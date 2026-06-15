@@ -1,0 +1,139 @@
+{
+    "app": {
+        "title": "open."
+    },
+    "time": {
+        "morning": "утро",
+        "day": "день",
+        "evening": "вечер",
+        "night": "ночь",
+        "monday": "Понедельник",
+        "tuesday": "Вторник",
+        "wednesday": "Среда",
+        "thursday": "Четверг",
+        "friday": "Пятница",
+        "saturday": "Суббота",
+        "sunday": "Воскресенье"
+    },
+    "home": {
+        "statistics": "за последние 2 недели",
+        "statisticsHours": "@:home.statistics\n{hours} часов",
+        "library": "Библиотека",
+        "libraryTracks": "· {count} треков",
+        "history": "ИСТОРИЯ",
+        "historyEmpty": "История пуста.\nНачните воспроизведение трека!",
+        "playlist": "ПЛЕЙЛИСТ",
+        "viewAll": "ВСЕ →",
+        "newPlaylist": "+ НОВЫЙ ПЛЕЙЛИСТ",
+        "historySidebar": "История"
+    },
+    "common": {
+        "search": "Поиск",
+        "add": "Добавить",
+        "close": "Закрыть",
+        "loading": "Загрузка...",
+        "error": "Ошибка",
+        "empty": "Пусто"
+    },
+    "import": {
+        "title": "Импорт музыки",
+        "selectSource": "Выберите источник",
+        "sourceSelected": "Выбрано: {source}",
+        "fromClipboard": "Из буфера обмена",
+        "localFile": "Выбрать локальный файл",
+        "soundCloud": "Импорт из SoundCloud"
+    },
+    "playlist": {
+        "create": {
+            "title": "Создать плейлист",
+            "cover": "обложка",
+            "addCover": "добавить обложку (опционально)",
+            "name": "Имя плейлиста",
+            "button": "Создать"
+        },
+        "notFound": "Плейлист не найден",
+        "files": {
+            "duration": "Длительность",
+            "album": "Альбом",
+            "year": "Год",
+            "added": "+ Добавить {count} файл в библиотеку",
+            "success": "✓ Добавлено {count} файл",
+            "partial": "✓ {added} добавлено · {errors} ошибок"
+        }
+    },
+    "search": {
+        "artists": "Поиск артистов..."
+    },
+    "track": {
+        "data": "данные",
+        "duration": "Длительность",
+        "album": "Альбом",
+        "year": "Год",
+        "linkInClipboard": "ССЫЛКА В БУФЕРЕ",
+        "add": "Добавить",
+        "failedToLoad": "Не удалось загрузить",
+        "unavailable": "Ссылка недоступна или трек заблокирован в вашем регионе",
+        "retry": "Попробовать снова",
+        "cancel": "Отмена"
+    },
+    "snackbar": {
+        "trackAdded": "Добавлено",
+        "trackAddedSub": "{title}",
+        "downloading": "Скачивается",
+        "downloadingSub": "{title}",
+        "playlistCreated": "Плейлист создан",
+        "errorNetwork": "Нет подключения к сети",
+        "errorLoad": "Не удалось загрузить",
+        "errorGeneric": "Что-то пошло не так",
+        "copied": "Скопировано",
+        "saved": "Сохранено"
+    },
+    "player": {
+        "unknownTitle": "Неизвестный трек",
+        "unknownArtist": "Неизвестный артист",
+        "nowPlaying": "Сейчас играет",
+        "queue": "Очередь",
+        "shuffle": "Перемешать",
+        "repeat": "Повтор",
+        "repeatOne": "Повтор трека"
+    },
+    "wave": {
+        "title": "моя\nволна",
+        "seedsLabel": "На основе",
+        "generating": "Генерируем волну...",
+        "empty": "Добавь seeds чтобы начать",
+        "seedsActive": "{count} активных"
+    },
+    "moods": {
+        "melancholy": "меланхолия",
+        "energy": "энергия",
+        "focus": "фокус",
+        "night": "ночь",
+        "drive": "драйв"
+    },
+    "library": {
+        "title": "Библиотека",
+        "filterAll": "Все",
+        "filterYoutube": "YouTube",
+        "filterLocal": "Локальные",
+        "filterSoundcloud": "SoundCloud",
+        "empty": "Треков пока нет",
+        "emptySub": "Добавь первый трек через +"
+    },
+    "statistics": {
+        "totalTracks": "треков",
+        "totalTime": "время",
+        "uniqueArtists": "артистов",
+        "periodToday": "Сегодня",
+        "periodWeek": "7 дней",
+        "periodTwoWeeks": "2 недели",
+        "periodMonth": "Месяц",
+        "periodAll": "Всё время"
+    },
+    "errors": {
+        "youtube": "YouTube недоступен",
+        "fileNotFound": "Файл не найден",
+        "noInternet": "Нет подключения к интернету",
+        "unknown": "Неизвестная ошибка"
+    }
+}

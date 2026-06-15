@@ -1,0 +1,83 @@
+part of 'player_bloc.dart';
+
+class PlayerState extends Equatable {
+  final Track? currentTrack;
+  final List<Track> queue;
+  final int currentIndex;
+  final bool isPlaying;
+  final bool isLoading;
+  final Duration position;
+  final Duration duration;
+  final bool shuffleEnabled;
+  final LoopMode loopMode;
+  final List<int>? shuffleIndices;
+  final String? error;
+
+  const PlayerState({
+    this.currentTrack,
+    this.queue = const [],
+    this.currentIndex = 0,
+    this.isPlaying = false,
+    this.isLoading = false,
+    this.position = Duration.zero,
+    this.duration = Duration.zero,
+    this.shuffleEnabled = false,
+    this.loopMode = LoopMode.off,
+    this.shuffleIndices,
+    this.error,
+  });
+
+  bool get hasNext => currentIndex < queue.length - 1;
+  bool get hasPrev => currentIndex > 0;
+
+  double get progress => duration.inMilliseconds == 0
+      ? 0
+      : position.inMilliseconds / duration.inMilliseconds;
+
+  @override
+  List<Object?> get props => [
+    currentTrack,
+    queue,
+    currentIndex,
+    isPlaying,
+    isLoading,
+    position,
+    duration,
+    shuffleEnabled,
+    loopMode,
+    shuffleIndices,
+    error,
+  ];
+
+  PlayerState copyWith({
+    Track? currentTrack,
+    List<Track>? queue,
+    int? currentIndex,
+    bool? isPlaying,
+    bool? isLoading,
+    Duration? position,
+    Duration? duration,
+    bool? shuffleEnabled,
+    LoopMode? loopMode,
+    Object? shuffleIndices = _unset,
+    String? error,
+  }) {
+    return PlayerState(
+      currentTrack: currentTrack ?? this.currentTrack,
+      queue: queue ?? this.queue,
+      currentIndex: currentIndex ?? this.currentIndex,
+      isPlaying: isPlaying ?? this.isPlaying,
+      isLoading: isLoading ?? this.isLoading,
+      position: position ?? this.position,
+      duration: duration ?? this.duration,
+      shuffleEnabled: shuffleEnabled ?? this.shuffleEnabled,
+      loopMode: loopMode ?? this.loopMode,
+      shuffleIndices: identical(shuffleIndices, _unset)
+          ? this.shuffleIndices
+          : shuffleIndices as List<int>?,
+      error: error,
+    );
+  }
+}
+
+const _unset = Object();

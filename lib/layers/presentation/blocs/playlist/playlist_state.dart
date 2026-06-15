@@ -1,0 +1,22 @@
+part of 'playlist_bloc.dart';
+
+sealed class PlaylistState extends Equatable {
+  const PlaylistState();
+
+  @override
+  List<Object> get props => [];
+}
+
+final class PlaylistInitial extends PlaylistState {}
+
+final class PlaylistLoaded extends PlaylistState {
+  final List<Playlist> playlists;
+  const PlaylistLoaded(this.playlists);
+}
+
+final class PlaylistLoading extends PlaylistState {}
+
+final class PlaylistError extends PlaylistState {
+  final String error;
+  const PlaylistError(this.error);
+}

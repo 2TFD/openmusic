@@ -1,0 +1,139 @@
+{
+    "app": {
+        "title": "open."
+    },
+    "time": {
+        "morning": "morning",
+        "day": "day",
+        "evening": "evening",
+        "night": "night",
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+    },
+    "home": {
+        "statistics": "from last 2 weeks",
+        "statisticsHours": "@:home.statistics\n{hours} hours",
+        "library": "Library",
+        "libraryTracks": "· {count} tracks",
+        "history": "HISTORY",
+        "historyEmpty": "History is empty.\nStart playing some tracks!",
+        "playlist": "PLAYLIST",
+        "viewAll": "ALL →",
+        "newPlaylist": "+ NEW PLAYLIST",
+        "historySidebar": "History"
+    },
+    "common": {
+        "search": "Search",
+        "add": "Add",
+        "close": "Close",
+        "loading": "Loading...",
+        "error": "Error",
+        "empty": "Empty"
+    },
+    "import": {
+        "title": "Import Music",
+        "selectSource": "Select source",
+        "sourceSelected": "Selected: {source}",
+        "fromClipboard": "Get from Clipboard",
+        "localFile": "Select Local File",
+        "soundCloud": "Import from SoundCloud"
+    },
+    "playlist": {
+        "create": {
+            "title": "Create Playlist",
+            "cover": "cover",
+            "addCover": "add cover (optional)",
+            "name": "Playlist Name",
+            "button": "Create"
+        },
+        "notFound": "Playlist not found",
+        "files": {
+            "duration": "Duration",
+            "album": "Album",
+            "year": "Year",
+            "added": "+ Add {count} file to library",
+            "success": "✓ Added {count} file",
+            "partial": "✓ {added} added · {errors} errors"
+        }
+    },
+    "search": {
+        "artists": "Search artists..."
+    },
+    "track": {
+        "data": "data",
+        "duration": "Duration",
+        "album": "Album",
+        "year": "Year",
+        "linkInClipboard": "LINK IN CLIPBOARD",
+        "add": "Add",
+        "failedToLoad": "Failed to load",
+        "unavailable": "Link is unavailable or track is blocked in your region",
+        "retry": "Try again",
+        "cancel": "Cancel"
+    },
+    "snackbar": {
+        "trackAdded": "Added",
+        "trackAddedSub": "{title}",
+        "downloading": "Downloading",
+        "downloadingSub": "{title}",
+        "playlistCreated": "Playlist created",
+        "errorNetwork": "No network connection",
+        "errorLoad": "Failed to load",
+        "errorGeneric": "Something went wrong",
+        "copied": "Copied",
+        "saved": "Saved"
+    },
+    "player": {
+        "unknownTitle": "Unknown Title",
+        "unknownArtist": "Unknown Artist",
+        "nowPlaying": "Now playing",
+        "queue": "Queue",
+        "shuffle": "Shuffle",
+        "repeat": "Repeat",
+        "repeatOne": "Repeat one"
+    },
+    "wave": {
+        "title": "my\nwave",
+        "seedsLabel": "Based on",
+        "generating": "Generating wave...",
+        "empty": "Add seeds to start",
+        "seedsActive": "{count} active"
+    },
+    "moods": {
+        "melancholy": "melancholy",
+        "energy": "energy",
+        "focus": "focus",
+        "night": "night",
+        "drive": "drive"
+    },
+    "library": {
+        "title": "Library",
+        "filterAll": "All",
+        "filterYoutube": "YouTube",
+        "filterLocal": "Local",
+        "filterSoundcloud": "SoundCloud",
+        "empty": "No tracks yet",
+        "emptySub": "Add your first track with +"
+    },
+    "statistics": {
+        "totalTracks": "tracks",
+        "totalTime": "listen time",
+        "uniqueArtists": "artists",
+        "periodToday": "Today",
+        "periodWeek": "7 days",
+        "periodTwoWeeks": "2 weeks",
+        "periodMonth": "Month",
+        "periodAll": "All time"
+    },
+    "errors": {
+        "youtube": "YouTube unavailable",
+        "fileNotFound": "File not found",
+        "noInternet": "No internet connection",
+        "unknown": "Unknown error"
+    }
+}
