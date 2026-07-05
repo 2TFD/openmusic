@@ -1,82 +1,29 @@
-import 'dart:convert';
-import 'package:openmusic/layers/domain/entities/track_preview.dart';
-
-enum DownloadStatus { queued, downloading, completed, failed, cancelled }
+enum DownloadStatus { queued, downloading, completed, failed }
 
 class DownloadTrackTask {
   final String trackId;
-  final String urlFile;
-
-  final double progress;
+  final String originalUrl;
   final DownloadStatus status;
-  DownloadTrackTask({
+
+  const DownloadTrackTask({
     required this.trackId,
-    required this.urlFile,
-    this.progress = 0,
+    required this.originalUrl,
     this.status = DownloadStatus.queued,
   });
 
   DownloadTrackTask copyWith({
     String? trackId,
-    String? urlFile,
-    double? progress,
+    String? originalUrl,
     DownloadStatus? status,
   }) {
     return DownloadTrackTask(
       trackId: trackId ?? this.trackId,
-      urlFile: urlFile ?? this.urlFile,
-      progress: progress ?? this.progress,
+      originalUrl: originalUrl ?? this.originalUrl,
       status: status ?? this.status,
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'trackId': trackId,
-      'urlFile': urlFile,
-      'progress': progress,
-      'status': status.name,
-    };
-  }
-
-  factory DownloadTrackTask.fromMap(Map<String, dynamic> map) {
-    return DownloadTrackTask(
-      trackId: map['trackId'] as String,
-      urlFile: map['urlFile'] as String,
-      progress: map['progress'] as double,
-      status: DownloadStatus.values.byName(map['status']),
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory DownloadTrackTask.fromJson(String source) =>
-      DownloadTrackTask.fromMap(json.decode(source) as Map<String, dynamic>);
-
   @override
-  String toString() {
-    return 'DownloadTrackTask(trackId: $trackId, urlFile: $urlFile, progress: $progress, status: $status)';
-  }
-
-  @override
-  bool operator ==(covariant DownloadTrackTask other) {
-    if (identical(this, other)) return true;
-
-    return other.trackId == trackId &&
-        other.urlFile == urlFile &&
-        other.progress == progress &&
-        other.status == status;
-  }
-
-  factory DownloadTrackTask.fromPreview(TrackPreview track) {
-    return DownloadTrackTask(trackId: track.id, urlFile: track.urlFile);
-  }
-
-  @override
-  int get hashCode {
-    return trackId.hashCode ^
-        urlFile.hashCode ^
-        progress.hashCode ^
-        status.hashCode;
-  }
+  String toString() =>
+      'DownloadTrackTask(trackId: $trackId, originalUrl: $originalUrl, status: $status)';
 }

@@ -16,7 +16,6 @@ import 'package:openmusic/layers/domain/usecases/get_statistic_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/remove_track_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/save_statistic_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/update_track_use_case.dart';
-import 'package:openmusic/layers/presentation/blocs/clipboard/clipboard_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/history/history_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist/playlist_bloc.dart';
@@ -95,8 +94,6 @@ class BlocScope extends StatelessWidget {
                 .watchPlayRecord(),
           )..add(const LoadStatisticEvent(StatsPeriod.twoWeeks)),
         ),
-        BlocProvider(create: (context) => ClipboardBloc()),
-
         BlocProvider(
           create: (context) => SearchBloc(
             searchUseCase: SearchUseCase(

@@ -67,7 +67,7 @@ class PlayRecordDto {
       artistName: map['artistName'] as String,
       sourceType: SourceType.values.firstWhere(
         (e) => e.name == map['sourceType'],
-        orElse: () => SourceType.localFile,
+        orElse: () => SourceType.unknown,
       ),
       listenedMs: map['listenedMs'] as int,
       playedAt: DateTime.fromMillisecondsSinceEpoch(map['playedAt'] as int),
@@ -116,7 +116,7 @@ class PlayRecordDto {
       artistName: data.artistName,
       sourceType: SourceType.values.firstWhere(
         (e) => e.name == data.sourceType,
-        orElse: () => SourceType.localFile,
+        orElse: () => SourceType.unknown,
       ),
       listenedMs: data.listenedDurationMilisecond,
       playedAt: data.playedAt,

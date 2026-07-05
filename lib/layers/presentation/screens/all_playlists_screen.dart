@@ -163,7 +163,6 @@ class _PlaylistGridCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Cover image or placeholder
             Expanded(
               child: ClipRRect(
                 borderRadius: const BorderRadius.vertical(
@@ -191,7 +190,6 @@ class _PlaylistGridCard extends StatelessWidget {
                 ),
               ),
             ),
-            // Info section
             Padding(
               padding: const EdgeInsets.all(10),
               child: Column(

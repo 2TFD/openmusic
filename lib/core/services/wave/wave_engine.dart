@@ -5,11 +5,11 @@ import 'dart:math';
 class WaveEngine {
   static List<Track> generate(WaveConfig config, List<Track> tracks) {
     if (tracks.isEmpty) return [];
-    final List<Track> embeddings = _getSimilarTracks(
+    final List<Track> similarTracks = _getSimilarTracks(
       config.tracks,
       tracks,
     ).map((e) => e.track).toList();
-    return embeddings;
+    return similarTracks;
   }
 
   static List<_SimilarTrack> _getSimilarTracks(

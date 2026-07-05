@@ -15,7 +15,7 @@ class EmbeddingEngine {
 
       var dio = Dio();
       var response = await dio.request(
-        'http://192.168.0.13:8000/embedding/smart',
+        "https://kxmwebwe-trackembeddingapi.hf.space/embedding/smart",
         options: Options(method: 'POST'),
         data: data,
       );

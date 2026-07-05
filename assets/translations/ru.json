@@ -41,7 +41,25 @@
         "sourceSelected": "Выбрано: {source}",
         "fromClipboard": "Из буфера обмена",
         "localFile": "Выбрать локальный файл",
-        "soundCloud": "Импорт из SoundCloud"
+        "soundCloud": "Импорт из SoundCloud",
+        "filesTitle": "Файлы",
+        "fileFormats": "MP3, FLAC, WAV, M4A",
+        "fileAction": "Выбрать файлы",
+        "fileActionSub": "Добавить аудио с устройства",
+        "linkTitle": "Ссылка",
+        "linkHint": "Вставьте ссылку SoundCloud",
+        "paste": "Вставить",
+        "addLink": "Добавить",
+        "clipboardEmpty": "Буфер обмена пуст",
+        "linkRequired": "Сначала вставьте ссылку",
+        "noFilesSelected": "Файлы не выбраны",
+        "filePickError": "Не удалось прочитать файлы",
+        "selectedFiles": "Выбранные файлы",
+        "addSelected": "Добавить выбранные файлы",
+        "addSelectedCount": "Добавить {count}",
+        "filesAdded": "Добавлено {count}",
+        "filesPartiallyAdded": "{added} добавлено · {failed} ошибок",
+        "filesAddFailed": "Не удалось добавить файлы"
     },
     "playlist": {
         "create": {

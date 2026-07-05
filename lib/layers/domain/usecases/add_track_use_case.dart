@@ -1,21 +1,21 @@
 import 'package:openmusic/core/services/track_source_resolver.dart';
 import 'package:openmusic/core/utils/app_logger.dart';
-import 'package:openmusic/layers/domain/entities/download_track_task.dart';
 import 'package:openmusic/layers/domain/entities/playlist.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/repositories/download_repository.dart';
+import 'package:openmusic/layers/domain/repositories/download_task_repository.dart';
 import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
-import 'package:openmusic/layers/domain/usecases/complite_track_download_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/complete_track_download_use_case.dart';
 
 import '../repositories/track_repository.dart';
 
 class AddTrackUseCase {
-  final DownloadRepository downloadRepository;
+  final DownloadTaskRepository downloadRepository;
   final CompleteTrackDownloadUseCase completeDownload;
   final TrackSourceResolver trackResolver;
   final TrackRepository trackRepository;
   final PlaylistRepository playlistRepository;
+
   AddTrackUseCase({
     required this.downloadRepository,
     required this.completeDownload,
@@ -36,29 +36,23 @@ class AddTrackUseCase {
       final results = await Future.wait(
         previews.map((p) async {
           try {
-            await trackRepository.addTrack(p.toTrack(null));
+            final existingTrack = await trackRepository.getTrackById(p.id);
+            if (existingTrack == null) {
+              await trackRepository.addTrack(p.toTrack(null));
+            } else if (existingTrack.filePath != null) {
+              return true;
+            }
 
-            if (p.source == SourceType.youtube) {
-              // YouTube requires youtube_explode_dart — can't use background_downloader
-              source
-                  .download(p)
-                  .then((filePath) async {
-                    await completeDownload(trackId: p.id, filePath: filePath);
-                  })
-                  .catchError((e, st) {
-                    AppLogger.log(
-                      '[AddTrackUseCase] YouTube download failed for ${p.id}: $e\n$st',
-                    );
-                  });
+            if (p.source == SourceType.localFile) {
+              final path = await source.download(p);
+              await completeDownload.call(trackId: p.id, filePath: path);
             } else {
-              await downloadRepository.enqueueTrackTask(
-                DownloadTrackTask.fromPreview(p),
-              );
+              await downloadRepository.enqueue(p.id, p.originalUrl);
             }
             return true;
           } catch (e, st) {
             await AppLogger.log(
-              '[AddTrackUseCase.execute] Error adding/downloading track ${p.id}: $e, stackTrace: $st',
+              '[AddTrackUseCase] Error adding track ${p.id}: $e, stackTrace: $st',
             );
             return false;
           }
@@ -69,6 +63,7 @@ class AddTrackUseCase {
       if (!results.contains(true)) {
         throw Exception('Failed to add any tracks from source');
       }
+
       if (previews.length > 1) {
         try {
           await playlistRepository.createPlaylist(
@@ -83,7 +78,7 @@ class AddTrackUseCase {
           );
         } catch (e, st) {
           await AppLogger.log(
-            '[AddTrackUseCase.execute] Warning: Failed to create playlist: $e, stackTrace: $st',
+            '[AddTrackUseCase] Warning: failed to create playlist: $e, stackTrace: $st',
           );
         }
       }
@@ -91,7 +86,7 @@ class AddTrackUseCase {
       return previews.first.toTrack(null);
     } catch (e, st) {
       await AppLogger.log(
-        '[AddTrackUseCase.execute] Error executing add track use case for input: $input, Error: $e, stackTrace: $st',
+        '[AddTrackUseCase] Error for input: $input, Error: $e, stackTrace: $st',
       );
       rethrow;
     }

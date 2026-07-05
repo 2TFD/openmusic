@@ -12,7 +12,7 @@ class TrackMapper {
       embedding: dto.embedding,
       id: dto.id,
       title: dto.title,
-      pathToFile: dto.pathToFile,
+      filePath: dto.filePath,
       artists: dto.artistIds.asMap().entries.map((entry) {
         final index = entry.key;
         final id = entry.value;
@@ -24,9 +24,9 @@ class TrackMapper {
       source: Source(
         type: SourceType.values.firstWhere(
           (e) => e.name == dto.sourceType,
-          orElse: () => SourceType.localFile,
+          orElse: () => SourceType.unknown,
         ),
-        originalUrl: dto.sourceUri,
+        originalUrl: dto.originalUrl,
       ),
       addedAt: dto.addedAt != null
           ? DateTime.parse(dto.addedAt!)
@@ -42,12 +42,12 @@ class TrackMapper {
       embedding: entity.embedding,
       id: entity.id,
       title: entity.title,
-      pathToFile: entity.pathToFile,
+      filePath: entity.filePath,
       artistIds: entity.artists.map((artist) => artist.id).toList(),
       artistNames: entity.artists.map((artist) => artist.name).toList(),
       durationMs: entity.duration.inMilliseconds,
       sourceType: entity.source.type.name,
-      sourceUri: entity.source.originalUrl,
+      originalUrl: entity.source.originalUrl,
       addedAt: entity.addedAt.toIso8601String(),
       album: entity.album,
       imageUrl: entity.imageUrl,

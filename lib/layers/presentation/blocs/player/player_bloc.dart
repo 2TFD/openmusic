@@ -175,11 +175,11 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     Emitter<PlayerState> emit,
   ) async {
     try {
-      final next = !state.shuffleEnabled;
+      final next = !state.isShuffleEnabled;
       await _service.setShuffleModeEnabled(next);
       emit(
         state.copyWith(
-          shuffleEnabled: next,
+          isShuffleEnabled: next,
           shuffleIndices: next ? _service.shuffleIndices : null,
         ),
       );

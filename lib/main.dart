@@ -13,12 +13,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: '.env');
   final dir = await getApplicationDocumentsDirectory();
-
   await configureDependencies(appDir: dir.path);
   await AppBootstrap(getIt).run();
-
   await EasyLocalization.ensureInitialized();
-
   await JustAudioBackground.init(
     androidNotificationChannelId: 'com.ttfd.openmusic.audio',
     androidNotificationChannelName: 'Audio playback',

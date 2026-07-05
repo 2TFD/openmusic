@@ -53,7 +53,6 @@ class AddTrackBloc extends Bloc<AddTrackEvent, AddTrackState> {
     emit(AddTrackLoading(event.preview));
 
     try {
-      log(event.preview.originalUrl);
       final track = await addTrackUseCase.execute(event.preview.originalUrl);
 
       emit(AddTrackSuccess(track));

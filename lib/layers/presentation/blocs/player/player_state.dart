@@ -8,7 +8,7 @@ class PlayerState extends Equatable {
   final bool isLoading;
   final Duration position;
   final Duration duration;
-  final bool shuffleEnabled;
+  final bool isShuffleEnabled;
   final LoopMode loopMode;
   final List<int>? shuffleIndices;
   final String? error;
@@ -21,7 +21,7 @@ class PlayerState extends Equatable {
     this.isLoading = false,
     this.position = Duration.zero,
     this.duration = Duration.zero,
-    this.shuffleEnabled = false,
+    this.isShuffleEnabled = false,
     this.loopMode = LoopMode.off,
     this.shuffleIndices,
     this.error,
@@ -43,7 +43,7 @@ class PlayerState extends Equatable {
     isLoading,
     position,
     duration,
-    shuffleEnabled,
+    isShuffleEnabled,
     loopMode,
     shuffleIndices,
     error,
@@ -57,7 +57,7 @@ class PlayerState extends Equatable {
     bool? isLoading,
     Duration? position,
     Duration? duration,
-    bool? shuffleEnabled,
+    bool? isShuffleEnabled,
     LoopMode? loopMode,
     Object? shuffleIndices = _unset,
     String? error,
@@ -70,7 +70,7 @@ class PlayerState extends Equatable {
       isLoading: isLoading ?? this.isLoading,
       position: position ?? this.position,
       duration: duration ?? this.duration,
-      shuffleEnabled: shuffleEnabled ?? this.shuffleEnabled,
+      isShuffleEnabled: isShuffleEnabled ?? this.isShuffleEnabled,
       loopMode: loopMode ?? this.loopMode,
       shuffleIndices: identical(shuffleIndices, _unset)
           ? this.shuffleIndices

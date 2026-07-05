@@ -86,7 +86,7 @@ class _PlayerBody extends StatelessWidget {
         _QueueButton(
           queue: state.queue,
           currentIndex: state.currentIndex,
-          shuffleEnabled: state.shuffleEnabled,
+          shuffleEnabled: state.isShuffleEnabled,
           shuffleIndices: state.shuffleIndices,
         ),
         const SizedBox(height: 16),
@@ -267,7 +267,7 @@ class _ControlsRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _ShuffleBtn(enabled: state.shuffleEnabled),
+        _ShuffleBtn(enabled: state.isShuffleEnabled),
         _SkipBtn(
           icon: Icons.skip_previous_rounded,
           enabled: state.hasPrev,

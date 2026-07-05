@@ -19,7 +19,7 @@ class Track extends Equatable {
   final DateTime addedAt;
   final String? album;
   final String? imageUrl;
-  final String? pathToFile;
+  final String? filePath;
 
   const Track({
     required this.id,
@@ -30,7 +30,7 @@ class Track extends Equatable {
     required this.duration,
     required this.source,
     required this.addedAt,
-    this.pathToFile,
+    this.filePath,
     this.album,
     this.imageUrl,
   });
@@ -45,7 +45,7 @@ class Track extends Equatable {
     addedAt,
     album,
     imageUrl,
-    pathToFile,
+    filePath,
     embedding,
     trackDescriptor,
   ];
@@ -78,7 +78,7 @@ class Track extends Equatable {
       artists: (json['artists'] as List)
           .map((artistJson) => Artist.fromJson(artistJson))
           .toList(),
-      pathToFile: json['pathToFile'],
+      filePath: json['filePath'],
       duration: json['durationMs'] != null
           ? Duration(milliseconds: json['durationMs'])
           : Duration.zero,
@@ -105,7 +105,7 @@ class Track extends Equatable {
   );
 
   AudioSource toAudioSource(String appDir) {
-    return AudioSource.file('$appDir/$pathToFile', tag: toMediaItem());
+    return AudioSource.file('$appDir/$filePath', tag: toMediaItem());
   }
 
   Track copyWith({
@@ -119,14 +119,14 @@ class Track extends Equatable {
     List<double>? embedding,
     String? album,
     String? imageUrl,
-    String? pathToFile,
+    String? filePath,
   }) {
     return Track(
       trackDescriptor: trackDescriptor ?? this.trackDescriptor,
       embedding: embedding ?? this.embedding,
       id: id ?? this.id,
       title: title ?? this.title,
-      pathToFile: pathToFile ?? this.pathToFile,
+      filePath: filePath ?? this.filePath,
       artists: artists ?? this.artists,
       duration: duration ?? this.duration,
       source: source ?? this.source,
@@ -136,8 +136,8 @@ class Track extends Equatable {
     );
   }
 
-  bool get isReady => embedding != null && pathToFile != null;
-  bool get isReadyToPlay => pathToFile != null;
+  bool get isReady => embedding != null && filePath != null;
+  bool get isReadyToPlay => filePath != null;
 }
 
 class TrackDescriptor {

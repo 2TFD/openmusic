@@ -22,9 +22,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   static const _filters = <(String, SourceType?)>[
     ('ALL', null),
-    ('YOUTUBE', SourceType.youtube),
     ('LOCAL', SourceType.localFile),
     ('SOUNDCLOUD', SourceType.soundcloud),
+    ('UNKNOWN', SourceType.unknown),
   ];
 
   @override
@@ -32,7 +32,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     return BlocBuilder<TrackBloc, TrackState>(
       builder: (context, state) {
         if (state is! TrackLoaded) {
-          return Center(child: Text(context.tr('track.data')));
+          return const Center(child: CircularProgressIndicator());
         }
 
         final tracks = _filter == null

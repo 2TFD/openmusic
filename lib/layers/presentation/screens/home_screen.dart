@@ -47,7 +47,6 @@ class HomeScreen extends StatelessWidget {
     return BlocConsumer<TrackBloc, TrackState>(
       listener: (context, state) {
         if (state is TrackLoaded) {
-          // TDOO ? replace
           final playerState = context.read<PlayerBloc>().state;
           if (playerState.currentTrack == null) {
             context.read<PlayerBloc>().add(PlayerQueueSet(state.tracks));

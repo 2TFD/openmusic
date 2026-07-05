@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-enum SourceType { localFile, youtube, soundcloud, bandcamp }
+enum SourceType { localFile, soundcloud, unknown }
 
 class Source extends Equatable {
   final SourceType type;
@@ -17,7 +17,11 @@ class Source extends Equatable {
   List<Object?> get props => [type, originalUrl, isAvailable];
 
   Map<String, dynamic> toJson() {
-    return {'type': type.name, 'uri': originalUrl, 'isAvailable': isAvailable};
+    return {
+      'type': type.name,
+      'originalUrl': originalUrl,
+      'isAvailable': isAvailable,
+    };
   }
 
   @override
@@ -29,7 +33,7 @@ class Source extends Equatable {
     return Source(
       type: SourceType.values.firstWhere(
         (e) => e.name == json['type'],
-        orElse: () => SourceType.localFile,
+        orElse: () => SourceType.unknown,
       ),
       originalUrl: json['originalUrl'],
       isAvailable: json['isAvailable'] ?? true,

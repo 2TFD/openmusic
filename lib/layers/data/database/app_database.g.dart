@@ -2049,6 +2049,331 @@ class EmbeddingTaskTableCompanion
   }
 }
 
+class $DownloadTaskTableTable extends DownloadTaskTable
+    with TableInfo<$DownloadTaskTableTable, DownloadTaskTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DownloadTaskTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _trackIdMeta = const VerificationMeta(
+    'trackId',
+  );
+  @override
+  late final GeneratedColumn<String> trackId = GeneratedColumn<String>(
+    'track_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _originalUrlMeta = const VerificationMeta(
+    'originalUrl',
+  );
+  @override
+  late final GeneratedColumn<String> originalUrl = GeneratedColumn<String>(
+    'original_url',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    trackId,
+    originalUrl,
+    status,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'download_task_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DownloadTaskTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('track_id')) {
+      context.handle(
+        _trackIdMeta,
+        trackId.isAcceptableOrUnknown(data['track_id']!, _trackIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_trackIdMeta);
+    }
+    if (data.containsKey('original_url')) {
+      context.handle(
+        _originalUrlMeta,
+        originalUrl.isAcceptableOrUnknown(
+          data['original_url']!,
+          _originalUrlMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_originalUrlMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {trackId};
+  @override
+  DownloadTaskTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DownloadTaskTableData(
+      trackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}track_id'],
+      )!,
+      originalUrl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}original_url'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $DownloadTaskTableTable createAlias(String alias) {
+    return $DownloadTaskTableTable(attachedDatabase, alias);
+  }
+}
+
+class DownloadTaskTableData extends DataClass
+    implements Insertable<DownloadTaskTableData> {
+  final String trackId;
+  final String originalUrl;
+  final String status;
+  final DateTime createdAt;
+  const DownloadTaskTableData({
+    required this.trackId,
+    required this.originalUrl,
+    required this.status,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['track_id'] = Variable<String>(trackId);
+    map['original_url'] = Variable<String>(originalUrl);
+    map['status'] = Variable<String>(status);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  DownloadTaskTableCompanion toCompanion(bool nullToAbsent) {
+    return DownloadTaskTableCompanion(
+      trackId: Value(trackId),
+      originalUrl: Value(originalUrl),
+      status: Value(status),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory DownloadTaskTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DownloadTaskTableData(
+      trackId: serializer.fromJson<String>(json['trackId']),
+      originalUrl: serializer.fromJson<String>(json['originalUrl']),
+      status: serializer.fromJson<String>(json['status']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'trackId': serializer.toJson<String>(trackId),
+      'originalUrl': serializer.toJson<String>(originalUrl),
+      'status': serializer.toJson<String>(status),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  DownloadTaskTableData copyWith({
+    String? trackId,
+    String? originalUrl,
+    String? status,
+    DateTime? createdAt,
+  }) => DownloadTaskTableData(
+    trackId: trackId ?? this.trackId,
+    originalUrl: originalUrl ?? this.originalUrl,
+    status: status ?? this.status,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  DownloadTaskTableData copyWithCompanion(DownloadTaskTableCompanion data) {
+    return DownloadTaskTableData(
+      trackId: data.trackId.present ? data.trackId.value : this.trackId,
+      originalUrl: data.originalUrl.present
+          ? data.originalUrl.value
+          : this.originalUrl,
+      status: data.status.present ? data.status.value : this.status,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DownloadTaskTableData(')
+          ..write('trackId: $trackId, ')
+          ..write('originalUrl: $originalUrl, ')
+          ..write('status: $status, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(trackId, originalUrl, status, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DownloadTaskTableData &&
+          other.trackId == this.trackId &&
+          other.originalUrl == this.originalUrl &&
+          other.status == this.status &&
+          other.createdAt == this.createdAt);
+}
+
+class DownloadTaskTableCompanion
+    extends UpdateCompanion<DownloadTaskTableData> {
+  final Value<String> trackId;
+  final Value<String> originalUrl;
+  final Value<String> status;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const DownloadTaskTableCompanion({
+    this.trackId = const Value.absent(),
+    this.originalUrl = const Value.absent(),
+    this.status = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DownloadTaskTableCompanion.insert({
+    required String trackId,
+    required String originalUrl,
+    required String status,
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : trackId = Value(trackId),
+       originalUrl = Value(originalUrl),
+       status = Value(status),
+       createdAt = Value(createdAt);
+  static Insertable<DownloadTaskTableData> custom({
+    Expression<String>? trackId,
+    Expression<String>? originalUrl,
+    Expression<String>? status,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (trackId != null) 'track_id': trackId,
+      if (originalUrl != null) 'original_url': originalUrl,
+      if (status != null) 'status': status,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DownloadTaskTableCompanion copyWith({
+    Value<String>? trackId,
+    Value<String>? originalUrl,
+    Value<String>? status,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return DownloadTaskTableCompanion(
+      trackId: trackId ?? this.trackId,
+      originalUrl: originalUrl ?? this.originalUrl,
+      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (trackId.present) {
+      map['track_id'] = Variable<String>(trackId.value);
+    }
+    if (originalUrl.present) {
+      map['original_url'] = Variable<String>(originalUrl.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DownloadTaskTableCompanion(')
+          ..write('trackId: $trackId, ')
+          ..write('originalUrl: $originalUrl, ')
+          ..write('status: $status, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2059,6 +2384,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $TrackTableTable trackTable = $TrackTableTable(this);
   late final $EmbeddingTaskTableTable embeddingTaskTable =
       $EmbeddingTaskTableTable(this);
+  late final $DownloadTaskTableTable downloadTaskTable =
+      $DownloadTaskTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2068,6 +2395,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     playlistTable,
     trackTable,
     embeddingTaskTable,
+    downloadTaskTable,
   ];
 }
 
@@ -3127,6 +3455,202 @@ typedef $$EmbeddingTaskTableTableProcessedTableManager =
       EmbeddingTaskTableData,
       PrefetchHooks Function()
     >;
+typedef $$DownloadTaskTableTableCreateCompanionBuilder =
+    DownloadTaskTableCompanion Function({
+      required String trackId,
+      required String originalUrl,
+      required String status,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$DownloadTaskTableTableUpdateCompanionBuilder =
+    DownloadTaskTableCompanion Function({
+      Value<String> trackId,
+      Value<String> originalUrl,
+      Value<String> status,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+class $$DownloadTaskTableTableFilterComposer
+    extends Composer<_$AppDatabase, $DownloadTaskTableTable> {
+  $$DownloadTaskTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get trackId => $composableBuilder(
+    column: $table.trackId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get originalUrl => $composableBuilder(
+    column: $table.originalUrl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DownloadTaskTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $DownloadTaskTableTable> {
+  $$DownloadTaskTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get trackId => $composableBuilder(
+    column: $table.trackId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get originalUrl => $composableBuilder(
+    column: $table.originalUrl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DownloadTaskTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DownloadTaskTableTable> {
+  $$DownloadTaskTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get trackId =>
+      $composableBuilder(column: $table.trackId, builder: (column) => column);
+
+  GeneratedColumn<String> get originalUrl => $composableBuilder(
+    column: $table.originalUrl,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$DownloadTaskTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DownloadTaskTableTable,
+          DownloadTaskTableData,
+          $$DownloadTaskTableTableFilterComposer,
+          $$DownloadTaskTableTableOrderingComposer,
+          $$DownloadTaskTableTableAnnotationComposer,
+          $$DownloadTaskTableTableCreateCompanionBuilder,
+          $$DownloadTaskTableTableUpdateCompanionBuilder,
+          (
+            DownloadTaskTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $DownloadTaskTableTable,
+              DownloadTaskTableData
+            >,
+          ),
+          DownloadTaskTableData,
+          PrefetchHooks Function()
+        > {
+  $$DownloadTaskTableTableTableManager(
+    _$AppDatabase db,
+    $DownloadTaskTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DownloadTaskTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DownloadTaskTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DownloadTaskTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> trackId = const Value.absent(),
+                Value<String> originalUrl = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DownloadTaskTableCompanion(
+                trackId: trackId,
+                originalUrl: originalUrl,
+                status: status,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String trackId,
+                required String originalUrl,
+                required String status,
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => DownloadTaskTableCompanion.insert(
+                trackId: trackId,
+                originalUrl: originalUrl,
+                status: status,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DownloadTaskTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DownloadTaskTableTable,
+      DownloadTaskTableData,
+      $$DownloadTaskTableTableFilterComposer,
+      $$DownloadTaskTableTableOrderingComposer,
+      $$DownloadTaskTableTableAnnotationComposer,
+      $$DownloadTaskTableTableCreateCompanionBuilder,
+      $$DownloadTaskTableTableUpdateCompanionBuilder,
+      (
+        DownloadTaskTableData,
+        BaseReferences<
+          _$AppDatabase,
+          $DownloadTaskTableTable,
+          DownloadTaskTableData
+        >,
+      ),
+      DownloadTaskTableData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3139,4 +3663,6 @@ class $AppDatabaseManager {
       $$TrackTableTableTableManager(_db, _db.trackTable);
   $$EmbeddingTaskTableTableTableManager get embeddingTaskTable =>
       $$EmbeddingTaskTableTableTableManager(_db, _db.embeddingTaskTable);
+  $$DownloadTaskTableTableTableManager get downloadTaskTable =>
+      $$DownloadTaskTableTableTableManager(_db, _db.downloadTaskTable);
 }

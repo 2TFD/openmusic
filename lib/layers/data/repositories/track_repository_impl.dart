@@ -111,7 +111,7 @@ class TrackRepositoryImpl implements TrackRepository {
       if (track == null) {
         throw Exception('not find track id:$id');
       }
-      track = track.copyWith(pathToFile: path);
+      track = track.copyWith(filePath: path);
       await localDataSource.updateTrack(TrackMapper.toDto(track));
     } catch (e, st) {
       await AppLogger.log(

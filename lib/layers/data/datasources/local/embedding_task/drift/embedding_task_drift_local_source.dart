@@ -2,7 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:openmusic/core/utils/app_logger.dart';
 import 'package:openmusic/layers/data/DTO/embedding_task_dto.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/datasources/local/embeding_task/embedding_task_local_data_source.dart';
+import 'package:openmusic/layers/data/datasources/local/embedding_task/embedding_task_local_data_source.dart';
 
 class EmbeddingTaskDriftLocalSource implements EmbeddingTaskLocalDataSource {
   final AppDatabase database;
@@ -36,6 +36,7 @@ class EmbeddingTaskDriftLocalSource implements EmbeddingTaskLocalDataSource {
               status: Value(task.status.name),
               createdAt: Value(task.createdAt),
             ),
+            mode: InsertMode.insertOrIgnore,
           );
     } catch (e, st) {
       await AppLogger.log(

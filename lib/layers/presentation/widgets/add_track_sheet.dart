@@ -361,15 +361,12 @@ class _SourceBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isYT = source == SourceType.youtube;
     return Container(
       padding: const EdgeInsets.fromLTRB(6, 3, 10, 3),
       decoration: BoxDecoration(
-        color: isYT ? const Color(0x1AFF0000) : const Color(0x1AFF5500),
+        color: const Color(0x1AFF5500),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: isYT ? const Color(0x26FF0000) : const Color(0x26FF5500),
-        ),
+        border: Border.all(color: const Color(0x26FF5500)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -377,9 +374,9 @@ class _SourceBadge extends StatelessWidget {
           Container(
             width: 6,
             height: 6,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              color: isYT ? const Color(0xFFFF4444) : const Color(0xFFFF7744),
+              color: Color(0xFFFF7744),
             ),
           ),
           const SizedBox(width: 5),
@@ -388,7 +385,7 @@ class _SourceBadge extends StatelessWidget {
             style: GoogleFonts.figtree(
               fontSize: 10,
               fontWeight: FontWeight.w600,
-              color: isYT ? const Color(0xFFFF6B6B) : const Color(0xFFFF9944),
+              color: const Color(0xFFFF9944),
               letterSpacing: 0.3,
             ),
           ),

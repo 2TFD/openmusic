@@ -5,7 +5,7 @@ class TrackDto extends Equatable {
 
   final String title;
 
-  final String? pathToFile;
+  final String? filePath;
 
   final List<String> artistIds;
 
@@ -15,7 +15,7 @@ class TrackDto extends Equatable {
 
   final String sourceType;
 
-  final String sourceUri;
+  final String originalUrl;
 
   final String? addedAt;
 
@@ -30,12 +30,12 @@ class TrackDto extends Equatable {
   const TrackDto({
     required this.id,
     required this.title,
-    required this.pathToFile,
+    required this.filePath,
     required this.artistIds,
     required this.artistNames,
     this.durationMs,
     required this.sourceType,
-    required this.sourceUri,
+    required this.originalUrl,
     this.addedAt,
     this.album,
     this.imageUrl,
@@ -47,12 +47,12 @@ class TrackDto extends Equatable {
   List<Object?> get props => [
     id,
     title,
-    pathToFile,
+    filePath,
     artistIds,
     artistNames,
     durationMs,
     sourceType,
-    sourceUri,
+    originalUrl,
     addedAt,
     album,
     imageUrl,
@@ -65,11 +65,11 @@ class TrackDto extends Equatable {
       'id': id,
       'title': title,
       'artistIds': artistIds,
-      'pathToFile': pathToFile,
+      'filePath': filePath,
       'artistNames': artistNames,
       'durationMs': durationMs,
       'sourceType': sourceType,
-      'sourceUri': sourceUri,
+      'originalUrl': originalUrl,
       'addedAt': addedAt,
       'album': album,
       'imageUrl': imageUrl,
@@ -82,12 +82,12 @@ class TrackDto extends Equatable {
     return TrackDto(
       id: json['id'],
       title: json['title'],
-      pathToFile: json['pathToFile'] ?? '',
+      filePath: json['filePath'] ?? '',
       artistIds: List<String>.from(json['artistIds']),
       artistNames: List<String>.from(json['artistNames']),
       durationMs: json['durationMs'],
       sourceType: json['sourceType'],
-      sourceUri: json['sourceUri'],
+      originalUrl: json['originalUrl'],
       addedAt: json['addedAt'],
       album: json['album'],
       imageUrl: json['imageUrl'],

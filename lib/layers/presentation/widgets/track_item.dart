@@ -74,7 +74,7 @@ class TrackItem extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            track.pathToFile == null
+            track.filePath == null
                 ? const Icon(Icons.cloud_off_sharp, color: AppColors.muted)
                 : isCurrent
                 ? _PlayingIndicator(isPlaying: isPlaying)

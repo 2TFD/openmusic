@@ -30,7 +30,7 @@ class TrackPreview {
   });
 
   Track toTrack(
-    String? pathToFile, {
+    String? filePath, {
     TrackDescriptor? trackDescriptor,
     List<double>? embedding,
   }) => Track(
@@ -43,7 +43,7 @@ class TrackPreview {
     artists: [Artist(id: id, name: artist)],
     album: album,
     imageUrl: artworkUrl,
-    pathToFile: pathToFile,
+    filePath: filePath,
     source: Source(type: source, originalUrl: originalUrl),
   );
 

@@ -7,7 +7,7 @@ extension StatsPeriodLabel on StatsPeriod {
     StatsPeriod.today => 'today',
     StatsPeriod.week => '7 days',
     StatsPeriod.twoWeeks => '2 weeks',
-    StatsPeriod.month => 'mounth',
+    StatsPeriod.month => 'month',
     StatsPeriod.allTime => 'all time',
   };
 

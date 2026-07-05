@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:openmusic/core/di/di.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
-import 'package:openmusic/layers/data/datasources/local/embeding_task/embedding_task_local_data_source.dart';
+import 'package:openmusic/layers/data/datasources/local/embedding_task/embedding_task_local_data_source.dart';
 import 'package:openmusic/layers/data/mappers/embedding_task_mapper.dart';
 import 'package:openmusic/layers/domain/entities/embedding_task.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
@@ -264,10 +264,9 @@ class _StatsBody extends StatelessWidget {
   const _StatsBody({required this.stats});
 
   static String _sourceLabel(dynamic type) => switch (type as SourceType) {
-    SourceType.soundcloud => 'SoundCloud',
     SourceType.localFile => 'Local',
-    SourceType.youtube => 'YouTube',
-    SourceType.bandcamp => 'Bandcamp',
+    SourceType.soundcloud => 'SoundCloud',
+    SourceType.unknown => 'Unknown',
   };
 
   @override

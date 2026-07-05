@@ -48,7 +48,7 @@ class PlayRecord extends Equatable {
     artistName: json['artistName'],
     sourceType: SourceType.values.firstWhere(
       (e) => e.name == json['sourceType'],
-      orElse: () => SourceType.localFile,
+      orElse: () => SourceType.unknown,
     ),
     listenedDuration: Duration(milliseconds: json['listenedMs']),
     playedAt: DateTime.parse(json['playedAt']),

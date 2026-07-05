@@ -248,7 +248,10 @@ class AppTheme {
 
   static ThemeData get dark {
     return ThemeData.dark().copyWith(
-      appBarTheme: const AppBarTheme(backgroundColor: AppColors.bg),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: AppColors.bg,
+        surfaceTintColor: Colors.transparent,
+      ),
       scaffoldBackgroundColor: AppColors.bg,
       colorScheme: const ColorScheme.dark(
         surface: AppColors.surface,
@@ -262,7 +265,7 @@ class AppTheme {
       ),
       dividerColor: AppColors.border,
       splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
+      highlightColor: const Color.fromARGB(0, 110, 59, 59),
 
       // Текст через Figtree по умолчанию
       textTheme: GoogleFonts.figtreeTextTheme(
@@ -289,41 +292,3 @@ class AppTheme {
     );
   }
 }
-
-// ──────────────────────────────────────────────────────────────
-// 8. КРАТКАЯ ШПАРГАЛКА
-// ──────────────────────────────────────────────────────────────
-//
-// ЦВЕТА
-//   Фон экрана          AppColors.bg         #080808
-//   Карточки            AppColors.surface    #111111
-//   Активная карточка   AppColors.surface2   #181818
-//   Граница             AppColors.border     #1E1E1E
-//   Текст               AppColors.text       #F0F0F0
-//   Вторичный текст     AppColors.textSub    #888888
-//   Мuted               AppColors.muted      #555555
-//   Акцент              AppColors.accent     #FFFFFF
-//
-// ШРИФТЫ
-//   Заголовок экрана    AppText.display1     Outfit 32 w800
-//   Заголовок секции    AppText.display2     Outfit 24 w700
-//   Название трека      AppText.display3     Outfit 18 w700
-//   Основной текст      AppText.bodyL        Figtree 14 w500
-//   Артист              AppText.bodyM        Figtree 13 w400
-//   Мета / chip         AppText.bodyS        Figtree 12 w400
-//   Длительность        AppText.bodyXS       Figtree 11 w400
-//   Лейбл секции        AppText.label        Figtree 10 w600 uppercase
-//   Nav label           AppText.labelXS      Figtree  9 w700 uppercase
-//
-// АНИМАЦИИ
-//   Tap feedback        AppAnim.micro        100ms
-//   Toggle chip         AppAnim.fast         180ms  easeInOut
-//   Переход экрана      AppAnim.normal       280ms  easeOut
-//   Stagger списка      AppAnim.stagger(i)   60+i*40ms
-//
-// РАДИУСЫ
-//   Карточка            AppRadius.l          20px
-//   Обложка трека       AppRadius.s          10px
-//   Mini cover          AppRadius.xs         6px
-//   Chip / pill         AppRadius.pill       100px
-// ──────────────────────────────────────────────────────────────

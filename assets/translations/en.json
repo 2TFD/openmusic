@@ -41,7 +41,25 @@
         "sourceSelected": "Selected: {source}",
         "fromClipboard": "Get from Clipboard",
         "localFile": "Select Local File",
-        "soundCloud": "Import from SoundCloud"
+        "soundCloud": "Import from SoundCloud",
+        "filesTitle": "Files",
+        "fileFormats": "MP3, FLAC, WAV, M4A",
+        "fileAction": "Choose files",
+        "fileActionSub": "Add audio from this device",
+        "linkTitle": "Link",
+        "linkHint": "Paste a SoundCloud link",
+        "paste": "Paste",
+        "addLink": "Add",
+        "clipboardEmpty": "Clipboard is empty",
+        "linkRequired": "Paste a link first",
+        "noFilesSelected": "No files selected",
+        "filePickError": "Failed to read files",
+        "selectedFiles": "Selected files",
+        "addSelected": "Add selected files",
+        "addSelectedCount": "Add {count}",
+        "filesAdded": "Added {count}",
+        "filesPartiallyAdded": "{added} added · {failed} failed",
+        "filesAddFailed": "Failed to add files"
     },
     "playlist": {
         "create": {

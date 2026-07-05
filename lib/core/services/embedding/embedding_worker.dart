@@ -10,7 +10,7 @@ class EmbeddingWorker {
   final EmbeddingEngine engine;
   final TrackRepository trackRepository;
 
-  bool _running = false;
+  bool _isRunning = false;
 
   EmbeddingWorker({
     required this.repo,
@@ -19,8 +19,8 @@ class EmbeddingWorker {
   });
 
   Future<void> start() async {
-    _running = true;
-    while (_running) {
+    _isRunning = true;
+    while (_isRunning) {
       final task = await repo.getNextQueued();
       if (task == null) {
         await Future.delayed(const Duration(seconds: 2));
@@ -43,5 +43,5 @@ class EmbeddingWorker {
     }
   }
 
-  void stop() => _running = false;
+  void stop() => _isRunning = false;
 }

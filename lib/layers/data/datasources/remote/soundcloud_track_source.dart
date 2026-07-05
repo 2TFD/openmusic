@@ -294,7 +294,7 @@ class SoundcloudTrackSource implements TrackSource {
     try {
       final clientId = await getClientId();
       final expandedUrl = await resolveShortSoundCloudUrl(input);
-      final jsonTrackData = await resolveTrack(expandedUrl, clientId);
+      final jsonTrackData = await fetchTrackJson(expandedUrl, clientId);
       final trackData = await _getTrackData(
         jsonTrackData['id'].toString(),
         clientId,
@@ -369,17 +369,18 @@ class SoundcloudTrackSource implements TrackSource {
         'https://soundcloud.com',
         options: Options(responseType: ResponseType.plain),
       );
-      final scriptUrls = RegExp(r'<script[^>]+src="(https://a-v2\.sndcdn\.com/assets/[^"]+\.js)"')
-          .allMatches(homeRes.data as String)
-          .map((m) => m.group(1)!)
-          .toList();
+      final scriptUrls = RegExp(
+        r'<script[^>]+src="(https://a-v2\.sndcdn\.com/assets/[^"]+\.js)"',
+      ).allMatches(homeRes.data as String).map((m) => m.group(1)!).toList();
 
       for (final url in scriptUrls.reversed) {
         final jsRes = await _dio.get(
           url,
           options: Options(responseType: ResponseType.plain),
         );
-        final match = RegExp(r'client_id:"([a-zA-Z0-9]+)"').firstMatch(jsRes.data as String);
+        final match = RegExp(
+          r'client_id:"([a-zA-Z0-9]+)"',
+        ).firstMatch(jsRes.data as String);
         if (match != null) {
           _cachedClientId = match.group(1)!;
           return _cachedClientId!;
@@ -391,7 +392,7 @@ class SoundcloudTrackSource implements TrackSource {
     return _fallbackClientId;
   }
 
-  Future<Map<String, dynamic>> resolveTrack(String url, String clientId) async {
+  Future<Map<String, dynamic>> fetchTrackJson(String url, String clientId) async {
     try {
       final resolveUrl =
           'https://api-v2.soundcloud.com/resolve?url=$url&client_id=$clientId';
@@ -404,19 +405,19 @@ class SoundcloudTrackSource implements TrackSource {
       return res.data;
     } on DioException catch (e, st) {
       await AppLogger.log(
-        '[SoundcloudTrackSource.resolveTrack] DioException for URL: $url, Error: ${e.message}, statusCode: ${e.response?.statusCode}, stackTrace: \n$st',
+        '[SoundcloudTrackSource.fetchTrackJson] DioException for URL: $url, Error: ${e.message}, statusCode: ${e.response?.statusCode}, stackTrace: \n$st',
       );
       rethrow;
     } catch (e, st) {
       await AppLogger.log(
-        '[SoundcloudTrackSource.resolveTrack] Error resolving URL: $url, Error: $e, stackTrace: \n$st',
+        '[SoundcloudTrackSource.fetchTrackJson] Error resolving URL: $url, Error: $e, stackTrace: \n$st',
       );
       rethrow;
     }
   }
 
-  Future<String> getStreamUrl(String urlStream, String clientId) async {
-    final url = '$urlStream?client_id=$clientId';
+  Future<String> getStreamUrl(String transcodingUrl, String clientId) async {
+    final url = '$transcodingUrl?client_id=$clientId';
 
     try {
       final res = await _dio.get(url);
@@ -424,7 +425,7 @@ class SoundcloudTrackSource implements TrackSource {
     } on DioException catch (e) {
       if (e.response?.statusCode == 404) {
         await AppLogger.log(
-          '[SoundCloudTrackSource.getStreamUrl] 404 error - stream URL may have expired: $urlStream',
+          '[SoundCloudTrackSource.getStreamUrl] 404 error - stream URL may have expired: $transcodingUrl',
         );
       } else {
         await AppLogger.log(
@@ -494,7 +495,7 @@ class SoundcloudTrackSource implements TrackSource {
 
       final expandedUrl = await resolveShortSoundCloudUrl(trackUrl);
 
-      final jsonTrackData = await resolveTrack(expandedUrl, clientId);
+      final jsonTrackData = await fetchTrackJson(expandedUrl, clientId);
       _validateProgressiveStream(jsonTrackData);
 
       final transcodings = jsonTrackData['media']['transcodings'] as List;
@@ -503,9 +504,9 @@ class SoundcloudTrackSource implements TrackSource {
         orElse: () => null,
       );
 
-      final urlStream = progressive['url'];
+      final transcodingUrl = progressive['url'];
 
-      final streamUrl = await getStreamUrl(urlStream, clientId);
+      final streamUrl = await getStreamUrl(transcodingUrl, clientId);
 
       final filePath = await downloadFile(streamUrl, "$filename.mp3");
 
@@ -520,10 +521,20 @@ class SoundcloudTrackSource implements TrackSource {
 
   @override
   Future<String> download(TrackPreview track) async {
-    final now = DateTime.now();
-    final filename =
-        "${track.artist}-${track.title}_${now.second}_${now.millisecond}";
+    final filename = _safeFilename(
+      '${track.artist}-${track.title}_${DateTime.now().microsecondsSinceEpoch}',
+    );
     return downloadSoundCloudTrack(track.originalUrl, filename);
+  }
+
+  String _safeFilename(String value) {
+    final sanitized = value
+        .replaceAll(RegExp(r'[\\/:*?"<>|]'), '_')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+
+    if (sanitized.isEmpty) return 'soundcloud_track';
+    return sanitized.length > 120 ? sanitized.substring(0, 120) : sanitized;
   }
 
   @override
@@ -562,7 +573,7 @@ class SoundcloudTrackSource implements TrackSource {
           id: trackData['id'].toString(),
           title: trackData['title'],
           source: SourceType.soundcloud,
-          originalUrl: url, //playlist url
+          originalUrl: url,
           album: trackData["album"],
           duration: Duration(milliseconds: trackData["duration"]),
           artist: trackData["user"]["username"],

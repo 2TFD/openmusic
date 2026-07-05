@@ -1,5 +1,5 @@
 import 'package:openmusic/layers/data/DTO/embedding_task_dto.dart';
-import 'package:openmusic/layers/data/datasources/local/embeding_task/embedding_task_local_data_source.dart';
+import 'package:openmusic/layers/data/datasources/local/embedding_task/embedding_task_local_data_source.dart';
 import 'package:openmusic/layers/data/mappers/embedding_task_mapper.dart';
 import 'package:openmusic/layers/domain/entities/embedding_task.dart';
 import 'package:openmusic/layers/domain/repositories/embedding_task_repository.dart';
