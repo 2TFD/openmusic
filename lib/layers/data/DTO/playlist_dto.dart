@@ -73,7 +73,7 @@ class PlaylistDto extends Equatable {
     return PlaylistDto(
       id: data.id,
       name: data.name,
-      trackIds: data.trackIds.split(','),
+      trackIds: data.trackIds.isEmpty ? [] : data.trackIds.split(','),
       createdAt: data.createdAt,
       description: data.description,
       imageUrl: data.imageUrl,

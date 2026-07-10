@@ -7,7 +7,7 @@ class DownloadTaskMapper {
       trackId: entity.trackId,
       originalUrl: entity.originalUrl,
       status: entity.status,
-      createdAt: DateTime.now(),
+      createdAt: entity.createdAt,
     );
   }
 
@@ -16,6 +16,7 @@ class DownloadTaskMapper {
       trackId: dto.trackId,
       originalUrl: dto.originalUrl,
       status: dto.status,
+      createdAt: dto.createdAt,
     );
   }
 }

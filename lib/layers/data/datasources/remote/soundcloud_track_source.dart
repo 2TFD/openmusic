@@ -592,7 +592,9 @@ class SoundcloudTrackSource implements TrackSource {
         final item = (res.data['collection'] as List<dynamic>).first;
 
         final trackData = item['track'];
-        if (trackData == null) {}
+        if (trackData == null) {
+          throw Exception('No track data in first likes item');
+        }
 
         final transcodings = trackData['media']['transcodings'] as List;
         final progressive = transcodings.firstWhere(

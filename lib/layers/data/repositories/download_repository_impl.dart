@@ -41,23 +41,14 @@ class DownloadTaskRepositoryImpl implements DownloadTaskRepository {
   }
 
   @override
-  Future<void> markDownloading(String trackId) async {
-    final dto = await localDataSource.getByTrackId(trackId);
-    if (dto == null) return;
-    await localDataSource.update(
-      dto.copyWith(status: DownloadStatus.downloading),
-    );
-  }
+  Future<void> markDownloading(String trackId) =>
+      localDataSource.updateStatus(trackId, DownloadStatus.downloading);
 
   @override
-  Future<void> markDone(String trackId) async {
-    await localDataSource.deleteByTrackId(trackId);
-  }
+  Future<void> markDone(String trackId) =>
+      localDataSource.deleteByTrackId(trackId);
 
   @override
-  Future<void> markFailed(String trackId) async {
-    final dto = await localDataSource.getByTrackId(trackId);
-    if (dto == null) return;
-    await localDataSource.update(dto.copyWith(status: DownloadStatus.failed));
-  }
+  Future<void> markFailed(String trackId) =>
+      localDataSource.updateStatus(trackId, DownloadStatus.failed);
 }

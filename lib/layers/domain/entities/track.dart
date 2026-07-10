@@ -95,19 +95,6 @@ class Track extends Equatable {
   factory Track.fromJsonString(String jsonString) =>
       Track.fromJson(json.decode(jsonString));
 
-  MediaItem toMediaItem() => MediaItem(
-    id: id,
-    title: title,
-    artist: artists.map((a) => a.name).join(', '),
-    album: album,
-    artUri: imageUrl != null ? Uri.parse(imageUrl!) : null,
-    duration: duration,
-  );
-
-  AudioSource toAudioSource(String appDir) {
-    return AudioSource.file('$appDir/$filePath', tag: toMediaItem());
-  }
-
   Track copyWith({
     String? id,
     String? title,
@@ -721,9 +708,9 @@ class ContextProfile {
 
   factory ContextProfile.fromMap(Map<String, dynamic> map) {
     return ContextProfile(
-      genres: List<String>.from((map['genres'] as List<String>)),
-      moods: List<String>.from((map['moods'] as List<String>)),
-      scenarios: List<String>.from((map['scenarios'] as List<String>)),
+      genres: List<String>.from(map['genres'] as List),
+      moods: List<String>.from(map['moods'] as List),
+      scenarios: List<String>.from(map['scenarios'] as List),
     );
   }
 

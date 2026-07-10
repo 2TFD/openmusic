@@ -7,17 +7,17 @@ sealed class PlaylistEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class LoadPlaylisyEvent extends PlaylistEvent {}
+class LoadPlaylistEvent extends PlaylistEvent {}
 
-class AddTrackPlaylisyEvent extends PlaylistEvent {
+class AddTrackPlaylistEvent extends PlaylistEvent {
   final String playlistId;
   final String trackId;
-  const AddTrackPlaylisyEvent(this.playlistId, this.trackId);
+  const AddTrackPlaylistEvent(this.playlistId, this.trackId);
 }
 
-class CreatePlaylisyEvent extends PlaylistEvent {
+class CreatePlaylistEvent extends PlaylistEvent {
   final Playlist playlist;
-  const CreatePlaylisyEvent(this.playlist);
+  const CreatePlaylistEvent(this.playlist);
 }
 
 class PlaylistErrorEvent extends PlaylistEvent {

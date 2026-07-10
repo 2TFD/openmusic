@@ -12,7 +12,7 @@ class CompleteTrackDownloadUseCase {
     await trackRepository.updateTrackPathById(id: trackId, path: filePath);
     await embeddingRepository.createTask(
       EmbeddingTask(
-        id: DateTime.now().toIso8601String(),
+        id: trackId,
         trackId: trackId,
         filePath: filePath,
         status: EmbeddingStatus.queued,

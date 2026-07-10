@@ -12,7 +12,7 @@ import 'package:openmusic/layers/presentation/screens/settings_screen.dart';
 import 'package:openmusic/core/app_router/app_shell.dart';
 
 class AppRouter {
-  static GoRouter get router => GoRouter(
+  static final GoRouter router = GoRouter(
     initialLocation: '/${AppRouterNames.home}',
     routes: [
       ShellRoute(

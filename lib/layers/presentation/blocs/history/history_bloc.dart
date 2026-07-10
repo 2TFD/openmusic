@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
+import 'package:openmusic/layers/domain/repositories/play_record_repository.dart';
 import 'package:openmusic/layers/domain/usecases/get_history_use_case.dart';
 
 part 'history_event.dart';
@@ -8,10 +9,14 @@ part 'history_state.dart';
 
 class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
   final GetHistoryUseCase _getHistoryUseCase;
+  final PlayRecordRepository _playRecordRepository;
 
-  HistoryBloc({required GetHistoryUseCase getHistoryUseCase})
-    : _getHistoryUseCase = getHistoryUseCase,
-      super(const HistoryInitial()) {
+  HistoryBloc({
+    required GetHistoryUseCase getHistoryUseCase,
+    required PlayRecordRepository playRecordRepository,
+  }) : _getHistoryUseCase = getHistoryUseCase,
+       _playRecordRepository = playRecordRepository,
+       super(const HistoryInitial()) {
     on<LoadHistoryEvent>(_onLoadHistory);
     on<RefreshHistoryEvent>(_onRefreshHistory);
     on<ClearHistoryEvent>(_onClearHistory);
@@ -65,6 +70,11 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     ClearHistoryEvent event,
     Emitter<HistoryState> emit,
   ) async {
-    emit(const HistoryLoaded(tracks: [], totalRecords: 0));
+    try {
+      await _playRecordRepository.clear();
+      emit(const HistoryLoaded(tracks: [], totalRecords: 0));
+    } catch (e) {
+      emit(HistoryError('Failed to clear history: ${e.toString()}'));
+    }
   }
 }

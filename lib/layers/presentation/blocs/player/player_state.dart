@@ -50,7 +50,7 @@ class PlayerState extends Equatable {
   ];
 
   PlayerState copyWith({
-    Track? currentTrack,
+    Object? currentTrack = _unset,
     List<Track>? queue,
     int? currentIndex,
     bool? isPlaying,
@@ -60,10 +60,12 @@ class PlayerState extends Equatable {
     bool? isShuffleEnabled,
     LoopMode? loopMode,
     Object? shuffleIndices = _unset,
-    String? error,
+    Object? error = _unset,
   }) {
     return PlayerState(
-      currentTrack: currentTrack ?? this.currentTrack,
+      currentTrack: identical(currentTrack, _unset)
+          ? this.currentTrack
+          : currentTrack as Track?,
       queue: queue ?? this.queue,
       currentIndex: currentIndex ?? this.currentIndex,
       isPlaying: isPlaying ?? this.isPlaying,
@@ -75,7 +77,7 @@ class PlayerState extends Equatable {
       shuffleIndices: identical(shuffleIndices, _unset)
           ? this.shuffleIndices
           : shuffleIndices as List<int>?,
-      error: error,
+      error: identical(error, _unset) ? this.error : error as String?,
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:openmusic/core/utils/app_logger.dart';
 import 'package:openmusic/layers/data/DTO/embedding_task_dto.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
 import 'package:openmusic/layers/data/datasources/local/embedding_task/embedding_task_local_data_source.dart';
+import 'package:openmusic/layers/domain/entities/embedding_task.dart';
 
 class EmbeddingTaskDriftLocalSource implements EmbeddingTaskLocalDataSource {
   final AppDatabase database;
@@ -85,6 +86,14 @@ class EmbeddingTaskDriftLocalSource implements EmbeddingTaskLocalDataSource {
   }
 
   @override
+  Stream<List<EmbeddingTaskDto>> watchAll() {
+    return database
+        .select(database.embeddingTaskTable)
+        .watch()
+        .map((rows) => rows.map((e) => EmbeddingTaskDto.fromDataClass(e)).toList());
+  }
+
+  @override
   Future<EmbeddingTaskDto> getById(String id) async {
     try {
       final res = await (database.select(
@@ -137,6 +146,20 @@ class EmbeddingTaskDriftLocalSource implements EmbeddingTaskLocalDataSource {
     } catch (e, st) {
       await AppLogger.log(
         '[EmbeddingTaskDriftLocalSouce.update] Error updating record ${record.id}: $e, stackTrace: $st',
+      );
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> updateStatus(String trackId, EmbeddingStatus status) async {
+    try {
+      await (database.update(database.embeddingTaskTable)
+            ..where((t) => t.trackId.equals(trackId)))
+          .write(EmbeddingTaskTableCompanion(status: Value(status.name)));
+    } catch (e, st) {
+      await AppLogger.log(
+        '[EmbeddingTaskDriftLocalSouce.updateStatus] Error updating status for trackId $trackId: $e, stackTrace: $st',
       );
       rethrow;
     }

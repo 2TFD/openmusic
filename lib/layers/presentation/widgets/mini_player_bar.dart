@@ -116,6 +116,7 @@ class _MiniPlayerLayoutState extends State<_MiniPlayerLayout> {
         controller: pageController,
         itemCount: widget.state.queue.length,
         onPageChanged: (value) {
+          if (value == widget.state.currentIndex) return;
           context.read<PlayerBloc>().add(PlayerIndexSeeked(index: value));
         },
         itemBuilder: (context, index) {
@@ -305,14 +306,14 @@ class _Controls extends StatelessWidget {
       children: [
         _CtrlBtn(
           icon: Icons.skip_previous_rounded,
-          onTap: () => getIt<AudioPlayerService>().skipToPrevious(),
+          onTap: () => context.read<PlayerBloc>().add(PlayerSkippedPrevious()),
         ),
         const SizedBox(width: 4),
         _PlayBtn(isPlaying: isPlaying),
         const SizedBox(width: 4),
         _CtrlBtn(
           icon: Icons.skip_next_rounded,
-          onTap: () => getIt<AudioPlayerService>().skipToNext(),
+          onTap: () => context.read<PlayerBloc>().add(PlayerSkippedNext()),
         ),
       ],
     );

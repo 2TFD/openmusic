@@ -6,12 +6,9 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:openmusic/core/di/di.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
-import 'package:openmusic/layers/data/datasources/local/embedding_task/embedding_task_local_data_source.dart';
-import 'package:openmusic/layers/data/mappers/embedding_task_mapper.dart';
-import 'package:openmusic/layers/domain/entities/embedding_task.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/entities/statistic.dart';
-import 'package:openmusic/layers/domain/repositories/play_record_repository.dart';
+import 'package:openmusic/layers/domain/repositories/embedding_task_repository.dart';
 import 'package:openmusic/layers/presentation/blocs/history/history_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/statistic/statistic_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/track/track_bloc.dart';
@@ -40,23 +37,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadPendingCount();
-    _embeddingWatchSub = getIt<EmbeddingTaskLocalDataSource>().watch().listen(
-      (_) => _loadPendingCount(),
-    );
-  }
-
-  Future<void> _loadPendingCount() async {
-    final dtos = await getIt<EmbeddingTaskLocalDataSource>().getAll();
-    final pending = dtos
-        .map(EmbeddingTaskMapper.toEntity)
-        .where(
-          (t) =>
-              t.status == EmbeddingStatus.queued ||
-              t.status == EmbeddingStatus.processing,
-        )
-        .length;
-    if (mounted) setState(() => _pendingCount = pending);
+    _embeddingWatchSub = getIt<EmbeddingTaskRepository>()
+        .watchPendingCount()
+        .listen((count) {
+      if (mounted) setState(() => _pendingCount = count);
+    });
   }
 
   void _onPeriodChanged(BuildContext context, int index) {
@@ -621,10 +606,7 @@ class _AppSection extends StatelessWidget {
     );
 
     if (confirmed == true && context.mounted) {
-      await getIt<PlayRecordRepository>().clear();
-      if (context.mounted) {
-        context.read<HistoryBloc>().add(const ClearHistoryEvent());
-      }
+      context.read<HistoryBloc>().add(const ClearHistoryEvent());
     }
   }
 

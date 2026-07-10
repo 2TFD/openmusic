@@ -27,7 +27,7 @@ class _CreatePlaylistSheetState extends State<CreatePlaylistSheet> {
     final name = _nameCtrl.text.trim();
     if (name.isEmpty) return;
     context.read<PlaylistBloc>().add(
-      CreatePlaylisyEvent(
+      CreatePlaylistEvent(
         Playlist(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           name: name,
@@ -47,9 +47,7 @@ class _CreatePlaylistSheetState extends State<CreatePlaylistSheet> {
     return Container(
       decoration: const BoxDecoration(
         color: AppBlur.sheetColor,
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(AppRadius.xl),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
       padding: EdgeInsets.fromLTRB(
         AppSpacing.xl,
@@ -84,11 +82,7 @@ class _CreatePlaylistSheetState extends State<CreatePlaylistSheet> {
               const Spacer(),
               IconButton(
                 onPressed: () => Navigator.pop(context),
-                icon: const Icon(
-                  Icons.close,
-                  size: 18,
-                  color: AppColors.muted,
-                ),
+                icon: const Icon(Icons.close, size: 18, color: AppColors.muted),
                 padding: const EdgeInsets.all(AppSpacing.s),
               ),
             ],
@@ -122,9 +116,7 @@ class _CreatePlaylistSheetState extends State<CreatePlaylistSheet> {
               onTap: _canCreate ? _submit : null,
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  vertical: AppSpacing.m + 2,
-                ),
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.m + 2),
                 decoration: BoxDecoration(
                   color: AppColors.surface3,
                   borderRadius: BorderRadius.circular(AppRadius.m),

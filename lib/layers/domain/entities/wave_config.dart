@@ -42,9 +42,9 @@ class WaveConfig {
 
   factory WaveConfig.fromMap(Map<String, dynamic> map) {
     return WaveConfig(
-      seeds: List<String>.from((map['seeds'] as List<String>)),
+      seeds: List<String>.from(map['seeds'] as List),
       tracks: List<Track>.from(
-        (map['tracks'] as List<int>).map<Track>(
+        (map['tracks'] as List).map<Track>(
           (x) => Track.fromJson(x as Map<String, dynamic>),
         ),
       ),

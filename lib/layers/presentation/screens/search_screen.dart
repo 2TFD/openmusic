@@ -324,17 +324,13 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget _buildPreviewTile(TrackPreview preview) {
     return GestureDetector(
       onTap: () {
+        context.read<AddTrackBloc>().add(FetchTrackPreview(preview.originalUrl));
         showModalBottomSheet(
           context: context,
           useRootNavigator: true,
           backgroundColor: Colors.transparent,
           isScrollControlled: true,
-          builder: (_) {
-            context.read<AddTrackBloc>().add(
-              FetchTrackPreview(preview.originalUrl),
-            );
-            return AddTrackSheet(url: preview.originalUrl, preview: preview);
-          },
+          builder: (_) => AddTrackSheet(url: preview.originalUrl, preview: preview),
         );
       },
       child: Container(

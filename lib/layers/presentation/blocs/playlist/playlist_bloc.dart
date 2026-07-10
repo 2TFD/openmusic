@@ -26,7 +26,7 @@ class PlaylistBloc extends Bloc<PlaylistEvent, PlaylistState> {
   }) : super(PlaylistInitial()) {
     _changesSubscription = playlistChangesStream.listen(
       (e) {
-        add(LoadPlaylisyEvent());
+        add(LoadPlaylistEvent());
       },
       onError: (error, stackTrace) {
         log(
@@ -36,9 +36,9 @@ class PlaylistBloc extends Bloc<PlaylistEvent, PlaylistState> {
         add(const PlaylistErrorEvent('Stream error occurred'));
       },
     );
-    on<LoadPlaylisyEvent>(_onLoad);
-    on<AddTrackPlaylisyEvent>(_onAdd);
-    on<CreatePlaylisyEvent>(_onCreate);
+    on<LoadPlaylistEvent>(_onLoad);
+    on<AddTrackPlaylistEvent>(_onAdd);
+    on<CreatePlaylistEvent>(_onCreate);
     on<PlaylistErrorEvent>(_onPlaylistError);
   }
   @override
@@ -48,7 +48,7 @@ class PlaylistBloc extends Bloc<PlaylistEvent, PlaylistState> {
   }
 
   Future<void> _onLoad(
-    LoadPlaylisyEvent event,
+    LoadPlaylistEvent event,
     Emitter<PlaylistState> emit,
   ) async {
     emit(PlaylistLoading());
@@ -61,29 +61,29 @@ class PlaylistBloc extends Bloc<PlaylistEvent, PlaylistState> {
   }
 
   Future<void> _onAdd(
-    AddTrackPlaylisyEvent event,
+    AddTrackPlaylistEvent event,
     Emitter<PlaylistState> emit,
   ) async {
     emit(PlaylistLoading());
     try {
-      addTrackToPlaylistUseCase(
+      await addTrackToPlaylistUseCase(
         playlistId: event.playlistId,
         trackId: event.trackId,
       );
-      add(LoadPlaylisyEvent());
+      add(LoadPlaylistEvent());
     } catch (e) {
       emit(PlaylistError(failureFromException(e).toLocaleKey()));
     }
   }
 
   Future<void> _onCreate(
-    CreatePlaylisyEvent event,
+    CreatePlaylistEvent event,
     Emitter<PlaylistState> emit,
   ) async {
     emit(PlaylistLoading());
     try {
       await createPlaylistUseCase(event.playlist);
-      add(LoadPlaylisyEvent());
+      add(LoadPlaylistEvent());
     } catch (e) {
       emit(PlaylistError(failureFromException(e).toLocaleKey()));
     }

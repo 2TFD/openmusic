@@ -23,32 +23,33 @@ class EmbeddingTaskRepositoryImpl implements EmbeddingTaskRepository {
   }
 
   @override
-  Future<void> markFailed(String trackId) async {
-    final task = await localDataSource.getByTrackId(trackId);
-    final updatedTask = task.copyWith(status: EmbeddingStatus.failed);
-    return localDataSource.update(updatedTask);
-  }
+  Future<void> markFailed(String trackId) =>
+      localDataSource.updateStatus(trackId, EmbeddingStatus.failed);
 
   @override
-  Future<void> markProcessing(String trackId) async {
-    final task = await localDataSource.getByTrackId(trackId);
-    final updatedTask = task.copyWith(status: EmbeddingStatus.processing);
-    return localDataSource.update(updatedTask);
-  }
+  Future<void> markProcessing(String trackId) =>
+      localDataSource.updateStatus(trackId, EmbeddingStatus.processing);
 
   @override
-  Future<void> saveResult(String trackId, List<double> vector) async {
-    final task = await localDataSource.getByTrackId(trackId);
-    final updatedTask = task.copyWith(
-      status: EmbeddingStatus.done,
-      filePath: vector.toString(),
-    );
-    return localDataSource.update(updatedTask);
-  }
+  Future<void> saveResult(String trackId, List<double> vector) =>
+      localDataSource.updateStatus(trackId, EmbeddingStatus.done);
 
   @override
   Stream<dynamic> watchQueued() {
     return localDataSource.watch();
+  }
+
+  @override
+  Stream<int> watchPendingCount() {
+    return localDataSource.watchAll().map(
+      (dtos) => dtos
+          .where(
+            (dto) =>
+                dto.status == EmbeddingStatus.queued ||
+                dto.status == EmbeddingStatus.processing,
+          )
+          .length,
+    );
   }
 
   @override

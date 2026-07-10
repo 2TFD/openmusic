@@ -3,6 +3,7 @@ import 'package:openmusic/core/utils/app_logger.dart';
 import 'package:openmusic/layers/data/DTO/download_task_dto.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
 import 'package:openmusic/layers/data/datasources/local/download_task/download_task_local_data_source.dart';
+import 'package:openmusic/layers/domain/entities/download_track_task.dart';
 
 class DownloadTaskDriftLocalSource implements DownloadTaskLocalDataSource {
   final AppDatabase database;
@@ -71,6 +72,20 @@ class DownloadTaskDriftLocalSource implements DownloadTaskLocalDataSource {
     } catch (e, st) {
       await AppLogger.log(
         '[DownloadTaskDriftLocalSource.update] $e\n$st',
+      );
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> updateStatus(String trackId, DownloadStatus status) async {
+    try {
+      await (database.update(database.downloadTaskTable)
+            ..where((t) => t.trackId.equals(trackId)))
+          .write(DownloadTaskTableCompanion(status: Value(status.name)));
+    } catch (e, st) {
+      await AppLogger.log(
+        '[DownloadTaskDriftLocalSource.updateStatus] $e\n$st',
       );
       rethrow;
     }

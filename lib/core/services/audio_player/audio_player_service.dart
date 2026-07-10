@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:just_audio/just_audio.dart';
+import 'package:openmusic/core/infrastructure/mappers/track_audio_mapper.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 
 class AudioPlayerService {
@@ -103,6 +104,7 @@ class AudioPlayerService {
     try {
       await _player.stop();
       final sources = tracks.map((t) => t.toAudioSource(appDir)).toList();
+
       await _player.setAudioSources(sources, initialIndex: index);
     } catch (e, st) {
       log(

@@ -74,7 +74,7 @@ class BlocScope extends StatelessWidget {
               getIt<PlaylistRepository>(),
             ),
             playlistChangesStream: getIt<PlaylistRepository>().watchPlaylist(),
-          )..add(LoadPlaylisyEvent()),
+          )..add(LoadPlaylistEvent()),
         ),
         BlocProvider(
           create: (context) => PlayerBloc(
@@ -113,6 +113,7 @@ class BlocScope extends StatelessWidget {
               playRecordRepository: getIt<PlayRecordRepository>(),
               getTracksUseCase: GetTracksUseCase(getIt<TrackRepository>()),
             ),
+            playRecordRepository: getIt<PlayRecordRepository>(),
           )..add(const LoadHistoryEvent()),
         ),
       ],
