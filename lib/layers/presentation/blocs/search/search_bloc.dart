@@ -11,10 +11,6 @@ part 'search_state.dart';
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
   final SearchUseCase searchUseCase;
 
-  static const int _pageSize = 30;
-  List<Track> _localCache = [];
-  String _localCacheQuery = '';
-
   SearchBloc({required this.searchUseCase}) : super(SearchInitial()) {
     on<SearchLocalEvent>(_onSearchLocal);
     on<SearchExternalEvent>(_onSearchExternal);
@@ -30,30 +26,31 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       return;
     }
 
-    if (event.offset == 0 || event.query != _localCacheQuery) {
+    if (event.offset == 0) {
       emit(SearchLoading());
-      try {
-        _localCache = await searchUseCase.searchLocal(event.query);
-        _localCacheQuery = event.query;
-      } catch (e) {
-        emit(SearchError(failureFromException(e).toLocaleKey()));
-        return;
-      }
     }
 
-    final page = _localCache.skip(event.offset).take(_pageSize).toList();
-    final existing = (event.offset > 0 && state is SearchLoaded)
-        ? (state as SearchLoaded).tracks
-        : <Track>[];
+    try {
+      final result = await searchUseCase.searchLocal(
+        event.query,
+        offset: event.offset,
+      );
 
-    emit(
-      SearchLoaded(
-        tracks: [...existing, ...page],
-        isLocal: true,
-        hasMore: event.offset + _pageSize < _localCache.length,
-        currentOffset: event.offset,
-      ),
-    );
+      final existing = (event.offset > 0 && state is SearchLoaded)
+          ? (state as SearchLoaded).tracks
+          : <Track>[];
+
+      emit(
+        SearchLoaded(
+          tracks: [...existing, ...result.tracks],
+          isLocal: true,
+          hasMore: result.hasMore,
+          currentOffset: result.offset,
+        ),
+      );
+    } catch (e) {
+      emit(SearchError(failureFromException(e).toLocaleKey()));
+    }
   }
 
   Future<void> _onSearchExternal(

@@ -7,8 +7,9 @@ sealed class PlayerEvent {}
 // Публичные — вызываются из UI
 class PlayerQueueSet extends PlayerEvent {
   final List<Track> tracks;
-  final int startIndex;
-  PlayerQueueSet(this.tracks, {this.startIndex = 0});
+  final Track? startTrack;
+  final bool autoPlay;
+  PlayerQueueSet(this.tracks, {this.startTrack, this.autoPlay = true});
 }
 
 class PlayerPlayPauseToggled extends PlayerEvent {}
@@ -18,10 +19,9 @@ class PlayerSeeked extends PlayerEvent {
   PlayerSeeked(this.position);
 }
 
-class PlayerIndexSeeked extends PlayerEvent {
-  final List<Track>? tracks;
+class PlayerTrackSelected extends PlayerEvent {
   final int index;
-  PlayerIndexSeeked({required this.index, this.tracks});
+  PlayerTrackSelected({required this.index});
 }
 
 class PlayerSkippedNext extends PlayerEvent {}
@@ -31,6 +31,8 @@ class PlayerSkippedPrevious extends PlayerEvent {}
 class PlayerShuffleToggled extends PlayerEvent {}
 
 class PlayerRepeatCycled extends PlayerEvent {}
+
+class PlayerErrorShown extends PlayerEvent {}
 
 // Внутренние — только от стримов, UI не трогает
 class _PlayerPositionUpdated extends PlayerEvent {

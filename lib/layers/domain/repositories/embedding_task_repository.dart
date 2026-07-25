@@ -1,12 +1,19 @@
 import 'package:openmusic/layers/domain/entities/embedding_task.dart';
 
 abstract class EmbeddingTaskRepository {
-  Future<EmbeddingTask?> getNextQueued();
-  Future<void> markProcessing(String trackId);
-  Future<void> saveResult(String trackId, List<double> vector);
-  Future<void> markFailed(String trackId);
+  /// Atomically moves the next queued task to processing and returns it.
+  Future<EmbeddingTask?> claimNext({required String ownerId});
+  Future<bool> renewLease({required String trackId, required String ownerId});
+  Future<bool> releaseLease({required String trackId, required String ownerId});
+  Future<bool> saveResult({
+    required String trackId,
+    required String ownerId,
+    required List<double> vector,
+  });
+  Future<bool> markFailed({required String trackId, required String ownerId});
   Future<void> createTask(EmbeddingTask task);
-  Stream<dynamic> watchQueued();
+  Stream<List<EmbeddingTask>> watchQueued();
+
   /// Стрим количества задач в состоянии queued или processing.
   /// Используется UI для отображения счётчика без прямого доступа к data-слою.
   Stream<int> watchPendingCount();

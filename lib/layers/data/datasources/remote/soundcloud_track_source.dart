@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:openmusic/core/utils/app_logger.dart';
 import 'package:openmusic/layers/domain/entities/playlist.dart';
+import 'package:openmusic/layers/domain/entities/operation_cancellation.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/entities/track_preview.dart';
@@ -392,7 +393,10 @@ class SoundcloudTrackSource implements TrackSource {
     return _fallbackClientId;
   }
 
-  Future<Map<String, dynamic>> fetchTrackJson(String url, String clientId) async {
+  Future<Map<String, dynamic>> fetchTrackJson(
+    String url,
+    String clientId,
+  ) async {
     try {
       final resolveUrl =
           'https://api-v2.soundcloud.com/resolve?url=$url&client_id=$clientId';
@@ -436,12 +440,23 @@ class SoundcloudTrackSource implements TrackSource {
     }
   }
 
-  Future<String> downloadFile(String url, String filename) async {
+  Future<String> downloadFile(
+    String url,
+    String filename, {
+    OperationCancellation? cancellation,
+  }) async {
     try {
+      cancellation?.throwIfCancelled();
+      final cancelToken = CancelToken();
+      cancellation?.whenCancelled.then((_) {
+        if (!cancelToken.isCancelled) cancelToken.cancel();
+      });
       final res = await _dio.get(
         url,
         options: Options(responseType: ResponseType.bytes),
+        cancelToken: cancelToken,
       );
+      cancellation?.throwIfCancelled();
       final dir = await getApplicationDocumentsDirectory();
       final file = await File("${dir.path}/$filename").create();
       await file.writeAsBytes(res.data);
@@ -488,8 +503,9 @@ class SoundcloudTrackSource implements TrackSource {
 
   Future<String> downloadSoundCloudTrack(
     String trackUrl,
-    String filename,
-  ) async {
+    String filename, {
+    OperationCancellation? cancellation,
+  }) async {
     try {
       final clientId = await getClientId();
 
@@ -508,7 +524,11 @@ class SoundcloudTrackSource implements TrackSource {
 
       final streamUrl = await getStreamUrl(transcodingUrl, clientId);
 
-      final filePath = await downloadFile(streamUrl, "$filename.mp3");
+      final filePath = await downloadFile(
+        streamUrl,
+        "$filename.mp3",
+        cancellation: cancellation,
+      );
 
       return filePath;
     } catch (e, st) {
@@ -520,11 +540,18 @@ class SoundcloudTrackSource implements TrackSource {
   }
 
   @override
-  Future<String> download(TrackPreview track) async {
+  Future<String> download(
+    TrackPreview track, {
+    OperationCancellation? cancellation,
+  }) async {
     final filename = _safeFilename(
       '${track.artist}-${track.title}_${DateTime.now().microsecondsSinceEpoch}',
     );
-    return downloadSoundCloudTrack(track.originalUrl, filename);
+    return downloadSoundCloudTrack(
+      track.originalUrl,
+      filename,
+      cancellation: cancellation,
+    );
   }
 
   String _safeFilename(String value) {

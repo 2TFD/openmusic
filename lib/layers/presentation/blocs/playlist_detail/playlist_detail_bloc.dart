@@ -1,24 +1,29 @@
-import 'dart:developer';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/layers/domain/entities/playlist.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_repository.dart';
+import 'package:openmusic/layers/domain/usecases/delete_playlist_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/get_playlist_with_tracks_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/update_playlist_use_case.dart';
 
 part 'playlist_detail_event.dart';
 part 'playlist_detail_state.dart';
 
 class PlaylistDetailBloc
     extends Bloc<PlaylistDetailEvent, PlaylistDetailState> {
-  final PlaylistRepository playlistRepo;
-  final TrackRepository trackRepo;
+  final GetPlaylistWithTracksUseCase _getPlaylistWithTracks;
+  final UpdatePlaylistUseCase _updatePlaylist;
+  final DeletePlaylistUseCase _deletePlaylist;
 
   PlaylistDetailBloc({
-    required this.playlistRepo,
-    required this.trackRepo,
-  }) : super(PlaylistDetailInitial()) {
+    required GetPlaylistWithTracksUseCase getPlaylistWithTracks,
+    required UpdatePlaylistUseCase updatePlaylist,
+    required DeletePlaylistUseCase deletePlaylist,
+  }) : _getPlaylistWithTracks = getPlaylistWithTracks,
+       _updatePlaylist = updatePlaylist,
+       _deletePlaylist = deletePlaylist,
+       super(PlaylistDetailInitial()) {
     on<PlaylistDetailLoad>(_onLoad);
     on<PlaylistDetailRemoveTrack>(_onRemoveTrack);
     on<PlaylistDetailReorder>(_onReorder);
@@ -32,18 +37,15 @@ class PlaylistDetailBloc
   ) async {
     emit(PlaylistDetailLoading());
     try {
-      final playlist = await playlistRepo.getPlaylistById(event.playlistId);
-      if (playlist == null) throw Exception('Playlist not found');
-      final loaded = await Future.wait(
-        playlist.trackIds.map((id) => trackRepo.getTrackById(id)),
-      );
+      final result = await _getPlaylistWithTracks(event.playlistId);
+      if (emit.isDone) return;
       emit(PlaylistDetailLoaded(
-        playlist: playlist,
-        tracks: loaded.whereType<Track>().toList(),
+        playlist: result.playlist,
+        tracks: result.tracks,
       ));
-    } catch (e, st) {
-      log(e.toString(), stackTrace: st);
-      emit(PlaylistDetailError(e.toString()));
+    } catch (e) {
+      if (emit.isDone) return;
+      emit(PlaylistDetailError(failureFromException(e).toLocaleKey()));
     }
   }
 
@@ -54,15 +56,20 @@ class PlaylistDetailBloc
     final current = state;
     if (current is! PlaylistDetailLoaded) return;
 
-    final newTracks = current.tracks
-        .where((t) => t.id != event.trackId)
-        .toList();
-    final updated = current.playlist.copyWith(
-      trackIds: newTracks.map((t) => t.id).toList(),
-    );
-
+    final updated = _updatePlaylist.removeTrack(current.playlist, event.trackId);
+    final newTracks =
+        current.tracks.where((t) => t.id != event.trackId).toList();
     emit(PlaylistDetailLoaded(playlist: updated, tracks: newTracks));
-    await playlistRepo.updatePlaylist(updated);
+    try {
+      await _updatePlaylist(updated);
+    } catch (e) {
+      if (emit.isDone) return;
+      emit(PlaylistDetailLoaded(
+        playlist: current.playlist,
+        tracks: current.tracks,
+        errorKey: failureFromException(e).toLocaleKey(),
+      ));
+    }
   }
 
   Future<void> _onReorder(
@@ -78,12 +85,22 @@ class PlaylistDetailBloc
     final list = List<Track>.from(current.tracks);
     list.insert(newIndex, list.removeAt(event.oldIndex));
 
-    final updated = current.playlist.copyWith(
-      trackIds: list.map((t) => t.id).toList(),
+    final updated = _updatePlaylist.reorderTracks(
+      current.playlist,
+      event.oldIndex,
+      event.newIndex,
     );
-
     emit(PlaylistDetailLoaded(playlist: updated, tracks: list));
-    await playlistRepo.updatePlaylist(updated);
+    try {
+      await _updatePlaylist(updated);
+    } catch (e) {
+      if (emit.isDone) return;
+      emit(PlaylistDetailLoaded(
+        playlist: current.playlist,
+        tracks: current.tracks,
+        errorKey: failureFromException(e).toLocaleKey(),
+      ));
+    }
   }
 
   Future<void> _onRename(
@@ -93,9 +110,18 @@ class PlaylistDetailBloc
     final current = state;
     if (current is! PlaylistDetailLoaded) return;
 
-    final updated = current.playlist.copyWith(name: event.name);
+    final updated = _updatePlaylist.rename(current.playlist, event.name);
     emit(PlaylistDetailLoaded(playlist: updated, tracks: current.tracks));
-    await playlistRepo.updatePlaylist(updated);
+    try {
+      await _updatePlaylist(updated);
+    } catch (e) {
+      if (emit.isDone) return;
+      emit(PlaylistDetailLoaded(
+        playlist: current.playlist,
+        tracks: current.tracks,
+        errorKey: failureFromException(e).toLocaleKey(),
+      ));
+    }
   }
 
   Future<void> _onDelete(
@@ -105,7 +131,13 @@ class PlaylistDetailBloc
     final current = state;
     if (current is! PlaylistDetailLoaded) return;
 
-    await playlistRepo.deletePlaylist(current.playlist.id);
-    emit(PlaylistDetailDeleted());
+    try {
+      await _deletePlaylist(current.playlist.id);
+      if (emit.isDone) return;
+      emit(PlaylistDetailDeleted());
+    } catch (e) {
+      if (emit.isDone) return;
+      emit(PlaylistDetailError(failureFromException(e).toLocaleKey()));
+    }
   }
 }

@@ -17,12 +17,12 @@ class PlaylistBloc extends Bloc<PlaylistEvent, PlaylistState> {
   final AddTrackToPlaylistUseCase addTrackToPlaylistUseCase;
   final CreatePlaylistUseCase createPlaylistUseCase;
 
-  StreamSubscription<dynamic>? _changesSubscription;
+  StreamSubscription<List<Playlist>>? _changesSubscription;
   PlaylistBloc({
     required this.getPlaylistsUseCase,
     required this.addTrackToPlaylistUseCase,
     required this.createPlaylistUseCase,
-    required Stream<dynamic> playlistChangesStream,
+    required Stream<List<Playlist>> playlistChangesStream,
   }) : super(PlaylistInitial()) {
     _changesSubscription = playlistChangesStream.listen(
       (e) {
@@ -33,13 +33,16 @@ class PlaylistBloc extends Bloc<PlaylistEvent, PlaylistState> {
           'Stream error: $error, stackTrace: $stackTrace',
           name: "PlaylistBloc",
         );
-        add(const PlaylistErrorEvent('Stream error occurred'));
+        add(_PlaylistStreamErrored(error));
       },
     );
     on<LoadPlaylistEvent>(_onLoad);
     on<AddTrackPlaylistEvent>(_onAdd);
     on<CreatePlaylistEvent>(_onCreate);
-    on<PlaylistErrorEvent>(_onPlaylistError);
+    on<_PlaylistStreamErrored>(
+      (e, emit) =>
+          emit(PlaylistError(failureFromException(e.error).toLocaleKey())),
+    );
   }
   @override
   Future<void> close() {
@@ -87,9 +90,5 @@ class PlaylistBloc extends Bloc<PlaylistEvent, PlaylistState> {
     } catch (e) {
       emit(PlaylistError(failureFromException(e).toLocaleKey()));
     }
-  }
-
-  void _onPlaylistError(PlaylistErrorEvent event, Emitter<PlaylistState> emit) {
-    emit(PlaylistError(event.message));
   }
 }

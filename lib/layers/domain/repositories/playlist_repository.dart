@@ -8,5 +8,5 @@ abstract class PlaylistRepository {
   Future<void> addTrackToPlaylist(String playlistId, String trackId);
   Future<void> removeTrackFromPlaylist(String playlistId, String trackId);
   Future<void> updatePlaylist(Playlist playlist);
-  Stream<dynamic> watchPlaylist();
+  Stream<List<Playlist>> watchPlaylist();
 }

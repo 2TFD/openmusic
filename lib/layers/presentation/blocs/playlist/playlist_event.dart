@@ -13,17 +13,24 @@ class AddTrackPlaylistEvent extends PlaylistEvent {
   final String playlistId;
   final String trackId;
   const AddTrackPlaylistEvent(this.playlistId, this.trackId);
+
+  @override
+  List<Object> get props => [playlistId, trackId];
 }
 
 class CreatePlaylistEvent extends PlaylistEvent {
   final Playlist playlist;
   const CreatePlaylistEvent(this.playlist);
-}
-
-class PlaylistErrorEvent extends PlaylistEvent {
-  final String message;
-  const PlaylistErrorEvent(this.message);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [playlist];
 }
+
+class _PlaylistStreamErrored extends PlaylistEvent {
+  final Object error;
+  const _PlaylistStreamErrored(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+

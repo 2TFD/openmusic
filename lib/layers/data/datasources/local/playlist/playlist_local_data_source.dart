@@ -6,5 +6,5 @@ abstract class PlaylistLocalDataSource {
   Future<void> savePlaylist(PlaylistDto playlist);
   Future<void> deletePlaylist(String id);
   Future<void> updatePlaylist(PlaylistDto playlist);
-  Stream<dynamic> watchPlaylist();
+  Stream<List<PlaylistDto>> watchPlaylist();
 }

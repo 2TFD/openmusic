@@ -58,7 +58,7 @@ class _GooTransition extends StatelessWidget {
             ),
             AnimatedOpacity(
               opacity: t < 0.5 ? 0 : 1,
-              duration: Duration(milliseconds: 400),
+              duration: const Duration(milliseconds: 400),
               child: child,
             ),
           ],

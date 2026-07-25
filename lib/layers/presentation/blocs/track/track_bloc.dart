@@ -20,7 +20,7 @@ class TrackBloc extends Bloc<TrackEvent, TrackState> {
   final SearchUseCase searchUseCase;
   final RemoveTrackUseCase removeTrackUseCase;
   final UpdateTrackUseCase updateTrackUseCase;
-  StreamSubscription<dynamic>? _trackChangesSubscription;
+  StreamSubscription<List<Track>>? _trackChangesSubscription;
 
   TrackBloc({
     required this.getTracksUseCase,
@@ -28,7 +28,7 @@ class TrackBloc extends Bloc<TrackEvent, TrackState> {
     required this.searchUseCase,
     required this.removeTrackUseCase,
     required this.updateTrackUseCase,
-    required Stream<dynamic> trackChangesStream,
+    required Stream<List<Track>> trackChangesStream,
   }) : super(TrackInitial()) {
     _trackChangesSubscription = trackChangesStream.listen(
       (e) {
@@ -38,13 +38,16 @@ class TrackBloc extends Bloc<TrackEvent, TrackState> {
         AppLogger.log(
           '[TrackBloc] Stream error: $error, stackTrace: $stackTrace',
         );
-        add(const TrackErrorEvent('Stream error occurred'));
+        add(_TrackStreamErrored(error));
       },
     );
     on<LoadTracksEvent>(_onLoadTracks);
     on<RemoveTrackEvent>(_onRemoveTrack);
     on<UpdateTrackEvent>(_onUpdateTrack);
-    on<TrackErrorEvent>(_onTrackError);
+    on<_TrackStreamErrored>(
+      (e, emit) =>
+          emit(TrackError(failureFromException(e.error).toLocaleKey())),
+    );
   }
 
   @override
@@ -60,6 +63,7 @@ class TrackBloc extends Bloc<TrackEvent, TrackState> {
     emit(TrackLoading());
     try {
       final tracks = await getTracksUseCase();
+
       emit(TrackLoaded(tracks));
     } catch (e) {
       emit(TrackError(failureFromException(e).toLocaleKey()));
@@ -70,11 +74,16 @@ class TrackBloc extends Bloc<TrackEvent, TrackState> {
     RemoveTrackEvent event,
     Emitter<TrackState> emit,
   ) async {
-    emit(TrackLoading());
+    final current = state;
+    if (current is TrackLoaded) {
+      emit(
+        TrackLoaded(
+          current.tracks.where((t) => t.id != event.trackId).toList(),
+        ),
+      );
+    }
     try {
       await removeTrackUseCase(event.trackId);
-      final tracks = await getTracksUseCase();
-      emit(TrackLoaded(tracks));
     } catch (e) {
       emit(TrackError(failureFromException(e).toLocaleKey()));
     }
@@ -84,17 +93,10 @@ class TrackBloc extends Bloc<TrackEvent, TrackState> {
     UpdateTrackEvent event,
     Emitter<TrackState> emit,
   ) async {
-    emit(TrackLoading());
     try {
       await updateTrackUseCase(event.track);
-      final tracks = await getTracksUseCase();
-      emit(TrackLoaded(tracks));
     } catch (e) {
       emit(TrackError(failureFromException(e).toLocaleKey()));
     }
-  }
-
-  void _onTrackError(TrackErrorEvent event, Emitter<TrackState> emit) {
-    emit(TrackError(event.message));
   }
 }

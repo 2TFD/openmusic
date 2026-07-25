@@ -22,12 +22,14 @@ import 'package:openmusic/layers/data/repositories/play_record_repository_impl.d
 import 'package:openmusic/layers/data/repositories/playlist_repository_impl.dart';
 import 'package:openmusic/layers/data/repositories/search_source_impl.dart';
 import 'package:openmusic/layers/data/repositories/track_repository_impl.dart';
+import 'package:openmusic/layers/data/repositories/track_download_completion_repository_impl.dart';
 import 'package:openmusic/layers/domain/repositories/download_task_repository.dart';
 import 'package:openmusic/layers/domain/repositories/embedding_task_repository.dart';
 import 'package:openmusic/layers/domain/repositories/play_record_repository.dart';
 import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
 import 'package:openmusic/layers/domain/repositories/search_source.dart';
 import 'package:openmusic/layers/domain/repositories/track_repository.dart';
+import 'package:openmusic/layers/domain/repositories/track_download_completion_repository.dart';
 import 'package:openmusic/core/services/track_source_resolver.dart';
 import 'package:openmusic/core/services/wave/wave_engine.dart';
 import 'package:openmusic/layers/domain/usecases/add_track_use_case.dart';
@@ -81,7 +83,13 @@ Future<void> configureDependencies({required String appDir}) async {
   );
 
   getIt.registerSingleton<DownloadTaskRepository>(
-    DownloadTaskRepositoryImpl(localDataSource: getIt<DownloadTaskLocalDataSource>()),
+    DownloadTaskRepositoryImpl(
+      localDataSource: getIt<DownloadTaskLocalDataSource>(),
+    ),
+  );
+
+  getIt.registerLazySingleton<TrackDownloadCompletionRepository>(
+    () => TrackDownloadCompletionRepositoryImpl(getIt<AppDatabase>()),
   );
 
   getIt.registerLazySingleton<SearchSource>(
@@ -100,7 +108,6 @@ Future<void> configureDependencies({required String appDir}) async {
     () => EmbeddingWorker(
       repo: getIt<EmbeddingTaskRepository>(),
       engine: getIt<EmbeddingEngine>(),
-      trackRepository: getIt<TrackRepository>(),
     ),
   );
 
@@ -108,7 +115,7 @@ Future<void> configureDependencies({required String appDir}) async {
     () => DownloadWorker(
       downloadRepository: getIt<DownloadTaskRepository>(),
       trackResolver: getIt<TrackSourceResolver>(),
-      completeDownload: CompleteTrackDownloadUseCase(getIt(), getIt()),
+      completeDownload: CompleteTrackDownloadUseCase(getIt()),
     ),
   );
 
@@ -122,11 +129,11 @@ Future<void> configureDependencies({required String appDir}) async {
     () => AddTrackUseCase(
       playlistRepository: getIt(),
       downloadRepository: getIt(),
-      completeDownload: CompleteTrackDownloadUseCase(getIt(), getIt()),
+      completeDownload: CompleteTrackDownloadUseCase(getIt()),
       trackResolver: getIt(),
       trackRepository: getIt(),
     ),
   );
 
-  getIt.registerFactory(() => CompleteTrackDownloadUseCase(getIt(), getIt()));
+  getIt.registerFactory(() => CompleteTrackDownloadUseCase(getIt()));
 }

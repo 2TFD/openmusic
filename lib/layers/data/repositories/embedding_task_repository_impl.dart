@@ -1,4 +1,4 @@
-import 'package:openmusic/layers/data/DTO/embedding_task_dto.dart';
+import 'package:openmusic/core/services/task_lease.dart';
 import 'package:openmusic/layers/data/datasources/local/embedding_task/embedding_task_local_data_source.dart';
 import 'package:openmusic/layers/data/mappers/embedding_task_mapper.dart';
 import 'package:openmusic/layers/domain/entities/embedding_task.dart';
@@ -8,35 +8,52 @@ class EmbeddingTaskRepositoryImpl implements EmbeddingTaskRepository {
   final EmbeddingTaskLocalDataSource localDataSource;
   EmbeddingTaskRepositoryImpl({required this.localDataSource});
   @override
-  Future<EmbeddingTask?> getNextQueued() async {
-    final EmbeddingTaskDto? dto = (await localDataSource.getAll())
-        .where(
-          (task) =>
-              task.status == EmbeddingStatus.queued ||
-              task.status == EmbeddingStatus.failed ||
-              (task.status == EmbeddingStatus.processing &&
-                  DateTime.now().difference(task.createdAt).inMinutes > 3),
-        )
-        .firstOrNull;
-    if (dto == null) return null;
-    return EmbeddingTaskMapper.toEntity(dto);
+  Future<EmbeddingTask?> claimNext({required String ownerId}) async {
+    final dto = await localDataSource.claimNext(
+      ownerId: ownerId,
+      leaseUntil: DateTime.now().add(TaskLeasePolicy.duration),
+    );
+    return dto == null ? null : EmbeddingTaskMapper.toEntity(dto);
   }
 
   @override
-  Future<void> markFailed(String trackId) =>
-      localDataSource.updateStatus(trackId, EmbeddingStatus.failed);
+  Future<bool> renewLease({required String trackId, required String ownerId}) =>
+      localDataSource.renewLease(
+        trackId: trackId,
+        ownerId: ownerId,
+        leaseUntil: DateTime.now().add(TaskLeasePolicy.duration),
+      );
 
   @override
-  Future<void> markProcessing(String trackId) =>
-      localDataSource.updateStatus(trackId, EmbeddingStatus.processing);
+  Future<bool> releaseLease({
+    required String trackId,
+    required String ownerId,
+  }) => localDataSource.releaseLease(trackId: trackId, ownerId: ownerId);
 
   @override
-  Future<void> saveResult(String trackId, List<double> vector) =>
-      localDataSource.updateStatus(trackId, EmbeddingStatus.done);
+  Future<bool> markFailed({required String trackId, required String ownerId}) =>
+      localDataSource.updateStatusIfOwned(
+        trackId: trackId,
+        ownerId: ownerId,
+        status: EmbeddingStatus.failed,
+      );
 
   @override
-  Stream<dynamic> watchQueued() {
-    return localDataSource.watch();
+  Future<bool> saveResult({
+    required String trackId,
+    required String ownerId,
+    required List<double> vector,
+  }) => localDataSource.completeIfOwned(
+    trackId: trackId,
+    ownerId: ownerId,
+    vector: vector,
+  );
+
+  @override
+  Stream<List<EmbeddingTask>> watchQueued() {
+    return localDataSource.watch().map(
+      (dtos) => dtos.map(EmbeddingTaskMapper.toEntity).toList(),
+    );
   }
 
   @override

@@ -8,7 +8,10 @@ import 'package:openmusic/layers/domain/repositories/search_source.dart';
 import 'package:openmusic/layers/domain/repositories/track_repository.dart';
 import 'package:openmusic/core/services/audio_player/audio_player_service.dart';
 import 'package:openmusic/layers/domain/usecases/add_track_to_playlist_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/build_playback_queue_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/clear_history_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/create_playlist_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/fetch_track_preview_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/generate_wave_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/get_history_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/get_playlists_use_case.dart';
@@ -59,7 +62,9 @@ class BlocScope extends StatelessWidget {
         BlocProvider(
           create: (context) => AddTrackBloc(
             addTrackUseCase: getIt<AddTrackUseCase>(),
-            trackSourceResolver: getIt<TrackSourceResolver>(),
+            fetchTrackPreviewUseCase: FetchTrackPreviewUseCase(
+              trackResolver: getIt<TrackSourceResolver>(),
+            ),
           ),
         ),
         BlocProvider(
@@ -83,6 +88,7 @@ class BlocScope extends StatelessWidget {
             recordPlay: SaveRecordPlayUseCase(
               repo: getIt<PlayRecordRepository>(),
             ),
+            buildQueue: BuildPlaybackQueueUseCase(),
           ),
         ),
         BlocProvider(
@@ -111,9 +117,11 @@ class BlocScope extends StatelessWidget {
           create: (context) => HistoryBloc(
             getHistoryUseCase: GetHistoryUseCase(
               playRecordRepository: getIt<PlayRecordRepository>(),
-              getTracksUseCase: GetTracksUseCase(getIt<TrackRepository>()),
+              trackRepository: getIt<TrackRepository>(),
             ),
-            playRecordRepository: getIt<PlayRecordRepository>(),
+            clearHistoryUseCase: ClearHistoryUseCase(
+              playRecordRepository: getIt<PlayRecordRepository>(),
+            ),
           )..add(const LoadHistoryEvent()),
         ),
       ],

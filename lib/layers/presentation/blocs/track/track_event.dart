@@ -27,11 +27,12 @@ class UpdateTrackEvent extends TrackEvent {
   List<Object> get props => [track];
 }
 
-class TrackErrorEvent extends TrackEvent {
-  final String message;
+class _TrackStreamErrored extends TrackEvent {
+  final Object error;
 
-  const TrackErrorEvent(this.message);
+  const _TrackStreamErrored(this.error);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [error];
 }
+

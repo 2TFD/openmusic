@@ -17,10 +17,11 @@ class ChangePeriodEvent extends StatisticEvent {
   const ChangePeriodEvent(this.period);
 }
 
-class StatisticErrorEvent extends StatisticEvent {
-  final String message;
-  const StatisticErrorEvent(this.message);
+class _StatisticStreamErrored extends StatisticEvent {
+  final Object error;
+  const _StatisticStreamErrored(this.error);
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [error];
 }
+

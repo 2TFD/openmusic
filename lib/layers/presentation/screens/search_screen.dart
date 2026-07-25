@@ -271,9 +271,8 @@ class _SearchScreenState extends State<SearchScreen> {
           isAvailable: track.isReadyToPlay,
           onTap: () {
             context.read<PlayerBloc>().add(
-              PlayerQueueSet(tracks, startIndex: index),
+              PlayerQueueSet(tracks, startTrack: track),
             );
-            context.read<PlayerBloc>().add(PlayerPlayPauseToggled());
           },
         );
       },

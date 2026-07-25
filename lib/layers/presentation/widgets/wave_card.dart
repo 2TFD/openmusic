@@ -44,7 +44,9 @@ class _WaveCardState extends State<WaveCard> {
     return BlocConsumer<WaveBloc, WaveState>(
       listener: (context, state) {
         if (state is WaveReady) {
-          context.read<PlayerBloc>().add(PlayerQueueSet(state.tracks));
+          context.read<PlayerBloc>().add(
+            PlayerQueueSet(state.tracks, autoPlay: false),
+          );
         }
       },
       builder: (context, state) {
@@ -92,7 +94,7 @@ class _WaveCardState extends State<WaveCard> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => context.read<WaveBloc>().add(WaveRefreshed()),
+                    onTap: () => context.read<WaveBloc>().add(WaveRefreshRequested()),
                     child: Container(
                       width: 44,
                       height: 44,
@@ -392,7 +394,7 @@ class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
                 padding: const EdgeInsets.only(right: AppSpacing.s),
                 child: GestureDetector(
                   onTap: () => context.read<WaveBloc>().add(
-                    WaveMoodChanged(active ? '' : key),
+                    WaveMoodSelected(active ? '' : key),
                   ),
                   child: AnimatedContainer(
                     duration: AppAnim.fast,
@@ -530,7 +532,7 @@ class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
           icon: Icons.person_outline,
           isSelected: selected,
           onTap: () => context.read<WaveBloc>().add(
-            selected ? WaveSeedRemoved(artist) : WaveSeedAdded(artist),
+            selected ? WaveSeedDeselected(artist) : WaveSeedSelected(artist),
           ),
         );
       },
@@ -567,7 +569,7 @@ class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
           icon: Icons.music_note,
           isSelected: isSelected,
           onTap: () => context.read<WaveBloc>().add(
-            isSelected ? WaveRemoveTrack(track) : WaveAddTrack(track),
+            isSelected ? WaveTrackDeselected(track) : WaveTrackSelected(track),
           ),
         );
       },
@@ -584,7 +586,7 @@ class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
     child: Center(
       child: GestureDetector(
         onTap: () {
-          context.read<WaveBloc>().add(WaveReset());
+          context.read<WaveBloc>().add(WaveResetRequested());
           Navigator.pop(context);
         },
         child: Text('Reset wave', style: AppText.bodyM),

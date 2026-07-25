@@ -16,6 +16,14 @@ class PlayerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<PlayerBloc, PlayerState>(
+      buildWhen: (prev, curr) =>
+          prev.currentTrack != curr.currentTrack ||
+          prev.isLoading != curr.isLoading ||
+          prev.isPlaying != curr.isPlaying ||
+          prev.loopMode != curr.loopMode ||
+          prev.isShuffleEnabled != curr.isShuffleEnabled ||
+          prev.queue != curr.queue ||
+          prev.currentIndex != curr.currentIndex,
       builder: (context, state) {
         final track = state.currentTrack;
         if (track == null) return const _EmptyState();
@@ -71,9 +79,9 @@ class _PlayerBody extends StatelessWidget {
         ),
         const SizedBox(height: 24),
 
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenH),
-          child: _SeekBar(state: state),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: AppSpacing.screenH),
+          child: _SeekBar(),
         ),
         const SizedBox(height: 28),
 
@@ -221,9 +229,7 @@ class _TrackMeta extends StatelessWidget {
 }
 
 class _SeekBar extends StatelessWidget {
-  final PlayerState state;
-
-  const _SeekBar({required this.state});
+  const _SeekBar();
 
   String _fmt(Duration d) {
     final m = d.inMinutes;
@@ -233,25 +239,29 @@ class _SeekBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ProgressLine(
-          progress: state.progress,
-          onSeek: (value) {
-            final pos = Duration(
-              milliseconds: (state.duration.inMilliseconds * value).round(),
-            );
-            context.read<PlayerBloc>().add(PlayerSeeked(pos));
-          },
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(_fmt(state.position), style: AppText.bodyXS),
-            Text(_fmt(state.duration), style: AppText.bodyXS),
-          ],
-        ),
-      ],
+    return BlocBuilder<PlayerBloc, PlayerState>(
+      buildWhen: (prev, curr) =>
+          prev.position != curr.position || prev.duration != curr.duration,
+      builder: (context, state) => Column(
+        children: [
+          ProgressLine(
+            progress: state.progress,
+            onSeek: (value) {
+              final pos = Duration(
+                milliseconds: (state.duration.inMilliseconds * value).round(),
+              );
+              context.read<PlayerBloc>().add(PlayerSeeked(pos));
+            },
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(_fmt(state.position), style: AppText.bodyXS),
+              Text(_fmt(state.duration), style: AppText.bodyXS),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -425,9 +435,9 @@ class _WaveBtn extends StatelessWidget {
           onTap: () {
             final bloc = context.read<WaveBloc>();
             if (inWave) {
-              bloc.add(WaveRemoveTrack(track));
+              bloc.add(WaveTrackDeselected(track));
             } else {
-              bloc.add(WaveAddTrack(track));
+              bloc.add(WaveTrackSelected(track));
             }
           },
           behavior: HitTestBehavior.opaque,
@@ -584,7 +594,7 @@ class _QueueSheet extends StatelessWidget {
                   isCurrent: i == currentDisplayIdx,
                   onTap: () {
                     ctx.read<PlayerBloc>().add(
-                      PlayerIndexSeeked(index: item.originalIndex),
+                      PlayerTrackSelected(index: item.originalIndex),
                     );
                     Navigator.of(ctx).pop();
                   },

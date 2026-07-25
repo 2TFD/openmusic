@@ -31,6 +31,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<TrackBloc, TrackState>(
       builder: (context, state) {
+        if (state is TrackError) {
+          return Scaffold(body: Center(child: Text(state.error.tr())));
+        }
         if (state is! TrackLoaded) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -59,20 +62,20 @@ class _LibraryScreenState extends State<LibraryScreen> {
               Expanded(
                 child: ListView.builder(
                   itemCount: tracks.length,
-                  itemBuilder: (context, index) => TrackItem(
-                    track: tracks[index],
-                    isPlaying: context.watch<PlayerBloc>().state.isPlaying,
-                    isCurrent:
-                        tracks[index] ==
-                        context.watch<PlayerBloc>().state.currentTrack,
-                    isAvailable: tracks[index].isReadyToPlay,
-                    onTap: () {
-                      context.read<PlayerBloc>().add(
-                        PlayerQueueSet(tracks, startIndex: index),
-                      );
-                      context.read<PlayerBloc>().add(PlayerPlayPauseToggled());
-                    },
-                  ),
+                  itemBuilder: (context, index) {
+                    final playerState = context.watch<PlayerBloc>().state;
+                    return TrackItem(
+                      track: tracks[index],
+                      isPlaying: playerState.isPlaying,
+                      isCurrent: tracks[index] == playerState.currentTrack,
+                      isAvailable: tracks[index].isReadyToPlay,
+                      onTap: () {
+                        context.read<PlayerBloc>().add(
+                          PlayerQueueSet(tracks, startTrack: tracks[index]),
+                        );
+                      },
+                    );
+                  },
                 ),
               ),
             ],

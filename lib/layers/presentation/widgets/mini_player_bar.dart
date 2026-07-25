@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:openmusic/core/di/di.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
-import 'package:openmusic/core/services/audio_player/audio_player_service.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/screens/player_screen.dart';
 import 'package:openmusic/layers/presentation/widgets/cached_image.dart';
@@ -117,7 +115,7 @@ class _MiniPlayerLayoutState extends State<_MiniPlayerLayout> {
         itemCount: widget.state.queue.length,
         onPageChanged: (value) {
           if (value == widget.state.currentIndex) return;
-          context.read<PlayerBloc>().add(PlayerIndexSeeked(index: value));
+          context.read<PlayerBloc>().add(PlayerTrackSelected(index: value));
         },
         itemBuilder: (context, index) {
           final track = widget.state.queue[index];

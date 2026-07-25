@@ -28,9 +28,8 @@ class TrackMapper {
         ),
         originalUrl: dto.originalUrl,
       ),
-      addedAt: dto.addedAt != null
-          ? DateTime.parse(dto.addedAt!)
-          : DateTime.now(),
+      addedAt:
+          dto.addedAt ?? DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
       album: dto.album,
       imageUrl: dto.imageUrl,
     );
@@ -48,7 +47,7 @@ class TrackMapper {
       durationMs: entity.duration.inMilliseconds,
       sourceType: entity.source.type.name,
       originalUrl: entity.source.originalUrl,
-      addedAt: entity.addedAt.toIso8601String(),
+      addedAt: entity.addedAt,
       album: entity.album,
       imageUrl: entity.imageUrl,
     );

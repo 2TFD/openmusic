@@ -17,6 +17,12 @@ class TrackRepositoryImpl implements TrackRepository {
   }
 
   @override
+  Future<List<Track>> getTracksByIds(List<String> ids) async {
+    final dtos = await localDataSource.getTracksByIds(ids);
+    return dtos.map(TrackMapper.toEntity).toList();
+  }
+
+  @override
   Future<Track?> getTrackById(String id) async {
     final model = await localDataSource.getTrackById(id);
     return model != null ? TrackMapper.toEntity(model) : null;
@@ -24,105 +30,38 @@ class TrackRepositoryImpl implements TrackRepository {
 
   @override
   Future<void> addTrack(Track track) async {
-    try {
-      final existingTrack = await getTrackById(track.id);
-      if (existingTrack != null) {
-        await AppLogger.log(
-          "[TrackRepositoryImpl] Track with id: ${track.id} already exists. Skipping addition.",
-        );
-        throw Exception('Track with id: ${track.id} already exists');
-      }
-
-      final model = TrackMapper.toDto(track);
-      await localDataSource.saveTrack(model);
-    } catch (e, st) {
+    final existingTrack = await getTrackById(track.id);
+    if (existingTrack != null) {
       await AppLogger.log(
-        "[TrackRepositoryImpl] ERROR adding track with id: ${track.id}. Error: $e, StackTrace: \n$st",
+        "[TrackRepositoryImpl] Track with id: ${track.id} already exists. Skipping addition.",
       );
-      rethrow;
+      throw Exception('Track with id: ${track.id} already exists');
     }
+
+    final model = TrackMapper.toDto(track);
+    await localDataSource.saveTrack(model);
   }
 
   @override
   Future<void> removeTrack(String trackId) async {
-    try {
-      await localDataSource.deleteTrackById(trackId);
-    } catch (e, st) {
-      await AppLogger.log(
-        "[TrackRepositoryImpl] ERROR removing track with id: $trackId. Error: $e, StackTrace: \n$st",
-      );
-      rethrow;
-    }
+    await localDataSource.deleteTrackById(trackId);
   }
 
   @override
   Future<List<Track>> searchTracks(String query) async {
-    final allTracks = await getTracks();
-    final lowerQuery = query.toLowerCase();
-
-    return allTracks.where((track) {
-      return track.title.toLowerCase().contains(lowerQuery) ||
-          track.artists.any(
-            (artist) => artist.name.toLowerCase().contains(lowerQuery),
-          ) ||
-          (track.album?.toLowerCase().contains(lowerQuery) ?? false);
-    }).toList();
+    final dtos = await localDataSource.searchTracks(query);
+    return dtos.map(TrackMapper.toEntity).toList();
   }
 
   @override
   Future<void> updateTrack(Track track) async {
-    try {
-      await localDataSource.updateTrack(TrackMapper.toDto(track));
-    } catch (e, st) {
-      await AppLogger.log(
-        "[TrackRepositoryImpl] ERROR updating track with id: ${track.id}. Error: $e, StackTrace: \n$st",
-      );
-      rethrow;
-    }
+    await localDataSource.updateTrack(TrackMapper.toDto(track));
   }
 
   @override
-  Future<void> updateTrackEmbeddingById({
-    required String id,
-    required List<double> vector,
-  }) async {
-    try {
-      Track? track = await getTrackById(id);
-      if (track == null) {
-        throw Exception('not find track id:$id');
-      }
-      track = track.copyWith(embedding: vector);
-      await localDataSource.updateTrack(TrackMapper.toDto(track));
-    } catch (e, st) {
-      await AppLogger.log(
-        "[TrackRepositoryImpl] ERROR updating track embedding for id: $id. Error: $e, StackTrace: \n$st",
-      );
-      rethrow;
-    }
-  }
-
-  @override
-  Future<void> updateTrackPathById({
-    required String id,
-    required String path,
-  }) async {
-    try {
-      Track? track = await getTrackById(id);
-      if (track == null) {
-        throw Exception('not find track id:$id');
-      }
-      track = track.copyWith(filePath: path);
-      await localDataSource.updateTrack(TrackMapper.toDto(track));
-    } catch (e, st) {
-      await AppLogger.log(
-        "[TrackRepositoryImpl] ERROR updating track path for id: $id with path: $path. Error: $e, StackTrace: \n$st",
-      );
-      rethrow;
-    }
-  }
-
-  @override
-  Stream<dynamic> watchTracks() {
-    return localDataSource.watchTracks();
+  Stream<List<Track>> watchTracks() {
+    return localDataSource.watchTracks().map(
+      (dtos) => dtos.map(TrackMapper.toEntity).toList(),
+    );
   }
 }

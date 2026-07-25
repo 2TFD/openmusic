@@ -45,7 +45,10 @@ class AddTrackUseCase {
 
             if (p.source == SourceType.localFile) {
               final path = await source.download(p);
-              await completeDownload.call(trackId: p.id, filePath: path);
+              await completeDownload.completeLocal(
+                trackId: p.id,
+                filePath: path,
+              );
             } else {
               await downloadRepository.enqueue(p.id, p.originalUrl);
             }

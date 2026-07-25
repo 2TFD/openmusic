@@ -49,7 +49,9 @@ class HomeScreen extends StatelessWidget {
         if (state is TrackLoaded) {
           final playerState = context.read<PlayerBloc>().state;
           if (playerState.currentTrack == null) {
-            context.read<PlayerBloc>().add(PlayerQueueSet(state.tracks));
+            context.read<PlayerBloc>().add(
+              PlayerQueueSet(state.tracks, autoPlay: false),
+            );
           }
         }
       },
@@ -263,6 +265,23 @@ class _HistorySection extends StatelessWidget {
                 return SingleChildScrollView(
                   child: BlocBuilder<HistoryBloc, HistoryState>(
                     builder: (context, state) {
+                      if (state is HistoryError) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 16,
+                          ),
+                          child: Center(
+                            child: Text(
+                              state.message.tr(),
+                              style: GoogleFonts.figtree(
+                                fontSize: 13,
+                                color: AppColors.muted,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
                       if (state is! HistoryLoaded) {
                         return const Padding(
                           padding: EdgeInsets.symmetric(
@@ -332,11 +351,8 @@ class _HistorySection extends StatelessWidget {
                                   context.read<PlayerBloc>().add(
                                     PlayerQueueSet(
                                       state.tracks,
-                                      startIndex: entry.key,
+                                      startTrack: entry.value,
                                     ),
-                                  );
-                                  context.read<PlayerBloc>().add(
-                                    PlayerPlayPauseToggled(),
                                   );
                                 },
                               ),
@@ -437,6 +453,17 @@ class _PlaylistSection extends StatelessWidget {
           height: 180,
           child: BlocBuilder<PlaylistBloc, PlaylistState>(
             builder: (context, state) {
+              if (state is PlaylistError) {
+                return Center(
+                  child: Text(
+                    state.error.tr(),
+                    style: GoogleFonts.figtree(
+                      fontSize: 13,
+                      color: AppColors.muted,
+                    ),
+                  ),
+                );
+              }
               if (state is! PlaylistLoaded) {
                 return const SizedBox();
               }

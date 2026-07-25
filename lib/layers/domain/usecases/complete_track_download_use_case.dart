@@ -1,23 +1,22 @@
-import 'package:openmusic/layers/domain/entities/embedding_task.dart';
-import 'package:openmusic/layers/domain/repositories/embedding_task_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_repository.dart';
+import 'package:openmusic/layers/domain/repositories/track_download_completion_repository.dart';
 
 class CompleteTrackDownloadUseCase {
-  final TrackRepository trackRepository;
-  final EmbeddingTaskRepository embeddingRepository;
+  final TrackDownloadCompletionRepository repository;
 
-  CompleteTrackDownloadUseCase(this.trackRepository, this.embeddingRepository);
+  CompleteTrackDownloadUseCase(this.repository);
 
-  Future<void> call({required String trackId, required String filePath}) async {
-    await trackRepository.updateTrackPathById(id: trackId, path: filePath);
-    await embeddingRepository.createTask(
-      EmbeddingTask(
-        id: trackId,
-        trackId: trackId,
-        filePath: filePath,
-        status: EmbeddingStatus.queued,
-        createdAt: DateTime.now(),
-      ),
-    );
-  }
+  Future<void> completeLocal({
+    required String trackId,
+    required String filePath,
+  }) => repository.completeLocal(trackId: trackId, filePath: filePath);
+
+  Future<bool> completeClaimed({
+    required String trackId,
+    required String filePath,
+    required String ownerId,
+  }) => repository.completeClaimed(
+    trackId: trackId,
+    filePath: filePath,
+    ownerId: ownerId,
+  );
 }

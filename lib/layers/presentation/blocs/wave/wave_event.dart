@@ -6,36 +6,36 @@ sealed class WaveEvent extends Equatable {
   List<Object> get props => [];
 }
 
-final class WaveStarted extends WaveEvent {
+final class WaveInitialized extends WaveEvent {
   final WaveConfig config;
-  const WaveStarted(this.config);
+  const WaveInitialized(this.config);
 }
 
-final class WaveSeedAdded extends WaveEvent {
+final class WaveSeedSelected extends WaveEvent {
   final String seed;
-  const WaveSeedAdded(this.seed);
+  const WaveSeedSelected(this.seed);
 }
 
-final class WaveSeedRemoved extends WaveEvent {
+final class WaveSeedDeselected extends WaveEvent {
   final String seed;
-  const WaveSeedRemoved(this.seed);
+  const WaveSeedDeselected(this.seed);
 }
 
-final class WaveMoodChanged extends WaveEvent {
+final class WaveMoodSelected extends WaveEvent {
   final String mood;
-  const WaveMoodChanged(this.mood);
+  const WaveMoodSelected(this.mood);
 }
 
-final class WaveRefreshed extends WaveEvent {}
+final class WaveRefreshRequested extends WaveEvent {}
 
-final class WaveAddTrack extends WaveEvent {
+final class WaveTrackSelected extends WaveEvent {
   final Track track;
-  const WaveAddTrack(this.track);
+  const WaveTrackSelected(this.track);
 }
 
-final class WaveRemoveTrack extends WaveEvent {
+final class WaveTrackDeselected extends WaveEvent {
   final Track track;
-  const WaveRemoveTrack(this.track);
+  const WaveTrackDeselected(this.track);
 }
 
-final class WaveReset extends WaveEvent {}
+final class WaveResetRequested extends WaveEvent {}

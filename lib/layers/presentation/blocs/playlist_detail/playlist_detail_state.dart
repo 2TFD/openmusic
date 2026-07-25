@@ -14,11 +14,16 @@ final class PlaylistDetailLoading extends PlaylistDetailState {}
 final class PlaylistDetailLoaded extends PlaylistDetailState {
   final Playlist playlist;
   final List<Track> tracks;
+  final String? errorKey;
 
-  const PlaylistDetailLoaded({required this.playlist, required this.tracks});
+  const PlaylistDetailLoaded({
+    required this.playlist,
+    required this.tracks,
+    this.errorKey,
+  });
 
   @override
-  List<Object?> get props => [playlist, tracks];
+  List<Object?> get props => [playlist, tracks, errorKey];
 }
 
 final class PlaylistDetailDeleted extends PlaylistDetailState {}

@@ -1000,11 +1000,11 @@ class $TrackTableTable extends TrackTable
     'addedAt',
   );
   @override
-  late final GeneratedColumn<String> addedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<DateTime> addedAt = GeneratedColumn<DateTime>(
     'added_at',
     aliasedName,
     true,
-    type: DriftSqlType.string,
+    type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
   static const VerificationMeta _albumMeta = const VerificationMeta('album');
@@ -1215,7 +1215,7 @@ class $TrackTableTable extends TrackTable
         data['${effectivePrefix}source_uri'],
       )!,
       addedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.dateTime,
         data['${effectivePrefix}added_at'],
       ),
       album: attachedDatabase.typeMapping.read(
@@ -1252,7 +1252,7 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
   final int? durationMs;
   final String sourceType;
   final String sourceUri;
-  final String? addedAt;
+  final DateTime? addedAt;
   final String? album;
   final String? imageUrl;
   final String? trackDescriptorJson;
@@ -1288,7 +1288,7 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
     map['source_type'] = Variable<String>(sourceType);
     map['source_uri'] = Variable<String>(sourceUri);
     if (!nullToAbsent || addedAt != null) {
-      map['added_at'] = Variable<String>(addedAt);
+      map['added_at'] = Variable<DateTime>(addedAt);
     }
     if (!nullToAbsent || album != null) {
       map['album'] = Variable<String>(album);
@@ -1351,7 +1351,7 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
       durationMs: serializer.fromJson<int?>(json['durationMs']),
       sourceType: serializer.fromJson<String>(json['sourceType']),
       sourceUri: serializer.fromJson<String>(json['sourceUri']),
-      addedAt: serializer.fromJson<String?>(json['addedAt']),
+      addedAt: serializer.fromJson<DateTime?>(json['addedAt']),
       album: serializer.fromJson<String?>(json['album']),
       imageUrl: serializer.fromJson<String?>(json['imageUrl']),
       trackDescriptorJson: serializer.fromJson<String?>(
@@ -1372,7 +1372,7 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
       'durationMs': serializer.toJson<int?>(durationMs),
       'sourceType': serializer.toJson<String>(sourceType),
       'sourceUri': serializer.toJson<String>(sourceUri),
-      'addedAt': serializer.toJson<String?>(addedAt),
+      'addedAt': serializer.toJson<DateTime?>(addedAt),
       'album': serializer.toJson<String?>(album),
       'imageUrl': serializer.toJson<String?>(imageUrl),
       'trackDescriptorJson': serializer.toJson<String?>(trackDescriptorJson),
@@ -1389,7 +1389,7 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
     Value<int?> durationMs = const Value.absent(),
     String? sourceType,
     String? sourceUri,
-    Value<String?> addedAt = const Value.absent(),
+    Value<DateTime?> addedAt = const Value.absent(),
     Value<String?> album = const Value.absent(),
     Value<String?> imageUrl = const Value.absent(),
     Value<String?> trackDescriptorJson = const Value.absent(),
@@ -1503,7 +1503,7 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
   final Value<int?> durationMs;
   final Value<String> sourceType;
   final Value<String> sourceUri;
-  final Value<String?> addedAt;
+  final Value<DateTime?> addedAt;
   final Value<String?> album;
   final Value<String?> imageUrl;
   final Value<String?> trackDescriptorJson;
@@ -1555,7 +1555,7 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
     Expression<int>? durationMs,
     Expression<String>? sourceType,
     Expression<String>? sourceUri,
-    Expression<String>? addedAt,
+    Expression<DateTime>? addedAt,
     Expression<String>? album,
     Expression<String>? imageUrl,
     Expression<String>? trackDescriptorJson,
@@ -1590,7 +1590,7 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
     Value<int?>? durationMs,
     Value<String>? sourceType,
     Value<String>? sourceUri,
-    Value<String?>? addedAt,
+    Value<DateTime?>? addedAt,
     Value<String?>? album,
     Value<String?>? imageUrl,
     Value<String?>? trackDescriptorJson,
@@ -1643,7 +1643,7 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
       map['source_uri'] = Variable<String>(sourceUri.value);
     }
     if (addedAt.present) {
-      map['added_at'] = Variable<String>(addedAt.value);
+      map['added_at'] = Variable<DateTime>(addedAt.value);
     }
     if (album.present) {
       map['album'] = Variable<String>(album.value);
@@ -1701,6 +1701,7 @@ class $EmbeddingTaskTableTable extends EmbeddingTaskTable
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
   );
   static const VerificationMeta _trackIdMeta = const VerificationMeta(
     'trackId',
@@ -1744,6 +1745,28 @@ class $EmbeddingTaskTableTable extends EmbeddingTaskTable
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _leaseOwnerMeta = const VerificationMeta(
+    'leaseOwner',
+  );
+  @override
+  late final GeneratedColumn<String> leaseOwner = GeneratedColumn<String>(
+    'lease_owner',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _leaseUntilMeta = const VerificationMeta(
+    'leaseUntil',
+  );
+  @override
+  late final GeneratedColumn<DateTime> leaseUntil = GeneratedColumn<DateTime>(
+    'lease_until',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1751,6 +1774,8 @@ class $EmbeddingTaskTableTable extends EmbeddingTaskTable
     status,
     filePath,
     createdAt,
+    leaseOwner,
+    leaseUntil,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1801,6 +1826,18 @@ class $EmbeddingTaskTableTable extends EmbeddingTaskTable
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('lease_owner')) {
+      context.handle(
+        _leaseOwnerMeta,
+        leaseOwner.isAcceptableOrUnknown(data['lease_owner']!, _leaseOwnerMeta),
+      );
+    }
+    if (data.containsKey('lease_until')) {
+      context.handle(
+        _leaseUntilMeta,
+        leaseUntil.isAcceptableOrUnknown(data['lease_until']!, _leaseUntilMeta),
+      );
+    }
     return context;
   }
 
@@ -1830,6 +1867,14 @@ class $EmbeddingTaskTableTable extends EmbeddingTaskTable
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      leaseOwner: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lease_owner'],
+      ),
+      leaseUntil: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}lease_until'],
+      ),
     );
   }
 
@@ -1846,12 +1891,16 @@ class EmbeddingTaskTableData extends DataClass
   final String status;
   final String filePath;
   final DateTime createdAt;
+  final String? leaseOwner;
+  final DateTime? leaseUntil;
   const EmbeddingTaskTableData({
     required this.id,
     required this.trackId,
     required this.status,
     required this.filePath,
     required this.createdAt,
+    this.leaseOwner,
+    this.leaseUntil,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1861,6 +1910,12 @@ class EmbeddingTaskTableData extends DataClass
     map['status'] = Variable<String>(status);
     map['file_path'] = Variable<String>(filePath);
     map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || leaseOwner != null) {
+      map['lease_owner'] = Variable<String>(leaseOwner);
+    }
+    if (!nullToAbsent || leaseUntil != null) {
+      map['lease_until'] = Variable<DateTime>(leaseUntil);
+    }
     return map;
   }
 
@@ -1871,6 +1926,12 @@ class EmbeddingTaskTableData extends DataClass
       status: Value(status),
       filePath: Value(filePath),
       createdAt: Value(createdAt),
+      leaseOwner: leaseOwner == null && nullToAbsent
+          ? const Value.absent()
+          : Value(leaseOwner),
+      leaseUntil: leaseUntil == null && nullToAbsent
+          ? const Value.absent()
+          : Value(leaseUntil),
     );
   }
 
@@ -1885,6 +1946,8 @@ class EmbeddingTaskTableData extends DataClass
       status: serializer.fromJson<String>(json['status']),
       filePath: serializer.fromJson<String>(json['filePath']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      leaseOwner: serializer.fromJson<String?>(json['leaseOwner']),
+      leaseUntil: serializer.fromJson<DateTime?>(json['leaseUntil']),
     );
   }
   @override
@@ -1896,6 +1959,8 @@ class EmbeddingTaskTableData extends DataClass
       'status': serializer.toJson<String>(status),
       'filePath': serializer.toJson<String>(filePath),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'leaseOwner': serializer.toJson<String?>(leaseOwner),
+      'leaseUntil': serializer.toJson<DateTime?>(leaseUntil),
     };
   }
 
@@ -1905,12 +1970,16 @@ class EmbeddingTaskTableData extends DataClass
     String? status,
     String? filePath,
     DateTime? createdAt,
+    Value<String?> leaseOwner = const Value.absent(),
+    Value<DateTime?> leaseUntil = const Value.absent(),
   }) => EmbeddingTaskTableData(
     id: id ?? this.id,
     trackId: trackId ?? this.trackId,
     status: status ?? this.status,
     filePath: filePath ?? this.filePath,
     createdAt: createdAt ?? this.createdAt,
+    leaseOwner: leaseOwner.present ? leaseOwner.value : this.leaseOwner,
+    leaseUntil: leaseUntil.present ? leaseUntil.value : this.leaseUntil,
   );
   EmbeddingTaskTableData copyWithCompanion(EmbeddingTaskTableCompanion data) {
     return EmbeddingTaskTableData(
@@ -1919,6 +1988,12 @@ class EmbeddingTaskTableData extends DataClass
       status: data.status.present ? data.status.value : this.status,
       filePath: data.filePath.present ? data.filePath.value : this.filePath,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      leaseOwner: data.leaseOwner.present
+          ? data.leaseOwner.value
+          : this.leaseOwner,
+      leaseUntil: data.leaseUntil.present
+          ? data.leaseUntil.value
+          : this.leaseUntil,
     );
   }
 
@@ -1929,13 +2004,23 @@ class EmbeddingTaskTableData extends DataClass
           ..write('trackId: $trackId, ')
           ..write('status: $status, ')
           ..write('filePath: $filePath, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('leaseOwner: $leaseOwner, ')
+          ..write('leaseUntil: $leaseUntil')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, trackId, status, filePath, createdAt);
+  int get hashCode => Object.hash(
+    id,
+    trackId,
+    status,
+    filePath,
+    createdAt,
+    leaseOwner,
+    leaseUntil,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1944,7 +2029,9 @@ class EmbeddingTaskTableData extends DataClass
           other.trackId == this.trackId &&
           other.status == this.status &&
           other.filePath == this.filePath &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.leaseOwner == this.leaseOwner &&
+          other.leaseUntil == this.leaseUntil);
 }
 
 class EmbeddingTaskTableCompanion
@@ -1954,6 +2041,8 @@ class EmbeddingTaskTableCompanion
   final Value<String> status;
   final Value<String> filePath;
   final Value<DateTime> createdAt;
+  final Value<String?> leaseOwner;
+  final Value<DateTime?> leaseUntil;
   final Value<int> rowid;
   const EmbeddingTaskTableCompanion({
     this.id = const Value.absent(),
@@ -1961,6 +2050,8 @@ class EmbeddingTaskTableCompanion
     this.status = const Value.absent(),
     this.filePath = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.leaseOwner = const Value.absent(),
+    this.leaseUntil = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   EmbeddingTaskTableCompanion.insert({
@@ -1969,6 +2060,8 @@ class EmbeddingTaskTableCompanion
     required String status,
     required String filePath,
     required DateTime createdAt,
+    this.leaseOwner = const Value.absent(),
+    this.leaseUntil = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        trackId = Value(trackId),
@@ -1981,6 +2074,8 @@ class EmbeddingTaskTableCompanion
     Expression<String>? status,
     Expression<String>? filePath,
     Expression<DateTime>? createdAt,
+    Expression<String>? leaseOwner,
+    Expression<DateTime>? leaseUntil,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1989,6 +2084,8 @@ class EmbeddingTaskTableCompanion
       if (status != null) 'status': status,
       if (filePath != null) 'file_path': filePath,
       if (createdAt != null) 'created_at': createdAt,
+      if (leaseOwner != null) 'lease_owner': leaseOwner,
+      if (leaseUntil != null) 'lease_until': leaseUntil,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1999,6 +2096,8 @@ class EmbeddingTaskTableCompanion
     Value<String>? status,
     Value<String>? filePath,
     Value<DateTime>? createdAt,
+    Value<String?>? leaseOwner,
+    Value<DateTime?>? leaseUntil,
     Value<int>? rowid,
   }) {
     return EmbeddingTaskTableCompanion(
@@ -2007,6 +2106,8 @@ class EmbeddingTaskTableCompanion
       status: status ?? this.status,
       filePath: filePath ?? this.filePath,
       createdAt: createdAt ?? this.createdAt,
+      leaseOwner: leaseOwner ?? this.leaseOwner,
+      leaseUntil: leaseUntil ?? this.leaseUntil,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2029,6 +2130,12 @@ class EmbeddingTaskTableCompanion
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (leaseOwner.present) {
+      map['lease_owner'] = Variable<String>(leaseOwner.value);
+    }
+    if (leaseUntil.present) {
+      map['lease_until'] = Variable<DateTime>(leaseUntil.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2043,6 +2150,8 @@ class EmbeddingTaskTableCompanion
           ..write('status: $status, ')
           ..write('filePath: $filePath, ')
           ..write('createdAt: $createdAt, ')
+          ..write('leaseOwner: $leaseOwner, ')
+          ..write('leaseUntil: $leaseUntil, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2097,12 +2206,36 @@ class $DownloadTaskTableTable extends DownloadTaskTable
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _leaseOwnerMeta = const VerificationMeta(
+    'leaseOwner',
+  );
+  @override
+  late final GeneratedColumn<String> leaseOwner = GeneratedColumn<String>(
+    'lease_owner',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _leaseUntilMeta = const VerificationMeta(
+    'leaseUntil',
+  );
+  @override
+  late final GeneratedColumn<DateTime> leaseUntil = GeneratedColumn<DateTime>(
+    'lease_until',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     trackId,
     originalUrl,
     status,
     createdAt,
+    leaseOwner,
+    leaseUntil,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2151,6 +2284,18 @@ class $DownloadTaskTableTable extends DownloadTaskTable
     } else if (isInserting) {
       context.missing(_createdAtMeta);
     }
+    if (data.containsKey('lease_owner')) {
+      context.handle(
+        _leaseOwnerMeta,
+        leaseOwner.isAcceptableOrUnknown(data['lease_owner']!, _leaseOwnerMeta),
+      );
+    }
+    if (data.containsKey('lease_until')) {
+      context.handle(
+        _leaseUntilMeta,
+        leaseUntil.isAcceptableOrUnknown(data['lease_until']!, _leaseUntilMeta),
+      );
+    }
     return context;
   }
 
@@ -2176,6 +2321,14 @@ class $DownloadTaskTableTable extends DownloadTaskTable
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
       )!,
+      leaseOwner: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lease_owner'],
+      ),
+      leaseUntil: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}lease_until'],
+      ),
     );
   }
 
@@ -2191,11 +2344,15 @@ class DownloadTaskTableData extends DataClass
   final String originalUrl;
   final String status;
   final DateTime createdAt;
+  final String? leaseOwner;
+  final DateTime? leaseUntil;
   const DownloadTaskTableData({
     required this.trackId,
     required this.originalUrl,
     required this.status,
     required this.createdAt,
+    this.leaseOwner,
+    this.leaseUntil,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2204,6 +2361,12 @@ class DownloadTaskTableData extends DataClass
     map['original_url'] = Variable<String>(originalUrl);
     map['status'] = Variable<String>(status);
     map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || leaseOwner != null) {
+      map['lease_owner'] = Variable<String>(leaseOwner);
+    }
+    if (!nullToAbsent || leaseUntil != null) {
+      map['lease_until'] = Variable<DateTime>(leaseUntil);
+    }
     return map;
   }
 
@@ -2213,6 +2376,12 @@ class DownloadTaskTableData extends DataClass
       originalUrl: Value(originalUrl),
       status: Value(status),
       createdAt: Value(createdAt),
+      leaseOwner: leaseOwner == null && nullToAbsent
+          ? const Value.absent()
+          : Value(leaseOwner),
+      leaseUntil: leaseUntil == null && nullToAbsent
+          ? const Value.absent()
+          : Value(leaseUntil),
     );
   }
 
@@ -2226,6 +2395,8 @@ class DownloadTaskTableData extends DataClass
       originalUrl: serializer.fromJson<String>(json['originalUrl']),
       status: serializer.fromJson<String>(json['status']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      leaseOwner: serializer.fromJson<String?>(json['leaseOwner']),
+      leaseUntil: serializer.fromJson<DateTime?>(json['leaseUntil']),
     );
   }
   @override
@@ -2236,6 +2407,8 @@ class DownloadTaskTableData extends DataClass
       'originalUrl': serializer.toJson<String>(originalUrl),
       'status': serializer.toJson<String>(status),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'leaseOwner': serializer.toJson<String?>(leaseOwner),
+      'leaseUntil': serializer.toJson<DateTime?>(leaseUntil),
     };
   }
 
@@ -2244,11 +2417,15 @@ class DownloadTaskTableData extends DataClass
     String? originalUrl,
     String? status,
     DateTime? createdAt,
+    Value<String?> leaseOwner = const Value.absent(),
+    Value<DateTime?> leaseUntil = const Value.absent(),
   }) => DownloadTaskTableData(
     trackId: trackId ?? this.trackId,
     originalUrl: originalUrl ?? this.originalUrl,
     status: status ?? this.status,
     createdAt: createdAt ?? this.createdAt,
+    leaseOwner: leaseOwner.present ? leaseOwner.value : this.leaseOwner,
+    leaseUntil: leaseUntil.present ? leaseUntil.value : this.leaseUntil,
   );
   DownloadTaskTableData copyWithCompanion(DownloadTaskTableCompanion data) {
     return DownloadTaskTableData(
@@ -2258,6 +2435,12 @@ class DownloadTaskTableData extends DataClass
           : this.originalUrl,
       status: data.status.present ? data.status.value : this.status,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      leaseOwner: data.leaseOwner.present
+          ? data.leaseOwner.value
+          : this.leaseOwner,
+      leaseUntil: data.leaseUntil.present
+          ? data.leaseUntil.value
+          : this.leaseUntil,
     );
   }
 
@@ -2267,13 +2450,22 @@ class DownloadTaskTableData extends DataClass
           ..write('trackId: $trackId, ')
           ..write('originalUrl: $originalUrl, ')
           ..write('status: $status, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('leaseOwner: $leaseOwner, ')
+          ..write('leaseUntil: $leaseUntil')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(trackId, originalUrl, status, createdAt);
+  int get hashCode => Object.hash(
+    trackId,
+    originalUrl,
+    status,
+    createdAt,
+    leaseOwner,
+    leaseUntil,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2281,7 +2473,9 @@ class DownloadTaskTableData extends DataClass
           other.trackId == this.trackId &&
           other.originalUrl == this.originalUrl &&
           other.status == this.status &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.leaseOwner == this.leaseOwner &&
+          other.leaseUntil == this.leaseUntil);
 }
 
 class DownloadTaskTableCompanion
@@ -2290,12 +2484,16 @@ class DownloadTaskTableCompanion
   final Value<String> originalUrl;
   final Value<String> status;
   final Value<DateTime> createdAt;
+  final Value<String?> leaseOwner;
+  final Value<DateTime?> leaseUntil;
   final Value<int> rowid;
   const DownloadTaskTableCompanion({
     this.trackId = const Value.absent(),
     this.originalUrl = const Value.absent(),
     this.status = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.leaseOwner = const Value.absent(),
+    this.leaseUntil = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DownloadTaskTableCompanion.insert({
@@ -2303,6 +2501,8 @@ class DownloadTaskTableCompanion
     required String originalUrl,
     required String status,
     required DateTime createdAt,
+    this.leaseOwner = const Value.absent(),
+    this.leaseUntil = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : trackId = Value(trackId),
        originalUrl = Value(originalUrl),
@@ -2313,6 +2513,8 @@ class DownloadTaskTableCompanion
     Expression<String>? originalUrl,
     Expression<String>? status,
     Expression<DateTime>? createdAt,
+    Expression<String>? leaseOwner,
+    Expression<DateTime>? leaseUntil,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2320,6 +2522,8 @@ class DownloadTaskTableCompanion
       if (originalUrl != null) 'original_url': originalUrl,
       if (status != null) 'status': status,
       if (createdAt != null) 'created_at': createdAt,
+      if (leaseOwner != null) 'lease_owner': leaseOwner,
+      if (leaseUntil != null) 'lease_until': leaseUntil,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2329,6 +2533,8 @@ class DownloadTaskTableCompanion
     Value<String>? originalUrl,
     Value<String>? status,
     Value<DateTime>? createdAt,
+    Value<String?>? leaseOwner,
+    Value<DateTime?>? leaseUntil,
     Value<int>? rowid,
   }) {
     return DownloadTaskTableCompanion(
@@ -2336,6 +2542,8 @@ class DownloadTaskTableCompanion
       originalUrl: originalUrl ?? this.originalUrl,
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
+      leaseOwner: leaseOwner ?? this.leaseOwner,
+      leaseUntil: leaseUntil ?? this.leaseUntil,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2355,6 +2563,12 @@ class DownloadTaskTableCompanion
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (leaseOwner.present) {
+      map['lease_owner'] = Variable<String>(leaseOwner.value);
+    }
+    if (leaseUntil.present) {
+      map['lease_until'] = Variable<DateTime>(leaseUntil.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2368,6 +2582,8 @@ class DownloadTaskTableCompanion
           ..write('originalUrl: $originalUrl, ')
           ..write('status: $status, ')
           ..write('createdAt: $createdAt, ')
+          ..write('leaseOwner: $leaseOwner, ')
+          ..write('leaseUntil: $leaseUntil, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2890,7 +3106,7 @@ typedef $$TrackTableTableCreateCompanionBuilder =
       Value<int?> durationMs,
       required String sourceType,
       required String sourceUri,
-      Value<String?> addedAt,
+      Value<DateTime?> addedAt,
       Value<String?> album,
       Value<String?> imageUrl,
       Value<String?> trackDescriptorJson,
@@ -2907,7 +3123,7 @@ typedef $$TrackTableTableUpdateCompanionBuilder =
       Value<int?> durationMs,
       Value<String> sourceType,
       Value<String> sourceUri,
-      Value<String?> addedAt,
+      Value<DateTime?> addedAt,
       Value<String?> album,
       Value<String?> imageUrl,
       Value<String?> trackDescriptorJson,
@@ -2964,7 +3180,7 @@ class $$TrackTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get addedAt => $composableBuilder(
+  ColumnFilters<DateTime> get addedAt => $composableBuilder(
     column: $table.addedAt,
     builder: (column) => ColumnFilters(column),
   );
@@ -3039,7 +3255,7 @@ class $$TrackTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get addedAt => $composableBuilder(
+  ColumnOrderings<DateTime> get addedAt => $composableBuilder(
     column: $table.addedAt,
     builder: (column) => ColumnOrderings(column),
   );
@@ -3106,7 +3322,7 @@ class $$TrackTableTableAnnotationComposer
   GeneratedColumn<String> get sourceUri =>
       $composableBuilder(column: $table.sourceUri, builder: (column) => column);
 
-  GeneratedColumn<String> get addedAt =>
+  GeneratedColumn<DateTime> get addedAt =>
       $composableBuilder(column: $table.addedAt, builder: (column) => column);
 
   GeneratedColumn<String> get album =>
@@ -3163,7 +3379,7 @@ class $$TrackTableTableTableManager
                 Value<int?> durationMs = const Value.absent(),
                 Value<String> sourceType = const Value.absent(),
                 Value<String> sourceUri = const Value.absent(),
-                Value<String?> addedAt = const Value.absent(),
+                Value<DateTime?> addedAt = const Value.absent(),
                 Value<String?> album = const Value.absent(),
                 Value<String?> imageUrl = const Value.absent(),
                 Value<String?> trackDescriptorJson = const Value.absent(),
@@ -3195,7 +3411,7 @@ class $$TrackTableTableTableManager
                 Value<int?> durationMs = const Value.absent(),
                 required String sourceType,
                 required String sourceUri,
-                Value<String?> addedAt = const Value.absent(),
+                Value<DateTime?> addedAt = const Value.absent(),
                 Value<String?> album = const Value.absent(),
                 Value<String?> imageUrl = const Value.absent(),
                 Value<String?> trackDescriptorJson = const Value.absent(),
@@ -3249,6 +3465,8 @@ typedef $$EmbeddingTaskTableTableCreateCompanionBuilder =
       required String status,
       required String filePath,
       required DateTime createdAt,
+      Value<String?> leaseOwner,
+      Value<DateTime?> leaseUntil,
       Value<int> rowid,
     });
 typedef $$EmbeddingTaskTableTableUpdateCompanionBuilder =
@@ -3258,6 +3476,8 @@ typedef $$EmbeddingTaskTableTableUpdateCompanionBuilder =
       Value<String> status,
       Value<String> filePath,
       Value<DateTime> createdAt,
+      Value<String?> leaseOwner,
+      Value<DateTime?> leaseUntil,
       Value<int> rowid,
     });
 
@@ -3292,6 +3512,16 @@ class $$EmbeddingTaskTableTableFilterComposer
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get leaseOwner => $composableBuilder(
+    column: $table.leaseOwner,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get leaseUntil => $composableBuilder(
+    column: $table.leaseUntil,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -3329,6 +3559,16 @@ class $$EmbeddingTaskTableTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get leaseOwner => $composableBuilder(
+    column: $table.leaseOwner,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get leaseUntil => $composableBuilder(
+    column: $table.leaseUntil,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$EmbeddingTaskTableTableAnnotationComposer
@@ -3354,6 +3594,16 @@ class $$EmbeddingTaskTableTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get leaseOwner => $composableBuilder(
+    column: $table.leaseOwner,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get leaseUntil => $composableBuilder(
+    column: $table.leaseUntil,
+    builder: (column) => column,
+  );
 }
 
 class $$EmbeddingTaskTableTableTableManager
@@ -3401,6 +3651,8 @@ class $$EmbeddingTaskTableTableTableManager
                 Value<String> status = const Value.absent(),
                 Value<String> filePath = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<String?> leaseOwner = const Value.absent(),
+                Value<DateTime?> leaseUntil = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => EmbeddingTaskTableCompanion(
                 id: id,
@@ -3408,6 +3660,8 @@ class $$EmbeddingTaskTableTableTableManager
                 status: status,
                 filePath: filePath,
                 createdAt: createdAt,
+                leaseOwner: leaseOwner,
+                leaseUntil: leaseUntil,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -3417,6 +3671,8 @@ class $$EmbeddingTaskTableTableTableManager
                 required String status,
                 required String filePath,
                 required DateTime createdAt,
+                Value<String?> leaseOwner = const Value.absent(),
+                Value<DateTime?> leaseUntil = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => EmbeddingTaskTableCompanion.insert(
                 id: id,
@@ -3424,6 +3680,8 @@ class $$EmbeddingTaskTableTableTableManager
                 status: status,
                 filePath: filePath,
                 createdAt: createdAt,
+                leaseOwner: leaseOwner,
+                leaseUntil: leaseUntil,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -3461,6 +3719,8 @@ typedef $$DownloadTaskTableTableCreateCompanionBuilder =
       required String originalUrl,
       required String status,
       required DateTime createdAt,
+      Value<String?> leaseOwner,
+      Value<DateTime?> leaseUntil,
       Value<int> rowid,
     });
 typedef $$DownloadTaskTableTableUpdateCompanionBuilder =
@@ -3469,6 +3729,8 @@ typedef $$DownloadTaskTableTableUpdateCompanionBuilder =
       Value<String> originalUrl,
       Value<String> status,
       Value<DateTime> createdAt,
+      Value<String?> leaseOwner,
+      Value<DateTime?> leaseUntil,
       Value<int> rowid,
     });
 
@@ -3498,6 +3760,16 @@ class $$DownloadTaskTableTableFilterComposer
 
   ColumnFilters<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get leaseOwner => $composableBuilder(
+    column: $table.leaseOwner,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get leaseUntil => $composableBuilder(
+    column: $table.leaseUntil,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -3530,6 +3802,16 @@ class $$DownloadTaskTableTableOrderingComposer
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get leaseOwner => $composableBuilder(
+    column: $table.leaseOwner,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get leaseUntil => $composableBuilder(
+    column: $table.leaseUntil,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$DownloadTaskTableTableAnnotationComposer
@@ -3554,6 +3836,16 @@ class $$DownloadTaskTableTableAnnotationComposer
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get leaseOwner => $composableBuilder(
+    column: $table.leaseOwner,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get leaseUntil => $composableBuilder(
+    column: $table.leaseUntil,
+    builder: (column) => column,
+  );
 }
 
 class $$DownloadTaskTableTableTableManager
@@ -3600,12 +3892,16 @@ class $$DownloadTaskTableTableTableManager
                 Value<String> originalUrl = const Value.absent(),
                 Value<String> status = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
+                Value<String?> leaseOwner = const Value.absent(),
+                Value<DateTime?> leaseUntil = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DownloadTaskTableCompanion(
                 trackId: trackId,
                 originalUrl: originalUrl,
                 status: status,
                 createdAt: createdAt,
+                leaseOwner: leaseOwner,
+                leaseUntil: leaseUntil,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -3614,12 +3910,16 @@ class $$DownloadTaskTableTableTableManager
                 required String originalUrl,
                 required String status,
                 required DateTime createdAt,
+                Value<String?> leaseOwner = const Value.absent(),
+                Value<DateTime?> leaseUntil = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DownloadTaskTableCompanion.insert(
                 trackId: trackId,
                 originalUrl: originalUrl,
                 status: status,
                 createdAt: createdAt,
+                leaseOwner: leaseOwner,
+                leaseUntil: leaseUntil,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

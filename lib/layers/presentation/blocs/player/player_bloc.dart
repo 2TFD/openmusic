@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/core/services/audio_player/audio_player_service.dart';
 import 'package:openmusic/core/utils/app_logger.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
+import 'package:openmusic/layers/domain/usecases/build_playback_queue_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/save_statistic_use_case.dart';
 
 part 'player_event.dart';
@@ -14,6 +15,7 @@ part 'player_state.dart';
 class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   final AudioPlayerService _service;
   final SaveRecordPlayUseCase _recordPlay;
+  final BuildPlaybackQueueUseCase _buildQueue;
   final String _appDir;
 
   StreamSubscription? _positionSub;
@@ -26,18 +28,23 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     required AudioPlayerService service,
     required String appDir,
     required SaveRecordPlayUseCase recordPlay,
+    required BuildPlaybackQueueUseCase buildQueue,
   }) : _service = service,
        _appDir = appDir,
        _recordPlay = recordPlay,
+       _buildQueue = buildQueue,
        super(const PlayerState()) {
     on<PlayerQueueSet>(_onQueueSet);
     on<PlayerPlayPauseToggled>(_onPlayPause);
     on<PlayerSeeked>(_onSeeked);
-    on<PlayerIndexSeeked>(_onIndexSeeked);
+    on<PlayerTrackSelected>(_onTrackSelected);
     on<PlayerSkippedNext>(_onSkipNext);
     on<PlayerSkippedPrevious>(_onSkipPrev);
     on<PlayerShuffleToggled>(_onShuffleToggle);
     on<PlayerRepeatCycled>(_onRepeatCycle);
+    on<PlayerErrorShown>(
+      (e, emit) => emit(state.copyWith(error: null)),
+    );
     on<_PlayerPositionUpdated>(_onPosition);
     on<_PlayerDurationUpdated>(_onDuration);
     on<_PlayerPlayingUpdated>(_onPlaying);
@@ -50,41 +57,57 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   void _subscribe() {
     _positionSub = _service.positionStream.listen(
       (pos) => add(_PlayerPositionUpdated(pos)),
+      onError: (e, st) =>
+          AppLogger.log('[PlayerBloc] positionStream error: $e, stackTrace: $st'),
     );
     _durationSub = _service.durationStream
         .where((d) => d != null && d > Duration.zero)
-        .listen((dur) => add(_PlayerDurationUpdated(dur!)));
+        .listen(
+          (dur) => add(_PlayerDurationUpdated(dur!)),
+          onError: (e, st) => AppLogger.log(
+            '[PlayerBloc] durationStream error: $e, stackTrace: $st',
+          ),
+        );
 
     _playingSub = _service.playingStream.listen(
       (playing) => add(_PlayerPlayingUpdated(playing)),
+      onError: (e, st) =>
+          AppLogger.log('[PlayerBloc] playingStream error: $e, stackTrace: $st'),
     );
-    _indexSub = _service.indexStream.listen((index) {
-      if (index != null) add(_PlayerIndexUpdated(index));
-    });
+    _indexSub = _service.indexStream.listen(
+      (index) {
+        if (index != null) add(_PlayerIndexUpdated(index));
+      },
+      onError: (e, st) =>
+          AppLogger.log('[PlayerBloc] indexStream error: $e, stackTrace: $st'),
+    );
     _processingSub = _service.processingStream.listen(
       (ps) => add(_PlayerProcessingUpdated(ps)),
+      onError: (e, st) => AppLogger.log(
+        '[PlayerBloc] processingStream error: $e, stackTrace: $st',
+      ),
     );
   }
 
   Future<void> _onQueueSet(PlayerQueueSet e, Emitter<PlayerState> emit) async {
     try {
-      final tracks = e.tracks.where((e) => e.isReadyToPlay).toList();
-      if (tracks.isEmpty) {
+      final queue = _buildQueue(e.tracks, startTrack: e.startTrack);
+      if (queue.isEmpty) {
         emit(state.copyWith(queue: const [], currentTrack: null));
         return;
       }
-      final index = e.startIndex.clamp(0, tracks.length - 1);
-      await _service.setQueue(tracks, _appDir, index: index);
+      await _service.setQueue(queue.tracks, _appDir, index: queue.startIndex);
       emit(
         state.copyWith(
-          queue: tracks,
-          currentIndex: e.startIndex,
-          currentTrack: tracks[index],
+          queue: queue.tracks,
+          currentIndex: queue.startIndex,
+          currentTrack: queue.tracks[queue.startIndex],
         ),
       );
+      if (e.autoPlay) await _service.play();
     } catch (e, st) {
       AppLogger.log('[PlayerBloc._onQueueSet] Error: $e, stackTrace: $st');
-      emit(state.copyWith(error: 'Failed to set queue: ${e.toString()}'));
+      emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
     }
   }
 
@@ -97,7 +120,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     } catch (e, st) {
       AppLogger.log('[PlayerBloc._onPlayPause] Error: $e, stackTrace: $st');
       emit(
-        state.copyWith(error: 'Failed to toggle play/pause: ${e.toString()}'),
+        state.copyWith(error: failureFromException(e).toLocaleKey()),
       );
     }
   }
@@ -107,36 +130,20 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       await _service.seek(e.position);
     } catch (e, st) {
       AppLogger.log('[PlayerBloc._onSeeked] Error: $e, stackTrace: $st');
-      emit(state.copyWith(error: 'Failed to seek: ${e.toString()}'));
+      emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
     }
   }
 
-  Future<void> _onIndexSeeked(
-    PlayerIndexSeeked e,
+  Future<void> _onTrackSelected(
+    PlayerTrackSelected e,
     Emitter<PlayerState> emit,
   ) async {
     try {
-      if (e.tracks != null && !listEquals(e.tracks, state.queue)) {
-        await _service.setQueue(e.tracks!, _appDir, index: e.index);
-        await _service.seekToIndex(e.index);
-        await _service.play();
-        emit(
-          state.copyWith(
-            queue: e.tracks,
-            currentIndex: e.index,
-            currentTrack: e.tracks != null && e.index < e.tracks!.length
-                ? e.tracks![e.index]
-                : null,
-          ),
-        );
-
-        return;
-      }
       await _service.seekToIndex(e.index);
       await _service.play();
     } catch (e, st) {
-      AppLogger.log('[PlayerBloc._onIndexSeeked] Error: $e, stackTrace: $st');
-      emit(state.copyWith(error: 'Failed to seek to index: ${e.toString()}'));
+      AppLogger.log('[PlayerBloc._onTrackSelected] Error: $e, stackTrace: $st');
+      emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
     }
   }
 
@@ -148,7 +155,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       if (state.hasNext) await _service.skipToNext();
     } catch (e, st) {
       AppLogger.log('[PlayerBloc._onSkipNext] Error: $e, stackTrace: $st');
-      emit(state.copyWith(error: 'Failed to skip to next: ${e.toString()}'));
+      emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
     }
   }
 
@@ -165,7 +172,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     } catch (e, st) {
       AppLogger.log('[PlayerBloc._onSkipPrev] Error: $e, stackTrace: $st');
       emit(
-        state.copyWith(error: 'Failed to skip to previous: ${e.toString()}'),
+        state.copyWith(error: failureFromException(e).toLocaleKey()),
       );
     }
   }
@@ -185,6 +192,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       );
     } catch (e, st) {
       AppLogger.log('[PlayerBloc._onShuffleToggle] Error: $e, stackTrace: $st');
+      emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
     }
   }
 
@@ -202,6 +210,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       emit(state.copyWith(loopMode: next));
     } catch (e, st) {
       AppLogger.log('[PlayerBloc._onRepeatCycle] Error: $e, stackTrace: $st');
+      emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
     }
   }
 
@@ -216,7 +225,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
 
   void _onIndex(_PlayerIndexUpdated e, Emitter<PlayerState> emit) {
     if (e.index < state.queue.length) {
-      if (state.position.inSeconds > 30 && state.currentTrack != null) {
+      if (state.currentTrack != null) {
         _recordPlay(state.currentTrack!, state.position).catchError((
           error,
           stackTrace,

@@ -5,6 +5,7 @@ import 'package:ffmpeg_kit_flutter_new/ffprobe_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:openmusic/layers/domain/entities/playlist.dart';
+import 'package:openmusic/layers/domain/entities/operation_cancellation.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/entities/track_preview.dart';
@@ -195,7 +196,11 @@ class LocalFileTrackSource implements TrackSource {
   }
 
   @override
-  Future<String> download(TrackPreview preview) async {
+  Future<String> download(
+    TrackPreview preview, {
+    OperationCancellation? cancellation,
+  }) async {
+    cancellation?.throwIfCancelled();
     final dir = await getApplicationDocumentsDirectory();
     final ext = _extensionWithDot(preview.originalUrl);
     final id = _generateId(preview.originalUrl);
@@ -205,6 +210,7 @@ class LocalFileTrackSource implements TrackSource {
     if (await File(destPath).exists()) return relativePath;
 
     await File(preview.originalUrl).copy(destPath);
+    cancellation?.throwIfCancelled();
     return relativePath;
   }
 

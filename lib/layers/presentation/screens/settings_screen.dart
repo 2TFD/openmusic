@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -166,6 +167,20 @@ class _ListeningSection extends StatelessWidget {
           builder: (context, state) {
             if (state is StatisticsLoaded) {
               return _StatsBody(stats: state.statistics);
+            }
+            if (state is StatisticsError) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    state.error.tr(),
+                    style: GoogleFonts.figtree(
+                      fontSize: 13,
+                      color: AppColors.muted,
+                    ),
+                  ),
+                ),
+              );
             }
             return const _StatsLoading();
           },

@@ -1,10 +1,15 @@
 import 'package:dio/dio.dart';
 import 'package:openmusic/core/utils/app_logger.dart';
+import 'package:openmusic/layers/domain/entities/operation_cancellation.dart';
 import 'package:path_provider/path_provider.dart';
 
 class EmbeddingEngine {
-  Future<List<double>> compute(String filePath) async {
+  Future<List<double>> compute(
+    String filePath, {
+    OperationCancellation? cancellation,
+  }) async {
     try {
+      cancellation?.throwIfCancelled();
       final dir = await getApplicationDocumentsDirectory();
       var data = FormData.fromMap({
         'file': await MultipartFile.fromFile(
@@ -14,11 +19,17 @@ class EmbeddingEngine {
       });
 
       var dio = Dio();
+      final cancelToken = CancelToken();
+      cancellation?.whenCancelled.then((_) {
+        if (!cancelToken.isCancelled) cancelToken.cancel();
+      });
       var response = await dio.request(
         "https://kxmwebwe-trackembeddingapi.hf.space/embedding/smart",
         options: Options(method: 'POST'),
         data: data,
+        cancelToken: cancelToken,
       );
+      cancellation?.throwIfCancelled();
 
       if (response.statusCode == 200) {
         return List<double>.from(response.data['embedding']);

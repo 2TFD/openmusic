@@ -12,6 +12,7 @@ class SaveRecordPlayUseCase {
   Future<void> call(Track track, Duration listenedDuration) async {
     if (listenedDuration < _minDuration) return;
 
+    final now = DateTime.now();
     final record = PlayRecord(
       id: const Uuid().v4(),
       trackId: track.id,
@@ -19,32 +20,12 @@ class SaveRecordPlayUseCase {
       artistName: track.artists.map((a) => a.name).join(', '),
       sourceType: track.source.type,
       listenedDuration: listenedDuration,
-      playedAt: DateTime.now(),
+      playedAt: now,
     );
-    final allRecords = await _playRecordRepository.getAll();
-    PlayRecord? lastRecordWithSameTrack;
 
-    for (final r in allRecords) {
-      if (r.trackId == record.trackId) {
-        if (lastRecordWithSameTrack == null ||
-            r.playedAt.isAfter(lastRecordWithSameTrack.playedAt)) {
-          lastRecordWithSameTrack = r;
-        }
-      }
-    }
+    final last = await _playRecordRepository.getLatestByTrackId(track.id);
+    if (last != null && now.difference(last.playedAt).inSeconds < 30) return;
 
-    bool isDuplicatePlay = false;
-
-    if (lastRecordWithSameTrack != null) {
-      final diffInSeconds = record.playedAt
-          .difference(lastRecordWithSameTrack.playedAt)
-          .inSeconds;
-
-      if (diffInSeconds >= 0 && diffInSeconds < 30) {
-        isDuplicatePlay = true;
-      }
-    }
-    if (isDuplicatePlay) return;
     await _playRecordRepository.save(record);
   }
 }

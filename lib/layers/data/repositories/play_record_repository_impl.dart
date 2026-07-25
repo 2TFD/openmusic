@@ -16,14 +16,19 @@ class PlayRecordRepositoryImpl implements PlayRecordRepository {
 
   @override
   Future<List<PlayRecord>> getAll({DateTime? from}) async {
-    final models = await localDataSource.getRecords();
-    var records = models.map(PlayRecordMapper.toEntity).toList();
-    if (from != null) {
-      records = records.where((r) => r.playedAt.isAfter(from)).toList();
-    }
-    records.sort((a, b) => b.playedAt.compareTo(a.playedAt));
-    return records;
+    final models = await localDataSource.getRecords(from: from);
+    return models.map(PlayRecordMapper.toEntity).toList();
   }
+
+  @override
+  Future<PlayRecord?> getLatestByTrackId(String trackId) async {
+    final dto = await localDataSource.getLatestByTrackId(trackId);
+    return dto != null ? PlayRecordMapper.toEntity(dto) : null;
+  }
+
+  @override
+  Future<List<String>> getRecentTrackIds({int limit = 20}) =>
+      localDataSource.getRecentTrackIds(limit: limit);
 
   @override
   Future<void> clear() async {
@@ -31,7 +36,9 @@ class PlayRecordRepositoryImpl implements PlayRecordRepository {
   }
 
   @override
-  Stream<dynamic> watchPlayRecord() {
-    return localDataSource.watchPlayRecord();
+  Stream<List<PlayRecord>> watchPlayRecord() {
+    return localDataSource
+        .watchPlayRecord()
+        .map((dtos) => dtos.map(PlayRecordMapper.toEntity).toList());
   }
 }

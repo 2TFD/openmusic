@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,9 +8,13 @@ import 'package:openmusic/core/themes/app_theme.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
 import 'package:openmusic/layers/domain/repositories/track_repository.dart';
+import 'package:openmusic/layers/domain/usecases/delete_playlist_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/get_playlist_with_tracks_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/update_playlist_use_case.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist_detail/playlist_detail_bloc.dart';
 import 'package:openmusic/layers/presentation/widgets/cached_image.dart';
+import 'package:openmusic/layers/presentation/widgets/snackbars/custom_snack_bar.dart';
 import 'package:openmusic/layers/presentation/widgets/track_item.dart';
 
 class PlaylistScreen extends StatelessWidget {
@@ -20,8 +25,12 @@ class PlaylistScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => PlaylistDetailBloc(
-        playlistRepo: getIt<PlaylistRepository>(),
-        trackRepo: getIt<TrackRepository>(),
+        getPlaylistWithTracks: GetPlaylistWithTracksUseCase(
+          playlistRepository: getIt<PlaylistRepository>(),
+          trackRepository: getIt<TrackRepository>(),
+        ),
+        updatePlaylist: UpdatePlaylistUseCase(getIt<PlaylistRepository>()),
+        deletePlaylist: DeletePlaylistUseCase(getIt<PlaylistRepository>()),
       )..add(PlaylistDetailLoad(playlistId)),
       child: _PlaylistScreenBody(playlistId: playlistId),
     );
@@ -133,6 +142,9 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
         if (state is PlaylistDetailDeleted) {
           context.pop();
         }
+        if (state is PlaylistDetailLoaded && state.errorKey != null) {
+          CustomSnackBar.error(context, state.errorKey!.tr());
+        }
       },
       child: BlocBuilder<PlaylistDetailBloc, PlaylistDetailState>(
         builder: (context, state) {
@@ -231,11 +243,10 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
               child: _PlayButton(
                 isPlayingThis: isPlayingThis && playerState.isPlaying,
                 onTap: () {
-                  context.read<PlayerBloc>().add(
-                    PlayerQueueSet(tracks, startIndex: 0),
-                  );
-                  if (!playerState.isPlaying || !isPlayingThis) {
+                  if (isPlayingThis && playerState.isPlaying) {
                     context.read<PlayerBloc>().add(PlayerPlayPauseToggled());
+                  } else {
+                    context.read<PlayerBloc>().add(PlayerQueueSet(tracks));
                   }
                 },
               ),
@@ -259,9 +270,8 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
                   isAvailable: track.isReadyToPlay,
                   onTap: () {
                     context.read<PlayerBloc>().add(
-                      PlayerQueueSet(tracks, startIndex: index),
+                      PlayerQueueSet(tracks, startTrack: track),
                     );
-                    context.read<PlayerBloc>().add(PlayerPlayPauseToggled());
                   },
                 ),
               );

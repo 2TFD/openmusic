@@ -17,7 +17,7 @@ class TrackDto extends Equatable {
 
   final String originalUrl;
 
-  final String? addedAt;
+  final DateTime? addedAt;
 
   final String? album;
 
@@ -70,7 +70,7 @@ class TrackDto extends Equatable {
       'durationMs': durationMs,
       'sourceType': sourceType,
       'originalUrl': originalUrl,
-      'addedAt': addedAt,
+      'addedAt': addedAt?.toIso8601String(),
       'album': album,
       'imageUrl': imageUrl,
       'trackDescriptorJson': trackDescriptorJson,
@@ -88,7 +88,11 @@ class TrackDto extends Equatable {
       durationMs: json['durationMs'],
       sourceType: json['sourceType'],
       originalUrl: json['originalUrl'],
-      addedAt: json['addedAt'],
+      addedAt: switch (json['addedAt']) {
+        final String value => DateTime.tryParse(value),
+        final int value => DateTime.fromMillisecondsSinceEpoch(value),
+        _ => null,
+      },
       album: json['album'],
       imageUrl: json['imageUrl'],
       trackDescriptorJson: json['trackDescriptorJson'],

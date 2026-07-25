@@ -16,36 +16,36 @@ class WaveBloc extends Bloc<WaveEvent, WaveState> {
   WaveBloc({required GenerateWaveUseCase generate})
     : _generate = generate,
       super(WaveInitial()) {
-    on<WaveStarted>(_onStarted);
-    on<WaveSeedAdded>(_onSeedAdded);
-    on<WaveSeedRemoved>(_onSeedRemoved);
-    on<WaveMoodChanged>(_onMoodChanged);
-    on<WaveRefreshed>(_onRefreshed);
-    on<WaveAddTrack>(_onWaveAddTrack);
-    on<WaveRemoveTrack>(_onWaveRemoveTrack);
-    on<WaveReset>(_onWaveReset);
+    on<WaveInitialized>(_onInitialized);
+    on<WaveSeedSelected>(_onSeedSelected);
+    on<WaveSeedDeselected>(_onSeedDeselected);
+    on<WaveMoodSelected>(_onMoodSelected);
+    on<WaveRefreshRequested>(_onRefreshRequested);
+    on<WaveTrackSelected>(_onTrackSelected);
+    on<WaveTrackDeselected>(_onTrackDeselected);
+    on<WaveResetRequested>(_onResetRequested);
   }
 
-  Future<void> _onStarted(WaveStarted e, Emitter<WaveState> emit) async {
+  Future<void> _onInitialized(WaveInitialized e, Emitter<WaveState> emit) async {
     await _generateAndEmit(e.config, emit);
   }
 
-  Future<void> _onWaveReset(WaveReset e, Emitter<WaveState> emit) async {
+  Future<void> _onResetRequested(WaveResetRequested e, Emitter<WaveState> emit) async {
     await _generateAndEmit(
       const WaveConfig(tracks: [], seeds: [], mood: ''),
       emit,
     );
   }
 
-  Future<void> _onWaveAddTrack(WaveAddTrack e, Emitter<WaveState> emit) async {
+  Future<void> _onTrackSelected(WaveTrackSelected e, Emitter<WaveState> emit) async {
     await _generateAndEmit(
       _currentConfig.copyWith(tracks: [..._currentConfig.tracks, e.track]),
       emit,
     );
   }
 
-  Future<void> _onWaveRemoveTrack(
-    WaveRemoveTrack e,
+  Future<void> _onTrackDeselected(
+    WaveTrackDeselected e,
     Emitter<WaveState> emit,
   ) async {
     await _generateAndEmit(
@@ -56,19 +56,20 @@ class WaveBloc extends Bloc<WaveEvent, WaveState> {
     );
   }
 
-  Future<void> _onSeedAdded(WaveSeedAdded e, Emitter<WaveState> emit) async {
+  Future<void> _onSeedSelected(WaveSeedSelected e, Emitter<WaveState> emit) async {
     final current = _currentConfig;
-
-    final updated = WaveConfig(
-      seeds: [...current.seeds, e.seed],
-      mood: current.mood,
-      tracks: current.tracks,
+    await _generateAndEmit(
+      WaveConfig(
+        seeds: [...current.seeds, e.seed],
+        mood: current.mood,
+        tracks: current.tracks,
+      ),
+      emit,
     );
-    await _generateAndEmit(updated, emit);
   }
 
-  Future<void> _onSeedRemoved(
-    WaveSeedRemoved e,
+  Future<void> _onSeedDeselected(
+    WaveSeedDeselected e,
     Emitter<WaveState> emit,
   ) async {
     await _generateAndEmit(
@@ -79,14 +80,14 @@ class WaveBloc extends Bloc<WaveEvent, WaveState> {
     );
   }
 
-  Future<void> _onMoodChanged(
-    WaveMoodChanged e,
+  Future<void> _onMoodSelected(
+    WaveMoodSelected e,
     Emitter<WaveState> emit,
   ) async {
     await _generateAndEmit(_currentConfig.copyWith(mood: e.mood), emit);
   }
 
-  Future<void> _onRefreshed(WaveRefreshed e, Emitter<WaveState> emit) async {
+  Future<void> _onRefreshRequested(WaveRefreshRequested e, Emitter<WaveState> emit) async {
     await _generateAndEmit(_currentConfig, emit);
   }
 
@@ -106,6 +107,7 @@ class WaveBloc extends Bloc<WaveEvent, WaveState> {
     try {
       final tracks = await _generate.execute(config);
 
+      if (emit.isDone) return;
       if (tracks.isEmpty) {
         emit(WaveEmpty(config));
         return;
@@ -113,6 +115,7 @@ class WaveBloc extends Bloc<WaveEvent, WaveState> {
       emit(WaveReady(tracks: tracks, config: config));
     } catch (e) {
       log(failureFromException(e).toString(), error: e);
+      if (emit.isDone) return;
       emit(
         WaveError(error: failureFromException(e).toLocaleKey(), config: config),
       );
