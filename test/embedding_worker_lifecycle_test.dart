@@ -63,6 +63,7 @@ class _FakeEmbeddingTaskRepository implements EmbeddingTaskRepository {
       status: EmbeddingStatus.processing,
       filePath: 'track-1.mp3',
       createdAt: DateTime.now(),
+      audioRevision: 0,
     );
   }
 
@@ -94,14 +95,9 @@ class _FakeEmbeddingTaskRepository implements EmbeddingTaskRepository {
   Future<bool> saveResult({
     required String trackId,
     required String ownerId,
+    required int audioRevision,
     required List<double> vector,
   }) async => true;
-
-  @override
-  Future<void> createTask(EmbeddingTask task) async {}
-
-  @override
-  Stream<List<EmbeddingTask>> watchQueued() => const Stream.empty();
 
   @override
   Stream<int> watchPendingCount() => const Stream.empty();

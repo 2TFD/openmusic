@@ -1,3 +1,4 @@
+import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/layers/data/datasources/local/playlist/playlist_local_data_source.dart';
 import 'package:openmusic/layers/data/mappers/playlist_mapper.dart';
 import 'package:openmusic/layers/domain/entities/playlist.dart';
@@ -10,15 +11,10 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
 
   @override
   Future<void> addTrackToPlaylist(String playlistId, String trackId) async {
-    final playlist = await getPlaylistById(playlistId);
-    if (playlist == null) {
-      throw Exception('Playlist with id: $playlistId not found');
+    final exists = await localDataSource.addTrack(playlistId, trackId);
+    if (!exists) {
+      throw NotFoundFailure('playlist', playlistId);
     }
-    final updated = playlist.copyWith(
-      trackIds: [...playlist.trackIds, trackId],
-    );
-
-    await updatePlaylist(updated);
   }
 
   @override
@@ -49,16 +45,10 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
     String playlistId,
     String trackId,
   ) async {
-    final playlist = await getPlaylistById(playlistId);
-    if (playlist == null) {
-      throw Exception('Playlist with id: $playlistId not found');
+    final exists = await localDataSource.removeTrack(playlistId, trackId);
+    if (!exists) {
+      throw NotFoundFailure('playlist', playlistId);
     }
-
-    final updated = playlist.copyWith(
-      trackIds: playlist.trackIds.where((id) => id != trackId).toList(),
-    );
-
-    await updatePlaylist(updated);
   }
 
   @override
@@ -69,8 +59,8 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
 
   @override
   Stream<List<Playlist>> watchPlaylist() {
-    return localDataSource
-        .watchPlaylist()
-        .map((dtos) => dtos.map(PlaylistMapper.toEntity).toList());
+    return localDataSource.watchPlaylist().map(
+      (dtos) => dtos.map(PlaylistMapper.toEntity).toList(),
+    );
   }
 }

@@ -33,7 +33,16 @@
         "close": "Закрыть",
         "loading": "Загрузка...",
         "error": "Ошибка",
-        "empty": "Пусто"
+        "empty": "Пусто",
+        "cancel": "Отмена",
+        "delete": "Удалить",
+        "save": "Сохранить",
+        "edit": "Изменить",
+        "done": "Готово",
+        "rename": "Переименовать",
+        "clear": "Очистить",
+        "unknown": "Неизвестно",
+        "trackCount": "{count} треков"
     },
     "import": {
         "title": "Импорт музыки",
@@ -70,6 +79,15 @@
             "button": "Создать"
         },
         "notFound": "Плейлист не найден",
+        "delete": "Удалить плейлист",
+        "deleteConfirm": "Это действие нельзя отменить.",
+        "empty": "Треков пока нет",
+        "holdToDrag": "Удерживайте для перемещения",
+        "playAll": "Воспроизвести всё",
+        "pause": "Пауза",
+        "removeTrack": "Удалить из плейлиста",
+        "name": "Название",
+        "nameHint": "Название плейлиста",
         "files": {
             "duration": "Длительность",
             "album": "Альбом",
@@ -80,7 +98,13 @@
         }
     },
     "search": {
-        "artists": "Поиск артистов..."
+        "artists": "Поиск артистов...",
+        "title": "Поиск",
+        "hint": "Название трека или артист...",
+        "local": "Локально",
+        "online": "Онлайн",
+        "start": "Начните поиск",
+        "noTracks": "Треки не найдены"
     },
     "track": {
         "data": "данные",
@@ -92,7 +116,9 @@
         "failedToLoad": "Не удалось загрузить",
         "unavailable": "Ссылка недоступна или трек заблокирован в вашем регионе",
         "retry": "Попробовать снова",
-        "cancel": "Отмена"
+        "cancel": "Отмена",
+        "addToLibrary": "+ Добавить в библиотеку",
+        "addedToLibrary": "✓ Добавлено в библиотеку"
     },
     "snackbar": {
         "trackAdded": "Добавлено",
@@ -113,14 +139,27 @@
         "queue": "Очередь",
         "shuffle": "Перемешать",
         "repeat": "Повтор",
-        "repeatOne": "Повтор трека"
+        "repeatOne": "Повтор трека",
+        "nothingPlaying": "Ничего не играет",
+        "upNext": "Далее"
     },
     "wave": {
         "title": "моя\nволна",
         "seedsLabel": "На основе",
         "generating": "Генерируем волну...",
         "empty": "Добавь seeds чтобы начать",
-        "seedsActive": "{count} активных"
+        "seedsActive": "{count} активных",
+        "ownMood": "своё настроение",
+        "dialogTitle": "Волна",
+        "mood": "Настроение",
+        "artists": "Артисты",
+        "tracks": "Треки",
+        "searchArtists": "Поиск артистов…",
+        "searchTracks": "Поиск треков…",
+        "noArtists": "В библиотеке нет артистов",
+        "noTracksReady": "Нет готовых треков",
+        "noResults": "Ничего не найдено",
+        "reset": "Сбросить волну"
     },
     "moods": {
         "melancholy": "меланхолия",
@@ -135,6 +174,7 @@
         "filterYoutube": "YouTube",
         "filterLocal": "Локальные",
         "filterSoundcloud": "SoundCloud",
+        "filterUnknown": "Неизвестные",
         "empty": "Треков пока нет",
         "emptySub": "Добавь первый трек через +"
     },
@@ -148,7 +188,40 @@
         "periodMonth": "Месяц",
         "periodAll": "Всё время"
     },
+    "settings": {
+        "title": "Настройки",
+        "listening": "Прослушивание",
+        "library": "Библиотека",
+        "app": "Приложение",
+        "listeningTime": "Время прослушивания",
+        "tracks": "Треки",
+        "artists": "Артисты",
+        "sources": "Источники",
+        "todayShort": "Сегодня",
+        "weekShort": "7Д",
+        "twoWeeksShort": "2Н",
+        "monthShort": "1М",
+        "allShort": "Все",
+        "durationHoursMinutes": "{hours} ч {minutes} мин",
+        "durationMinutes": "{minutes} мин",
+        "durationSeconds": "{seconds} с",
+        "waveReady": "Готовность волны",
+        "embeddingsDescription": "треков с ML-векторами для поиска похожей музыки",
+        "processingQueue": "Очередь обработки",
+        "embeddingsPending": "ML-векторы ожидают обработки",
+        "clearHistory": "Очистить историю",
+        "clearHistoryConfirm": "Вся история прослушивания будет удалена безвозвратно.",
+        "version": "Версия",
+        "clearPlayHistory": "Очистить историю прослушивания"
+    },
+    "allPlaylists": {
+        "title": "Все плейлисты",
+        "empty": "Плейлистов пока нет",
+        "emptySub": "Нажмите +, чтобы создать первый плейлист",
+        "create": "Создать плейлист"
+    },
     "errors": {
+        "app": "Ошибка приложения: {message}",
         "youtube": "YouTube недоступен",
         "fileNotFound": "Файл не найден",
         "noInternet": "Нет подключения к интернету",

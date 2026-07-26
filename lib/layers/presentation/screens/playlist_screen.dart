@@ -3,14 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:openmusic/core/di/di.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_repository.dart';
-import 'package:openmusic/layers/domain/usecases/delete_playlist_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/get_playlist_with_tracks_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/update_playlist_use_case.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist_detail/playlist_detail_bloc.dart';
 import 'package:openmusic/layers/presentation/widgets/cached_image.dart';
@@ -18,28 +12,14 @@ import 'package:openmusic/layers/presentation/widgets/snackbars/custom_snack_bar
 import 'package:openmusic/layers/presentation/widgets/track_item.dart';
 
 class PlaylistScreen extends StatelessWidget {
-  final String playlistId;
-  const PlaylistScreen({super.key, required this.playlistId});
+  const PlaylistScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => PlaylistDetailBloc(
-        getPlaylistWithTracks: GetPlaylistWithTracksUseCase(
-          playlistRepository: getIt<PlaylistRepository>(),
-          trackRepository: getIt<TrackRepository>(),
-        ),
-        updatePlaylist: UpdatePlaylistUseCase(getIt<PlaylistRepository>()),
-        deletePlaylist: DeletePlaylistUseCase(getIt<PlaylistRepository>()),
-      )..add(PlaylistDetailLoad(playlistId)),
-      child: _PlaylistScreenBody(playlistId: playlistId),
-    );
-  }
+  Widget build(BuildContext context) => const _PlaylistScreenBody();
 }
 
 class _PlaylistScreenBody extends StatefulWidget {
-  final String playlistId;
-  const _PlaylistScreenBody({required this.playlistId});
+  const _PlaylistScreenBody();
 
   @override
   State<_PlaylistScreenBody> createState() => _PlaylistScreenBodyState();
@@ -94,13 +74,16 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.l),
         ),
-        title: Text('Delete playlist', style: AppText.display3),
-        content: Text('This cannot be undone.', style: AppText.bodyM),
+        title: Text(context.tr('playlist.delete'), style: AppText.display3),
+        content: Text(
+          context.tr('playlist.deleteConfirm'),
+          style: AppText.bodyM,
+        ),
         actions: [
           TextButton(
             onPressed: () => dialogCtx.pop(),
             child: Text(
-              'Cancel',
+              context.tr('common.cancel'),
               style: AppText.bodyL.copyWith(color: AppColors.textSub),
             ),
           ),
@@ -110,7 +93,7 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
               dialogCtx.pop();
             },
             child: Text(
-              'Delete',
+              context.tr('common.delete'),
               style: AppText.bodyL.copyWith(color: AppColors.error),
             ),
           ),
@@ -189,13 +172,16 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
     return AppBar(
       backgroundColor: AppColors.bg,
       scrolledUnderElevation: 0,
-      title: Text(_isEditing ? 'Edit' : playlistName, style: AppText.display3),
+      title: Text(
+        _isEditing ? context.tr('common.edit') : playlistName,
+        style: AppText.display3,
+      ),
       actions: _isEditing
           ? [
               TextButton(
                 onPressed: () => setState(() => _isEditing = false),
                 child: Text(
-                  'Done',
+                  context.tr('common.done'),
                   style: AppText.bodyL.copyWith(fontWeight: FontWeight.w600),
                 ),
               ),
@@ -254,7 +240,9 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
           ),
         if (tracks.isEmpty)
           SliverFillRemaining(
-            child: Center(child: Text('No tracks yet', style: AppText.bodyM)),
+            child: Center(
+              child: Text(context.tr('playlist.empty'), style: AppText.bodyM),
+            ),
           )
         else
           SliverList.builder(
@@ -290,11 +278,17 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
           child: Row(
             children: [
               Text(
-                '${tracks.length} ${_pluralTracks(tracks.length)}',
+                context.tr(
+                  'common.trackCount',
+                  namedArgs: {'count': tracks.length.toString()},
+                ),
                 style: AppText.label,
               ),
               const Spacer(),
-              Text('HOLD TO DRAG', style: AppText.label),
+              Text(
+                context.tr('playlist.holdToDrag').toUpperCase(),
+                style: AppText.label,
+              ),
             ],
           ),
         ),
@@ -333,22 +327,12 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
           Text(name, style: AppText.display2),
           const SizedBox(height: 6),
           Text(
-            '$trackCount ${_pluralTracks(trackCount)}',
+            'common.trackCount'.tr(namedArgs: {'count': trackCount.toString()}),
             style: AppText.bodyXS,
           ),
         ],
       ),
     );
-  }
-
-  String _pluralTracks(int count) {
-    final mod10 = count % 10;
-    final mod100 = count % 100;
-    if (mod10 == 1 && mod100 != 11) return 'трек';
-    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
-      return 'трека';
-    }
-    return 'треков';
   }
 }
 
@@ -380,7 +364,7 @@ class _PlayButton extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             Text(
-              isPlayingThis ? 'Pause' : 'Play all',
+              context.tr(isPlayingThis ? 'playlist.pause' : 'playlist.playAll'),
               style: AppText.bodyL.copyWith(fontWeight: FontWeight.w600),
             ),
           ],
@@ -538,7 +522,7 @@ class _TrackOptionsSheet extends StatelessWidget {
           const SizedBox(height: 8),
           _SheetAction(
             icon: Icons.remove_circle_outline,
-            label: 'Remove from playlist',
+            label: context.tr('playlist.removeTrack'),
             color: AppColors.error,
             onTap: onRemove,
           ),
@@ -582,13 +566,13 @@ class _PlaylistActionsSheet extends StatelessWidget {
           ),
           _SheetAction(
             icon: Icons.edit_outlined,
-            label: 'Rename',
+            label: context.tr('common.rename'),
             onTap: onRename,
           ),
           const SizedBox(height: 4),
           _SheetAction(
             icon: Icons.delete_outline,
-            label: 'Delete playlist',
+            label: context.tr('playlist.delete'),
             color: AppColors.error,
             onTap: onDelete,
           ),
@@ -656,7 +640,7 @@ class _RenamePlaylistSheetState extends State<_RenamePlaylistSheet> {
           ),
           Row(
             children: [
-              Text('Rename', style: AppText.display3),
+              Text(context.tr('common.rename'), style: AppText.display3),
               const Spacer(),
               IconButton(
                 onPressed: () => context.pop(),
@@ -666,7 +650,7 @@ class _RenamePlaylistSheetState extends State<_RenamePlaylistSheet> {
             ],
           ),
           const SizedBox(height: AppSpacing.xl),
-          Text('NAME', style: AppText.label),
+          Text(context.tr('playlist.name').toUpperCase(), style: AppText.label),
           const SizedBox(height: AppSpacing.s),
           TextField(
             controller: _ctrl,
@@ -680,7 +664,7 @@ class _RenamePlaylistSheetState extends State<_RenamePlaylistSheet> {
             maxLines: 1,
             textInputAction: TextInputAction.done,
             decoration: InputDecoration(
-              hintText: 'Playlist name',
+              hintText: context.tr('playlist.nameHint'),
               hintStyle: AppText.display2.copyWith(color: AppColors.muted2),
               counterText: '',
               border: InputBorder.none,
@@ -702,7 +686,7 @@ class _RenamePlaylistSheetState extends State<_RenamePlaylistSheet> {
                   borderRadius: BorderRadius.circular(AppRadius.m),
                 ),
                 child: Text(
-                  'Save',
+                  context.tr('common.save'),
                   style: AppText.bodyL.copyWith(
                     color: _canSave ? AppColors.text : AppColors.muted,
                     fontWeight: FontWeight.w600,

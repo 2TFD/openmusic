@@ -10,6 +10,7 @@ class EmbeddingTaskTable extends Table {
   TextColumn get filePath => text()();
 
   DateTimeColumn get createdAt => dateTime()();
+  IntColumn get audioRevision => integer().withDefault(const Constant(0))();
   TextColumn get leaseOwner => text().nullable()();
   DateTimeColumn get leaseUntil => dateTime().nullable()();
 

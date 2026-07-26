@@ -12,12 +12,14 @@ class EmbeddingTask {
   final String filePath;
 
   final DateTime createdAt;
+  final int audioRevision;
   EmbeddingTask({
     required this.id,
     required this.trackId,
     required this.status,
     required this.filePath,
     required this.createdAt,
+    this.audioRevision = 0,
   });
 
   EmbeddingTask copyWith({
@@ -26,6 +28,7 @@ class EmbeddingTask {
     EmbeddingStatus? status,
     String? filePath,
     DateTime? createdAt,
+    int? audioRevision,
   }) {
     return EmbeddingTask(
       id: id ?? this.id,
@@ -33,6 +36,7 @@ class EmbeddingTask {
       status: status ?? this.status,
       filePath: filePath ?? this.filePath,
       createdAt: createdAt ?? this.createdAt,
+      audioRevision: audioRevision ?? this.audioRevision,
     );
   }
 
@@ -43,6 +47,7 @@ class EmbeddingTask {
       'status': status.name,
       'filePath': filePath,
       'createdAt': createdAt.millisecondsSinceEpoch,
+      'audioRevision': audioRevision,
     };
   }
 
@@ -53,6 +58,7 @@ class EmbeddingTask {
       status: EmbeddingStatus.values.byName(map['status']),
       filePath: map['filePath'] as String,
       createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
+      audioRevision: map['audioRevision'] as int? ?? 0,
     );
   }
 
@@ -63,7 +69,7 @@ class EmbeddingTask {
 
   @override
   String toString() {
-    return 'EmbeddingTask(id: $id, trackId: $trackId, status: $status, filePath: $filePath, createdAt: $createdAt)';
+    return 'EmbeddingTask(id: $id, trackId: $trackId, status: $status, filePath: $filePath, createdAt: $createdAt, audioRevision: $audioRevision)';
   }
 
   @override
@@ -74,7 +80,8 @@ class EmbeddingTask {
         other.trackId == trackId &&
         other.status == status &&
         other.filePath == filePath &&
-        other.createdAt == createdAt;
+        other.createdAt == createdAt &&
+        other.audioRevision == audioRevision;
   }
 
   @override
@@ -83,6 +90,7 @@ class EmbeddingTask {
         trackId.hashCode ^
         status.hashCode ^
         filePath.hashCode ^
-        createdAt.hashCode;
+        createdAt.hashCode ^
+        audioRevision.hashCode;
   }
 }

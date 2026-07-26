@@ -1,0 +1,1 @@
+enum PlatformFailureKind { network, fileNotFound }

@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/core/services/download/download_worker.dart';
 import 'package:openmusic/core/services/embedding/embedding_engine.dart';
 import 'package:openmusic/core/services/embedding/embedding_worker.dart';
@@ -22,18 +23,32 @@ import 'package:openmusic/layers/data/repositories/play_record_repository_impl.d
 import 'package:openmusic/layers/data/repositories/playlist_repository_impl.dart';
 import 'package:openmusic/layers/data/repositories/search_source_impl.dart';
 import 'package:openmusic/layers/data/repositories/track_repository_impl.dart';
+import 'package:openmusic/layers/data/repositories/track_removal_repository_impl.dart';
+import 'package:openmusic/layers/data/repositories/track_ingestion_repository_impl.dart';
 import 'package:openmusic/layers/data/repositories/track_download_completion_repository_impl.dart';
 import 'package:openmusic/layers/domain/repositories/download_task_repository.dart';
+import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
 import 'package:openmusic/layers/domain/repositories/embedding_task_repository.dart';
+import 'package:openmusic/layers/domain/repositories/local_track_picker.dart';
 import 'package:openmusic/layers/domain/repositories/play_record_repository.dart';
 import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
 import 'package:openmusic/layers/domain/repositories/search_source.dart';
 import 'package:openmusic/layers/domain/repositories/track_repository.dart';
+import 'package:openmusic/layers/domain/repositories/track_removal_repository.dart';
+import 'package:openmusic/layers/domain/repositories/track_ingestion_repository.dart';
 import 'package:openmusic/layers/domain/repositories/track_download_completion_repository.dart';
 import 'package:openmusic/core/services/track_source_resolver.dart';
 import 'package:openmusic/core/services/wave/wave_engine.dart';
 import 'package:openmusic/layers/domain/usecases/add_track_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/complete_track_download_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/delete_playlist_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/get_playlist_with_tracks_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/import_local_tracks_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/pick_local_tracks_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/update_playlist_use_case.dart';
+import 'package:openmusic/layers/presentation/blocs/embedding_status/embedding_status_cubit.dart';
+import 'package:openmusic/layers/presentation/blocs/import_music/import_music_cubit.dart';
+import 'package:openmusic/layers/presentation/blocs/playlist_detail/playlist_detail_bloc.dart';
 
 final getIt = GetIt.instance;
 
@@ -43,6 +58,12 @@ Future<void> configureDependencies({required String appDir}) async {
 
   // datasource
   getIt.registerSingleton<AppDatabase>(appDatabase);
+
+  getIt.registerLazySingleton<LocalFileTrackSource>(LocalFileTrackSource.new);
+  getIt.registerLazySingleton<SoundcloudTrackSource>(SoundcloudTrackSource.new);
+  getIt.registerLazySingleton<LocalTrackPicker>(
+    () => getIt<LocalFileTrackSource>(),
+  );
 
   getIt.registerSingleton<TrackLocalDataSource>(
     TrackDriftLocalSource(getIt<AppDatabase>()),
@@ -70,6 +91,13 @@ Future<void> configureDependencies({required String appDir}) async {
     TrackRepositoryImpl(localDataSource: getIt<TrackLocalDataSource>()),
   );
 
+  getIt.registerLazySingleton<TrackRemovalRepository>(
+    () => TrackRemovalRepositoryImpl(
+      database: getIt<AppDatabase>(),
+      appDir: getIt<String>(),
+    ),
+  );
+
   getIt.registerLazySingleton<EmbeddingTaskRepository>(
     () => EmbeddingTaskRepositoryImpl(localDataSource: getIt()),
   );
@@ -88,12 +116,19 @@ Future<void> configureDependencies({required String appDir}) async {
     ),
   );
 
+  getIt.registerLazySingleton<TrackIngestionRepository>(
+    () => TrackIngestionRepositoryImpl(
+      database: getIt<AppDatabase>(),
+      trackLocalDataSource: getIt<TrackLocalDataSource>(),
+    ),
+  );
+
   getIt.registerLazySingleton<TrackDownloadCompletionRepository>(
     () => TrackDownloadCompletionRepositoryImpl(getIt<AppDatabase>()),
   );
 
   getIt.registerLazySingleton<SearchSource>(
-    () => SearchSourceImpl(trackRepository: getIt()),
+    () => SearchSourceImpl(soundcloudTrackSource: getIt()),
   );
 
   // services
@@ -101,8 +136,10 @@ Future<void> configureDependencies({required String appDir}) async {
   getIt.registerLazySingleton(() => EmbeddingEngine());
 
   getIt.registerLazySingleton(
-    () =>
-        TrackSourceResolver([LocalFileTrackSource(), SoundcloudTrackSource()]),
+    () => TrackSourceResolver([
+      getIt<LocalFileTrackSource>(),
+      getIt<SoundcloudTrackSource>(),
+    ]),
   );
   getIt.registerLazySingleton(
     () => EmbeddingWorker(
@@ -119,7 +156,9 @@ Future<void> configureDependencies({required String appDir}) async {
     ),
   );
 
-  getIt.registerLazySingleton(() => AudioPlayerService());
+  getIt.registerLazySingleton<AudioPlayerPort>(
+    () => AudioPlayerService(appDir: getIt<String>()),
+  );
 
   getIt.registerLazySingleton(() => WaveEngine());
 
@@ -128,12 +167,43 @@ Future<void> configureDependencies({required String appDir}) async {
   getIt.registerFactory(
     () => AddTrackUseCase(
       playlistRepository: getIt(),
-      downloadRepository: getIt(),
-      completeDownload: CompleteTrackDownloadUseCase(getIt()),
       trackResolver: getIt(),
       trackRepository: getIt(),
+      ingestionRepository: getIt(),
     ),
   );
 
   getIt.registerFactory(() => CompleteTrackDownloadUseCase(getIt()));
+
+  getIt.registerFactory(() => PickLocalTracksUseCase(getIt()));
+  getIt.registerFactory(
+    () => ImportLocalTracksUseCase((resolved) async {
+      final result = await getIt<AddTrackUseCase>().addResolved(resolved);
+      if (result.isEmpty) {
+        throw result.failures.firstOrNull?.failure ??
+            const EmptyResultFailure('import tracks');
+      }
+    }),
+  );
+
+  // Route-scoped presentation objects. The router owns their lifecycle.
+  getIt.registerFactory(
+    () =>
+        ImportMusicCubit(pickLocalTracks: getIt(), importLocalTracks: getIt()),
+  );
+  getIt.registerFactory(
+    () => EmbeddingStatusCubit(
+      pendingCounts: getIt<EmbeddingTaskRepository>().watchPendingCount(),
+    ),
+  );
+  getIt.registerFactory(
+    () => PlaylistDetailBloc(
+      getPlaylistWithTracks: GetPlaylistWithTracksUseCase(
+        playlistRepository: getIt(),
+        trackRepository: getIt(),
+      ),
+      updatePlaylist: UpdatePlaylistUseCase(getIt()),
+      deletePlaylist: DeletePlaylistUseCase(getIt()),
+    ),
+  );
 }

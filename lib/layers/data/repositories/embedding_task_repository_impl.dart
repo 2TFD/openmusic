@@ -32,29 +32,20 @@ class EmbeddingTaskRepositoryImpl implements EmbeddingTaskRepository {
 
   @override
   Future<bool> markFailed({required String trackId, required String ownerId}) =>
-      localDataSource.updateStatusIfOwned(
-        trackId: trackId,
-        ownerId: ownerId,
-        status: EmbeddingStatus.failed,
-      );
+      localDataSource.markFailedIfOwned(trackId: trackId, ownerId: ownerId);
 
   @override
   Future<bool> saveResult({
     required String trackId,
     required String ownerId,
+    required int audioRevision,
     required List<double> vector,
   }) => localDataSource.completeIfOwned(
     trackId: trackId,
     ownerId: ownerId,
+    audioRevision: audioRevision,
     vector: vector,
   );
-
-  @override
-  Stream<List<EmbeddingTask>> watchQueued() {
-    return localDataSource.watch().map(
-      (dtos) => dtos.map(EmbeddingTaskMapper.toEntity).toList(),
-    );
-  }
 
   @override
   Stream<int> watchPendingCount() {
@@ -67,11 +58,5 @@ class EmbeddingTaskRepositoryImpl implements EmbeddingTaskRepository {
           )
           .length,
     );
-  }
-
-  @override
-  Future<void> createTask(EmbeddingTask task) async {
-    final dto = EmbeddingTaskMapper.toDto(task);
-    return await localDataSource.save(dto);
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/DTO/download_task_dto.dart';
+import 'package:openmusic/layers/data/models/download_task_dto.dart';
 import 'package:openmusic/layers/data/mappers/download_task_mapper.dart';
 import 'package:openmusic/layers/domain/entities/download_track_task.dart';
 

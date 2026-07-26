@@ -1,4 +1,4 @@
-import 'package:openmusic/layers/data/DTO/download_task_dto.dart';
+import 'package:openmusic/layers/data/models/download_task_dto.dart';
 import 'package:openmusic/layers/domain/entities/download_track_task.dart';
 
 class DownloadTaskMapper {

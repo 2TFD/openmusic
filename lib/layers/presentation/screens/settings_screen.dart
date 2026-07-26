@@ -1,15 +1,12 @@
-import 'dart:async';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:openmusic/core/di/di.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/entities/statistic.dart';
-import 'package:openmusic/layers/domain/repositories/embedding_task_repository.dart';
+import 'package:openmusic/layers/presentation/blocs/embedding_status/embedding_status_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/history/history_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/statistic/statistic_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/track/track_bloc.dart';
@@ -24,8 +21,6 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   // index 2 = twoWeeks, matches StatisticBloc initial load in BlocScope
   int _period = 2;
-  int _pendingCount = 0;
-  StreamSubscription<dynamic>? _embeddingWatchSub;
 
   static const _statsPeriods = [
     StatsPeriod.today,
@@ -35,25 +30,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     StatsPeriod.allTime,
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    _embeddingWatchSub = getIt<EmbeddingTaskRepository>()
-        .watchPendingCount()
-        .listen((count) {
-      if (mounted) setState(() => _pendingCount = count);
-    });
-  }
-
   void _onPeriodChanged(BuildContext context, int index) {
     setState(() => _period = index);
     context.read<StatisticBloc>().add(ChangePeriodEvent(_statsPeriods[index]));
-  }
-
-  @override
-  void dispose() {
-    _embeddingWatchSub?.cancel();
-    super.dispose();
   }
 
   @override
@@ -80,11 +59,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   AppSpacing.screenH,
                   28,
                 ),
-                child: Text('Settings', style: AppText.display1),
+                child: Text(
+                  context.tr('settings.title'),
+                  style: AppText.display1,
+                ),
               ),
             ),
 
-            _sectionHeader('LISTENING'),
+            _sectionHeader(context.tr('settings.listening').toUpperCase()),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -97,17 +79,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-            _sectionHeader('LIBRARY'),
+            _sectionHeader(context.tr('settings.library').toUpperCase()),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.screenH,
                 ),
-                child: _LibrarySection(pendingCount: _pendingCount),
+                child: BlocBuilder<EmbeddingStatusCubit, int>(
+                  builder: (context, pendingCount) =>
+                      _LibrarySection(pendingCount: pendingCount),
+                ),
               ),
             ),
 
-            _sectionHeader('APP'),
+            _sectionHeader(context.tr('settings.app').toUpperCase()),
             const SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: AppSpacing.screenH),
@@ -143,7 +128,13 @@ class _ListeningSection extends StatelessWidget {
 
   const _ListeningSection({required this.period, required this.onPeriodChange});
 
-  static const _chips = ['TODAY', '7D', '2W', '1M', 'ALL'];
+  static const _chipKeys = [
+    'settings.todayShort',
+    'settings.weekShort',
+    'settings.twoWeeksShort',
+    'settings.monthShort',
+    'settings.allShort',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -153,9 +144,9 @@ class _ListeningSection extends StatelessWidget {
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
-            children: List.generate(_chips.length, (i) {
+            children: List.generate(_chipKeys.length, (i) {
               return _PeriodChip(
-                label: _chips[i],
+                label: context.tr(_chipKeys[i]).toUpperCase(),
                 selected: i == period,
                 onTap: () => onPeriodChange(i),
               );
@@ -201,7 +192,10 @@ class _StatsLoading extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('LISTENING TIME', style: AppText.label),
+              Text(
+                context.tr('settings.listeningTime').toUpperCase(),
+                style: AppText.label,
+              ),
               const SizedBox(height: 10),
               const _Shimmer(width: 130, height: 34),
               const SizedBox(height: 6),
@@ -263,11 +257,42 @@ class _StatsBody extends StatelessWidget {
 
   const _StatsBody({required this.stats});
 
-  static String _sourceLabel(dynamic type) => switch (type as SourceType) {
-    SourceType.localFile => 'Local',
-    SourceType.soundcloud => 'SoundCloud',
-    SourceType.unknown => 'Unknown',
-  };
+  static String _sourceLabel(BuildContext context, SourceType type) =>
+      context.tr(switch (type) {
+        SourceType.localFile => 'library.filterLocal',
+        SourceType.soundcloud => 'library.filterSoundcloud',
+        SourceType.unknown => 'library.filterUnknown',
+      });
+
+  static String _periodLabel(BuildContext context, StatsPeriod period) =>
+      context.tr(switch (period) {
+        StatsPeriod.today => 'statistics.periodToday',
+        StatsPeriod.week => 'statistics.periodWeek',
+        StatsPeriod.twoWeeks => 'statistics.periodTwoWeeks',
+        StatsPeriod.month => 'statistics.periodMonth',
+        StatsPeriod.allTime => 'statistics.periodAll',
+      });
+
+  static String _formatTime(BuildContext context, Duration duration) {
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    if (hours > 0) {
+      return context.tr(
+        'settings.durationHoursMinutes',
+        namedArgs: {'hours': '$hours', 'minutes': '$minutes'},
+      );
+    }
+    if (minutes > 0) {
+      return context.tr(
+        'settings.durationMinutes',
+        namedArgs: {'minutes': '$minutes'},
+      );
+    }
+    return context.tr(
+      'settings.durationSeconds',
+      namedArgs: {'seconds': '${duration.inSeconds}'},
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -283,14 +308,17 @@ class _StatsBody extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('LISTENING TIME', style: AppText.label),
+              Text(
+                context.tr('settings.listeningTime').toUpperCase(),
+                style: AppText.label,
+              ),
               const SizedBox(height: 10),
               Text(
-                isEmpty ? '—' : stats.formattedTime,
+                isEmpty ? '—' : _formatTime(context, stats.totalTime),
                 style: AppText.display1,
               ),
               const SizedBox(height: 4),
-              Text(stats.period.label, style: AppText.bodyXS),
+              Text(_periodLabel(context, stats.period), style: AppText.bodyXS),
             ],
           ),
         ),
@@ -300,21 +328,21 @@ class _StatsBody extends StatelessWidget {
           children: [
             Expanded(
               child: _MiniStat(
-                label: 'TRACKS',
+                label: context.tr('settings.tracks').toUpperCase(),
                 value: isEmpty ? '—' : '${stats.totalTracks}',
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: _MiniStat(
-                label: 'ARTISTS',
+                label: context.tr('settings.artists').toUpperCase(),
                 value: isEmpty ? '—' : '${stats.uniqueArtists}',
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: _MiniStat(
-                label: 'SOURCES',
+                label: context.tr('settings.sources').toUpperCase(),
                 value: bySource.isEmpty ? '—' : '${bySource.length}',
               ),
             ),
@@ -329,7 +357,7 @@ class _StatsBody extends StatelessWidget {
                 for (int i = 0; i < bySource.length; i++) ...[
                   if (i > 0) const SizedBox(height: 14),
                   _SourceBar(
-                    name: _sourceLabel(bySource[i].key),
+                    name: _sourceLabel(context, bySource[i].key),
                     count: bySource[i].value,
                     fraction: bySource[i].value / maxCount,
                   ),
@@ -483,7 +511,10 @@ class _LibrarySection extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text('WAVE READY', style: AppText.label),
+                      Text(
+                        context.tr('settings.waveReady').toUpperCase(),
+                        style: AppText.label,
+                      ),
                       const Spacer(),
                       Text(
                         total == 0 ? '—' : '$embedded / $total',
@@ -505,7 +536,7 @@ class _LibrarySection extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'tracks with ML embeddings for similar music discovery',
+                    context.tr('settings.embeddingsDescription'),
                     style: AppText.bodyXS,
                   ),
                 ],
@@ -544,7 +575,7 @@ class _LibrarySection extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Processing queue',
+                          context.tr('settings.processingQueue'),
                           style: GoogleFonts.outfit(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -553,7 +584,10 @@ class _LibrarySection extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        Text('ML embeddings pending', style: AppText.bodyXS),
+                        Text(
+                          context.tr('settings.embeddingsPending'),
+                          style: AppText.bodyXS,
+                        ),
                       ],
                     ),
                   ),
@@ -595,20 +629,23 @@ class _AppSection extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(borderRadius: AppRadius.cardBR),
-        title: Text('Clear history', style: AppText.display3),
+        title: Text(
+          context.tr('settings.clearHistory'),
+          style: AppText.display3,
+        ),
         content: Text(
-          'All play history will be deleted permanently.',
+          context.tr('settings.clearHistoryConfirm'),
           style: AppText.bodyM,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Cancel', style: AppText.bodyM),
+            child: Text(context.tr('common.cancel'), style: AppText.bodyM),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(
-              'Clear',
+              context.tr('common.clear'),
               style: GoogleFonts.figtree(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
@@ -635,15 +672,18 @@ class _AppSection extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const _AppRow(label: 'Version', trailing: Text('0.1.0')),
+          _AppRow(
+            label: context.tr('settings.version'),
+            trailing: const Text('0.1.0'),
+          ),
           const Divider(height: 1, thickness: 1, color: AppColors.border),
           GestureDetector(
             onTap: () => _clearHistory(context),
             behavior: HitTestBehavior.opaque,
-            child: const _AppRow(
-              label: 'Clear play history',
+            child: _AppRow(
+              label: context.tr('settings.clearPlayHistory'),
               labelColor: AppColors.error,
-              trailing: Icon(
+              trailing: const Icon(
                 Icons.delete_outline_rounded,
                 color: AppColors.error,
                 size: 16,

@@ -2,16 +2,28 @@ import 'dart:developer';
 import 'package:just_audio/just_audio.dart';
 import 'package:openmusic/core/infrastructure/mappers/track_audio_mapper.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
+import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
 
-class AudioPlayerService {
+class AudioPlayerService implements AudioPlayerPort {
+  AudioPlayerService({required this.appDir});
+
+  final String appDir;
   final AudioPlayer _player = AudioPlayer();
+  @override
   Stream<Duration> get positionStream => _player.positionStream;
+  @override
   Stream<Duration?> get durationStream => _player.durationStream;
+  @override
   Stream<bool> get playingStream => _player.playingStream;
+  @override
   Stream<int?> get indexStream => _player.currentIndexStream;
-  Stream<ProcessingState> get processingStream => _player.processingStateStream;
+  @override
+  Stream<PlaybackProcessingState> get processingStream =>
+      _player.processingStateStream.map(_mapProcessingState);
+  @override
   List<int>? get shuffleIndices => _player.shuffleIndices;
 
+  @override
   Future<void> play() async {
     try {
       await _player.play();
@@ -21,6 +33,7 @@ class AudioPlayerService {
     }
   }
 
+  @override
   Future<void> pause() async {
     try {
       await _player.pause();
@@ -30,6 +43,7 @@ class AudioPlayerService {
     }
   }
 
+  @override
   Future<void> seek(Duration position) async {
     try {
       await _player.seek(position);
@@ -41,6 +55,7 @@ class AudioPlayerService {
     }
   }
 
+  @override
   Future<void> seekToIndex(int index) async {
     try {
       await _player.seek(Duration.zero, index: index);
@@ -52,6 +67,7 @@ class AudioPlayerService {
     }
   }
 
+  @override
   Future<void> skipToNext() async {
     try {
       await _player.seekToNext();
@@ -63,6 +79,7 @@ class AudioPlayerService {
     }
   }
 
+  @override
   Future<void> skipToPrevious() async {
     try {
       await _player.seekToPrevious();
@@ -74,9 +91,14 @@ class AudioPlayerService {
     }
   }
 
-  Future<void> setLoopMode(LoopMode mode) async {
+  @override
+  Future<void> setLoopMode(PlaybackLoopMode mode) async {
     try {
-      await _player.setLoopMode(mode);
+      await _player.setLoopMode(switch (mode) {
+        PlaybackLoopMode.off => LoopMode.off,
+        PlaybackLoopMode.all => LoopMode.all,
+        PlaybackLoopMode.one => LoopMode.one,
+      });
     } catch (e, st) {
       log(
         '[AudioPlayerService.setLoopMode] Error setting loop mode to $mode: $e, stackTrace: $st',
@@ -85,6 +107,7 @@ class AudioPlayerService {
     }
   }
 
+  @override
   Future<void> setShuffleModeEnabled(bool enabled) async {
     try {
       await _player.setShuffleModeEnabled(enabled);
@@ -96,11 +119,8 @@ class AudioPlayerService {
     }
   }
 
-  Future<void> setQueue(
-    List<Track> tracks,
-    String appDir, {
-    int index = 0,
-  }) async {
+  @override
+  Future<void> setQueue(List<Track> tracks, {int index = 0}) async {
     try {
       await _player.stop();
       final sources = tracks.map((t) => t.toAudioSource(appDir)).toList();
@@ -114,5 +134,15 @@ class AudioPlayerService {
     }
   }
 
+  @override
   Future<void> dispose() => _player.dispose();
+
+  static PlaybackProcessingState _mapProcessingState(ProcessingState state) =>
+      switch (state) {
+        ProcessingState.idle => PlaybackProcessingState.idle,
+        ProcessingState.loading => PlaybackProcessingState.loading,
+        ProcessingState.buffering => PlaybackProcessingState.buffering,
+        ProcessingState.ready => PlaybackProcessingState.ready,
+        ProcessingState.completed => PlaybackProcessingState.completed,
+      };
 }

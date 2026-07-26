@@ -43,9 +43,5 @@ class DownloadTaskRepositoryImpl implements DownloadTaskRepository {
 
   @override
   Future<bool> markFailed({required String trackId, required String ownerId}) =>
-      localDataSource.updateStatusIfOwned(
-        trackId: trackId,
-        ownerId: ownerId,
-        status: DownloadStatus.failed,
-      );
+      localDataSource.markFailedIfOwned(trackId: trackId, ownerId: ownerId);
 }

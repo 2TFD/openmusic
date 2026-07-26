@@ -8,6 +8,7 @@ class TrackPreview {
   final String id;
   final String title;
   final String artist;
+  final String? artistId;
   final String? album;
   final String? artworkUrl;
   final Duration? duration;
@@ -20,6 +21,7 @@ class TrackPreview {
     required this.id,
     required this.title,
     required this.artist,
+    this.artistId,
     this.album,
     this.artworkUrl,
     this.duration,
@@ -40,7 +42,12 @@ class TrackPreview {
     addedAt: DateTime.now(),
     id: id,
     title: title,
-    artists: [Artist(id: id, name: artist)],
+    artists: [
+      Artist(
+        id: artistId ?? stableArtistId(source: source, artistName: artist),
+        name: artist,
+      ),
+    ],
     album: album,
     imageUrl: artworkUrl,
     filePath: filePath,
@@ -52,6 +59,7 @@ class TrackPreview {
       'id': id,
       'title': title,
       'artist': artist,
+      'artistId': artistId,
       'album': album,
       'artworkUrl': artworkUrl,
       'duration': duration?.inMicroseconds.toString(),
@@ -67,6 +75,7 @@ class TrackPreview {
       id: map['id'] as String,
       title: map['title'] as String,
       artist: map['artist'] as String,
+      artistId: map['artistId'] as String?,
       album: map['album'] != null ? map['album'] as String : null,
       artworkUrl: map['artworkUrl'] != null
           ? map['artworkUrl'] as String
@@ -90,6 +99,7 @@ class TrackPreview {
     String? id,
     String? title,
     String? artist,
+    String? artistId,
     String? album,
     String? artworkUrl,
     Duration? duration,
@@ -102,6 +112,7 @@ class TrackPreview {
       id: id ?? this.id,
       title: title ?? this.title,
       artist: artist ?? this.artist,
+      artistId: artistId ?? this.artistId,
       album: album ?? this.album,
       artworkUrl: artworkUrl ?? this.artworkUrl,
       duration: duration ?? this.duration,
@@ -111,4 +122,15 @@ class TrackPreview {
       urlFile: urlFile ?? this.urlFile,
     );
   }
+}
+
+String stableArtistId({
+  required SourceType source,
+  required String artistName,
+}) {
+  final normalized = artistName.trim().toLowerCase().replaceAll(
+    RegExp(r'\s+'),
+    ' ',
+  );
+  return '${source.name}:artist:$normalized';
 }

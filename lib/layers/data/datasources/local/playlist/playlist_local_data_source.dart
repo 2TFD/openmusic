@@ -1,4 +1,4 @@
-import 'package:openmusic/layers/data/DTO/playlist_dto.dart';
+import 'package:openmusic/layers/data/models/playlist_dto.dart';
 
 abstract class PlaylistLocalDataSource {
   Future<List<PlaylistDto>> getPlaylists();
@@ -6,5 +6,7 @@ abstract class PlaylistLocalDataSource {
   Future<void> savePlaylist(PlaylistDto playlist);
   Future<void> deletePlaylist(String id);
   Future<void> updatePlaylist(PlaylistDto playlist);
+  Future<bool> addTrack(String playlistId, String trackId);
+  Future<bool> removeTrack(String playlistId, String trackId);
   Stream<List<PlaylistDto>> watchPlaylist();
 }

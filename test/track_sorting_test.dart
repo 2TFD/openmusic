@@ -1,6 +1,6 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/DTO/track_dto.dart';
+import 'package:openmusic/layers/data/models/track_dto.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
 import 'package:openmusic/layers/data/datasources/local/track/drift/track_drift_local_source.dart';
 
@@ -40,8 +40,7 @@ TrackDto _track(String id, DateTime? addedAt) {
     id: id,
     title: id,
     filePath: null,
-    artistIds: const [],
-    artistNames: const [],
+    artists: const [],
     durationMs: 1000,
     sourceType: 'soundcloud',
     originalUrl: 'https://example.com/$id',

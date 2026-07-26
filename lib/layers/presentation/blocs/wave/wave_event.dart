@@ -21,11 +21,6 @@ final class WaveSeedDeselected extends WaveEvent {
   const WaveSeedDeselected(this.seed);
 }
 
-final class WaveMoodSelected extends WaveEvent {
-  final String mood;
-  const WaveMoodSelected(this.mood);
-}
-
 final class WaveRefreshRequested extends WaveEvent {}
 
 final class WaveTrackSelected extends WaveEvent {

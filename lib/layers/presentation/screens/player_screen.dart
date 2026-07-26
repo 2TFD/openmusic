@@ -1,9 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:just_audio/just_audio.dart' show LoopMode;
 import 'package:openmusic/core/themes/app_theme.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
+import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/wave/wave_bloc.dart';
 import 'package:openmusic/layers/domain/entities/wave_config.dart';
@@ -40,7 +41,9 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 200,
-      child: Center(child: Text('Nothing playing', style: AppText.bodyM)),
+      child: Center(
+        child: Text(context.tr('player.nothingPlaying'), style: AppText.bodyM),
+      ),
     );
   }
 }
@@ -321,14 +324,14 @@ class _ShuffleBtn extends StatelessWidget {
 }
 
 class _RepeatBtn extends StatelessWidget {
-  final LoopMode mode;
+  final PlaybackLoopMode mode;
 
   const _RepeatBtn({required this.mode});
 
   @override
   Widget build(BuildContext context) {
-    final isActive = mode != LoopMode.off;
-    final icon = mode == LoopMode.one
+    final isActive = mode != PlaybackLoopMode.off;
+    final icon = mode == PlaybackLoopMode.one
         ? Icons.repeat_one_rounded
         : Icons.repeat_rounded;
 
@@ -488,7 +491,10 @@ class _QueueButton extends StatelessWidget {
               size: 16,
             ),
             const SizedBox(width: 6),
-            Text('QUEUE', style: AppText.label),
+            Text(
+              context.tr('player.queue').toUpperCase(),
+              style: AppText.label,
+            ),
           ],
         ),
       ),
@@ -563,7 +569,10 @@ class _QueueSheet extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenH),
             child: Row(
               children: [
-                Text('UP NEXT', style: AppText.label),
+                Text(
+                  context.tr('player.upNext').toUpperCase(),
+                  style: AppText.label,
+                ),
                 if (shuffleEnabled) ...[
                   const SizedBox(width: 6),
                   const Icon(
@@ -573,7 +582,13 @@ class _QueueSheet extends StatelessWidget {
                   ),
                 ],
                 const Spacer(),
-                Text('${queue.length} tracks', style: AppText.bodyXS),
+                Text(
+                  context.tr(
+                    'common.trackCount',
+                    namedArgs: {'count': queue.length.toString()},
+                  ),
+                  style: AppText.bodyXS,
+                ),
               ],
             ),
           ),

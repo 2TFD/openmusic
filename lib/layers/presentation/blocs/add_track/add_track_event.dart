@@ -16,11 +16,19 @@ final class FetchTrackPreview extends AddTrackEvent {
 }
 
 final class AddTrackToLibrary extends AddTrackEvent {
-  final TrackPreview preview;
-  const AddTrackToLibrary(this.preview);
+  final ResolvedTrackInput resolved;
+  const AddTrackToLibrary(this.resolved);
 
   @override
-  List<Object?> get props => [preview];
+  List<Object?> get props => [resolved];
+}
+
+final class UseResolvedTrackInput extends AddTrackEvent {
+  final ResolvedTrackInput resolved;
+  const UseResolvedTrackInput(this.resolved);
+
+  @override
+  List<Object?> get props => [resolved];
 }
 
 final class ResetAddTrack extends AddTrackEvent {

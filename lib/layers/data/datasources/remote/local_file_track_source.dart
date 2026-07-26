@@ -4,15 +4,15 @@ import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/ffprobe_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:openmusic/layers/domain/entities/playlist.dart';
 import 'package:openmusic/layers/domain/entities/operation_cancellation.dart';
+import 'package:openmusic/layers/domain/entities/resolved_track_input.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/entities/track_preview.dart';
+import 'package:openmusic/layers/domain/repositories/local_track_picker.dart';
 import 'package:openmusic/layers/domain/repositories/track_source.dart';
 import 'package:path_provider/path_provider.dart';
 
-class LocalFileTrackSource implements TrackSource {
+class LocalFileTrackSource implements TrackSource, LocalTrackPicker {
   static const _audioExtensions = [
     'mp3',
     'm4a',
@@ -24,13 +24,13 @@ class LocalFileTrackSource implements TrackSource {
   ];
 
   @override
+  SourceType get sourceType => SourceType.localFile;
+
+  @override
   bool canHandle(String input) {
     return input.startsWith('/') &&
         _audioExtensions.contains(_extension(input).toLowerCase());
   }
-
-  @override
-  Future<TrackPreview> fetchTrackPreview(String input) => fetchPreview(input);
 
   Future<TrackPreview> fetchPreview(String filePath) async {
     final fileName = _basenameWithoutExtension(filePath);
@@ -94,11 +94,12 @@ class LocalFileTrackSource implements TrackSource {
   }
 
   @override
-  Future<List<TrackPreview>> resolve(String input) async {
-    return [await fetchPreview(input)];
+  Future<ResolvedTrackInput> resolve(String input) async {
+    return ResolvedTrackInput.single(await fetchPreview(input));
   }
 
-  static Future<List<TrackPreview>> pickFiles() async {
+  @override
+  Future<List<TrackPreview>> pickTracks() async {
     final result = await FilePicker.platform.pickFiles(
       allowMultiple: true,
       type: FileType.custom,
@@ -109,7 +110,6 @@ class LocalFileTrackSource implements TrackSource {
 
     if (result == null || result.files.isEmpty) return [];
 
-    final source = LocalFileTrackSource();
     final previews = <TrackPreview>[];
 
     for (final file in result.files) {
@@ -117,7 +117,7 @@ class LocalFileTrackSource implements TrackSource {
       if (path == null) continue;
 
       try {
-        previews.add(await source.fetchPreview(path));
+        previews.add(await fetchPreview(path));
       } catch (_) {
         previews.add(_fallbackPreview(path));
       }
@@ -182,17 +182,6 @@ class LocalFileTrackSource implements TrackSource {
       hash = (hash * 0x01000193) & 0xffffffff;
     }
     return hash.toRadixString(16).padLeft(8, '0');
-  }
-
-  @override
-  Future<Playlist> createPlaylist(String url, List<Track> tracks) async {
-    final name = _basenameWithoutExtension(url);
-    return Playlist(
-      id: _generateId(url),
-      name: name.isNotEmpty ? name : 'Local Files',
-      trackIds: tracks.map((t) => t.id).toList(),
-      createdAt: DateTime.now(),
-    );
   }
 
   @override

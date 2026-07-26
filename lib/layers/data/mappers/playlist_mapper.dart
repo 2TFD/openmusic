@@ -1,5 +1,5 @@
 import '../../domain/entities/playlist.dart';
-import '../DTO/playlist_dto.dart';
+import '../models/playlist_dto.dart';
 
 class PlaylistMapper {
   static Playlist toEntity(PlaylistDto model) {

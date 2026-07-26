@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
 import 'package:openmusic/layers/domain/entities/track_preview.dart';
+import 'package:openmusic/layers/domain/entities/resolved_track_input.dart';
 import 'package:openmusic/layers/presentation/blocs/add_track/add_track_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/search/search_bloc.dart';
@@ -108,7 +109,7 @@ class _SearchScreenState extends State<SearchScreen> {
           icon: const Icon(Icons.arrow_back, color: AppColors.textSub),
           onPressed: () => context.pop(),
         ),
-        title: Text('Search', style: AppText.display3),
+        title: Text(context.tr('search.title'), style: AppText.display3),
       ),
       body: SafeArea(
         child: Column(
@@ -120,7 +121,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 autofocus: true,
                 style: GoogleFonts.figtree(color: AppColors.text, fontSize: 14),
                 decoration: InputDecoration(
-                  hintText: 'Track name or artist...',
+                  hintText: context.tr('search.hint'),
                   hintStyle: GoogleFonts.figtree(
                     color: AppColors.muted,
                     fontSize: 14,
@@ -169,13 +170,13 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Row(
                 children: [
                   _ModeChip(
-                    label: 'Local',
+                    label: context.tr('search.local'),
                     selected: _isLocalSearch,
                     onTap: () => _toggleSearchMode(true),
                   ),
                   const SizedBox(width: 8),
                   _ModeChip(
-                    label: 'Online',
+                    label: context.tr('search.online'),
                     selected: !_isLocalSearch,
                     onTap: () => _toggleSearchMode(false),
                   ),
@@ -201,7 +202,7 @@ class _SearchScreenState extends State<SearchScreen> {
           children: [
             const Icon(Icons.search, size: 48, color: AppColors.muted2),
             const SizedBox(height: 16),
-            Text('Start searching', style: AppText.bodyM),
+            Text(context.tr('search.start'), style: AppText.bodyM),
           ],
         ),
       );
@@ -314,7 +315,7 @@ class _SearchScreenState extends State<SearchScreen> {
             color: AppColors.muted2,
           ),
           const SizedBox(height: 16),
-          Text('No tracks found', style: AppText.bodyM),
+          Text(context.tr('search.noTracks'), style: AppText.bodyM),
         ],
       ),
     );
@@ -323,13 +324,16 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget _buildPreviewTile(TrackPreview preview) {
     return GestureDetector(
       onTap: () {
-        context.read<AddTrackBloc>().add(FetchTrackPreview(preview.originalUrl));
+        context.read<AddTrackBloc>().add(
+          UseResolvedTrackInput(ResolvedTrackInput.single(preview)),
+        );
         showModalBottomSheet(
           context: context,
           useRootNavigator: true,
           backgroundColor: Colors.transparent,
           isScrollControlled: true,
-          builder: (_) => AddTrackSheet(url: preview.originalUrl, preview: preview),
+          builder: (_) =>
+              AddTrackSheet(url: preview.originalUrl, preview: preview),
         );
       },
       child: Container(

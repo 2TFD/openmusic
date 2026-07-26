@@ -1,4 +1,4 @@
-import 'package:openmusic/layers/data/DTO/embedding_task_dto.dart';
+import 'package:openmusic/layers/data/models/embedding_task_dto.dart';
 import 'package:openmusic/layers/domain/entities/embedding_task.dart';
 
 class EmbeddingTaskMapper {
@@ -9,6 +9,7 @@ class EmbeddingTaskMapper {
       status: entity.status,
       createdAt: entity.createdAt,
       filePath: entity.filePath,
+      audioRevision: entity.audioRevision,
     );
   }
 
@@ -19,6 +20,7 @@ class EmbeddingTaskMapper {
       status: dto.status,
       createdAt: dto.createdAt,
       filePath: dto.filePath,
+      audioRevision: dto.audioRevision,
     );
   }
 }

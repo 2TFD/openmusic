@@ -16,27 +16,32 @@ final class AddTrackPreviewLoading extends AddTrackState {
 }
 
 final class AddTrackPreviewLoaded extends AddTrackState {
-  final TrackPreview preview;
-  const AddTrackPreviewLoaded({required this.preview});
+  final ResolvedTrackInput resolved;
+  const AddTrackPreviewLoaded({required this.resolved});
+
+  TrackPreview get preview => resolved.firstTrack;
 
   @override
-  List<Object?> get props => [preview];
+  List<Object?> get props => [resolved];
 }
 
 final class AddTrackLoading extends AddTrackState {
-  final TrackPreview preview;
-  const AddTrackLoading(this.preview);
+  final ResolvedTrackInput resolved;
+  const AddTrackLoading(this.resolved);
+
+  TrackPreview get preview => resolved.firstTrack;
 
   @override
-  List<Object?> get props => [preview];
+  List<Object?> get props => [resolved];
 }
 
 final class AddTrackSuccess extends AddTrackState {
   final Track track;
-  const AddTrackSuccess(this.track);
+  final AddTrackResult result;
+  const AddTrackSuccess(this.track, {required this.result});
 
   @override
-  List<Object?> get props => [track];
+  List<Object?> get props => [track, result.addedTracks, result.failures];
 }
 
 final class AddTrackError extends AddTrackState {

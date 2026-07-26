@@ -88,7 +88,7 @@ class _CreatePlaylistSheetState extends State<CreatePlaylistSheet> {
             ],
           ),
           const SizedBox(height: AppSpacing.xl),
-          Text('NAME', style: AppText.label),
+          Text(context.tr('playlist.name').toUpperCase(), style: AppText.label),
           const SizedBox(height: AppSpacing.s),
           TextField(
             controller: _nameCtrl,

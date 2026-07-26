@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:openmusic/core/di/di.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
-import 'package:openmusic/layers/data/datasources/remote/local_file_track_source.dart';
 import 'package:openmusic/layers/domain/entities/track_preview.dart';
-import 'package:openmusic/layers/domain/usecases/add_track_use_case.dart';
 import 'package:openmusic/layers/presentation/blocs/add_track/add_track_bloc.dart';
+import 'package:openmusic/layers/presentation/blocs/import_music/import_music_cubit.dart';
 import 'package:openmusic/layers/presentation/widgets/add_track_sheet.dart';
 import 'package:openmusic/layers/presentation/widgets/cached_image.dart';
 import 'package:openmusic/layers/presentation/widgets/snackbars/custom_snack_bar.dart';
@@ -22,7 +20,6 @@ class ImportMusicScreen extends StatefulWidget {
 
 class _ImportMusicScreenState extends State<ImportMusicScreen> {
   final _linkController = TextEditingController();
-  bool _isPickingFiles = false;
 
   @override
   void dispose() {
@@ -30,54 +27,30 @@ class _ImportMusicScreenState extends State<ImportMusicScreen> {
     super.dispose();
   }
 
-  Future<void> _openAddLocalFile() async {
-    if (_isPickingFiles) return;
+  void _openAddLocalFile() =>
+      context.read<ImportMusicCubit>().pickLocalTracks();
 
-    setState(() => _isPickingFiles = true);
-    try {
-      final previews = await LocalFileTrackSource.pickFiles();
-      if (!mounted) return;
-
-      if (previews.isEmpty) {
+  void _onImportState(BuildContext context, ImportMusicState state) {
+    switch (state) {
+      case LocalTracksPicked(:final previews):
+        final cubit = context.read<ImportMusicCubit>();
+        showModalBottomSheet<void>(
+          context: context,
+          useRootNavigator: true,
+          backgroundColor: Colors.transparent,
+          isScrollControlled: true,
+          builder: (_) => BlocProvider.value(
+            value: cubit,
+            child: _ImportFilesSheet(previews: previews),
+          ),
+        );
+      case LocalTracksSelectionEmpty():
         CustomSnackBar.info(context, context.tr('import.noFilesSelected'));
-        return;
-      }
-
-      await showModalBottomSheet<void>(
-        context: context,
-        useRootNavigator: true,
-        backgroundColor: Colors.transparent,
-        isScrollControlled: true,
-        builder: (_) => _ImportFilesSheet(
-          previews: previews,
-          onImport: _importLocalPreviews,
-        ),
-      );
-    } catch (_) {
-      if (!mounted) return;
-      CustomSnackBar.error(context, context.tr('import.filePickError'));
-    } finally {
-      if (mounted) setState(() => _isPickingFiles = false);
+      case LocalTracksPickFailure():
+        CustomSnackBar.error(context, context.tr('import.filePickError'));
+      default:
+        break;
     }
-  }
-
-  Future<_ImportResult> _importLocalPreviews(
-    List<TrackPreview> previews,
-  ) async {
-    final addTrack = getIt<AddTrackUseCase>();
-    var added = 0;
-    var failed = 0;
-
-    for (final preview in previews) {
-      try {
-        await addTrack.execute(preview.originalUrl);
-        added++;
-      } catch (_) {
-        failed++;
-      }
-    }
-
-    return _ImportResult(added: added, failed: failed);
   }
 
   Future<void> _pasteLink() async {
@@ -117,35 +90,38 @@ class _ImportMusicScreenState extends State<ImportMusicScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.bg,
-      appBar: AppBar(
-        title: Text(context.tr('import.title')),
+    return BlocConsumer<ImportMusicCubit, ImportMusicState>(
+      listener: _onImportState,
+      builder: (context, state) => Scaffold(
         backgroundColor: AppColors.bg,
-        elevation: 0,
-      ),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
-          children: [
-            _SectionHeader(
-              label: context.tr('import.filesTitle'),
-              actionLabel: context.tr('import.fileFormats'),
-            ),
-            const SizedBox(height: 10),
-            _FileImportPanel(
-              isLoading: _isPickingFiles,
-              onTap: _openAddLocalFile,
-            ),
-            const SizedBox(height: 28),
-            _SectionHeader(label: context.tr('import.linkTitle')),
-            const SizedBox(height: 10),
-            _LinkImportPanel(
-              controller: _linkController,
-              onPaste: _pasteLink,
-              onAdd: _openLinkPreview,
-            ),
-          ],
+        appBar: AppBar(
+          title: Text(context.tr('import.title')),
+          backgroundColor: AppColors.bg,
+          elevation: 0,
+        ),
+        body: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+            children: [
+              _SectionHeader(
+                label: context.tr('import.filesTitle'),
+                actionLabel: context.tr('import.fileFormats'),
+              ),
+              const SizedBox(height: 10),
+              _FileImportPanel(
+                isLoading: state is LocalTracksPicking,
+                onTap: _openAddLocalFile,
+              ),
+              const SizedBox(height: 28),
+              _SectionHeader(label: context.tr('import.linkTitle')),
+              const SizedBox(height: 10),
+              _LinkImportPanel(
+                controller: _linkController,
+                onPaste: _pasteLink,
+                onAdd: _openLinkPreview,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -463,10 +439,9 @@ class _SecondaryButton extends StatelessWidget {
 }
 
 class _ImportFilesSheet extends StatefulWidget {
-  const _ImportFilesSheet({required this.previews, required this.onImport});
+  const _ImportFilesSheet({required this.previews});
 
   final List<TrackPreview> previews;
-  final Future<_ImportResult> Function(List<TrackPreview> previews) onImport;
 
   @override
   State<_ImportFilesSheet> createState() => _ImportFilesSheetState();
@@ -474,7 +449,6 @@ class _ImportFilesSheet extends StatefulWidget {
 
 class _ImportFilesSheetState extends State<_ImportFilesSheet> {
   late final Set<String> _selectedIds;
-  bool _isImporting = false;
 
   @override
   void initState() {
@@ -488,43 +462,14 @@ class _ImportFilesSheetState extends State<_ImportFilesSheet> {
         .toList();
   }
 
-  Future<void> _importSelected() async {
+  void _importSelected() {
     final selected = _selectedPreviews;
-    if (selected.isEmpty || _isImporting) return;
-
-    setState(() => _isImporting = true);
-    final result = await widget.onImport(selected);
-
-    if (!mounted) return;
-
-    if (result.failed == 0) {
-      CustomSnackBar.success(
-        context,
-        context.tr(
-          'import.filesAdded',
-          namedArgs: {'count': result.added.toString()},
-        ),
-      );
-    } else if (result.added > 0) {
-      CustomSnackBar.warning(
-        context,
-        context.tr(
-          'import.filesPartiallyAdded',
-          namedArgs: {
-            'added': result.added.toString(),
-            'failed': result.failed.toString(),
-          },
-        ),
-      );
-    } else {
-      CustomSnackBar.error(context, context.tr('import.filesAddFailed'));
-    }
-
-    Navigator.pop(context);
+    if (selected.isEmpty) return;
+    context.read<ImportMusicCubit>().importLocalTracks(selected);
   }
 
   void _toggle(TrackPreview preview) {
-    if (_isImporting) return;
+    if (context.read<ImportMusicCubit>().state is LocalTracksImporting) return;
 
     setState(() {
       if (_selectedIds.contains(preview.id)) {
@@ -538,75 +483,110 @@ class _ImportFilesSheetState extends State<_ImportFilesSheet> {
   @override
   Widget build(BuildContext context) {
     final selectedCount = _selectedIds.length;
+    final isImporting = context.select(
+      (ImportMusicCubit cubit) => cubit.state is LocalTracksImporting,
+    );
 
-    return Container(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.82,
-      ),
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        border: Border(top: BorderSide(color: AppColors.border)),
-      ),
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).padding.bottom + 16,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 14),
-          Container(
-            width: 36,
-            height: 4,
-            decoration: BoxDecoration(
-              color: AppColors.muted2,
-              borderRadius: BorderRadius.circular(2),
+    return BlocListener<ImportMusicCubit, ImportMusicState>(
+      listener: (context, state) {
+        if (state case LocalTracksImported(:final result)) {
+          if (result.failed == 0) {
+            CustomSnackBar.success(
+              context,
+              context.tr(
+                'import.filesAdded',
+                namedArgs: {'count': result.added.toString()},
+              ),
+            );
+          } else if (result.added > 0) {
+            CustomSnackBar.warning(
+              context,
+              context.tr(
+                'import.filesPartiallyAdded',
+                namedArgs: {
+                  'added': result.added.toString(),
+                  'failed': result.failed.toString(),
+                },
+              ),
+            );
+          } else {
+            CustomSnackBar.error(context, context.tr('import.filesAddFailed'));
+          }
+          Navigator.pop(context);
+        }
+      },
+      child: Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.82,
+        ),
+        decoration: const BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          border: Border(top: BorderSide(color: AppColors.border)),
+        ),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).padding.bottom + 16,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 14),
+            Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.muted2,
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 10),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    context.tr('import.selectedFiles'),
-                    style: AppText.display3,
-                    overflow: TextOverflow.ellipsis,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      context.tr('import.selectedFiles'),
+                      style: AppText.display3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
+                  Text(
+                    '$selectedCount/${widget.previews.length}',
+                    style: AppText.bodyM,
+                  ),
+                ],
+              ),
+            ),
+            Flexible(
+              child: ListView.separated(
+                shrinkWrap: true,
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 12),
+                itemCount: widget.previews.length,
+                separatorBuilder: (_, _) => const Divider(
+                  height: 1,
+                  color: AppColors.border,
+                  indent: 78,
                 ),
-                Text(
-                  '$selectedCount/${widget.previews.length}',
-                  style: AppText.bodyM,
-                ),
-              ],
+                itemBuilder: (context, index) {
+                  final preview = widget.previews[index];
+                  return _ImportFileRow(
+                    preview: preview,
+                    selected: _selectedIds.contains(preview.id),
+                    onTap: () => _toggle(preview),
+                  );
+                },
+              ),
             ),
-          ),
-          Flexible(
-            child: ListView.separated(
-              shrinkWrap: true,
-              padding: const EdgeInsets.fromLTRB(8, 0, 8, 12),
-              itemCount: widget.previews.length,
-              separatorBuilder: (_, _) =>
-                  const Divider(height: 1, color: AppColors.border, indent: 78),
-              itemBuilder: (context, index) {
-                final preview = widget.previews[index];
-                return _ImportFileRow(
-                  preview: preview,
-                  selected: _selectedIds.contains(preview.id),
-                  onTap: () => _toggle(preview),
-                );
-              },
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              child: _ImportSelectedButton(
+                count: selectedCount,
+                isLoading: isImporting,
+                onTap: selectedCount == 0 ? null : _importSelected,
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-            child: _ImportSelectedButton(
-              count: selectedCount,
-              isLoading: _isImporting,
-              onTap: selectedCount == 0 ? null : _importSelected,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -758,11 +738,4 @@ class _ImportSelectedButton extends StatelessWidget {
       ),
     );
   }
-}
-
-class _ImportResult {
-  const _ImportResult({required this.added, required this.failed});
-
-  final int added;
-  final int failed;
 }

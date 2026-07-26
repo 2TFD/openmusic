@@ -1,6 +1,7 @@
 import 'package:openmusic/layers/data/datasources/local/play_record/play_record_local_data_source.dart';
 import 'package:openmusic/layers/data/mappers/play_record_mapper.dart';
 import 'package:openmusic/layers/domain/entities/play_record.dart';
+import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/repositories/play_record_repository.dart';
 
 class PlayRecordRepositoryImpl implements PlayRecordRepository {
@@ -9,21 +10,26 @@ class PlayRecordRepositoryImpl implements PlayRecordRepository {
   PlayRecordRepositoryImpl({required this.localDataSource});
 
   @override
+  Future<PlayRecordSummary> aggregate({required DateTime from}) async {
+    final summary = await localDataSource.aggregate(from: from);
+    return PlayRecordSummary(
+      totalTracks: summary.totalTracks,
+      totalTime: Duration(milliseconds: summary.totalMilliseconds),
+      uniqueArtists: summary.uniqueArtists,
+      bySource: {
+        for (final entry in summary.bySource.entries)
+          SourceType.values.firstWhere(
+            (value) => value.name == entry.key,
+            orElse: () => SourceType.unknown,
+          ): entry.value,
+      },
+    );
+  }
+
+  @override
   Future<void> save(PlayRecord record) async {
     final model = PlayRecordMapper.toDto(record);
     await localDataSource.saveRecord(model);
-  }
-
-  @override
-  Future<List<PlayRecord>> getAll({DateTime? from}) async {
-    final models = await localDataSource.getRecords(from: from);
-    return models.map(PlayRecordMapper.toEntity).toList();
-  }
-
-  @override
-  Future<PlayRecord?> getLatestByTrackId(String trackId) async {
-    final dto = await localDataSource.getLatestByTrackId(trackId);
-    return dto != null ? PlayRecordMapper.toEntity(dto) : null;
   }
 
   @override
@@ -37,8 +43,8 @@ class PlayRecordRepositoryImpl implements PlayRecordRepository {
 
   @override
   Stream<List<PlayRecord>> watchPlayRecord() {
-    return localDataSource
-        .watchPlayRecord()
-        .map((dtos) => dtos.map(PlayRecordMapper.toEntity).toList());
+    return localDataSource.watchPlayRecord().map(
+      (dtos) => dtos.map(PlayRecordMapper.toEntity).toList(),
+    );
   }
 }

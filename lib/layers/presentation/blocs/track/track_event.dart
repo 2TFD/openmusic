@@ -35,4 +35,3 @@ class _TrackStreamErrored extends TrackEvent {
   @override
   List<Object> get props => [error];
 }
-

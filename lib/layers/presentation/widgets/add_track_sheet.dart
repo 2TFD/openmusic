@@ -26,7 +26,7 @@ class AddTrackSheet extends StatelessWidget {
             Navigator.pop(context);
             context.read<AddTrackBloc>().add(const ResetAddTrack());
           } else if (state is AddTrackError) {
-            CustomSnackBar.error(context, 'Error: ${state.message.tr()}');
+            CustomSnackBar.error(context, state.message.tr());
           }
         },
         builder: (context, state) {
@@ -68,7 +68,7 @@ class AddTrackSheet extends StatelessWidget {
         preview: state.preview,
         adding: false,
         onAdd: () {
-          context.read<AddTrackBloc>().add(AddTrackToLibrary(state.preview));
+          context.read<AddTrackBloc>().add(AddTrackToLibrary(state.resolved));
         },
         onCancel: () => Navigator.pop(context),
       );
@@ -110,6 +110,7 @@ extension on Track {
       id: id,
       title: title,
       artist: artists.map((a) => a.name).join(', '),
+      artistId: artists.length == 1 ? artists.first.id : null,
       album: album,
       artworkUrl: imageUrl,
       duration: duration,
@@ -381,7 +382,11 @@ class _SourceBadge extends StatelessWidget {
           ),
           const SizedBox(width: 5),
           Text(
-            source.name,
+            context.tr(switch (source) {
+              SourceType.localFile => 'library.filterLocal',
+              SourceType.soundcloud => 'library.filterSoundcloud',
+              SourceType.unknown => 'library.filterUnknown',
+            }),
             style: GoogleFonts.figtree(
               fontSize: 10,
               fontWeight: FontWeight.w600,
@@ -459,7 +464,7 @@ class _AddButton extends StatelessWidget {
                   ),
                 )
               : Text(
-                  '+ Добавить в библиотеку',
+                  context.tr('track.addToLibrary'),
                   style: GoogleFonts.outfit(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
@@ -660,7 +665,7 @@ class _SuccessToastState extends State<_SuccessToast>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '✓ Добавлено в библиотеку',
+                        context.tr('track.addedToLibrary'),
                         style: GoogleFonts.figtree(
                           fontSize: 10,
                           color: const Color(0xFF4ADE80),

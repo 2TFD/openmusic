@@ -33,4 +33,3 @@ class _PlaylistStreamErrored extends PlaylistEvent {
   @override
   List<Object> get props => [error];
 }
-

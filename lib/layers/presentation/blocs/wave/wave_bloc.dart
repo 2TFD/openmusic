@@ -19,25 +19,30 @@ class WaveBloc extends Bloc<WaveEvent, WaveState> {
     on<WaveInitialized>(_onInitialized);
     on<WaveSeedSelected>(_onSeedSelected);
     on<WaveSeedDeselected>(_onSeedDeselected);
-    on<WaveMoodSelected>(_onMoodSelected);
     on<WaveRefreshRequested>(_onRefreshRequested);
     on<WaveTrackSelected>(_onTrackSelected);
     on<WaveTrackDeselected>(_onTrackDeselected);
     on<WaveResetRequested>(_onResetRequested);
   }
 
-  Future<void> _onInitialized(WaveInitialized e, Emitter<WaveState> emit) async {
+  Future<void> _onInitialized(
+    WaveInitialized e,
+    Emitter<WaveState> emit,
+  ) async {
     await _generateAndEmit(e.config, emit);
   }
 
-  Future<void> _onResetRequested(WaveResetRequested e, Emitter<WaveState> emit) async {
-    await _generateAndEmit(
-      const WaveConfig(tracks: [], seeds: [], mood: ''),
-      emit,
-    );
+  Future<void> _onResetRequested(
+    WaveResetRequested e,
+    Emitter<WaveState> emit,
+  ) async {
+    await _generateAndEmit(const WaveConfig(tracks: [], seeds: []), emit);
   }
 
-  Future<void> _onTrackSelected(WaveTrackSelected e, Emitter<WaveState> emit) async {
+  Future<void> _onTrackSelected(
+    WaveTrackSelected e,
+    Emitter<WaveState> emit,
+  ) async {
     await _generateAndEmit(
       _currentConfig.copyWith(tracks: [..._currentConfig.tracks, e.track]),
       emit,
@@ -56,13 +61,16 @@ class WaveBloc extends Bloc<WaveEvent, WaveState> {
     );
   }
 
-  Future<void> _onSeedSelected(WaveSeedSelected e, Emitter<WaveState> emit) async {
+  Future<void> _onSeedSelected(
+    WaveSeedSelected e,
+    Emitter<WaveState> emit,
+  ) async {
     final current = _currentConfig;
     await _generateAndEmit(
       WaveConfig(
         seeds: [...current.seeds, e.seed],
-        mood: current.mood,
         tracks: current.tracks,
+        queueSize: current.queueSize,
       ),
       emit,
     );
@@ -80,14 +88,10 @@ class WaveBloc extends Bloc<WaveEvent, WaveState> {
     );
   }
 
-  Future<void> _onMoodSelected(
-    WaveMoodSelected e,
+  Future<void> _onRefreshRequested(
+    WaveRefreshRequested e,
     Emitter<WaveState> emit,
   ) async {
-    await _generateAndEmit(_currentConfig.copyWith(mood: e.mood), emit);
-  }
-
-  Future<void> _onRefreshRequested(WaveRefreshRequested e, Emitter<WaveState> emit) async {
     await _generateAndEmit(_currentConfig, emit);
   }
 
@@ -96,7 +100,7 @@ class WaveBloc extends Bloc<WaveEvent, WaveState> {
     WaveGenerating() => (state as WaveGenerating).config,
     WaveEmpty() => (state as WaveEmpty).config,
     WaveError() => (state as WaveError).config,
-    _ => const WaveConfig(seeds: [], mood: '', tracks: []),
+    _ => const WaveConfig(seeds: [], tracks: []),
   };
 
   Future<void> _generateAndEmit(

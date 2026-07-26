@@ -33,7 +33,16 @@
         "close": "Close",
         "loading": "Loading...",
         "error": "Error",
-        "empty": "Empty"
+        "empty": "Empty",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "save": "Save",
+        "edit": "Edit",
+        "done": "Done",
+        "rename": "Rename",
+        "clear": "Clear",
+        "unknown": "Unknown",
+        "trackCount": "{count} tracks"
     },
     "import": {
         "title": "Import Music",
@@ -70,6 +79,15 @@
             "button": "Create"
         },
         "notFound": "Playlist not found",
+        "delete": "Delete playlist",
+        "deleteConfirm": "This cannot be undone.",
+        "empty": "No tracks yet",
+        "holdToDrag": "Hold to drag",
+        "playAll": "Play all",
+        "pause": "Pause",
+        "removeTrack": "Remove from playlist",
+        "name": "Name",
+        "nameHint": "Playlist name",
         "files": {
             "duration": "Duration",
             "album": "Album",
@@ -80,7 +98,13 @@
         }
     },
     "search": {
-        "artists": "Search artists..."
+        "artists": "Search artists...",
+        "title": "Search",
+        "hint": "Track name or artist...",
+        "local": "Local",
+        "online": "Online",
+        "start": "Start searching",
+        "noTracks": "No tracks found"
     },
     "track": {
         "data": "data",
@@ -92,7 +116,9 @@
         "failedToLoad": "Failed to load",
         "unavailable": "Link is unavailable or track is blocked in your region",
         "retry": "Try again",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "addToLibrary": "+ Add to library",
+        "addedToLibrary": "✓ Added to library"
     },
     "snackbar": {
         "trackAdded": "Added",
@@ -113,14 +139,27 @@
         "queue": "Queue",
         "shuffle": "Shuffle",
         "repeat": "Repeat",
-        "repeatOne": "Repeat one"
+        "repeatOne": "Repeat one",
+        "nothingPlaying": "Nothing playing",
+        "upNext": "Up next"
     },
     "wave": {
         "title": "my\nwave",
         "seedsLabel": "Based on",
         "generating": "Generating wave...",
         "empty": "Add seeds to start",
-        "seedsActive": "{count} active"
+        "seedsActive": "{count} active",
+        "ownMood": "own mood",
+        "dialogTitle": "Wave",
+        "mood": "Mood",
+        "artists": "Artists",
+        "tracks": "Tracks",
+        "searchArtists": "Search artists…",
+        "searchTracks": "Search tracks…",
+        "noArtists": "No artists in library",
+        "noTracksReady": "No tracks ready",
+        "noResults": "No results",
+        "reset": "Reset wave"
     },
     "moods": {
         "melancholy": "melancholy",
@@ -135,6 +174,7 @@
         "filterYoutube": "YouTube",
         "filterLocal": "Local",
         "filterSoundcloud": "SoundCloud",
+        "filterUnknown": "Unknown",
         "empty": "No tracks yet",
         "emptySub": "Add your first track with +"
     },
@@ -148,7 +188,40 @@
         "periodMonth": "Month",
         "periodAll": "All time"
     },
+    "settings": {
+        "title": "Settings",
+        "listening": "Listening",
+        "library": "Library",
+        "app": "App",
+        "listeningTime": "Listening time",
+        "tracks": "Tracks",
+        "artists": "Artists",
+        "sources": "Sources",
+        "todayShort": "Today",
+        "weekShort": "7D",
+        "twoWeeksShort": "2W",
+        "monthShort": "1M",
+        "allShort": "All",
+        "durationHoursMinutes": "{hours}h {minutes}m",
+        "durationMinutes": "{minutes}m",
+        "durationSeconds": "{seconds}s",
+        "waveReady": "Wave ready",
+        "embeddingsDescription": "tracks with ML embeddings for similar music discovery",
+        "processingQueue": "Processing queue",
+        "embeddingsPending": "ML embeddings pending",
+        "clearHistory": "Clear history",
+        "clearHistoryConfirm": "All play history will be deleted permanently.",
+        "version": "Version",
+        "clearPlayHistory": "Clear play history"
+    },
+    "allPlaylists": {
+        "title": "All playlists",
+        "empty": "No playlists yet",
+        "emptySub": "Tap + to create your first playlist",
+        "create": "Create playlist"
+    },
     "errors": {
+        "app": "Application error: {message}",
         "youtube": "YouTube unavailable",
         "fileNotFound": "File not found",
         "noInternet": "No internet connection",

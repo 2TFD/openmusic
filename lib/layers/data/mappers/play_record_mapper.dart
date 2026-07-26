@@ -1,5 +1,5 @@
 import '../../domain/entities/play_record.dart';
-import '../DTO/play_record_dto.dart';
+import '../models/play_record_dto.dart';
 
 class PlayRecordMapper {
   static PlayRecord toEntity(PlayRecordDto dto) {

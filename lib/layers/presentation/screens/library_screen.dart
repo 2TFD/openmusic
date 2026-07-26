@@ -21,10 +21,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
   SourceType? _filter;
 
   static const _filters = <(String, SourceType?)>[
-    ('ALL', null),
-    ('LOCAL', SourceType.localFile),
-    ('SOUNDCLOUD', SourceType.soundcloud),
-    ('UNKNOWN', SourceType.unknown),
+    ('library.filterAll', null),
+    ('library.filterLocal', SourceType.localFile),
+    ('library.filterSoundcloud', SourceType.soundcloud),
+    ('library.filterUnknown', SourceType.unknown),
   ];
 
   @override
@@ -107,7 +107,7 @@ class _FilterRow extends StatelessWidget {
       ),
       child: Row(
         children: filters.map((entry) {
-          final (label, type) = entry;
+          final (localeKey, type) = entry;
           final isSelected = selected == type;
           return GestureDetector(
             onTap: () => onChanged(type),
@@ -123,7 +123,7 @@ class _FilterRow extends StatelessWidget {
                 ),
               ),
               child: Text(
-                label,
+                context.tr(localeKey).toUpperCase(),
                 style: GoogleFonts.figtree(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,

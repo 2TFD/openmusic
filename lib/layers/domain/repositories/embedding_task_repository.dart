@@ -8,11 +8,10 @@ abstract class EmbeddingTaskRepository {
   Future<bool> saveResult({
     required String trackId,
     required String ownerId,
+    required int audioRevision,
     required List<double> vector,
   });
   Future<bool> markFailed({required String trackId, required String ownerId});
-  Future<void> createTask(EmbeddingTask task);
-  Stream<List<EmbeddingTask>> watchQueued();
 
   /// Стрим количества задач в состоянии queued или processing.
   /// Используется UI для отображения счётчика без прямого доступа к data-слою.

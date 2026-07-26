@@ -56,6 +56,6 @@ class _PlayerIndexUpdated extends PlayerEvent {
 }
 
 class _PlayerProcessingUpdated extends PlayerEvent {
-  final ProcessingState state;
+  final PlaybackProcessingState state;
   _PlayerProcessingUpdated(this.state);
 }

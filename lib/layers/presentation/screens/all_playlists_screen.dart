@@ -19,7 +19,7 @@ class AllPlaylistsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.bg,
         title: Text(
-          'All Playlists',
+          context.tr('allPlaylists.title'),
           style: GoogleFonts.outfit(
             fontSize: 24,
             fontWeight: FontWeight.w700,
@@ -81,7 +81,7 @@ class AllPlaylistsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No playlists yet',
+                    context.tr('allPlaylists.empty'),
                     style: GoogleFonts.outfit(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -90,7 +90,7 @@ class AllPlaylistsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Tap + to create your first playlist',
+                    context.tr('allPlaylists.emptySub'),
                     style: GoogleFonts.figtree(
                       fontSize: 13,
                       color: AppColors.muted,
@@ -108,7 +108,7 @@ class AllPlaylistsScreen extends StatelessWidget {
                       );
                     },
                     icon: const Icon(Icons.add, size: 20),
-                    label: const Text('Create Playlist'),
+                    label: Text(context.tr('allPlaylists.create')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.surface2,
                       foregroundColor: AppColors.text,
@@ -208,7 +208,10 @@ class _PlaylistGridCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${playlist.trackIds.length} tracks',
+                    context.tr(
+                      'common.trackCount',
+                      namedArgs: {'count': '${playlist.trackIds.length}'},
+                    ),
                     style: GoogleFonts.figtree(
                       fontSize: 11,
                       color: AppColors.muted2,

@@ -8,6 +8,6 @@ class SearchTracksUseCase {
   SearchTracksUseCase(this.repository);
 
   Future<List<Track>> call(String query) async {
-    return await repository.searchTracks(query);
+    return await repository.searchTracks(query, limit: 100, offset: 0);
   }
 }

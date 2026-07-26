@@ -1,5 +1,4 @@
-import 'package:openmusic/layers/data/DTO/download_task_dto.dart';
-import 'package:openmusic/layers/domain/entities/download_track_task.dart';
+import 'package:openmusic/layers/data/models/download_task_dto.dart';
 
 abstract class DownloadTaskLocalDataSource {
   Future<List<DownloadTaskDto>> getAll();
@@ -18,14 +17,9 @@ abstract class DownloadTaskLocalDataSource {
     required DateTime leaseUntil,
   });
   Future<bool> releaseLease({required String trackId, required String ownerId});
-  Future<bool> updateStatusIfOwned({
+  Future<bool> markFailedIfOwned({
     required String trackId,
     required String ownerId,
-    required DownloadStatus status,
   });
   Future<DownloadTaskDto?> getByTrackId(String trackId);
-  Future<void> save(DownloadTaskDto task);
-  Future<void> update(DownloadTaskDto task);
-  Future<void> updateStatus(String trackId, DownloadStatus status);
-  Future<void> deleteByTrackId(String trackId);
 }

@@ -6,7 +6,7 @@ import 'package:openmusic/layers/domain/repositories/play_record_repository.dart
 import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
 import 'package:openmusic/layers/domain/repositories/search_source.dart';
 import 'package:openmusic/layers/domain/repositories/track_repository.dart';
-import 'package:openmusic/core/services/audio_player/audio_player_service.dart';
+import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
 import 'package:openmusic/layers/domain/usecases/add_track_to_playlist_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/build_playback_queue_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/clear_history_use_case.dart';
@@ -47,7 +47,7 @@ class BlocScope extends StatelessWidget {
             getTracksUseCase: GetTracksUseCase(getIt<TrackRepository>()),
             addTrackUseCase: getIt<AddTrackUseCase>(),
             removeTrackUseCase: RemoveTrackUseCase(
-              trackRepository: getIt<TrackRepository>(),
+              trackRemovalRepository: getIt(),
             ),
             updateTrackUseCase: UpdateTrackUseCase(
               trackRepository: getIt<TrackRepository>(),
@@ -83,8 +83,7 @@ class BlocScope extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => PlayerBloc(
-            service: getIt<AudioPlayerService>(),
-            appDir: getIt<String>(),
+            service: getIt<AudioPlayerPort>(),
             recordPlay: SaveRecordPlayUseCase(
               repo: getIt<PlayRecordRepository>(),
             ),

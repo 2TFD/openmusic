@@ -1,7 +1,9 @@
+import 'dart:io';
+
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/DTO/download_task_dto.dart';
-import 'package:openmusic/layers/data/DTO/embedding_task_dto.dart';
+import 'package:openmusic/layers/data/models/download_task_dto.dart';
+import 'package:openmusic/layers/data/models/embedding_task_dto.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
 import 'package:openmusic/layers/data/datasources/local/download_task/drift/download_task_drift_local_source.dart';
 import 'package:openmusic/layers/data/datasources/local/embedding_task/drift/embedding_task_drift_local_source.dart';
@@ -21,13 +23,10 @@ void main() {
 
   test('only one concurrent caller can claim a download task', () async {
     final source = DownloadTaskDriftLocalSource(database);
-    await source.save(
-      DownloadTaskDto(
-        trackId: 'download-1',
-        originalUrl: 'https://example.com/download-1',
-        status: DownloadStatus.queued,
-        createdAt: DateTime.now(),
-      ),
+    await source.enqueue(
+      trackId: 'download-1',
+      originalUrl: 'https://example.com/download-1',
+      createdAt: DateTime.now(),
     );
 
     final leaseUntil = DateTime.now().add(const Duration(minutes: 1));
@@ -45,6 +44,37 @@ void main() {
       (await source.getByTrackId('download-1'))?.status,
       DownloadStatus.downloading,
     );
+  });
+
+  test('claim stays atomic across independent database connections', () async {
+    final tempDir = await Directory.systemTemp.createTemp(
+      'openmusic_atomic_claim_',
+    );
+    addTearDown(() => tempDir.delete(recursive: true));
+    final file = File('${tempDir.path}/queue.sqlite');
+    final firstDatabase = AppDatabase(NativeDatabase(file));
+    final secondDatabase = AppDatabase(NativeDatabase(file));
+    addTearDown(firstDatabase.close);
+    addTearDown(secondDatabase.close);
+    await firstDatabase.customStatement('PRAGMA journal_mode = WAL');
+    await firstDatabase.customStatement('PRAGMA busy_timeout = 5000');
+    await secondDatabase.customStatement('PRAGMA busy_timeout = 5000');
+
+    final first = DownloadTaskDriftLocalSource(firstDatabase);
+    final second = DownloadTaskDriftLocalSource(secondDatabase);
+    await first.enqueue(
+      trackId: 'shared-task',
+      originalUrl: 'https://example.com/shared',
+      createdAt: DateTime.now(),
+    );
+    final leaseUntil = DateTime.now().add(const Duration(minutes: 1));
+
+    final claims = await Future.wait([
+      first.claimNext(ownerId: 'owner-a', leaseUntil: leaseUntil),
+      second.claimNext(ownerId: 'owner-b', leaseUntil: leaseUntil),
+    ]);
+
+    expect(claims.whereType<DownloadTaskDto>(), hasLength(1));
   });
 
   test('only one concurrent enqueue creates a download task', () async {
@@ -110,11 +140,7 @@ void main() {
       ownerId: 'owner-a',
       leaseUntil: DateTime.now().add(const Duration(minutes: 1)),
     );
-    await source.updateStatusIfOwned(
-      trackId: 'failed-task',
-      ownerId: 'owner-a',
-      status: DownloadStatus.failed,
-    );
+    await source.markFailedIfOwned(trackId: 'failed-task', ownerId: 'owner-a');
 
     final enqueued = await source.enqueue(
       trackId: 'failed-task',
@@ -134,15 +160,17 @@ void main() {
 
   test('only one concurrent caller can claim an embedding task', () async {
     final source = EmbeddingTaskDriftLocalSource(database);
-    await source.save(
-      EmbeddingTaskDto(
-        id: 'embedding-1',
-        trackId: 'track-1',
-        status: EmbeddingStatus.queued,
-        filePath: '/music/track-1.mp3',
-        createdAt: DateTime.now(),
-      ),
-    );
+    await database
+        .into(database.embeddingTaskTable)
+        .insert(
+          EmbeddingTaskTableCompanion.insert(
+            id: 'embedding-1',
+            trackId: 'track-1',
+            status: EmbeddingStatus.queued.name,
+            filePath: '/music/track-1.mp3',
+            createdAt: DateTime.now(),
+          ),
+        );
 
     final leaseUntil = DateTime.now().add(const Duration(minutes: 1));
     final claims = await Future.wait([
@@ -156,8 +184,10 @@ void main() {
       EmbeddingStatus.processing,
     );
     expect(
-      (await source.getByTrackId('track-1')).status,
-      EmbeddingStatus.processing,
+      (await (database.select(
+        database.embeddingTaskTable,
+      )..where((task) => task.trackId.equals('track-1'))).getSingle()).status,
+      EmbeddingStatus.processing.name,
     );
   });
 
@@ -165,13 +195,10 @@ void main() {
     'a live download lease cannot be stolen or released by another owner',
     () async {
       final source = DownloadTaskDriftLocalSource(database);
-      await source.save(
-        DownloadTaskDto(
-          trackId: 'download-live',
-          originalUrl: 'https://example.com/download-live',
-          status: DownloadStatus.queued,
-          createdAt: DateTime.now(),
-        ),
+      await source.enqueue(
+        trackId: 'download-live',
+        originalUrl: 'https://example.com/download-live',
+        createdAt: DateTime.now(),
       );
       final leaseUntil = DateTime.now().add(const Duration(minutes: 1));
 
@@ -193,13 +220,10 @@ void main() {
 
   test('an expired download lease can be reclaimed by a new owner', () async {
     final source = DownloadTaskDriftLocalSource(database);
-    await source.save(
-      DownloadTaskDto(
-        trackId: 'download-expired',
-        originalUrl: 'https://example.com/download-expired',
-        status: DownloadStatus.queued,
-        createdAt: DateTime.now(),
-      ),
+    await source.enqueue(
+      trackId: 'download-expired',
+      originalUrl: 'https://example.com/download-expired',
+      createdAt: DateTime.now(),
     );
 
     await source.claimNext(
@@ -224,15 +248,17 @@ void main() {
 
   test('an expired embedding lease can be reclaimed by a new owner', () async {
     final source = EmbeddingTaskDriftLocalSource(database);
-    await source.save(
-      EmbeddingTaskDto(
-        id: 'embedding-expired',
-        trackId: 'track-expired',
-        status: EmbeddingStatus.queued,
-        filePath: '/music/track-expired.mp3',
-        createdAt: DateTime.now(),
-      ),
-    );
+    await database
+        .into(database.embeddingTaskTable)
+        .insert(
+          EmbeddingTaskTableCompanion.insert(
+            id: 'embedding-expired',
+            trackId: 'track-expired',
+            status: EmbeddingStatus.queued.name,
+            filePath: '/music/track-expired.mp3',
+            createdAt: DateTime.now(),
+          ),
+        );
 
     await source.claimNext(
       ownerId: 'owner-a',
@@ -245,10 +271,9 @@ void main() {
 
     expect(reclaimed, isNotNull);
     expect(
-      await source.updateStatusIfOwned(
+      await source.markFailedIfOwned(
         trackId: 'track-expired',
         ownerId: 'owner-a',
-        status: EmbeddingStatus.done,
       ),
       isFalse,
     );

@@ -1,88 +1,59 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:openmusic/core/errors/failures/failure.dart';
+import 'package:openmusic/core/network/retry_policy.dart';
 import 'package:openmusic/core/utils/app_logger.dart';
-import 'package:openmusic/layers/domain/entities/playlist.dart';
 import 'package:openmusic/layers/domain/entities/operation_cancellation.dart';
+import 'package:openmusic/layers/domain/entities/resolved_track_input.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/entities/track_preview.dart';
 import 'package:openmusic/layers/domain/repositories/track_source.dart';
 import 'package:path_provider/path_provider.dart';
 
 class SoundcloudTrackSource implements TrackSource {
-  final _dio = Dio(
-    BaseOptions(
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 30),
-      sendTimeout: const Duration(seconds: 10),
-    ),
-  );
+  SoundcloudTrackSource({Dio? dio, Dio? redirectDio, RetryPolicy? retryPolicy})
+    : _dio =
+          dio ??
+          Dio(
+            BaseOptions(
+              connectTimeout: const Duration(seconds: 10),
+              receiveTimeout: const Duration(seconds: 30),
+              sendTimeout: const Duration(seconds: 10),
+            ),
+          ),
+      _redirectDio =
+          redirectDio ??
+          Dio(
+            BaseOptions(
+              followRedirects: false,
+              validateStatus: (status) => status != null && status < 400,
+              connectTimeout: const Duration(seconds: 10),
+              receiveTimeout: const Duration(seconds: 10),
+            ),
+          ),
+      _retryPolicy = retryPolicy ?? RetryPolicy();
 
-  final _redirectDio = Dio(
-    BaseOptions(
-      followRedirects: false,
-      validateStatus: (status) => status != null && status < 400,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-    ),
-  );
+  final Dio _dio;
+  final Dio _redirectDio;
+  final RetryPolicy _retryPolicy;
+
+  @override
+  SourceType get sourceType => SourceType.soundcloud;
+
+  Future<Response<dynamic>> _get(
+    String url, {
+    Options? options,
+    CancelToken? cancelToken,
+  }) {
+    return _retryPolicy.execute(
+      () => _dio.get(url, options: options, cancelToken: cancelToken),
+    );
+  }
 
   // Publicly visible in SoundCloud's JS bundles — not a secret.
   // Cached after first successful parse from soundcloud.com.
   static const _fallbackClientId = 'mQqpsaUSNZxyik7mV9y4D6dunaNX3mrQ';
   static String? _cachedClientId;
-
-  @override
-  Future<Playlist> createPlaylist(
-    String playlistUrl,
-    List<Track> tracks,
-  ) async {
-    try {
-      if (await _isPlaylist(playlistUrl)) {
-        final clientId = await getClientId();
-        final expandedUrl = await resolveShortSoundCloudUrl(playlistUrl);
-        final resolvePlaylistDataUrl =
-            'https://api-v2.soundcloud.com/resolve?url=$expandedUrl&client_id=$clientId';
-        final res = await _dio.get(resolvePlaylistDataUrl);
-        if (res.statusCode != 200) {
-          throw Exception('Resolve failed');
-        }
-        final jsonPlaylistData = res.data;
-        final playlist = Playlist(
-          id: jsonPlaylistData['id'].toString(),
-          name: jsonPlaylistData['title'] ?? 'New Playlist',
-          trackIds: tracks.map((t) => t.id).toList(),
-          createdAt: DateTime.now(),
-          imageUrl:
-              (jsonPlaylistData["artwork_url"] ??
-                      jsonPlaylistData["calculated_artwork_url"])
-                  ?.replaceAll('large', 't500x500'),
-          description: jsonPlaylistData["description"],
-        );
-        return playlist;
-      } else if (await _isLikes(playlistUrl)) {
-        final clientId = await getClientId();
-        final userJson = await _resolveUserJson(playlistUrl, clientId);
-        final playlist = Playlist(
-          id: userJson['id'].toString(),
-          name:
-              'soundcloud - ${userJson['permalink'] ?? userJson['username'] ?? ''}',
-          trackIds: tracks.map((t) => t.id).toList(),
-          createdAt: DateTime.now(),
-          imageUrl: userJson['avatar_url']?.replaceAll('large', 't500x500'),
-          description: userJson['description'],
-        );
-        return playlist;
-      } else {
-        throw Exception('Unsupported playlist type');
-      }
-    } catch (e, st) {
-      await AppLogger.log(
-        '[SoundCloudTrackSource.createPlaylist] ERROR: URL: $playlistUrl, Error: $e, StackTrace: \n$st',
-      );
-      rethrow;
-    }
-  }
 
   @override
   bool canHandle(String input) {
@@ -110,11 +81,11 @@ class SoundcloudTrackSource implements TrackSource {
     String trackId,
     String clientId,
   ) async {
-    final response = await _dio.get(
+    final response = await _get(
       "https://api-v2.soundcloud.com/tracks/$trackId?client_id=$clientId",
     );
     if (response.statusCode != 200) {
-      throw Exception('Track data fetch failed');
+      throw const RemoteServiceFailure('SoundCloud track data');
     }
     final trackData = response.data;
     _validateProgressiveStream(trackData);
@@ -128,11 +99,11 @@ class SoundcloudTrackSource implements TrackSource {
       orElse: () => null,
     );
     if (progressive == null) {
-      throw Exception('No progressive stream found (only HLS available)');
+      throw const UnsupportedMediaFailure('SoundCloud HLS-only track');
     }
   }
 
-  Future<List<TrackPreview>> _parseTrackPreviewFromPlaylist(
+  Future<ResolvedTrackInput> _parseTrackPreviewFromPlaylist(
     String playlistUrl,
   ) async {
     try {
@@ -141,9 +112,9 @@ class SoundcloudTrackSource implements TrackSource {
       final expandedUrl = await resolveShortSoundCloudUrl(playlistUrl);
       final resolvePlaylistDataUrl =
           'https://api-v2.soundcloud.com/resolve?url=$expandedUrl&client_id=$clientId';
-      final res = await _dio.get(resolvePlaylistDataUrl);
+      final res = await _get(resolvePlaylistDataUrl);
       if (res.statusCode != 200) {
-        throw Exception('Resolve failed');
+        throw const RemoteServiceFailure('SoundCloud resolve');
       }
       final jsonPlaylistData = res.data;
       final listTrackData = jsonPlaylistData['tracks'] as List;
@@ -179,6 +150,7 @@ class SoundcloudTrackSource implements TrackSource {
               album: trackData["album"],
               duration: Duration(milliseconds: trackData["duration"]),
               artist: trackData["user"]["username"],
+              artistId: 'soundcloud:artist:${trackData["user"]["id"]}',
             ),
           );
         } catch (e, st) {
@@ -190,9 +162,22 @@ class SoundcloudTrackSource implements TrackSource {
       }
 
       if (previews.isEmpty) {
-        throw Exception('No valid tracks found in playlist');
+        throw const EmptyResultFailure('resolve SoundCloud playlist');
       }
-      return previews;
+      return ResolvedTrackInput(
+        input: playlistUrl,
+        sourceType: SourceType.soundcloud,
+        tracks: previews,
+        collection: ResolvedTrackCollection(
+          id: jsonPlaylistData['id'].toString(),
+          name: jsonPlaylistData['title'] as String? ?? 'New Playlist',
+          description: jsonPlaylistData['description'] as String?,
+          imageUrl:
+              (jsonPlaylistData['artwork_url'] as String? ??
+                      jsonPlaylistData['calculated_artwork_url'] as String?)
+                  ?.replaceAll('large', 't500x500'),
+        ),
+      );
     } catch (e, st) {
       await AppLogger.log(
         '[SoundCloudTrackSource._parseTrackPreviewFromPlaylist] ERROR: URL: $playlistUrl, Error: $e, StackTrace: \n$st',
@@ -201,17 +186,18 @@ class SoundcloudTrackSource implements TrackSource {
     }
   }
 
-  Future<List<TrackPreview>> _parseTracksFromLikes(String profileUrl) async {
+  Future<ResolvedTrackInput> _parseTracksFromLikes(String profileUrl) async {
     try {
       final clientId = await getClientId();
-      final userId = await _resolveUserId(profileUrl, clientId);
+      final userJson = await _resolveUserJson(profileUrl, clientId);
+      final userId = userJson['id'].toString();
 
       const limit = 200;
       final likesUrl =
           'https://api-v2.soundcloud.com/users/$userId/likes?client_id=$clientId&limit=$limit';
-      final res = await _dio.get(likesUrl);
+      final res = await _get(likesUrl);
       if (res.statusCode != 200) {
-        throw Exception('Likes resolve failed');
+        throw const RemoteServiceFailure('SoundCloud likes');
       }
 
       final collection = res.data['collection'] as List<dynamic>;
@@ -250,6 +236,7 @@ class SoundcloudTrackSource implements TrackSource {
               album: trackData["album"],
               duration: Duration(milliseconds: trackData["duration"]),
               artist: trackData["user"]["username"],
+              artistId: 'soundcloud:artist:${trackData["user"]["id"]}',
             ),
           );
         } catch (e, st) {
@@ -261,10 +248,24 @@ class SoundcloudTrackSource implements TrackSource {
       }
 
       if (previews.isEmpty) {
-        throw Exception('No valid tracks found in likes');
+        throw const EmptyResultFailure('resolve SoundCloud likes');
       }
 
-      return previews;
+      return ResolvedTrackInput(
+        input: profileUrl,
+        sourceType: SourceType.soundcloud,
+        tracks: previews,
+        collection: ResolvedTrackCollection(
+          id: userId,
+          name:
+              'soundcloud - ${userJson['permalink'] ?? userJson['username'] ?? ''}',
+          description: userJson['description'] as String?,
+          imageUrl: (userJson['avatar_url'] as String?)?.replaceAll(
+            'large',
+            't500x500',
+          ),
+        ),
+      );
     } catch (e, st) {
       await AppLogger.log(
         '[SoundCloudTrackSource._parseTracksFromLikes] ERROR: URL: $profileUrl, Error: $e, StackTrace: \n$st',
@@ -273,20 +274,15 @@ class SoundcloudTrackSource implements TrackSource {
     }
   }
 
-  Future<String> _resolveUserId(String profileUrl, String clientId) async {
-    final userJson = await _resolveUserJson(profileUrl, clientId);
-    return userJson['id'].toString();
-  }
-
   Future<Map<String, dynamic>> _resolveUserJson(
     String profileUrl,
     String clientId,
   ) async {
     final resolveUrl =
         'https://api-v2.soundcloud.com/resolve?url=$profileUrl&client_id=$clientId';
-    final res = await _dio.get(resolveUrl);
+    final res = await _get(resolveUrl);
     if (res.statusCode != 200) {
-      throw Exception('Resolve failed');
+      throw const RemoteServiceFailure('SoundCloud user resolve');
     }
     return res.data as Map<String, dynamic>;
   }
@@ -306,7 +302,7 @@ class SoundcloudTrackSource implements TrackSource {
         orElse: () => null,
       );
       if (progressive == null) {
-        throw Exception('No progressive stream found (only HLS available)');
+        throw const UnsupportedMediaFailure('SoundCloud HLS-only track');
       }
       final streamUrl = await getStreamUrl(progressive['url'], clientId);
       final preview = TrackPreview(
@@ -315,6 +311,9 @@ class SoundcloudTrackSource implements TrackSource {
             .toString(),
         title: jsonTrackData['title'] ?? 'Unknown Title',
         artist: jsonTrackData['user']['username'] ?? 'Unknown Artist',
+        artistId: jsonTrackData['user']['id'] == null
+            ? null
+            : 'soundcloud:artist:${jsonTrackData['user']['id']}',
         source: SourceType.soundcloud,
         originalUrl: input,
         artworkUrl:
@@ -342,7 +341,7 @@ class SoundcloudTrackSource implements TrackSource {
   }
 
   @override
-  Future<List<TrackPreview>> resolve(String input) async {
+  Future<ResolvedTrackInput> resolve(String input) async {
     try {
       final url = await resolveShortSoundCloudUrl(input);
 
@@ -352,7 +351,7 @@ class SoundcloudTrackSource implements TrackSource {
         return _parseTracksFromLikes(url);
       } else {
         final preview = await fetchPreview(url);
-        return [preview];
+        return ResolvedTrackInput.single(preview);
       }
     } catch (e, st) {
       await AppLogger.log(
@@ -366,7 +365,7 @@ class SoundcloudTrackSource implements TrackSource {
     if (_cachedClientId != null) return _cachedClientId!;
 
     try {
-      final homeRes = await _dio.get(
+      final homeRes = await _get(
         'https://soundcloud.com',
         options: Options(responseType: ResponseType.plain),
       );
@@ -375,7 +374,7 @@ class SoundcloudTrackSource implements TrackSource {
       ).allMatches(homeRes.data as String).map((m) => m.group(1)!).toList();
 
       for (final url in scriptUrls.reversed) {
-        final jsRes = await _dio.get(
+        final jsRes = await _get(
           url,
           options: Options(responseType: ResponseType.plain),
         );
@@ -401,10 +400,13 @@ class SoundcloudTrackSource implements TrackSource {
       final resolveUrl =
           'https://api-v2.soundcloud.com/resolve?url=$url&client_id=$clientId';
 
-      final res = await _dio.get(resolveUrl);
+      final res = await _get(resolveUrl);
 
       if (res.statusCode != 200) {
-        throw Exception('Resolve failed: status code ${res.statusCode}');
+        throw RemoteServiceFailure(
+          'SoundCloud resolve',
+          statusCode: res.statusCode,
+        );
       }
       return res.data;
     } on DioException catch (e, st) {
@@ -424,7 +426,7 @@ class SoundcloudTrackSource implements TrackSource {
     final url = '$transcodingUrl?client_id=$clientId';
 
     try {
-      final res = await _dio.get(url);
+      final res = await _get(url);
       return res.data['url'];
     } on DioException catch (e) {
       if (e.response?.statusCode == 404) {
@@ -445,23 +447,36 @@ class SoundcloudTrackSource implements TrackSource {
     String filename, {
     OperationCancellation? cancellation,
   }) async {
+    File? partialFile;
     try {
       cancellation?.throwIfCancelled();
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/$filename');
+      if (await file.exists()) return filename;
+
+      final downloadFile = File('${file.path}.part');
+      partialFile = downloadFile;
       final cancelToken = CancelToken();
       cancellation?.whenCancelled.then((_) {
         if (!cancelToken.isCancelled) cancelToken.cancel();
       });
-      final res = await _dio.get(
-        url,
-        options: Options(responseType: ResponseType.bytes),
-        cancelToken: cancelToken,
-      );
+
+      await _retryPolicy.execute(() async {
+        if (await downloadFile.exists()) await downloadFile.delete();
+        await _dio.download(
+          url,
+          downloadFile.path,
+          cancelToken: cancelToken,
+          deleteOnError: true,
+        );
+      });
       cancellation?.throwIfCancelled();
-      final dir = await getApplicationDocumentsDirectory();
-      final file = await File("${dir.path}/$filename").create();
-      await file.writeAsBytes(res.data);
+      await downloadFile.rename(file.path);
       return filename;
     } catch (e, st) {
+      if (partialFile != null && await partialFile.exists()) {
+        await partialFile.delete();
+      }
       await AppLogger.log(
         '[SoundCloudTrackSource.downloadFile] ERROR downloading from URL: $url, Filename: $filename, Error: $e, StackTrace: \n$st',
       );
@@ -471,28 +486,34 @@ class SoundcloudTrackSource implements TrackSource {
 
   Future<String> resolveShortSoundCloudUrl(String shortUrl) async {
     try {
-      String currentUrl = shortUrl;
+      var currentUrl = shortUrl;
+      final visited = <String>{};
 
-      while (true) {
-        final response = await _redirectDio.get(currentUrl);
+      for (var redirectCount = 0; redirectCount < 8; redirectCount++) {
+        if (!visited.add(currentUrl)) {
+          throw const RemoteServiceFailure('SoundCloud redirect cycle');
+        }
+
+        final response = await _retryPolicy.execute(
+          () => _redirectDio.get(currentUrl),
+        );
 
         if (response.statusCode == 301 ||
             response.statusCode == 302 ||
             response.statusCode == 307 ||
             response.statusCode == 308) {
           final location = response.headers.value('location');
-
-          if (location == null) break;
-          currentUrl = location;
+          if (location == null || location.isEmpty) {
+            throw const ParseFailure();
+          }
+          currentUrl = Uri.parse(currentUrl).resolve(location).toString();
         } else {
-          break;
+          final uri = Uri.parse(currentUrl);
+          return uri.replace(query: '').toString();
         }
       }
 
-      final uri = Uri.parse(currentUrl);
-      final finalUrl = uri.replace(query: '').toString();
-
-      return finalUrl;
+      throw const RemoteServiceFailure('SoundCloud redirect limit');
     } catch (e, st) {
       await AppLogger.log(
         '[SoundCloudTrackSource.resolveShortSoundCloudUrl] ERROR resolving URL: $shortUrl, Error: $e, StackTrace: \n$st',
@@ -544,9 +565,7 @@ class SoundcloudTrackSource implements TrackSource {
     TrackPreview track, {
     OperationCancellation? cancellation,
   }) async {
-    final filename = _safeFilename(
-      '${track.artist}-${track.title}_${DateTime.now().microsecondsSinceEpoch}',
-    );
+    final filename = downloadFilename(track);
     return downloadSoundCloudTrack(
       track.originalUrl,
       filename,
@@ -554,7 +573,10 @@ class SoundcloudTrackSource implements TrackSource {
     );
   }
 
-  String _safeFilename(String value) {
+  static String downloadFilename(TrackPreview track) =>
+      _safeFilename('soundcloud_${track.id}');
+
+  static String _safeFilename(String value) {
     final sanitized = value
         .replaceAll(RegExp(r'[\\/:*?"<>|]'), '_')
         .replaceAll(RegExp(r'\s+'), ' ')
@@ -562,96 +584,5 @@ class SoundcloudTrackSource implements TrackSource {
 
     if (sanitized.isEmpty) return 'soundcloud_track';
     return sanitized.length > 120 ? sanitized.substring(0, 120) : sanitized;
-  }
-
-  @override
-  Future<TrackPreview> fetchTrackPreview(String input) async {
-    try {
-      final url = await resolveShortSoundCloudUrl(input);
-      final clientId = await getClientId();
-      if (await _isPlaylist(url)) {
-        final resolvePlaylistDataUrl =
-            'https://api-v2.soundcloud.com/resolve?url=$url&client_id=$clientId';
-        final res = await _dio.get(resolvePlaylistDataUrl);
-        if (res.statusCode != 200) {
-          throw Exception('Resolve failed');
-        }
-        final jsonPlaylistData = res.data;
-        final trackDataResponse = (jsonPlaylistData['tracks'] as List).first;
-        await Future.delayed(const Duration(milliseconds: 200));
-
-        final trackData = await _getTrackData(
-          trackDataResponse['id'].toString(),
-          clientId,
-        );
-        final transcodings = trackData['media']['transcodings'] as List;
-        final progressive = transcodings.firstWhere(
-          (t) => t['format']['protocol'] == 'progressive',
-          orElse: () => null,
-        );
-
-        final streamUrl = await getStreamUrl(progressive['url'], clientId);
-        return TrackPreview(
-          urlFile: streamUrl,
-          artworkUrl:
-              (trackData["artwork_url"] as String? ??
-                      trackData["calculated_artwork_url"] as String?)
-                  ?.replaceAll('large', 't500x500'),
-          id: trackData['id'].toString(),
-          title: trackData['title'],
-          source: SourceType.soundcloud,
-          originalUrl: url,
-          album: trackData["album"],
-          duration: Duration(milliseconds: trackData["duration"]),
-          artist: trackData["user"]["username"],
-        );
-      } else if (await _isLikes(url)) {
-        final userId = await _resolveUserId(url, clientId);
-
-        const limit = 10;
-        final likesUrl =
-            'https://api-v2.soundcloud.com/users/$userId/likes?client_id=$clientId&limit=$limit';
-        final res = await _dio.get(likesUrl);
-        if (res.statusCode != 200) {
-          throw Exception('Likes resolve failed');
-        }
-
-        final item = (res.data['collection'] as List<dynamic>).first;
-
-        final trackData = item['track'];
-        if (trackData == null) {
-          throw Exception('No track data in first likes item');
-        }
-
-        final transcodings = trackData['media']['transcodings'] as List;
-        final progressive = transcodings.firstWhere(
-          (t) => t['format']['protocol'] == 'progressive',
-          orElse: () => null,
-        );
-
-        final streamUrl = await getStreamUrl(progressive['url'], clientId);
-        return TrackPreview(
-          urlFile: streamUrl,
-          artworkUrl:
-              (trackData["artwork_url"] ?? trackData["calculated_artwork_url"])
-                  ?.replaceAll('large', 't500x500'),
-          id: trackData['id'].toString(),
-          title: trackData['title'],
-          source: SourceType.soundcloud,
-          originalUrl: url,
-          album: trackData["album"],
-          duration: Duration(milliseconds: trackData["duration"]),
-          artist: trackData["user"]["username"],
-        );
-      } else {
-        final preview = await fetchPreview(url);
-        return preview;
-      }
-    } catch (e, st) {
-      await AppLogger.log(
-        '[SoundCloudTrackSource.resolve] Error resolving URL: $input, Error: $e, StackTrace: \n$st',
-      );
-      rethrow;
-    }
   }
 }

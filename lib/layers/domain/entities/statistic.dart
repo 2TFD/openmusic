@@ -2,15 +2,7 @@ import 'package:openmusic/layers/domain/entities/source.dart';
 
 enum StatsPeriod { today, week, twoWeeks, month, allTime }
 
-extension StatsPeriodLabel on StatsPeriod {
-  String get label => switch (this) {
-    StatsPeriod.today => 'today',
-    StatsPeriod.week => '7 days',
-    StatsPeriod.twoWeeks => '2 weeks',
-    StatsPeriod.month => 'month',
-    StatsPeriod.allTime => 'all time',
-  };
-
+extension StatsPeriodDateRange on StatsPeriod {
   DateTime get startDate => switch (this) {
     StatsPeriod.today => DateTime(
       DateTime.now().year,
@@ -46,13 +38,4 @@ class Statistic {
     bySource: {},
     period: period,
   );
-
-  String get formattedTime {
-    final h = totalTime.inHours;
-    final m = totalTime.inMinutes % 60;
-    final s = totalTime.inSeconds % 60;
-    if (h > 0) return '${h}h ${m}m';
-    if (m > 0) return '${m}m';
-    return '${s}s';
-  }
 }

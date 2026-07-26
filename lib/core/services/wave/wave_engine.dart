@@ -5,11 +5,28 @@ import 'dart:math';
 class WaveEngine {
   static List<Track> generate(WaveConfig config, List<Track> tracks) {
     if (tracks.isEmpty) return [];
-    final List<Track> similarTracks = _getSimilarTracks(
-      config.tracks,
+    final seedNames = config.seeds.map((seed) => seed.toLowerCase()).toSet();
+    final targetsById = <String, Track>{
+      for (final track in config.tracks) track.id: track,
+      for (final track in tracks)
+        if (track.artists.any(
+          (artist) => seedNames.contains(artist.name.toLowerCase()),
+        ))
+          track.id: track,
+    };
+    final readyTargets = targetsById.values
+        .where((track) => track.isReady)
+        .toList();
+    if (readyTargets.isEmpty || config.queueSize <= 0) return [];
+    final dimension = readyTargets.first.embedding!.length;
+    final targets = readyTargets
+        .where((track) => track.embedding!.length == dimension)
+        .toList();
+
+    return _getSimilarTracks(
+      targets,
       tracks,
-    ).map((e) => e.track).toList();
-    return similarTracks;
+    ).take(config.queueSize).map((entry) => entry.track).toList();
   }
 
   static List<_SimilarTrack> _getSimilarTracks(
@@ -22,7 +39,7 @@ class WaveEngine {
       final result = allTracks
           .where(
             (track) =>
-                !targets.contains(track) &&
+                !targets.any((target) => target.id == track.id) &&
                 track.isReady &&
                 track.embedding!.length == targetEmbedding.length,
           )

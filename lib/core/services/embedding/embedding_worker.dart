@@ -56,6 +56,7 @@ class EmbeddingWorker {
           final saved = await repo.saveResult(
             trackId: task.trackId,
             ownerId: _ownerId,
+            audioRevision: task.audioRevision,
             vector: vector,
           );
           if (!saved) throw TaskLeaseLostException(task.trackId);

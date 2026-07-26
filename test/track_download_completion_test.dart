@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
 import 'package:openmusic/layers/data/repositories/track_download_completion_repository_impl.dart';
 import 'package:openmusic/layers/domain/entities/download_track_task.dart';
@@ -66,7 +67,7 @@ void main() {
           filePath: 'missing.mp3',
           ownerId: 'owner-a',
         ),
-        throwsStateError,
+        throwsA(isA<NotFoundFailure>()),
       );
 
       expect(await _download(database, 'missing-track'), isNotNull);
@@ -94,6 +95,34 @@ void main() {
       );
     },
   );
+
+  test(
+    'audio replacement clears embedding and advances task revision',
+    () async {
+      await _insertTrack(database, 'replacement');
+      await repository.completeLocal(
+        trackId: 'replacement',
+        filePath: 'old.mp3',
+      );
+      await (database.update(database.trackTable)
+            ..where((track) => track.id.equals('replacement')))
+          .write(const TrackTableCompanion(embedding: Value('[1.0]')));
+
+      await repository.completeLocal(
+        trackId: 'replacement',
+        filePath: 'new.mp3',
+      );
+
+      final track = await _track(database, 'replacement');
+      final task = await _embedding(database, 'replacement');
+      expect(track?.pathToFile, 'new.mp3');
+      expect(track?.embedding, isNull);
+      expect(track?.audioRevision, 2);
+      expect(task?.filePath, 'new.mp3');
+      expect(task?.audioRevision, 2);
+      expect(task?.status, EmbeddingStatus.queued.name);
+    },
+  );
 }
 
 Future<void> _insertTrack(AppDatabase database, String id) async {
@@ -103,8 +132,6 @@ Future<void> _insertTrack(AppDatabase database, String id) async {
         TrackTableCompanion.insert(
           id: id,
           title: id,
-          artistIds: '[]',
-          artistNames: '[]',
           sourceType: 'soundcloud',
           sourceUri: 'https://example.com/$id',
         ),

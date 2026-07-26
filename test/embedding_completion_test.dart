@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
 import 'package:openmusic/layers/data/datasources/local/embedding_task/drift/embedding_task_drift_local_source.dart';
 import 'package:openmusic/layers/domain/entities/embedding_task.dart';
@@ -25,6 +26,7 @@ void main() {
     final completed = await source.completeIfOwned(
       trackId: 'track-1',
       ownerId: 'owner-a',
+      audioRevision: 0,
       vector: const [0.1, 0.2, 0.3],
     );
 
@@ -44,6 +46,7 @@ void main() {
     final completed = await source.completeIfOwned(
       trackId: 'track-2',
       ownerId: 'owner-b',
+      audioRevision: 0,
       vector: const [9.0],
     );
 
@@ -56,6 +59,28 @@ void main() {
     expect((await _task(database, 'track-2'))?.leaseOwner, 'owner-a');
   });
 
+  test('stale audio revision cannot write a vector', () async {
+    await _insertTrack(database, 'track-stale');
+    await _insertProcessingTask(database, 'track-stale', 'owner-a');
+    await (database.update(database.trackTable)
+          ..where((track) => track.id.equals('track-stale')))
+        .write(const TrackTableCompanion(audioRevision: Value(1)));
+
+    final completed = await source.completeIfOwned(
+      trackId: 'track-stale',
+      ownerId: 'owner-a',
+      audioRevision: 0,
+      vector: const [9.0],
+    );
+
+    expect(completed, isFalse);
+    expect((await _track(database, 'track-stale'))?.embedding, isNull);
+    expect(
+      (await _task(database, 'track-stale'))?.status,
+      EmbeddingStatus.processing.name,
+    );
+  });
+
   test('missing track rolls task completion back', () async {
     await _insertProcessingTask(database, 'missing-track', 'owner-a');
 
@@ -63,9 +88,10 @@ void main() {
       source.completeIfOwned(
         trackId: 'missing-track',
         ownerId: 'owner-a',
+        audioRevision: 0,
         vector: const [1.0],
       ),
-      throwsStateError,
+      throwsA(isA<NotFoundFailure>()),
     );
 
     final task = await _task(database, 'missing-track');
@@ -81,8 +107,6 @@ Future<void> _insertTrack(AppDatabase database, String id) async {
         TrackTableCompanion.insert(
           id: id,
           title: id,
-          artistIds: '[]',
-          artistNames: '[]',
           sourceType: 'soundcloud',
           sourceUri: 'https://example.com/$id',
         ),

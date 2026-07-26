@@ -7,26 +7,14 @@ class GetStatisticsUseCase {
   GetStatisticsUseCase({required PlayRecordRepository repo}) : _repo = repo;
 
   Future<Statistic> execute(StatsPeriod period) async {
-    final records = await _repo.getAll(from: period.startDate);
-    if (records.isEmpty) return Statistic.empty(period);
-
-    final totalTime = records.fold(
-      Duration.zero,
-      (sum, r) => sum + r.listenedDuration,
-    );
-
-    final uniqueArtists = records.map((r) => r.artistName).toSet().length;
-
-    final bySource = <dynamic, int>{};
-    for (final r in records) {
-      bySource[r.sourceType] = (bySource[r.sourceType] ?? 0) + 1;
-    }
+    final summary = await _repo.aggregate(from: period.startDate);
+    if (summary.totalTracks == 0) return Statistic.empty(period);
 
     return Statistic(
-      totalTracks: records.length,
-      totalTime: totalTime,
-      uniqueArtists: uniqueArtists,
-      bySource: Map.from(bySource),
+      totalTracks: summary.totalTracks,
+      totalTime: summary.totalTime,
+      uniqueArtists: summary.uniqueArtists,
+      bySource: summary.bySource,
       period: period,
     );
   }

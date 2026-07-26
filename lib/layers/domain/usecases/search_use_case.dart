@@ -21,23 +21,17 @@ class SearchUseCase {
 
   static const int pageSize = 30;
 
-  List<Track> _localCache = [];
-  String _localCacheQuery = '';
-
   SearchUseCase({required this.trackRepository, required this.searchSource});
 
   Future<LocalSearchPage> searchLocal(String query, {int offset = 0}) async {
-    if (offset == 0 || query != _localCacheQuery) {
-      _localCache = await trackRepository.searchTracks(query);
-      _localCacheQuery = query;
-    }
-
-    final page = _localCache.skip(offset).take(pageSize).toList();
-    return LocalSearchPage(
-      tracks: page,
-      hasMore: offset + pageSize < _localCache.length,
+    final result = await trackRepository.searchTracks(
+      query,
+      limit: pageSize + 1,
       offset: offset,
     );
+    final hasMore = result.length > pageSize;
+    final page = result.take(pageSize).toList();
+    return LocalSearchPage(tracks: page, hasMore: hasMore, offset: offset);
   }
 
   Future<List<TrackPreview>> searchExternal(

@@ -1,6 +1,5 @@
 import 'package:openmusic/layers/data/datasources/local/track/track_local_data_source.dart';
 
-import '../../../core/utils/app_logger.dart';
 import '../../domain/entities/track.dart';
 import '../../domain/repositories/track_repository.dart';
 import '../mappers/track_mapper.dart';
@@ -29,33 +28,22 @@ class TrackRepositoryImpl implements TrackRepository {
   }
 
   @override
-  Future<void> addTrack(Track track) async {
-    final existingTrack = await getTrackById(track.id);
-    if (existingTrack != null) {
-      await AppLogger.log(
-        "[TrackRepositoryImpl] Track with id: ${track.id} already exists. Skipping addition.",
-      );
-      throw Exception('Track with id: ${track.id} already exists');
-    }
-
-    final model = TrackMapper.toDto(track);
-    await localDataSource.saveTrack(model);
-  }
-
-  @override
-  Future<void> removeTrack(String trackId) async {
-    await localDataSource.deleteTrackById(trackId);
-  }
-
-  @override
-  Future<List<Track>> searchTracks(String query) async {
-    final dtos = await localDataSource.searchTracks(query);
+  Future<List<Track>> searchTracks(
+    String query, {
+    required int limit,
+    required int offset,
+  }) async {
+    final dtos = await localDataSource.searchTracks(
+      query,
+      limit: limit,
+      offset: offset,
+    );
     return dtos.map(TrackMapper.toEntity).toList();
   }
 
   @override
-  Future<void> updateTrack(Track track) async {
-    await localDataSource.updateTrack(TrackMapper.toDto(track));
+  Future<void> updateMetadata(Track track) async {
+    await localDataSource.updateTrackMetadata(TrackMapper.toDto(track));
   }
 
   @override

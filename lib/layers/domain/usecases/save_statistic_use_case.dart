@@ -7,12 +7,12 @@ class SaveRecordPlayUseCase {
   final PlayRecordRepository _playRecordRepository;
   static const _minDuration = Duration(seconds: 30);
 
-  SaveRecordPlayUseCase({required PlayRecordRepository repo}) : _playRecordRepository = repo;
+  SaveRecordPlayUseCase({required PlayRecordRepository repo})
+    : _playRecordRepository = repo;
 
   Future<void> call(Track track, Duration listenedDuration) async {
     if (listenedDuration < _minDuration) return;
 
-    final now = DateTime.now();
     final record = PlayRecord(
       id: const Uuid().v4(),
       trackId: track.id,
@@ -20,11 +20,8 @@ class SaveRecordPlayUseCase {
       artistName: track.artists.map((a) => a.name).join(', '),
       sourceType: track.source.type,
       listenedDuration: listenedDuration,
-      playedAt: now,
+      playedAt: DateTime.now(),
     );
-
-    final last = await _playRecordRepository.getLatestByTrackId(track.id);
-    if (last != null && now.difference(last.playedAt).inSeconds < 30) return;
 
     await _playRecordRepository.save(record);
   }

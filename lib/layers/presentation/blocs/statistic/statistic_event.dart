@@ -24,4 +24,3 @@ class _StatisticStreamErrored extends StatisticEvent {
   @override
   List<Object> get props => [error];
 }
-

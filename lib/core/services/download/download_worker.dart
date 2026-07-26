@@ -67,7 +67,11 @@ class DownloadWorker {
           ),
         );
         final filePath = await heartbeat.run(task.trackId, () async {
-          final preview = await source.fetchTrackPreview(task!.originalUrl);
+          final resolved = await source.resolve(task!.originalUrl);
+          final preview = resolved.tracks.firstWhere(
+            (preview) => preview.id == task!.trackId,
+            orElse: () => resolved.firstTrack,
+          );
           cancellation!.throwIfCancelled();
           return source.download(preview, cancellation: cancellation);
         });

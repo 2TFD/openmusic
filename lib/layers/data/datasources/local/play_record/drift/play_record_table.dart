@@ -6,7 +6,7 @@ class PlayRecordTable extends Table {
   TextColumn get trackTitle => text()();
   TextColumn get artistName => text()();
   TextColumn get sourceType => text()();
-  IntColumn get listenedDurationMilisecond => integer()();
+  IntColumn get listenedDurationMilliseconds => integer()();
   DateTimeColumn get playedAt => dateTime()();
   @override
   Set<Column> get primaryKey => {id};

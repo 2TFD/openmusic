@@ -4,8 +4,6 @@ class TrackTable extends Table {
   TextColumn get id => text()();
   TextColumn get title => text()();
   TextColumn get pathToFile => text().nullable()();
-  TextColumn get artistIds => text()();
-  TextColumn get artistNames => text()();
   IntColumn get durationMs => integer().nullable()();
   TextColumn get sourceType => text()();
   TextColumn get sourceUri => text()();
@@ -14,6 +12,7 @@ class TrackTable extends Table {
   TextColumn get imageUrl => text().nullable()();
   TextColumn get trackDescriptorJson => text().nullable()();
   TextColumn get embedding => text().nullable()();
+  IntColumn get audioRevision => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column> get primaryKey => {id};

@@ -1,3 +1,4 @@
+import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/layers/domain/entities/playlist.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
@@ -22,7 +23,7 @@ class GetPlaylistWithTracksUseCase {
 
   Future<PlaylistWithTracks> call(String playlistId) async {
     final playlist = await _playlistRepository.getPlaylistById(playlistId);
-    if (playlist == null) throw Exception('Playlist not found');
+    if (playlist == null) throw NotFoundFailure('playlist', playlistId);
 
     final tracks = await _trackRepository.getTracksByIds(playlist.trackIds);
     final trackMap = {for (final t in tracks) t.id: t};

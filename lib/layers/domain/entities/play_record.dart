@@ -54,3 +54,17 @@ class PlayRecord extends Equatable {
     playedAt: DateTime.parse(json['playedAt']),
   );
 }
+
+class PlayRecordSummary {
+  const PlayRecordSummary({
+    required this.totalTracks,
+    required this.totalTime,
+    required this.uniqueArtists,
+    required this.bySource,
+  });
+
+  final int totalTracks;
+  final Duration totalTime;
+  final int uniqueArtists;
+  final Map<SourceType, int> bySource;
+}

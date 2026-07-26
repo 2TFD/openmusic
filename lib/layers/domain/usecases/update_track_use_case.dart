@@ -5,6 +5,6 @@ class UpdateTrackUseCase {
   final TrackRepository trackRepository;
   UpdateTrackUseCase({required this.trackRepository});
   Future<void> call(Track track) async {
-    await trackRepository.updateTrack(track);
+    await trackRepository.updateMetadata(track);
   }
 }

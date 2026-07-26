@@ -1,7 +1,13 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:openmusic/core/app_router/app_router_names.dart';
 import 'package:openmusic/core/app_router/transitions/goo_transition_page.dart';
+import 'package:openmusic/core/di/di.dart';
+import 'package:openmusic/layers/presentation/blocs/embedding_status/embedding_status_cubit.dart';
+import 'package:openmusic/layers/presentation/blocs/import_music/import_music_cubit.dart';
+import 'package:openmusic/layers/presentation/blocs/playlist_detail/playlist_detail_bloc.dart';
 import 'package:openmusic/layers/presentation/screens/all_playlists_screen.dart';
 import 'package:openmusic/layers/presentation/screens/home_screen.dart';
 import 'package:openmusic/layers/presentation/screens/import_music_screen.dart';
@@ -33,15 +39,23 @@ class AppRouter {
             name: AppRouterNames.importMusic,
             pageBuilder: (context, state) => GooTransitionPage<void>(
               key: state.pageKey,
-              child: const ImportMusicScreen(),
+              child: BlocProvider(
+                create: (_) => getIt<ImportMusicCubit>(),
+                child: const ImportMusicScreen(),
+              ),
             ),
           ),
           GoRoute(
             path: '/${AppRouterNames.playlist}/:id',
             name: AppRouterNames.playlist,
             builder: (context, state) {
-              final playlistId = state.pathParameters['id'];
-              return PlaylistScreen(playlistId: playlistId ?? '');
+              final playlistId = state.pathParameters['id'] ?? '';
+              return BlocProvider(
+                create: (_) =>
+                    getIt<PlaylistDetailBloc>()
+                      ..add(PlaylistDetailLoad(playlistId)),
+                child: const PlaylistScreen(),
+              );
             },
           ),
           GoRoute(
@@ -57,12 +71,21 @@ class AppRouter {
           GoRoute(
             path: '/${AppRouterNames.settings}',
             name: AppRouterNames.settings,
-            builder: (context, state) => const SettingsScreen(),
+            builder: (context, state) => BlocProvider(
+              create: (_) => getIt<EmbeddingStatusCubit>(),
+              child: const SettingsScreen(),
+            ),
           ),
         ],
       ),
     ],
-    errorBuilder: (context, state) =>
-        Center(child: Text("App error ${state.error?.message}")),
+    errorBuilder: (context, state) => Center(
+      child: Text(
+        context.tr(
+          'errors.app',
+          namedArgs: {'message': state.error?.message ?? ''},
+        ),
+      ),
+    ),
   );
 }

@@ -1,9 +1,9 @@
-import 'package:openmusic/layers/domain/repositories/track_repository.dart';
+import 'package:openmusic/layers/domain/repositories/track_removal_repository.dart';
 
 class RemoveTrackUseCase {
-  final TrackRepository trackRepository;
-  RemoveTrackUseCase({required this.trackRepository});
+  final TrackRemovalRepository trackRemovalRepository;
+  RemoveTrackUseCase({required this.trackRemovalRepository});
   Future<void> call(String trackId) async {
-    await trackRepository.removeTrack(trackId);
+    await trackRemovalRepository.removeTrack(trackId);
   }
 }

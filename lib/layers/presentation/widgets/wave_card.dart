@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
-import 'package:openmusic/core/utils/locale_keys.dart';
 import 'package:openmusic/layers/domain/entities/wave_config.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
@@ -73,7 +72,7 @@ class _WaveCardState extends State<WaveCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'own mood',
+                          context.tr('wave.ownMood'),
                           style: GoogleFonts.outfit(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
@@ -94,7 +93,8 @@ class _WaveCardState extends State<WaveCard> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => context.read<WaveBloc>().add(WaveRefreshRequested()),
+                    onTap: () =>
+                        context.read<WaveBloc>().add(WaveRefreshRequested()),
                     child: Container(
                       width: 44,
                       height: 44,
@@ -157,7 +157,7 @@ class _WaveCardState extends State<WaveCard> {
                       Row(
                         children: [
                           Text(
-                            'own mood',
+                            context.tr('wave.ownMood'),
                             style: GoogleFonts.outfit(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
@@ -227,14 +227,6 @@ class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
   String _search = '';
   final _searchCtrl = TextEditingController();
 
-  static const _moods = [
-    ('melancholy', LocaleKeys.moodMelancholy),
-    ('energy', LocaleKeys.moodEnergy),
-    ('focus', LocaleKeys.moodFocus),
-    ('night', LocaleKeys.moodNight),
-    ('drive', LocaleKeys.moodDrive),
-  ];
-
   @override
   void dispose() {
     _searchCtrl.dispose();
@@ -246,7 +238,7 @@ class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
     WaveGenerating(:final config) => config,
     WaveEmpty(:final config) => config,
     WaveError(:final config) => config,
-    _ => const WaveConfig(seeds: [], mood: '', tracks: []),
+    _ => const WaveConfig(seeds: [], tracks: []),
   };
 
   @override
@@ -302,10 +294,9 @@ class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
             children: [
               _buildHandle(),
               _buildHeader(context, config),
-              _buildMoodRow(context, config.mood),
               const Divider(height: 1, thickness: 1, color: AppColors.border),
-              _buildTabBar(),
-              _buildSearch(),
+              _buildTabBar(context),
+              _buildSearch(context),
               const Divider(height: 1, thickness: 1, color: AppColors.border),
               Expanded(
                 child: _tab == _WaveTab.artists
@@ -343,7 +334,7 @@ class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
       ),
       child: Row(
         children: [
-          Text('Wave', style: AppText.display3),
+          Text(context.tr('wave.dialogTitle'), style: AppText.display3),
           if (seedCount > 0) ...[
             const SizedBox(width: AppSpacing.s),
             Container(
@@ -372,62 +363,7 @@ class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
     );
   }
 
-  Widget _buildMoodRow(BuildContext context, String currentMood) => Padding(
-    padding: const EdgeInsets.fromLTRB(
-      AppSpacing.xl,
-      0,
-      AppSpacing.xl,
-      AppSpacing.m,
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('MOOD', style: AppText.label),
-        const SizedBox(height: AppSpacing.s),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: _moods.map((m) {
-              final (key, localeKey) = m;
-              final active = currentMood == key;
-              return Padding(
-                padding: const EdgeInsets.only(right: AppSpacing.s),
-                child: GestureDetector(
-                  onTap: () => context.read<WaveBloc>().add(
-                    WaveMoodSelected(active ? '' : key),
-                  ),
-                  child: AnimatedContainer(
-                    duration: AppAnim.fast,
-                    curve: AppAnim.toggle,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.m,
-                      vertical: AppSpacing.s - 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: active ? AppColors.surface3 : Colors.transparent,
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                      border: Border.all(
-                        color: active ? AppColors.borderAct : AppColors.border,
-                      ),
-                    ),
-                    child: Text(
-                      localeKey.tr(),
-                      style: AppText.bodyS.copyWith(
-                        color: active ? AppColors.text : AppColors.muted,
-                        fontWeight: active ? FontWeight.w600 : FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ],
-    ),
-  );
-
-  Widget _buildTabBar() => Padding(
+  Widget _buildTabBar(BuildContext context) => Padding(
     padding: const EdgeInsets.fromLTRB(
       AppSpacing.xl,
       AppSpacing.m,
@@ -437,7 +373,7 @@ class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
     child: Row(
       children: [
         _WaveTabButton(
-          label: 'Artists',
+          label: context.tr('wave.artists'),
           active: _tab == _WaveTab.artists,
           onTap: () => setState(() {
             _tab = _WaveTab.artists;
@@ -447,7 +383,7 @@ class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
         ),
         const SizedBox(width: AppSpacing.xl),
         _WaveTabButton(
-          label: 'Tracks',
+          label: context.tr('wave.tracks'),
           active: _tab == _WaveTab.tracks,
           onTap: () => setState(() {
             _tab = _WaveTab.tracks;
@@ -459,7 +395,7 @@ class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
     ),
   );
 
-  Widget _buildSearch() => Padding(
+  Widget _buildSearch(BuildContext context) => Padding(
     padding: const EdgeInsets.fromLTRB(
       AppSpacing.xl,
       AppSpacing.s,
@@ -474,8 +410,8 @@ class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
         style: AppText.bodyM.copyWith(color: AppColors.text),
         decoration: InputDecoration(
           hintText: _tab == _WaveTab.artists
-              ? 'Search artists…'
-              : 'Search tracks…',
+              ? context.tr('wave.searchArtists')
+              : context.tr('wave.searchTracks'),
           hintStyle: AppText.bodyM,
           prefixIcon: const Icon(
             Icons.search,
@@ -510,7 +446,7 @@ class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
     if (artists.isEmpty) {
       return Center(
         child: Text(
-          _search.isEmpty ? 'No artists in library' : 'No results',
+          context.tr(_search.isEmpty ? 'wave.noArtists' : 'wave.noResults'),
           style: AppText.bodyM,
         ),
       );
@@ -547,7 +483,7 @@ class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
     if (tracks.isEmpty) {
       return Center(
         child: Text(
-          _search.isEmpty ? 'No tracks ready' : 'No results',
+          context.tr(_search.isEmpty ? 'wave.noTracksReady' : 'wave.noResults'),
           style: AppText.bodyM,
         ),
       );
@@ -589,7 +525,7 @@ class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
           context.read<WaveBloc>().add(WaveResetRequested());
           Navigator.pop(context);
         },
-        child: Text('Reset wave', style: AppText.bodyM),
+        child: Text(context.tr('wave.reset'), style: AppText.bodyM),
       ),
     ),
   );

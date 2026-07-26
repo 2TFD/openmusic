@@ -1,6 +1,5 @@
 import 'package:drift/drift.dart';
-import 'package:openmusic/core/utils/app_logger.dart';
-import 'package:openmusic/layers/data/DTO/download_task_dto.dart';
+import 'package:openmusic/layers/data/models/download_task_dto.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
 import 'package:openmusic/layers/data/datasources/local/download_task/download_task_local_data_source.dart';
 import 'package:openmusic/layers/domain/entities/download_track_task.dart';
@@ -53,46 +52,47 @@ WHERE download_task_table.status IN (?, ?)
     required String ownerId,
     required DateTime leaseUntil,
   }) async {
-    return database.transaction<DownloadTaskDto?>(() async {
-      final now = DateTime.now();
-      final row =
-          await (database.select(database.downloadTaskTable)
-                ..where((t) {
-                  final leaseExpired =
-                      t.leaseUntil.isNull() |
-                      t.leaseUntil.isSmallerThanValue(now);
-                  return t.status.equals(DownloadStatus.queued.name) |
-                      (t.status.equals(DownloadStatus.downloading.name) &
-                          leaseExpired);
-                })
-                ..orderBy([(t) => OrderingTerm.asc(t.createdAt)])
-                ..limit(1))
-              .getSingleOrNull();
-      if (row == null) return null;
-
-      final claimed =
-          await (database.update(database.downloadTaskTable)..where((t) {
-                final leaseExpired =
-                    t.leaseUntil.isNull() |
-                    t.leaseUntil.isSmallerThanValue(now);
-                final claimable =
-                    t.status.equals(DownloadStatus.queued.name) |
-                    (t.status.equals(DownloadStatus.downloading.name) &
-                        leaseExpired);
-                return t.trackId.equals(row.trackId) & claimable;
-              }))
-              .write(
-                DownloadTaskTableCompanion(
-                  status: Value(DownloadStatus.downloading.name),
-                  leaseOwner: Value(ownerId),
-                  leaseUntil: Value(leaseUntil),
-                ),
-              );
-      if (claimed != 1) return null;
-      return DownloadTaskDto.fromDataClass(
-        row.copyWith(status: DownloadStatus.downloading.name),
-      );
-    });
+    final now = DateTime.now();
+    final rows = await database.customWriteReturning(
+      '''
+UPDATE download_task_table
+SET status = ?, lease_owner = ?, lease_until = ?
+WHERE track_id = (
+  SELECT track_id
+  FROM download_task_table
+  WHERE status = ?
+     OR (status = ? AND (lease_until IS NULL OR lease_until < ?))
+  ORDER BY created_at ASC
+  LIMIT 1
+)
+AND (
+  status = ?
+  OR (status = ? AND (lease_until IS NULL OR lease_until < ?))
+)
+RETURNING track_id, original_url, status, created_at
+''',
+      variables: [
+        Variable<String>(DownloadStatus.downloading.name),
+        Variable<String>(ownerId),
+        Variable<DateTime>(leaseUntil),
+        Variable<String>(DownloadStatus.queued.name),
+        Variable<String>(DownloadStatus.downloading.name),
+        Variable<DateTime>(now),
+        Variable<String>(DownloadStatus.queued.name),
+        Variable<String>(DownloadStatus.downloading.name),
+        Variable<DateTime>(now),
+      ],
+      updates: {database.downloadTaskTable},
+      updateKind: UpdateKind.update,
+    );
+    if (rows.isEmpty) return null;
+    final row = rows.single;
+    return DownloadTaskDto(
+      trackId: row.read<String>('track_id'),
+      originalUrl: row.read<String>('original_url'),
+      status: DownloadStatus.values.byName(row.read<String>('status')),
+      createdAt: row.read<DateTime>('created_at'),
+    );
   }
 
   @override
@@ -132,10 +132,9 @@ WHERE download_task_table.status IN (?, ?)
   }
 
   @override
-  Future<bool> updateStatusIfOwned({
+  Future<bool> markFailedIfOwned({
     required String trackId,
     required String ownerId,
-    required DownloadStatus status,
   }) async {
     final affected =
         await (database.update(database.downloadTaskTable)..where(
@@ -143,7 +142,7 @@ WHERE download_task_table.status IN (?, ?)
             ))
             .write(
               DownloadTaskTableCompanion(
-                status: Value(status.name),
+                status: Value(DownloadStatus.failed.name),
                 leaseOwner: const Value(null),
                 leaseUntil: const Value(null),
               ),
@@ -157,53 +156,5 @@ WHERE download_task_table.status IN (?, ?)
       database.downloadTaskTable,
     )..where((t) => t.trackId.equals(trackId))).getSingleOrNull();
     return row == null ? null : DownloadTaskDto.fromDataClass(row);
-  }
-
-  @override
-  Future<void> save(DownloadTaskDto task) async {
-    await database
-        .into(database.downloadTaskTable)
-        .insert(
-          DownloadTaskTableCompanion(
-            trackId: Value(task.trackId),
-            originalUrl: Value(task.originalUrl),
-            status: Value(task.status.name),
-            createdAt: Value(task.createdAt),
-          ),
-          mode: InsertMode.insertOrIgnore,
-        );
-  }
-
-  @override
-  Future<void> update(DownloadTaskDto task) async {
-    final updated = await database
-        .update(database.downloadTaskTable)
-        .replace(
-          DownloadTaskTableData(
-            trackId: task.trackId,
-            originalUrl: task.originalUrl,
-            status: task.status.name,
-            createdAt: task.createdAt,
-          ),
-        );
-    if (!updated) {
-      await AppLogger.log(
-        '[DownloadTaskDriftLocalSource.update] Record not found for trackId ${task.trackId}',
-      );
-    }
-  }
-
-  @override
-  Future<void> updateStatus(String trackId, DownloadStatus status) async {
-    await (database.update(database.downloadTaskTable)
-          ..where((t) => t.trackId.equals(trackId)))
-        .write(DownloadTaskTableCompanion(status: Value(status.name)));
-  }
-
-  @override
-  Future<void> deleteByTrackId(String trackId) async {
-    await (database.delete(
-      database.downloadTaskTable,
-    )..where((t) => t.trackId.equals(trackId))).go();
   }
 }

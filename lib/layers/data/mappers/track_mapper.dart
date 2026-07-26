@@ -1,7 +1,7 @@
 import '../../domain/entities/artist.dart';
 import '../../domain/entities/source.dart';
 import '../../domain/entities/track.dart';
-import '../DTO/track_dto.dart';
+import '../models/track_dto.dart';
 
 class TrackMapper {
   static Track toEntity(TrackDto dto) {
@@ -13,11 +13,9 @@ class TrackMapper {
       id: dto.id,
       title: dto.title,
       filePath: dto.filePath,
-      artists: dto.artistIds.asMap().entries.map((entry) {
-        final index = entry.key;
-        final id = entry.value;
-        return Artist(id: id, name: dto.artistNames[index]);
-      }).toList(),
+      artists: dto.artists
+          .map((artist) => Artist(id: artist.id, name: artist.name))
+          .toList(),
       duration: dto.durationMs != null
           ? Duration(milliseconds: dto.durationMs!)
           : Duration.zero,
@@ -42,8 +40,9 @@ class TrackMapper {
       id: entity.id,
       title: entity.title,
       filePath: entity.filePath,
-      artistIds: entity.artists.map((artist) => artist.id).toList(),
-      artistNames: entity.artists.map((artist) => artist.name).toList(),
+      artists: entity.artists
+          .map((artist) => ArtistDto(id: artist.id, name: artist.name))
+          .toList(),
       durationMs: entity.duration.inMilliseconds,
       sourceType: entity.source.type.name,
       originalUrl: entity.source.originalUrl,
