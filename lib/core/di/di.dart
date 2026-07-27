@@ -24,6 +24,8 @@ import 'package:openmusic/layers/data/repositories/playlist_repository_impl.dart
 import 'package:openmusic/layers/data/repositories/search_source_impl.dart';
 import 'package:openmusic/layers/data/repositories/track_repository_impl.dart';
 import 'package:openmusic/layers/data/repositories/track_removal_repository_impl.dart';
+import 'package:openmusic/layers/data/repositories/listening_checkpoint_repository_impl.dart';
+import 'package:openmusic/layers/data/repositories/playback_session_repository_impl.dart';
 import 'package:openmusic/layers/data/repositories/track_ingestion_repository_impl.dart';
 import 'package:openmusic/layers/data/repositories/track_download_completion_repository_impl.dart';
 import 'package:openmusic/layers/domain/repositories/download_task_repository.dart';
@@ -35,17 +37,24 @@ import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
 import 'package:openmusic/layers/domain/repositories/search_source.dart';
 import 'package:openmusic/layers/domain/repositories/track_repository.dart';
 import 'package:openmusic/layers/domain/repositories/track_removal_repository.dart';
+import 'package:openmusic/layers/domain/repositories/listening_checkpoint_repository.dart';
+import 'package:openmusic/layers/domain/repositories/playback_session_repository.dart';
 import 'package:openmusic/layers/domain/repositories/track_ingestion_repository.dart';
 import 'package:openmusic/layers/domain/repositories/track_download_completion_repository.dart';
 import 'package:openmusic/core/services/track_source_resolver.dart';
 import 'package:openmusic/core/services/wave/wave_engine.dart';
 import 'package:openmusic/layers/domain/usecases/add_track_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/add_track_to_playlist_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/complete_track_download_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/delete_playlist_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/get_playlist_with_tracks_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/import_local_tracks_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/pick_local_tracks_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/update_playlist_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/watch_playlist_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/recover_listening_checkpoint_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/restore_playback_session_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/save_statistic_use_case.dart';
 import 'package:openmusic/layers/presentation/blocs/embedding_status/embedding_status_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/import_music/import_music_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist_detail/playlist_detail_bloc.dart';
@@ -57,7 +66,7 @@ Future<void> configureDependencies({required String appDir}) async {
   getIt.registerSingleton<String>(appDir);
 
   // datasource
-  getIt.registerSingleton<AppDatabase>(appDatabase);
+  getIt.registerSingleton<AppDatabase>(AppDatabase());
 
   getIt.registerLazySingleton<LocalFileTrackSource>(LocalFileTrackSource.new);
   getIt.registerLazySingleton<SoundcloudTrackSource>(SoundcloudTrackSource.new);
@@ -96,6 +105,14 @@ Future<void> configureDependencies({required String appDir}) async {
       database: getIt<AppDatabase>(),
       appDir: getIt<String>(),
     ),
+  );
+
+  getIt.registerLazySingleton<ListeningCheckpointRepository>(
+    () => ListeningCheckpointRepositoryImpl(getIt<AppDatabase>()),
+  );
+
+  getIt.registerLazySingleton<PlaybackSessionRepository>(
+    () => PlaybackSessionRepositoryImpl(getIt<AppDatabase>()),
   );
 
   getIt.registerLazySingleton<EmbeddingTaskRepository>(
@@ -175,6 +192,17 @@ Future<void> configureDependencies({required String appDir}) async {
 
   getIt.registerFactory(() => CompleteTrackDownloadUseCase(getIt()));
 
+  getIt.registerFactory(
+    () => RecoverListeningCheckpointUseCase(
+      checkpoints: getIt(),
+      saveRecord: SaveRecordPlayUseCase(repo: getIt()),
+    ),
+  );
+
+  getIt.registerFactory(
+    () => RestorePlaybackSessionUseCase(sessions: getIt(), tracks: getIt()),
+  );
+
   getIt.registerFactory(() => PickLocalTracksUseCase(getIt()));
   getIt.registerFactory(
     () => ImportLocalTracksUseCase((resolved) async {
@@ -204,6 +232,9 @@ Future<void> configureDependencies({required String appDir}) async {
       ),
       updatePlaylist: UpdatePlaylistUseCase(getIt()),
       deletePlaylist: DeletePlaylistUseCase(getIt()),
+      addTrack: AddTrackToPlaylistUseCase(getIt()),
+      watchPlaylist: WatchPlaylistUseCase(getIt()),
+      trackChanges: getIt<TrackRepository>().watchChanges(),
     ),
   );
 }

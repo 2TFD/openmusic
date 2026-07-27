@@ -83,7 +83,7 @@ class AddTrackUseCase {
     Playlist? playlist;
     Failure? playlistFailure;
     final collection = resolved.collection;
-    if (collection != null && addedTracks.length > 1) {
+    if (collection != null && addedTracks.isNotEmpty) {
       try {
         final candidate = Playlist(
           id: collection.id,
@@ -93,8 +93,16 @@ class AddTrackUseCase {
           description: collection.description,
           imageUrl: collection.imageUrl,
         );
-        await playlistRepository.createPlaylist(candidate);
-        playlist = candidate;
+        final existing = await playlistRepository.getPlaylistById(candidate.id);
+        if (existing == null) {
+          await playlistRepository.createPlaylist(candidate);
+          playlist = candidate;
+        } else {
+          for (final track in addedTracks) {
+            await playlistRepository.addTrackToPlaylist(existing.id, track.id);
+          }
+          playlist = await playlistRepository.getPlaylistById(existing.id);
+        }
       } catch (error, stackTrace) {
         playlistFailure = failureFromException(error);
         await AppLogger.log(

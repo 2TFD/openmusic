@@ -10,5 +10,5 @@ abstract class TrackRepository {
     required int offset,
   });
   Future<void> updateMetadata(Track track);
-  Stream<List<Track>> watchTracks();
+  Stream<void> watchChanges();
 }

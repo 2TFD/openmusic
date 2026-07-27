@@ -4,7 +4,7 @@ sealed class PlaylistDetailEvent extends Equatable {
   const PlaylistDetailEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class PlaylistDetailLoad extends PlaylistDetailEvent {
@@ -23,6 +23,15 @@ class PlaylistDetailRemoveTrack extends PlaylistDetailEvent {
   List<Object> get props => [trackId];
 }
 
+class PlaylistDetailAddTrack extends PlaylistDetailEvent {
+  final Track track;
+
+  const PlaylistDetailAddTrack(this.track);
+
+  @override
+  List<Object> get props => [track];
+}
+
 class PlaylistDetailReorder extends PlaylistDetailEvent {
   final int oldIndex;
   final int newIndex;
@@ -34,12 +43,41 @@ class PlaylistDetailReorder extends PlaylistDetailEvent {
 
 class PlaylistDetailRename extends PlaylistDetailEvent {
   final String name;
-  const PlaylistDetailRename(this.name);
+  final String? description;
+  final String? imageUrl;
+
+  const PlaylistDetailRename({
+    required this.name,
+    this.description,
+    this.imageUrl,
+  });
 
   @override
-  List<Object> get props => [name];
+  List<Object?> get props => [name, description, imageUrl];
 }
 
 class PlaylistDetailDelete extends PlaylistDetailEvent {
   const PlaylistDetailDelete();
+}
+
+class _PlaylistDetailSnapshotReceived extends PlaylistDetailEvent {
+  final Playlist? playlist;
+
+  const _PlaylistDetailSnapshotReceived(this.playlist);
+
+  @override
+  List<Object> get props => [?playlist];
+}
+
+class _PlaylistTrackDataChanged extends PlaylistDetailEvent {
+  const _PlaylistTrackDataChanged();
+}
+
+class _PlaylistDetailStreamErrored extends PlaylistDetailEvent {
+  final Object error;
+
+  const _PlaylistDetailStreamErrored(this.error);
+
+  @override
+  List<Object> get props => [error];
 }

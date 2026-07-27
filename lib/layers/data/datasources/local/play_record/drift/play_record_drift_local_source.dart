@@ -88,14 +88,16 @@ GROUP BY source_type
             listenedDurationMilliseconds: Value(record.listenedMs),
             playedAt: Value(record.playedAt),
           ),
+          mode: InsertMode.insertOrIgnore,
         );
   }
 
   @override
-  Stream<List<PlayRecordDto>> watchPlayRecord() {
-    return database
-        .select(database.playRecordTable)
-        .watch()
-        .map((rows) => rows.map(PlayRecordDto.fromDataClass).toList());
-  }
+  Stream<void> watchChanges() => database
+      .customSelect(
+        'SELECT 1 AS change_signal',
+        readsFrom: {database.playRecordTable},
+      )
+      .watch()
+      .map((_) {});
 }

@@ -89,61 +89,41 @@ class TrackDriftLocalSource implements TrackLocalDataSource {
   }
 
   @override
-  Future<void> updateTrackMetadata(TrackDto track) async {
-    await database.transaction(() async {
-      await (database.update(
-        database.trackTable,
-      )..where((table) => table.id.equals(track.id))).write(
-        TrackTableCompanion(
-          title: Value(track.title),
-          durationMs: Value(track.durationMs),
-          album: Value(track.album),
-          imageUrl: Value(track.imageUrl),
-        ),
-      );
+  Future<bool> updateTrackMetadata(TrackDto track) async {
+    return database.transaction(() async {
+      final affected =
+          await (database.update(database.trackTable)..where(
+                (table) =>
+                    table.id.equals(track.id) &
+                    table.metadataRevision.equals(track.metadataRevision),
+              ))
+              .write(
+                TrackTableCompanion(
+                  title: Value(track.title),
+                  durationMs: Value(track.durationMs),
+                  album: Value(track.album),
+                  imageUrl: Value(track.imageUrl),
+                  metadataRevision: Value(track.metadataRevision + 1),
+                ),
+              );
+      if (affected != 1) return false;
       await _replaceArtists(track);
+      return true;
     });
   }
 
   @override
-  Stream<List<TrackDto>> watchTracks() {
-    final statement =
-        database.select(database.trackTable).join([
-          leftOuterJoin(
-            database.trackArtistTable,
-            database.trackArtistTable.trackId.equalsExp(database.trackTable.id),
-          ),
-          leftOuterJoin(
-            database.artistTable,
-            database.artistTable.id.equalsExp(
-              database.trackArtistTable.artistId,
-            ),
-          ),
-        ])..orderBy([
-          OrderingTerm.desc(database.trackTable.addedAt),
-          OrderingTerm.asc(database.trackTable.id),
-          OrderingTerm.asc(database.trackArtistTable.position),
-        ]);
-
-    return statement.watch().map((rows) {
-      final tracks = <String, TrackTableData>{};
-      final artists = <String, List<({String id, String name})>>{};
-      for (final row in rows) {
-        final track = row.readTable(database.trackTable);
-        tracks[track.id] = track;
-        final artist = row.readTableOrNull(database.artistTable);
-        if (artist != null) {
-          artists.putIfAbsent(track.id, () => []).add((
-            id: artist.id,
-            name: artist.name,
-          ));
-        }
-      }
-      return tracks.values
-          .map((track) => _mapToTrackDto(track, artists[track.id] ?? const []))
-          .toList();
-    });
-  }
+  Stream<void> watchChanges() => database
+      .customSelect(
+        'SELECT 1 AS change_signal',
+        readsFrom: {
+          database.trackTable,
+          database.trackArtistTable,
+          database.artistTable,
+        },
+      )
+      .watch()
+      .map((_) {});
 
   Future<List<TrackDto>> _mapRows(Iterable<TrackTableData> rows) async {
     final list = rows.toList();
@@ -254,6 +234,7 @@ class TrackDriftLocalSource implements TrackLocalDataSource {
                 .map((value) => (value as num).toDouble())
                 .toList()
           : null,
+      metadataRevision: data.metadataRevision,
     );
   }
 }

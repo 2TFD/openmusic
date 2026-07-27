@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:openmusic/layers/data/models/download_task_dto.dart';
@@ -52,8 +53,7 @@ void main() {
     );
     addTearDown(() => tempDir.delete(recursive: true));
     final file = File('${tempDir.path}/queue.sqlite');
-    final firstDatabase = AppDatabase(NativeDatabase(file));
-    final secondDatabase = AppDatabase(NativeDatabase(file));
+    final (firstDatabase, secondDatabase) = _openIndependentDatabases(file);
     addTearDown(firstDatabase.close);
     addTearDown(secondDatabase.close);
     await firstDatabase.customStatement('PRAGMA journal_mode = WAL');
@@ -278,4 +278,17 @@ void main() {
       isFalse,
     );
   });
+}
+
+(AppDatabase, AppDatabase) _openIndependentDatabases(File file) {
+  final previous = driftRuntimeOptions.dontWarnAboutMultipleDatabases;
+  driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+  try {
+    return (
+      AppDatabase(NativeDatabase.createInBackground(file)),
+      AppDatabase(NativeDatabase.createInBackground(file)),
+    );
+  } finally {
+    driftRuntimeOptions.dontWarnAboutMultipleDatabases = previous;
+  }
 }

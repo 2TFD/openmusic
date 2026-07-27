@@ -30,6 +30,7 @@ class TrackDto extends Equatable {
     this.imageUrl,
     this.trackDescriptorJson,
     this.embedding,
+    this.metadataRevision = 0,
   });
 
   final String id;
@@ -44,6 +45,7 @@ class TrackDto extends Equatable {
   final String? imageUrl;
   final String? trackDescriptorJson;
   final List<double>? embedding;
+  final int metadataRevision;
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -58,6 +60,7 @@ class TrackDto extends Equatable {
     'imageUrl': imageUrl,
     'trackDescriptorJson': trackDescriptorJson,
     'embedding': embedding,
+    'metadataRevision': metadataRevision,
   };
 
   factory TrackDto.fromJson(Map<String, dynamic> json) {
@@ -88,6 +91,7 @@ class TrackDto extends Equatable {
       embedding: json['embedding'] != null
           ? List<double>.from(json['embedding'] as List)
           : null,
+      metadataRevision: json['metadataRevision'] as int? ?? 0,
     );
   }
 
@@ -117,5 +121,6 @@ class TrackDto extends Equatable {
     imageUrl,
     trackDescriptorJson,
     embedding,
+    metadataRevision,
   ];
 }

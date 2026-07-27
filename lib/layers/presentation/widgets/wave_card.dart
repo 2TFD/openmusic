@@ -17,6 +17,14 @@ class WaveCard extends StatefulWidget {
 }
 
 class _WaveCardState extends State<WaveCard> {
+  bool _isWaveQueueActive(WaveReady wave, PlayerState player) {
+    if (wave.tracks.length != player.queue.length) return false;
+    for (var index = 0; index < wave.tracks.length; index++) {
+      if (wave.tracks[index].id != player.queue[index].id) return false;
+    }
+    return true;
+  }
+
   Widget _buildPlayButton(bool isWaveQueueActive, bool isPlaying) {
     if (!isWaveQueueActive) {
       return const Icon(Icons.play_arrow, color: AppColors.text, size: 22);
@@ -114,10 +122,10 @@ class _WaveCardState extends State<WaveCard> {
             ),
           );
         }
-        final currentImageUrl = context.select<PlayerBloc, String?>(
-          (playerBloc) => playerBloc.state.currentTrack?.imageUrl,
-        );
-        final isWaveQueueActive = state is WaveReady;
+        final playerState = context.watch<PlayerBloc>().state;
+        final currentImageUrl = playerState.currentTrack?.imageUrl;
+        final isWaveQueueActive =
+            state is WaveReady && _isWaveQueueActive(state, playerState);
 
         return Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
@@ -186,7 +194,11 @@ class _WaveCardState extends State<WaveCard> {
                 GestureDetector(
                   onTap: () async {
                     if (state is WaveReady) {
-                      context.read<PlayerBloc>().add(PlayerPlayPauseToggled());
+                      context.read<PlayerBloc>().add(
+                        isWaveQueueActive
+                            ? PlayerPlayPauseToggled()
+                            : PlayerQueueSet(state.tracks),
+                      );
                     }
                   },
                   child: Container(
@@ -198,9 +210,7 @@ class _WaveCardState extends State<WaveCard> {
                     ),
                     child: _buildPlayButton(
                       isWaveQueueActive,
-                      context.select<PlayerBloc, bool>(
-                        (playerBloc) => playerBloc.state.isPlaying,
-                      ),
+                      playerState.isPlaying,
                     ),
                   ),
                 ),

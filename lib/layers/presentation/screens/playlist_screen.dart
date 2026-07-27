@@ -4,9 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
+import 'package:openmusic/layers/domain/entities/playlist.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist_detail/playlist_detail_bloc.dart';
+import 'package:openmusic/layers/presentation/blocs/track/track_bloc.dart';
 import 'package:openmusic/layers/presentation/widgets/cached_image.dart';
 import 'package:openmusic/layers/presentation/widgets/snackbars/custom_snack_bar.dart';
 import 'package:openmusic/layers/presentation/widgets/track_item.dart';
@@ -57,8 +59,16 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
       isScrollControlled: true,
       builder: (_) => _RenamePlaylistSheet(
         initialName: loaded.playlist.name,
-        onSave: (name) {
-          bloc.add(PlaylistDetailRename(name));
+        initialDescription: loaded.playlist.description,
+        initialImageUrl: loaded.playlist.imageUrl,
+        onSave: (name, description, imageUrl) {
+          bloc.add(
+            PlaylistDetailRename(
+              name: name,
+              description: description,
+              imageUrl: imageUrl,
+            ),
+          );
           ctx.pop();
         },
       ),
@@ -118,6 +128,29 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
     );
   }
 
+  void _showAddTrackSheet(BuildContext ctx, Playlist playlist) {
+    final detailBloc = ctx.read<PlaylistDetailBloc>();
+    final trackState = ctx.read<TrackBloc>().state;
+    final available = trackState is TrackLoaded
+        ? trackState.tracks
+              .where((track) => !playlist.trackIds.contains(track.id))
+              .toList()
+        : const <Track>[];
+    showModalBottomSheet(
+      context: ctx,
+      backgroundColor: Colors.transparent,
+      useRootNavigator: true,
+      isScrollControlled: true,
+      builder: (sheetContext) => _AddTracksSheet(
+        tracks: available,
+        onAdd: (track) {
+          detailBloc.add(PlaylistDetailAddTrack(track));
+          sheetContext.pop();
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<PlaylistDetailBloc, PlaylistDetailState>(
@@ -154,8 +187,8 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
               ),
               PlaylistDetailLoaded(:final playlist, :final tracks) =>
                 _isEditing
-                    ? _buildEditView(context, tracks)
-                    : _buildViewMode(context, playlist.name, tracks),
+                    ? _buildEditView(context, playlist, tracks)
+                    : _buildViewMode(context, playlist, tracks),
               PlaylistDetailDeleted() => const SizedBox.shrink(),
             },
           );
@@ -211,17 +244,17 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
 
   Widget _buildViewMode(
     BuildContext context,
-    String playlistName,
+    Playlist playlist,
     List<Track> tracks,
   ) {
     final playerState = context.watch<PlayerBloc>().state;
     final isPlayingThis =
         playerState.currentTrack != null &&
-        tracks.contains(playerState.currentTrack);
+        tracks.any((track) => track.id == playerState.currentTrack!.id);
 
     return CustomScrollView(
       slivers: [
-        SliverToBoxAdapter(child: _buildHeader(playlistName, tracks.length)),
+        SliverToBoxAdapter(child: _buildHeader(playlist, tracks.length)),
         if (tracks.isNotEmpty)
           SliverToBoxAdapter(
             child: Padding(
@@ -229,7 +262,7 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
               child: _PlayButton(
                 isPlayingThis: isPlayingThis && playerState.isPlaying,
                 onTap: () {
-                  if (isPlayingThis && playerState.isPlaying) {
+                  if (isPlayingThis) {
                     context.read<PlayerBloc>().add(PlayerPlayPauseToggled());
                   } else {
                     context.read<PlayerBloc>().add(PlayerQueueSet(tracks));
@@ -254,7 +287,7 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
                 child: TrackItem(
                   track: track,
                   isPlaying: playerState.isPlaying,
-                  isCurrent: track == playerState.currentTrack,
+                  isCurrent: track.id == playerState.currentTrack?.id,
                   isAvailable: track.isReadyToPlay,
                   onTap: () {
                     context.read<PlayerBloc>().add(
@@ -270,7 +303,11 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
     );
   }
 
-  Widget _buildEditView(BuildContext context, List<Track> tracks) {
+  Widget _buildEditView(
+    BuildContext context,
+    Playlist playlist,
+    List<Track> tracks,
+  ) {
     return Column(
       children: [
         Padding(
@@ -285,6 +322,11 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
                 style: AppText.label,
               ),
               const Spacer(),
+              TextButton.icon(
+                onPressed: () => _showAddTrackSheet(context, playlist),
+                icon: const Icon(Icons.add, size: 16),
+                label: Text(context.tr('playlist.addTrack')),
+              ),
               Text(
                 context.tr('playlist.holdToDrag').toUpperCase(),
                 style: AppText.label,
@@ -318,13 +360,24 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
     );
   }
 
-  Widget _buildHeader(String name, int trackCount) {
+  Widget _buildHeader(Playlist playlist, int trackCount) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 12, 24, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(name, style: AppText.display2),
+          if (playlist.imageUrl != null) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(AppRadius.m),
+              child: CachedImage(url: playlist.imageUrl, size: 120),
+            ),
+            const SizedBox(height: 16),
+          ],
+          Text(playlist.name, style: AppText.display2),
+          if (playlist.description?.trim().isNotEmpty ?? false) ...[
+            const SizedBox(height: 6),
+            Text(playlist.description!, style: AppText.bodyM),
+          ],
           const SizedBox(height: 6),
           Text(
             'common.trackCount'.tr(namedArgs: {'count': trackCount.toString()}),
@@ -585,9 +638,17 @@ class _PlaylistActionsSheet extends StatelessWidget {
 
 class _RenamePlaylistSheet extends StatefulWidget {
   final String initialName;
-  final ValueChanged<String> onSave;
+  final String? initialDescription;
+  final String? initialImageUrl;
+  final void Function(String name, String? description, String? imageUrl)
+  onSave;
 
-  const _RenamePlaylistSheet({required this.initialName, required this.onSave});
+  const _RenamePlaylistSheet({
+    required this.initialName,
+    required this.initialDescription,
+    required this.initialImageUrl,
+    required this.onSave,
+  });
 
   @override
   State<_RenamePlaylistSheet> createState() => _RenamePlaylistSheetState();
@@ -597,12 +658,31 @@ class _RenamePlaylistSheetState extends State<_RenamePlaylistSheet> {
   late final TextEditingController _ctrl = TextEditingController(
     text: widget.initialName,
   );
+  late final TextEditingController _descriptionCtrl = TextEditingController(
+    text: widget.initialDescription,
+  );
+  late final TextEditingController _imageUrlCtrl = TextEditingController(
+    text: widget.initialImageUrl,
+  );
   late bool _canSave = widget.initialName.trim().isNotEmpty;
 
   @override
   void dispose() {
     _ctrl.dispose();
+    _descriptionCtrl.dispose();
+    _imageUrlCtrl.dispose();
     super.dispose();
+  }
+
+  void _save() {
+    if (!_canSave) return;
+    final description = _descriptionCtrl.text.trim();
+    final imageUrl = _imageUrlCtrl.text.trim();
+    widget.onSave(
+      _ctrl.text.trim(),
+      description.isEmpty ? null : description,
+      imageUrl.isEmpty ? null : imageUrl,
+    );
   }
 
   @override
@@ -640,7 +720,7 @@ class _RenamePlaylistSheetState extends State<_RenamePlaylistSheet> {
           ),
           Row(
             children: [
-              Text(context.tr('common.rename'), style: AppText.display3),
+              Text(context.tr('playlist.edit'), style: AppText.display3),
               const Spacer(),
               IconButton(
                 onPressed: () => context.pop(),
@@ -656,9 +736,6 @@ class _RenamePlaylistSheetState extends State<_RenamePlaylistSheet> {
             controller: _ctrl,
             autofocus: true,
             onChanged: (v) => setState(() => _canSave = v.trim().isNotEmpty),
-            onSubmitted: (_) {
-              if (_canSave) widget.onSave(_ctrl.text.trim());
-            },
             style: AppText.display2,
             maxLength: 50,
             maxLines: 1,
@@ -672,12 +749,49 @@ class _RenamePlaylistSheetState extends State<_RenamePlaylistSheet> {
               focusedBorder: InputBorder.none,
             ),
           ),
+          const SizedBox(height: AppSpacing.m),
+          Text(
+            context.tr('playlist.description').toUpperCase(),
+            style: AppText.label,
+          ),
+          TextField(
+            controller: _descriptionCtrl,
+            maxLength: 500,
+            maxLines: 3,
+            style: AppText.bodyL,
+            decoration: InputDecoration(
+              hintText: context.tr('playlist.descriptionHint'),
+              counterText: '',
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.m),
+          Text(
+            context.tr('playlist.imageUrl').toUpperCase(),
+            style: AppText.label,
+          ),
+          TextField(
+            controller: _imageUrlCtrl,
+            maxLines: 1,
+            keyboardType: TextInputType.url,
+            textInputAction: TextInputAction.done,
+            onSubmitted: (_) => _save(),
+            style: AppText.bodyL,
+            decoration: InputDecoration(
+              hintText: context.tr('playlist.imageUrlHint'),
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+            ),
+          ),
           const SizedBox(height: AppSpacing.xl),
           AnimatedOpacity(
             opacity: _canSave ? 1.0 : 0.35,
             duration: AppAnim.fast,
             child: GestureDetector(
-              onTap: _canSave ? () => widget.onSave(_ctrl.text.trim()) : null,
+              onTap: _canSave ? _save : null,
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.m + 2),
@@ -696,6 +810,73 @@ class _RenamePlaylistSheetState extends State<_RenamePlaylistSheet> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AddTracksSheet extends StatelessWidget {
+  const _AddTracksSheet({required this.tracks, required this.onAdd});
+
+  final List<Track> tracks;
+  final ValueChanged<Track> onAdd;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height * 0.75,
+      ),
+      decoration: const BoxDecoration(
+        color: AppBlur.sheetColor,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+      child: Column(
+        children: [
+          Container(
+            width: 32,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppColors.muted2,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 18),
+          Text(context.tr('playlist.addTrack'), style: AppText.display3),
+          const SizedBox(height: 12),
+          if (tracks.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 32),
+              child: Text(
+                context.tr('playlist.noTracksToAdd'),
+                style: AppText.bodyM,
+              ),
+            )
+          else
+            Flexible(
+              child: ListView.builder(
+                itemCount: tracks.length,
+                itemBuilder: (context, index) {
+                  final track = tracks[index];
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(AppRadius.s),
+                      child: CachedImage(url: track.imageUrl, size: 40),
+                    ),
+                    title: Text(track.title, style: AppText.bodyL),
+                    subtitle: Text(
+                      track.artists.map((artist) => artist.name).join(', '),
+                      style: AppText.bodyM,
+                    ),
+                    trailing: const Icon(Icons.add, color: AppColors.textSub),
+                    onTap: () => onAdd(track),
+                  );
+                },
+              ),
+            ),
         ],
       ),
     );

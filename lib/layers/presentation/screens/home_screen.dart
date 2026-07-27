@@ -44,17 +44,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<TrackBloc, TrackState>(
-      listener: (context, state) {
-        if (state is TrackLoaded) {
-          final playerState = context.read<PlayerBloc>().state;
-          if (playerState.currentTrack == null) {
-            context.read<PlayerBloc>().add(
-              PlayerQueueSet(state.tracks, autoPlay: false),
-            );
-          }
-        }
-      },
+    return BlocBuilder<TrackBloc, TrackState>(
       builder: (context, state) {
         if (state is TrackError) {
           return Scaffold(body: Center(child: Text(state.error.tr())));
@@ -306,6 +296,7 @@ class _HistorySection extends StatelessWidget {
                           ),
                         );
                       }
+                      final playerState = context.watch<PlayerBloc>().state;
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -344,8 +335,13 @@ class _HistorySection extends StatelessWidget {
                               padding: const EdgeInsets.all(8.0),
                               child: TrackItem(
                                 track: entry.value,
-                                isPlaying: false,
-                                isCurrent: false,
+                                isPlaying:
+                                    playerState.isPlaying &&
+                                    playerState.currentTrack?.id ==
+                                        entry.value.id,
+                                isCurrent:
+                                    playerState.currentTrack?.id ==
+                                    entry.value.id,
                                 isAvailable: entry.value.isReadyToPlay,
                                 onTap: () {
                                   context.read<PlayerBloc>().add(
@@ -491,7 +487,7 @@ class _PlaylistSection extends StatelessWidget {
 }
 
 class _PlaylistCard extends StatelessWidget {
-  final Playlist data;
+  final PlaylistSummary data;
   const _PlaylistCard({required this.data});
 
   @override
@@ -538,7 +534,7 @@ class _PlaylistCard extends StatelessWidget {
             ),
             const SizedBox(height: 2),
             Text(
-              data.trackIds.length.toString(),
+              data.trackCount.toString(),
               style: GoogleFonts.figtree(fontSize: 10, color: AppColors.muted2),
               overflow: TextOverflow.ellipsis,
             ),

@@ -20,7 +20,7 @@ class TrackBloc extends Bloc<TrackEvent, TrackState> {
   final SearchUseCase searchUseCase;
   final RemoveTrackUseCase removeTrackUseCase;
   final UpdateTrackUseCase updateTrackUseCase;
-  StreamSubscription<List<Track>>? _trackChangesSubscription;
+  StreamSubscription<void>? _trackChangesSubscription;
 
   TrackBloc({
     required this.getTracksUseCase,
@@ -28,8 +28,16 @@ class TrackBloc extends Bloc<TrackEvent, TrackState> {
     required this.searchUseCase,
     required this.removeTrackUseCase,
     required this.updateTrackUseCase,
-    required Stream<List<Track>> trackChangesStream,
+    required Stream<void> trackChangesStream,
   }) : super(TrackInitial()) {
+    on<LoadTracksEvent>(_onLoadTracks);
+    on<RemoveTrackEvent>(_onRemoveTrack);
+    on<UpdateTrackEvent>(_onUpdateTrack);
+    on<_TrackStreamErrored>(
+      (e, emit) =>
+          emit(TrackError(failureFromException(e.error).toLocaleKey())),
+    );
+
     _trackChangesSubscription = trackChangesStream.listen(
       (e) {
         add(LoadTracksEvent());
@@ -40,13 +48,6 @@ class TrackBloc extends Bloc<TrackEvent, TrackState> {
         );
         add(_TrackStreamErrored(error));
       },
-    );
-    on<LoadTracksEvent>(_onLoadTracks);
-    on<RemoveTrackEvent>(_onRemoveTrack);
-    on<UpdateTrackEvent>(_onUpdateTrack);
-    on<_TrackStreamErrored>(
-      (e, emit) =>
-          emit(TrackError(failureFromException(e.error).toLocaleKey())),
     );
   }
 
@@ -60,12 +61,20 @@ class TrackBloc extends Bloc<TrackEvent, TrackState> {
     LoadTracksEvent event,
     Emitter<TrackState> emit,
   ) async {
-    emit(TrackLoading());
+    final previous = state;
+    if (previous is! TrackLoaded) emit(TrackLoading());
+
     try {
       final tracks = await getTracksUseCase();
 
       emit(TrackLoaded(tracks));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      if (previous is TrackLoaded) {
+        AppLogger.log(
+          '[TrackBloc] Refresh failed: $e, stackTrace: $stackTrace',
+        );
+        return;
+      }
       emit(TrackError(failureFromException(e).toLocaleKey()));
     }
   }

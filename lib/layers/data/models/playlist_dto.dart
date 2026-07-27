@@ -11,6 +11,7 @@ class PlaylistDto extends Equatable {
     required this.createdAt,
     this.description,
     this.imageUrl,
+    this.revision = 0,
   });
 
   final String id;
@@ -19,6 +20,7 @@ class PlaylistDto extends Equatable {
   final DateTime createdAt;
   final String? description;
   final String? imageUrl;
+  final int revision;
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -27,6 +29,7 @@ class PlaylistDto extends Equatable {
     'createdAt': createdAt.toIso8601String(),
     'description': description,
     'imageUrl': imageUrl,
+    'revision': revision,
   };
 
   factory PlaylistDto.fromJson(Map<String, dynamic> json) {
@@ -37,6 +40,7 @@ class PlaylistDto extends Equatable {
       createdAt: DateTime.parse(json['createdAt'] as String),
       description: json['description'] as String?,
       imageUrl: json['imageUrl'] as String?,
+      revision: json['revision'] as int? ?? 0,
     );
   }
 
@@ -52,6 +56,7 @@ class PlaylistDto extends Equatable {
     DateTime? createdAt,
     String? description,
     String? imageUrl,
+    int? revision,
   }) {
     return PlaylistDto(
       id: id ?? this.id,
@@ -60,6 +65,7 @@ class PlaylistDto extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       description: description ?? this.description,
       imageUrl: imageUrl ?? this.imageUrl,
+      revision: revision ?? this.revision,
     );
   }
 
@@ -74,6 +80,7 @@ class PlaylistDto extends Equatable {
       createdAt: data.createdAt,
       description: data.description,
       imageUrl: data.imageUrl,
+      revision: data.revision,
     );
   }
 
@@ -83,6 +90,38 @@ class PlaylistDto extends Equatable {
     name,
     trackIds,
     createdAt,
+    description,
+    imageUrl,
+    revision,
+  ];
+}
+
+class PlaylistSummaryDto extends Equatable {
+  const PlaylistSummaryDto({
+    required this.id,
+    required this.name,
+    required this.createdAt,
+    required this.trackCount,
+    required this.revision,
+    this.description,
+    this.imageUrl,
+  });
+
+  final String id;
+  final String name;
+  final DateTime createdAt;
+  final int trackCount;
+  final int revision;
+  final String? description;
+  final String? imageUrl;
+
+  @override
+  List<Object?> get props => [
+    id,
+    name,
+    createdAt,
+    trackCount,
+    revision,
     description,
     imageUrl,
   ];

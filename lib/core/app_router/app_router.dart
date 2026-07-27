@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:openmusic/core/app_router/app_router_names.dart';
 import 'package:openmusic/core/app_router/transitions/goo_transition_page.dart';
 import 'package:openmusic/core/di/di.dart';
+import 'package:openmusic/core/utils/app_logger.dart';
 import 'package:openmusic/layers/presentation/blocs/embedding_status/embedding_status_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/import_music/import_music_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist_detail/playlist_detail_bloc.dart';
@@ -18,7 +21,7 @@ import 'package:openmusic/layers/presentation/screens/settings_screen.dart';
 import 'package:openmusic/core/app_router/app_shell.dart';
 
 class AppRouter {
-  static final GoRouter router = GoRouter(
+  static GoRouter get router => GoRouter(
     initialLocation: '/${AppRouterNames.home}',
     routes: [
       ShellRoute(
@@ -89,3 +92,5 @@ class AppRouter {
     ),
   );
 }
+
+late final GoRouter router;

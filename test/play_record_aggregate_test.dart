@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
@@ -10,7 +12,12 @@ void main() {
     final database = AppDatabase(NativeDatabase.memory());
     addTearDown(database.close);
     final source = PlayRecordDriftLocalSource(database);
+    final changes = StreamIterator<void>(source.watchChanges());
+    expect(await changes.moveNext(), isTrue);
+    final changed = changes.moveNext();
     await source.saveRecord(_record('old', DateTime.utc(2025), 9000));
+    expect(await changed, isTrue);
+    await changes.cancel();
     await source.saveRecord(_record('new-1', DateTime.utc(2026, 2), 1000));
     await source.saveRecord(
       _record('new-2', DateTime.utc(2026, 3), 2000, artist: 'Other'),

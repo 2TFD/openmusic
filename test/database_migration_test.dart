@@ -5,64 +5,93 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
 
 void main() {
-  test('schema v6 adds audio revisions and queue claim indexes', () async {
-    final tempDir = await Directory.systemTemp.createTemp(
-      'openmusic_schema_v7_migration_',
-    );
-    addTearDown(() => tempDir.delete(recursive: true));
-    final databaseFile = File('${tempDir.path}/migration.sqlite');
+  test(
+    'schema v6 migrates through revisions, indexes, and durable work tables',
+    () async {
+      final tempDir = await Directory.systemTemp.createTemp(
+        'openmusic_schema_v7_migration_',
+      );
+      addTearDown(() => tempDir.delete(recursive: true));
+      final databaseFile = File('${tempDir.path}/migration.sqlite');
 
-    final legacy = AppDatabase(NativeDatabase(databaseFile));
-    await legacy.customSelect('SELECT 1').get();
-    await legacy.customStatement(
-      'ALTER TABLE track_table DROP COLUMN audio_revision',
-    );
-    await legacy.customStatement(
-      'ALTER TABLE embedding_task_table DROP COLUMN audio_revision',
-    );
-    await legacy.customStatement(
-      'DROP INDEX IF EXISTS idx_download_task_claim',
-    );
-    await legacy.customStatement(
-      'DROP INDEX IF EXISTS idx_embedding_task_claim',
-    );
-    await legacy.customStatement('PRAGMA user_version = 6');
-    await legacy.close();
+      final legacy = AppDatabase(NativeDatabase(databaseFile));
+      await legacy.customSelect('SELECT 1').get();
+      await legacy.customStatement(
+        'ALTER TABLE track_table DROP COLUMN audio_revision',
+      );
+      await legacy.customStatement(
+        'ALTER TABLE embedding_task_table DROP COLUMN audio_revision',
+      );
+      await legacy.customStatement(
+        'ALTER TABLE track_table DROP COLUMN metadata_revision',
+      );
+      await legacy.customStatement(
+        'ALTER TABLE playlist_table DROP COLUMN revision',
+      );
+      await legacy.customStatement('DROP TABLE file_cleanup_task_table');
+      await legacy.customStatement('DROP TABLE listening_checkpoint_table');
+      await legacy.customStatement(
+        'DROP INDEX IF EXISTS idx_download_task_claim',
+      );
+      await legacy.customStatement(
+        'DROP INDEX IF EXISTS idx_embedding_task_claim',
+      );
+      await legacy.customStatement('PRAGMA user_version = 6');
+      await legacy.close();
 
-    final migrated = AppDatabase(NativeDatabase(databaseFile));
-    addTearDown(migrated.close);
-    await migrated.customSelect('SELECT 1').get();
+      final migrated = AppDatabase(NativeDatabase(databaseFile));
+      addTearDown(migrated.close);
+      await migrated.customSelect('SELECT 1').get();
 
-    final trackColumns = await migrated
-        .customSelect('PRAGMA table_info(track_table)')
-        .get();
-    final taskColumns = await migrated
-        .customSelect('PRAGMA table_info(embedding_task_table)')
-        .get();
-    final downloadIndexes = await migrated
-        .customSelect('PRAGMA index_list(download_task_table)')
-        .get();
-    final embeddingIndexes = await migrated
-        .customSelect('PRAGMA index_list(embedding_task_table)')
-        .get();
+      final trackColumns = await migrated
+          .customSelect('PRAGMA table_info(track_table)')
+          .get();
+      final taskColumns = await migrated
+          .customSelect('PRAGMA table_info(embedding_task_table)')
+          .get();
+      final playlistColumns = await migrated
+          .customSelect('PRAGMA table_info(playlist_table)')
+          .get();
+      final downloadIndexes = await migrated
+          .customSelect('PRAGMA index_list(download_task_table)')
+          .get();
+      final embeddingIndexes = await migrated
+          .customSelect('PRAGMA index_list(embedding_task_table)')
+          .get();
+      final tables = await migrated
+          .customSelect("SELECT name FROM sqlite_master WHERE type = 'table'")
+          .get();
 
-    expect(
-      trackColumns.map((row) => row.read<String>('name')),
-      contains('audio_revision'),
-    );
-    expect(
-      taskColumns.map((row) => row.read<String>('name')),
-      contains('audio_revision'),
-    );
-    expect(
-      downloadIndexes.map((row) => row.read<String>('name')),
-      contains('idx_download_task_claim'),
-    );
-    expect(
-      embeddingIndexes.map((row) => row.read<String>('name')),
-      contains('idx_embedding_task_claim'),
-    );
-  });
+      expect(
+        trackColumns.map((row) => row.read<String>('name')),
+        contains('audio_revision'),
+      );
+      expect(
+        trackColumns.map((row) => row.read<String>('name')),
+        contains('metadata_revision'),
+      );
+      expect(
+        taskColumns.map((row) => row.read<String>('name')),
+        contains('audio_revision'),
+      );
+      expect(
+        playlistColumns.map((row) => row.read<String>('name')),
+        contains('revision'),
+      );
+      expect(
+        downloadIndexes.map((row) => row.read<String>('name')),
+        contains('idx_download_task_claim'),
+      );
+      expect(
+        embeddingIndexes.map((row) => row.read<String>('name')),
+        contains('idx_embedding_task_claim'),
+      );
+      expect(
+        tables.map((row) => row.read<String>('name')),
+        containsAll(['file_cleanup_task_table', 'listening_checkpoint_table']),
+      );
+    },
+  );
 
   test('schema v3 migrates both task tables to lease columns', () async {
     final tempDir = await Directory.systemTemp.createTemp(
@@ -250,12 +279,50 @@ ORDER BY position
       contains('listened_duration_milliseconds'),
     );
   });
+
+  test('schema v9 migrates playback and navigation state tables', () async {
+    final tempDir = await Directory.systemTemp.createTemp(
+      'openmusic_state_schema_migration_',
+    );
+    addTearDown(() => tempDir.delete(recursive: true));
+    final databaseFile = File('${tempDir.path}/migration.sqlite');
+
+    final legacy = AppDatabase(NativeDatabase(databaseFile));
+    await legacy.customSelect('SELECT 1').get();
+    await legacy.customStatement('DROP TABLE playback_queue_item_table');
+    await legacy.customStatement('DROP TABLE playback_session_table');
+    await legacy.customStatement('DROP TABLE app_navigation_state_table');
+    await legacy.customStatement('PRAGMA user_version = 9');
+    await legacy.close();
+
+    final migrated = AppDatabase(NativeDatabase(databaseFile));
+    addTearDown(migrated.close);
+    await migrated.customSelect('SELECT 1').get();
+    final tables = await migrated
+        .customSelect("SELECT name FROM sqlite_master WHERE type = 'table'")
+        .get();
+
+    expect(
+      tables.map((row) => row.read<String>('name')),
+      containsAll([
+        'playback_session_table',
+        'playback_queue_item_table',
+        'app_navigation_state_table',
+      ]),
+    );
+  });
 }
 
 Future<void> _restoreLegacyBaseTables(
   AppDatabase database, {
   String addedAtType = 'INTEGER',
 }) async {
+  await database.customStatement(
+    'DROP TABLE IF EXISTS file_cleanup_task_table',
+  );
+  await database.customStatement(
+    'DROP TABLE IF EXISTS listening_checkpoint_table',
+  );
   await database.customStatement(
     'DROP INDEX IF EXISTS idx_download_task_claim',
   );

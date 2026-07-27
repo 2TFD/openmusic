@@ -25,6 +25,10 @@ class GetPlaylistWithTracksUseCase {
     final playlist = await _playlistRepository.getPlaylistById(playlistId);
     if (playlist == null) throw NotFoundFailure('playlist', playlistId);
 
+    return fromPlaylist(playlist);
+  }
+
+  Future<PlaylistWithTracks> fromPlaylist(Playlist playlist) async {
     final tracks = await _trackRepository.getTracksByIds(playlist.trackIds);
     final trackMap = {for (final t in tracks) t.id: t};
     final ordered = playlist.trackIds

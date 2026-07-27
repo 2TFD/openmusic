@@ -6,76 +6,52 @@ import 'package:equatable/equatable.dart';
 import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/layers/domain/entities/playlist.dart';
 import 'package:openmusic/layers/domain/usecases/create_playlist_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/add_track_to_playlist_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/get_playlists_use_case.dart';
 
 part 'playlist_event.dart';
 part 'playlist_state.dart';
 
 class PlaylistBloc extends Bloc<PlaylistEvent, PlaylistState> {
-  final GetPlaylistsUseCase getPlaylistsUseCase;
-  final AddTrackToPlaylistUseCase addTrackToPlaylistUseCase;
   final CreatePlaylistUseCase createPlaylistUseCase;
 
-  StreamSubscription<List<Playlist>>? _changesSubscription;
+  StreamSubscription<List<PlaylistSummary>>? _changesSubscription;
   PlaylistBloc({
-    required this.getPlaylistsUseCase,
-    required this.addTrackToPlaylistUseCase,
     required this.createPlaylistUseCase,
-    required Stream<List<Playlist>> playlistChangesStream,
-  }) : super(PlaylistInitial()) {
+    required Stream<List<PlaylistSummary>> playlistChangesStream,
+  }) : super(PlaylistLoading()) {
+    on<PlaylistEvent>(_onEvent, transformer: _sequential());
+
     _changesSubscription = playlistChangesStream.listen(
-      (e) {
-        add(LoadPlaylistEvent());
-      },
+      (playlists) => add(_PlaylistSnapshotReceived(playlists)),
       onError: (error, stackTrace) {
         log(
           'Stream error: $error, stackTrace: $stackTrace',
-          name: "PlaylistBloc",
+          name: 'PlaylistBloc',
         );
         add(_PlaylistStreamErrored(error));
       },
     );
-    on<LoadPlaylistEvent>(_onLoad);
-    on<AddTrackPlaylistEvent>(_onAdd);
-    on<CreatePlaylistEvent>(_onCreate);
-    on<_PlaylistStreamErrored>(
-      (e, emit) =>
-          emit(PlaylistError(failureFromException(e.error).toLocaleKey())),
-    );
   }
+
   @override
-  Future<void> close() {
-    _changesSubscription?.cancel();
+  Future<void> close() async {
+    await _changesSubscription?.cancel();
     return super.close();
   }
 
-  Future<void> _onLoad(
-    LoadPlaylistEvent event,
+  Future<void> _onEvent(
+    PlaylistEvent event,
     Emitter<PlaylistState> emit,
   ) async {
-    emit(PlaylistLoading());
-    try {
-      final playlists = await getPlaylistsUseCase.call();
-      emit(PlaylistLoaded(playlists));
-    } catch (e) {
-      emit(PlaylistError(failureFromException(e).toLocaleKey()));
-    }
-  }
-
-  Future<void> _onAdd(
-    AddTrackPlaylistEvent event,
-    Emitter<PlaylistState> emit,
-  ) async {
-    emit(PlaylistLoading());
-    try {
-      await addTrackToPlaylistUseCase(
-        playlistId: event.playlistId,
-        trackId: event.trackId,
-      );
-      add(LoadPlaylistEvent());
-    } catch (e) {
-      emit(PlaylistError(failureFromException(e).toLocaleKey()));
+    switch (event) {
+      case _PlaylistSnapshotReceived():
+        emit(PlaylistLoaded(event.playlists));
+        return;
+      case CreatePlaylistEvent():
+        await _onCreate(event, emit);
+        return;
+      case _PlaylistStreamErrored():
+        _emitFailure(event.error, emit);
+        return;
     }
   }
 
@@ -83,12 +59,46 @@ class PlaylistBloc extends Bloc<PlaylistEvent, PlaylistState> {
     CreatePlaylistEvent event,
     Emitter<PlaylistState> emit,
   ) async {
-    emit(PlaylistLoading());
+    final playlists = _currentPlaylists;
+    emit(PlaylistLoaded(playlists, isMutating: true));
     try {
       await createPlaylistUseCase(event.playlist);
-      add(LoadPlaylistEvent());
+      emit(PlaylistLoaded(playlists, completedOperationId: event.playlist.id));
     } catch (e) {
-      emit(PlaylistError(failureFromException(e).toLocaleKey()));
+      _emitOperationFailure(e, event.playlist.id, playlists, emit);
+    }
+  }
+
+  List<PlaylistSummary> get _currentPlaylists => switch (state) {
+    PlaylistLoaded(:final playlists) => playlists,
+    _ => const [],
+  };
+
+  void _emitOperationFailure(
+    Object error,
+    String operationId,
+    List<PlaylistSummary> playlists,
+    Emitter<PlaylistState> emit,
+  ) {
+    emit(
+      PlaylistLoaded(
+        playlists,
+        failedOperationId: operationId,
+        errorKey: failureFromException(error).toLocaleKey(),
+      ),
+    );
+  }
+
+  void _emitFailure(Object error, Emitter<PlaylistState> emit) {
+    final key = failureFromException(error).toLocaleKey();
+    final playlists = _currentPlaylists;
+    if (state is PlaylistLoaded) {
+      emit(PlaylistLoaded(playlists, errorKey: key));
+    } else {
+      emit(PlaylistError(key));
     }
   }
 }
+
+EventTransformer<E> _sequential<E>() =>
+    (events, mapper) => events.asyncExpand(mapper);

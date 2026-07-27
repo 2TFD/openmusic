@@ -119,13 +119,13 @@ ORDER BY position
         createdAt: DateTime.utc(2026),
       ),
     );
-    final updated = playlists.watchPlaylist().firstWhere(
-      (items) => items.single.trackIds.isNotEmpty,
-    );
+    final updated = playlists
+        .watchPlaylistById('playlist-1')
+        .firstWhere((playlist) => playlist?.trackIds.isNotEmpty ?? false);
 
     await playlists.addTrack('playlist-1', 'track-1');
 
-    expect((await updated).single.trackIds, ['track-1']);
+    expect((await updated)!.trackIds, ['track-1']);
   });
 }
 

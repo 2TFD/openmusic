@@ -20,6 +20,10 @@ abstract class AudioPlayerPort {
   Future<void> skipToPrevious();
   Future<void> setLoopMode(PlaybackLoopMode mode);
   Future<void> setShuffleModeEnabled(bool enabled);
-  Future<void> setQueue(List<Track> tracks, {int index = 0});
+  Future<void> setQueue(
+    List<Track> tracks, {
+    int index = 0,
+    Duration initialPosition = Duration.zero,
+  });
   Future<void> dispose();
 }

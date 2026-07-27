@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:get_it/get_it.dart';
 import 'package:openmusic/core/services/download/download_worker.dart';
 import 'package:openmusic/core/services/embedding/embedding_worker.dart';
+import 'package:openmusic/layers/domain/repositories/track_removal_repository.dart';
+import 'package:openmusic/layers/domain/usecases/recover_listening_checkpoint_use_case.dart';
 
 class AppBootstrap with WidgetsBindingObserver {
   final GetIt getIt;
@@ -16,6 +18,8 @@ class AppBootstrap with WidgetsBindingObserver {
       WidgetsBinding.instance.addObserver(this);
       _observingLifecycle = true;
     }
+    await getIt<TrackRemovalRepository>().cleanupPending();
+    await getIt<RecoverListeningCheckpointUseCase>()();
     await _initWorkers();
   }
 

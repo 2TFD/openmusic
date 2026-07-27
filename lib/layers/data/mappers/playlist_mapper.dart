@@ -10,6 +10,19 @@ class PlaylistMapper {
       createdAt: model.createdAt,
       description: model.description,
       imageUrl: model.imageUrl,
+      revision: model.revision,
+    );
+  }
+
+  static PlaylistSummary summaryToEntity(PlaylistSummaryDto model) {
+    return PlaylistSummary(
+      id: model.id,
+      name: model.name,
+      createdAt: model.createdAt,
+      trackCount: model.trackCount,
+      revision: model.revision,
+      description: model.description,
+      imageUrl: model.imageUrl,
     );
   }
 
@@ -21,6 +34,7 @@ class PlaylistMapper {
       createdAt: entity.createdAt,
       description: entity.description,
       imageUrl: entity.imageUrl,
+      revision: entity.revision,
     );
   }
 }

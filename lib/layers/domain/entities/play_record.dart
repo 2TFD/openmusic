@@ -68,3 +68,23 @@ class PlayRecordSummary {
   final int uniqueArtists;
   final Map<SourceType, int> bySource;
 }
+
+class ListeningCheckpoint {
+  const ListeningCheckpoint({
+    required this.id,
+    required this.trackId,
+    required this.trackTitle,
+    required this.artistName,
+    required this.sourceType,
+    required this.listenedDuration,
+    required this.updatedAt,
+  });
+
+  final String id;
+  final String trackId;
+  final String trackTitle;
+  final String artistName;
+  final SourceType sourceType;
+  final Duration listenedDuration;
+  final DateTime updatedAt;
+}

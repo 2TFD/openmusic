@@ -12,6 +12,7 @@ class PlayerState extends Equatable {
   final PlaybackLoopMode loopMode;
   final List<int>? shuffleIndices;
   final String? error;
+  final bool isRestoring;
 
   const PlayerState({
     this.currentTrack,
@@ -25,10 +26,31 @@ class PlayerState extends Equatable {
     this.loopMode = PlaybackLoopMode.off,
     this.shuffleIndices,
     this.error,
+    this.isRestoring = false,
   });
 
-  bool get hasNext => currentIndex < queue.length - 1;
-  bool get hasPrev => currentIndex > 0;
+  bool get hasNext {
+    if (queue.length < 2) return false;
+    if (loopMode == PlaybackLoopMode.all) return true;
+    return _effectivePosition < queue.length - 1;
+  }
+
+  bool get hasPrev {
+    if (queue.length < 2) return false;
+    if (loopMode == PlaybackLoopMode.all) return true;
+    return _effectivePosition > 0;
+  }
+
+  int get _effectivePosition {
+    final indices = shuffleIndices;
+    if (!isShuffleEnabled ||
+        indices == null ||
+        indices.length != queue.length) {
+      return currentIndex;
+    }
+    final position = indices.indexOf(currentIndex);
+    return position < 0 ? currentIndex : position;
+  }
 
   double get progress => duration.inMilliseconds == 0
       ? 0
@@ -47,6 +69,7 @@ class PlayerState extends Equatable {
     loopMode,
     shuffleIndices,
     error,
+    isRestoring,
   ];
 
   PlayerState copyWith({
@@ -61,6 +84,7 @@ class PlayerState extends Equatable {
     PlaybackLoopMode? loopMode,
     Object? shuffleIndices = _unset,
     Object? error = _unset,
+    bool? isRestoring,
   }) {
     return PlayerState(
       currentTrack: identical(currentTrack, _unset)
@@ -78,6 +102,7 @@ class PlayerState extends Equatable {
           ? this.shuffleIndices
           : shuffleIndices as List<int>?,
       error: identical(error, _unset) ? this.error : error as String?,
+      isRestoring: isRestoring ?? this.isRestoring,
     );
   }
 }

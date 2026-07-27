@@ -3,12 +3,17 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:openmusic/layers/domain/entities/artist.dart';
 import 'package:openmusic/layers/domain/entities/play_record.dart';
+import 'package:openmusic/layers/domain/entities/playback_session.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
+import 'package:openmusic/layers/domain/repositories/listening_checkpoint_repository.dart';
 import 'package:openmusic/layers/domain/repositories/play_record_repository.dart';
+import 'package:openmusic/layers/domain/repositories/playback_session_repository.dart';
+import 'package:openmusic/layers/domain/repositories/track_repository.dart';
 import 'package:openmusic/layers/domain/usecases/build_playback_queue_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/save_statistic_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/restore_playback_session_use_case.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 
 void main() {
@@ -17,10 +22,18 @@ void main() {
     () async {
       final player = _FakeAudioPlayer();
       final records = _FakePlayRecordRepository();
+      final checkpoints = _FakeCheckpointRepository();
+      final sessions = _FakePlaybackSessionRepository();
       final bloc = PlayerBloc(
         service: player,
         recordPlay: SaveRecordPlayUseCase(repo: records),
+        checkpoints: checkpoints,
         buildQueue: BuildPlaybackQueueUseCase(),
+        restorePlayback: RestorePlaybackSessionUseCase(
+          sessions: sessions,
+          tracks: _FakeTrackRepository(),
+        ),
+        sessions: sessions,
       );
       bloc.add(PlayerQueueSet([_track()], autoPlay: false));
       await _pump();
@@ -31,6 +44,10 @@ void main() {
         player.position.add(Duration(seconds: second));
       }
       await _pump();
+      expect(
+        checkpoints.checkpoint?.listenedDuration,
+        const Duration(seconds: 30),
+      );
 
       bloc.add(PlayerSeeked(const Duration(seconds: 100)));
       await _pump();
@@ -46,6 +63,32 @@ void main() {
       );
     },
   );
+}
+
+class _FakeCheckpointRepository implements ListeningCheckpointRepository {
+  ListeningCheckpoint? checkpoint;
+
+  @override
+  Future<ListeningCheckpoint> save(
+    Track track,
+    Duration listenedDuration,
+  ) async {
+    return checkpoint = ListeningCheckpoint(
+      id: 'checkpoint-1',
+      trackId: track.id,
+      trackTitle: track.title,
+      artistName: track.artists.map((artist) => artist.name).join(', '),
+      sourceType: track.source.type,
+      listenedDuration: listenedDuration,
+      updatedAt: DateTime.now(),
+    );
+  }
+
+  @override
+  Future<ListeningCheckpoint?> load() async => checkpoint;
+
+  @override
+  Future<void> clear(String id) async => checkpoint = null;
 }
 
 Future<void> _pump() => Future<void>.delayed(const Duration(milliseconds: 10));
@@ -98,7 +141,11 @@ class _FakeAudioPlayer implements AudioPlayerPort {
   @override
   Future<void> setLoopMode(PlaybackLoopMode mode) async {}
   @override
-  Future<void> setQueue(List<Track> tracks, {int index = 0}) async {}
+  Future<void> setQueue(
+    List<Track> tracks, {
+    int index = 0,
+    Duration initialPosition = Duration.zero,
+  }) async {}
   @override
   Future<void> setShuffleModeEnabled(bool enabled) async {}
   @override
@@ -111,6 +158,46 @@ class _FakeAudioPlayer implements AudioPlayerPort {
     await index.close();
     await processing.close();
   }
+}
+
+class _FakePlaybackSessionRepository implements PlaybackSessionRepository {
+  PlaybackSession? value;
+
+  @override
+  Future<PlaybackSession?> load() async => value;
+
+  @override
+  Future<void> replace(PlaybackSession session) async => value = session;
+
+  @override
+  Future<void> updatePlayback(PlaybackSession session) async => value = session;
+
+  @override
+  Future<void> clear() async => value = null;
+}
+
+class _FakeTrackRepository implements TrackRepository {
+  @override
+  Future<List<Track>> getTracks() async => const [];
+
+  @override
+  Future<Track?> getTrackById(String id) async => null;
+
+  @override
+  Future<List<Track>> getTracksByIds(List<String> ids) async => const [];
+
+  @override
+  Future<List<Track>> searchTracks(
+    String query, {
+    required int limit,
+    required int offset,
+  }) async => const [];
+
+  @override
+  Future<void> updateMetadata(Track track) async {}
+
+  @override
+  Stream<void> watchChanges() => const Stream.empty();
 }
 
 class _FakePlayRecordRepository implements PlayRecordRepository {
@@ -131,5 +218,5 @@ class _FakePlayRecordRepository implements PlayRecordRepository {
   @override
   Future<List<String>> getRecentTrackIds({int limit = 20}) async => const [];
   @override
-  Stream<List<PlayRecord>> watchPlayRecord() => const Stream.empty();
+  Stream<void> watchChanges() => const Stream.empty();
 }

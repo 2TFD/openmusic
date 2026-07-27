@@ -5,5 +5,5 @@ abstract class PlayRecordRepository {
   Future<PlayRecordSummary> aggregate({required DateTime from});
   Future<List<String>> getRecentTrackIds({int limit = 20});
   Future<void> clear();
-  Stream<List<PlayRecord>> watchPlayRecord();
+  Stream<void> watchChanges();
 }

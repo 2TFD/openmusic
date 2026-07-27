@@ -15,15 +15,17 @@ final class PlaylistDetailLoaded extends PlaylistDetailState {
   final Playlist playlist;
   final List<Track> tracks;
   final String? errorKey;
+  final bool isMutating;
 
   const PlaylistDetailLoaded({
     required this.playlist,
     required this.tracks,
     this.errorKey,
+    this.isMutating = false,
   });
 
   @override
-  List<Object?> get props => [playlist, tracks, errorKey];
+  List<Object?> get props => [playlist, tracks, errorKey, isMutating];
 }
 
 final class PlaylistDetailDeleted extends PlaylistDetailState {}

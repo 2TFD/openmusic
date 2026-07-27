@@ -169,7 +169,7 @@ class SoundcloudTrackSource implements TrackSource {
         sourceType: SourceType.soundcloud,
         tracks: previews,
         collection: ResolvedTrackCollection(
-          id: jsonPlaylistData['id'].toString(),
+          id: 'soundcloud:playlist:${jsonPlaylistData['id']}',
           name: jsonPlaylistData['title'] as String? ?? 'New Playlist',
           description: jsonPlaylistData['description'] as String?,
           imageUrl:
@@ -256,7 +256,7 @@ class SoundcloudTrackSource implements TrackSource {
         sourceType: SourceType.soundcloud,
         tracks: previews,
         collection: ResolvedTrackCollection(
-          id: userId,
+          id: 'soundcloud:likes:$userId',
           name:
               'soundcloud - ${userJson['permalink'] ?? userJson['username'] ?? ''}',
           description: userJson['description'] as String?,
@@ -361,7 +361,8 @@ class SoundcloudTrackSource implements TrackSource {
     }
   }
 
-  Future<String> getClientId() async {
+  Future<String> getClientId({bool forceRefresh = false}) async {
+    if (forceRefresh) _cachedClientId = null;
     if (_cachedClientId != null) return _cachedClientId!;
 
     try {
@@ -389,8 +390,10 @@ class SoundcloudTrackSource implements TrackSource {
     } catch (_) {}
 
     // Fallback to bundled value if parsing fails
-    return _fallbackClientId;
+    return _cachedClientId = _fallbackClientId;
   }
+
+  void invalidateClientId() => _cachedClientId = null;
 
   Future<Map<String, dynamic>> fetchTrackJson(
     String url,

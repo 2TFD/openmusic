@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:openmusic/core/errors/failures/failure.dart';
-import 'package:openmusic/layers/domain/entities/play_record.dart';
 import 'package:openmusic/layers/domain/entities/statistic.dart';
 import 'package:openmusic/layers/domain/usecases/get_statistic_use_case.dart';
 
@@ -12,11 +11,11 @@ part 'statistic_state.dart';
 
 class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
   final GetStatisticsUseCase getStatistics;
-  StreamSubscription<List<PlayRecord>>? _statisticChangesSubscription;
+  StreamSubscription<void>? _statisticChangesSubscription;
 
   StatisticBloc({
     required this.getStatistics,
-    required Stream<List<PlayRecord>> statisticChangesStream,
+    required Stream<void> statisticChangesStream,
   }) : super(StatisticInitial()) {
     _statisticChangesSubscription = statisticChangesStream.listen(
       (_) {

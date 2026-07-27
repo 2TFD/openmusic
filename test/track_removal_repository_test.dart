@@ -97,6 +97,10 @@ void main() {
       expect(await database.select(database.embeddingTaskTable).get(), isEmpty);
       expect(await database.select(database.playlistTrackTable).get(), isEmpty);
       expect(await database.select(database.artistTable).get(), isEmpty);
+      expect(
+        await database.select(database.fileCleanupTaskTable).get(),
+        isEmpty,
+      );
       expect(await database.select(database.playlistTable).get(), hasLength(1));
       expect(await audio.exists(), isFalse);
       expect(await artwork.exists(), isFalse);
@@ -130,5 +134,30 @@ void main() {
     ).removeTrack('track-2');
 
     expect(await protected.exists(), isTrue);
+  });
+
+  test('pending cleanup survives until a later retry', () async {
+    final root = await Directory.systemTemp.createTemp('openmusic_retry_');
+    addTearDown(() => root.delete(recursive: true));
+    final file = File('${root.path}/pending.mp3');
+    await file.writeAsString('pending');
+    final database = AppDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    await database
+        .into(database.fileCleanupTaskTable)
+        .insert(
+          FileCleanupTaskTableCompanion.insert(
+            path: 'pending.mp3',
+            createdAt: DateTime.now(),
+          ),
+        );
+
+    await TrackRemovalRepositoryImpl(
+      database: database,
+      appDir: root.path,
+    ).cleanupPending();
+
+    expect(await file.exists(), isFalse);
+    expect(await database.select(database.fileCleanupTaskTable).get(), isEmpty);
   });
 }

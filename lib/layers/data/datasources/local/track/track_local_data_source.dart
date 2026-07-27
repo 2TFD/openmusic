@@ -10,6 +10,6 @@ abstract class TrackLocalDataSource {
   Future<TrackDto?> getTrackById(String id);
   Future<List<TrackDto>> getTracksByIds(List<String> ids);
   Future<void> saveTrack(TrackDto track);
-  Future<void> updateTrackMetadata(TrackDto track);
-  Stream<List<TrackDto>> watchTracks();
+  Future<bool> updateTrackMetadata(TrackDto track);
+  Stream<void> watchChanges();
 }

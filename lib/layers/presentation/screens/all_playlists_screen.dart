@@ -142,7 +142,7 @@ class AllPlaylistsScreen extends StatelessWidget {
 }
 
 class _PlaylistGridCard extends StatelessWidget {
-  final Playlist playlist;
+  final PlaylistSummary playlist;
   const _PlaylistGridCard({required this.playlist});
 
   @override
@@ -210,7 +210,7 @@ class _PlaylistGridCard extends StatelessWidget {
                   Text(
                     context.tr(
                       'common.trackCount',
-                      namedArgs: {'count': '${playlist.trackIds.length}'},
+                      namedArgs: {'count': '${playlist.trackCount}'},
                     ),
                     style: GoogleFonts.figtree(
                       fontSize: 11,

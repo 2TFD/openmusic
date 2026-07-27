@@ -18,6 +18,7 @@ class Track extends Equatable {
   final String? album;
   final String? imageUrl;
   final String? filePath;
+  final int metadataRevision;
 
   const Track({
     required this.id,
@@ -31,6 +32,7 @@ class Track extends Equatable {
     this.filePath,
     this.album,
     this.imageUrl,
+    this.metadataRevision = 0,
   });
 
   @override
@@ -46,6 +48,7 @@ class Track extends Equatable {
     filePath,
     embedding,
     trackDescriptor,
+    metadataRevision,
   ];
 
   Map<String, dynamic> toJson() {
@@ -60,6 +63,8 @@ class Track extends Equatable {
       'addedAt': addedAt.toIso8601String(),
       'album': album,
       'imageUrl': imageUrl,
+      'filePath': filePath,
+      'metadataRevision': metadataRevision,
     };
   }
 
@@ -86,6 +91,7 @@ class Track extends Equatable {
           : DateTime.now(),
       album: json['album'],
       imageUrl: json['imageUrl'],
+      metadataRevision: json['metadataRevision'] as int? ?? 0,
     );
   }
 
@@ -105,6 +111,7 @@ class Track extends Equatable {
     String? album,
     String? imageUrl,
     String? filePath,
+    int? metadataRevision,
   }) {
     return Track(
       trackDescriptor: trackDescriptor ?? this.trackDescriptor,
@@ -118,6 +125,7 @@ class Track extends Equatable {
       addedAt: addedAt ?? this.addedAt,
       album: album ?? this.album,
       imageUrl: imageUrl ?? this.imageUrl,
+      metadataRevision: metadataRevision ?? this.metadataRevision,
     );
   }
 

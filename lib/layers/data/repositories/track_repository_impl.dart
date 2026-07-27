@@ -1,3 +1,4 @@
+import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/layers/data/datasources/local/track/track_local_data_source.dart';
 
 import '../../domain/entities/track.dart';
@@ -43,13 +44,12 @@ class TrackRepositoryImpl implements TrackRepository {
 
   @override
   Future<void> updateMetadata(Track track) async {
-    await localDataSource.updateTrackMetadata(TrackMapper.toDto(track));
+    final updated = await localDataSource.updateTrackMetadata(
+      TrackMapper.toDto(track),
+    );
+    if (!updated) throw ConflictFailure('track metadata', track.id);
   }
 
   @override
-  Stream<List<Track>> watchTracks() {
-    return localDataSource.watchTracks().map(
-      (dtos) => dtos.map(TrackMapper.toEntity).toList(),
-    );
-  }
+  Stream<void> watchChanges() => localDataSource.watchChanges();
 }

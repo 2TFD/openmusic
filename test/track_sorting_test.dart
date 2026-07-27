@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:openmusic/layers/data/models/track_dto.dart';
@@ -16,7 +18,7 @@ void main() {
   tearDown(() => database.close());
 
   test(
-    'getTracks and watchTracks return newest first deterministically',
+    'getTracks is deterministic and watchChanges emits without loading rows',
     () async {
       final sameDate = DateTime.utc(2025, 1, 1);
       await source.saveTrack(_track('old', DateTime.utc(2024, 1, 1)));
@@ -27,10 +29,12 @@ void main() {
       final expected = ['same-a', 'same-b', 'old', 'unknown'];
 
       expect((await source.getTracks()).map((track) => track.id), expected);
-      expect(
-        (await source.watchTracks().first).map((track) => track.id),
-        expected,
-      );
+      final changes = StreamIterator<void>(source.watchChanges());
+      expect(await changes.moveNext(), isTrue);
+      final changed = changes.moveNext();
+      await source.saveTrack(_track('newest', DateTime.utc(2026)));
+      expect(await changed, isTrue);
+      await changes.cancel();
     },
   );
 }

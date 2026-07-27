@@ -67,7 +67,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
                     return TrackItem(
                       track: tracks[index],
                       isPlaying: playerState.isPlaying,
-                      isCurrent: tracks[index] == playerState.currentTrack,
+                      isCurrent:
+                          tracks[index].id == playerState.currentTrack?.id,
                       isAvailable: tracks[index].isReadyToPlay,
                       onTap: () {
                         context.read<PlayerBloc>().add(

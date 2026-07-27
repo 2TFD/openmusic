@@ -7,5 +7,5 @@ abstract class PlayRecordLocalDataSource {
   Future<void> saveRecord(PlayRecordDto record);
   Future<void> deleteRecord(String id);
   Future<void> clear();
-  Stream<List<PlayRecordDto>> watchPlayRecord();
+  Stream<void> watchChanges();
 }

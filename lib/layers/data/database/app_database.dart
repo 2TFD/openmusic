@@ -8,11 +8,14 @@ import 'package:openmusic/layers/data/datasources/local/playlist/drift/playlist_
 import 'package:openmusic/layers/data/datasources/local/track/drift/artist_table.dart';
 import 'package:openmusic/layers/data/datasources/local/track/drift/track_artist_table.dart';
 import 'package:openmusic/layers/data/datasources/local/track/drift/track_table.dart';
+import 'package:openmusic/layers/data/database/file_cleanup_task_table.dart';
+import 'package:openmusic/layers/data/database/listening_checkpoint_table.dart';
+import 'package:openmusic/layers/data/database/playback_session_table.dart';
+import 'package:openmusic/layers/data/database/playback_queue_item_table.dart';
+import 'package:openmusic/layers/data/database/app_navigation_state_table.dart';
 import 'package:path_provider/path_provider.dart';
 
 part 'app_database.g.dart';
-
-final AppDatabase appDatabase = AppDatabase();
 
 @DriftDatabase(
   tables: [
@@ -24,13 +27,18 @@ final AppDatabase appDatabase = AppDatabase();
     ArtistTable,
     TrackArtistTable,
     PlaylistTrackTable,
+    FileCleanupTaskTable,
+    ListeningCheckpointTable,
+    PlaybackSessionTable,
+    PlaybackQueueItemTable,
+    AppNavigationStateTable,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -131,6 +139,22 @@ FROM track_table
         await m.addColumn(embeddingTaskTable, embeddingTaskTable.audioRevision);
         await _createV7Indexes(m.database);
       }
+      if (from < 8) {
+        await m.addColumn(trackTable, trackTable.metadataRevision);
+        await m.createTable(fileCleanupTaskTable);
+        await m.createTable(listeningCheckpointTable);
+      }
+      if (from < 9) {
+        await m.addColumn(playlistTable, playlistTable.revision);
+      }
+      if (from < 10) {
+        await m.createTable(playbackSessionTable);
+        await m.createTable(playbackQueueItemTable);
+        await m.createTable(appNavigationStateTable);
+      }
+    },
+    beforeOpen: (details) async {
+      await customStatement('PRAGMA foreign_keys = ON');
     },
   );
 

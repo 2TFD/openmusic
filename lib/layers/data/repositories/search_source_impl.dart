@@ -34,17 +34,18 @@ class SearchSourceImpl implements SearchSource {
     int offset = 0,
   }) async {
     try {
-      final response = await _retryPolicy.execute(
-        () async => _dio.get(
-          'https://api-v2.soundcloud.com/search/tracks',
-          queryParameters: {
-            'q': query,
-            'client_id': await _soundcloudTrackSource.getClientId(),
-            'limit': 30,
-            'offset': offset,
-          },
-        ),
-      );
+      var clientId = await _soundcloudTrackSource.getClientId();
+      late Response<dynamic> response;
+      try {
+        response = await _searchRequest(query, offset, clientId);
+      } on DioException catch (error) {
+        if (error.response?.statusCode != 401 &&
+            error.response?.statusCode != 403) {
+          rethrow;
+        }
+        clientId = await _soundcloudTrackSource.getClientId(forceRefresh: true);
+        response = await _searchRequest(query, offset, clientId);
+      }
 
       if (response.statusCode != 200) {
         throw RemoteServiceFailure(
@@ -76,6 +77,22 @@ class SearchSourceImpl implements SearchSource {
       rethrow;
     }
   }
+
+  Future<Response<dynamic>> _searchRequest(
+    String query,
+    int offset,
+    String clientId,
+  ) => _retryPolicy.execute(
+    () => _dio.get(
+      'https://api-v2.soundcloud.com/search/tracks',
+      queryParameters: {
+        'q': query,
+        'client_id': clientId,
+        'limit': 30,
+        'offset': offset,
+      },
+    ),
+  );
 
   TrackPreview? _mapSoundCloudTrackPreview(Map<String, dynamic> json) {
     try {

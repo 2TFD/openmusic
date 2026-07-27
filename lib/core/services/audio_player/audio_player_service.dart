@@ -120,12 +120,20 @@ class AudioPlayerService implements AudioPlayerPort {
   }
 
   @override
-  Future<void> setQueue(List<Track> tracks, {int index = 0}) async {
+  Future<void> setQueue(
+    List<Track> tracks, {
+    int index = 0,
+    Duration initialPosition = Duration.zero,
+  }) async {
     try {
       await _player.stop();
       final sources = tracks.map((t) => t.toAudioSource(appDir)).toList();
 
-      await _player.setAudioSources(sources, initialIndex: index);
+      await _player.setAudioSources(
+        sources,
+        initialIndex: index,
+        initialPosition: initialPosition,
+      );
     } catch (e, st) {
       log(
         '[AudioPlayerService.setQueue] Error setting queue: $e, stackTrace: $st',

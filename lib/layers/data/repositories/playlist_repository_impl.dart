@@ -25,7 +25,8 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
 
   @override
   Future<void> deletePlaylist(String playlistId) async {
-    await localDataSource.deletePlaylist(playlistId);
+    final deleted = await localDataSource.deletePlaylist(playlistId);
+    if (!deleted) throw NotFoundFailure('playlist', playlistId);
   }
 
   @override
@@ -35,32 +36,62 @@ class PlaylistRepositoryImpl implements PlaylistRepository {
   }
 
   @override
-  Future<List<Playlist>> getPlaylists() async {
-    final models = await localDataSource.getPlaylists();
-    return models.map(PlaylistMapper.toEntity).toList();
-  }
-
-  @override
   Future<void> removeTrackFromPlaylist(
     String playlistId,
-    String trackId,
-  ) async {
-    final exists = await localDataSource.removeTrack(playlistId, trackId);
-    if (!exists) {
-      throw NotFoundFailure('playlist', playlistId);
-    }
-  }
-
-  @override
-  Future<void> updatePlaylist(Playlist playlist) async {
-    final model = PlaylistMapper.toDto(playlist);
-    await localDataSource.updatePlaylist(model);
-  }
-
-  @override
-  Stream<List<Playlist>> watchPlaylist() {
-    return localDataSource.watchPlaylist().map(
-      (dtos) => dtos.map(PlaylistMapper.toEntity).toList(),
+    String trackId, {
+    required int expectedRevision,
+  }) async {
+    final result = await localDataSource.removeTrack(
+      playlistId,
+      trackId,
+      expectedRevision: expectedRevision,
     );
+    _throwForMutation(result, playlistId);
+  }
+
+  @override
+  Future<void> reorderTracks(
+    String playlistId,
+    List<String> trackIds, {
+    required int expectedRevision,
+  }) async {
+    final result = await localDataSource.reorderTracks(
+      playlistId,
+      trackIds,
+      expectedRevision: expectedRevision,
+    );
+    _throwForMutation(result, playlistId);
+  }
+
+  @override
+  Future<void> updateMetadata(Playlist playlist) async {
+    final model = PlaylistMapper.toDto(playlist);
+    final result = await localDataSource.updateMetadata(model);
+    _throwForMutation(result, playlist.id);
+  }
+
+  @override
+  Stream<List<PlaylistSummary>> watchPlaylistSummaries() {
+    return localDataSource.watchPlaylistSummaries().map(
+      (dtos) => dtos.map(PlaylistMapper.summaryToEntity).toList(),
+    );
+  }
+
+  @override
+  Stream<Playlist?> watchPlaylistById(String id) {
+    return localDataSource
+        .watchPlaylistById(id)
+        .map((dto) => dto == null ? null : PlaylistMapper.toEntity(dto));
+  }
+
+  void _throwForMutation(PlaylistMutationResult result, String playlistId) {
+    switch (result) {
+      case PlaylistMutationResult.applied:
+        return;
+      case PlaylistMutationResult.notFound:
+        throw NotFoundFailure('playlist', playlistId);
+      case PlaylistMutationResult.conflict:
+        throw ConflictFailure('playlist', playlistId);
+    }
   }
 }

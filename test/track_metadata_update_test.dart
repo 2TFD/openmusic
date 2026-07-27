@@ -23,8 +23,11 @@ void main() {
         ),
       );
 
-      await source.updateTrackMetadata(
-        _dto(title: 'Renamed', filePath: 'stale.mp3'),
+      expect(
+        await source.updateTrackMetadata(
+          _dto(title: 'Renamed', filePath: 'stale.mp3'),
+        ),
+        isTrue,
       );
 
       final row = await database.select(database.trackTable).getSingle();
@@ -32,6 +35,18 @@ void main() {
       expect(row.pathToFile, 'fresh.mp3');
       expect(row.embedding, '[1.0,2.0]');
       expect(row.audioRevision, 4);
+      expect(row.metadataRevision, 1);
+
+      expect(
+        await source.updateTrackMetadata(
+          _dto(title: 'Stale overwrite', filePath: 'stale.mp3'),
+        ),
+        isFalse,
+      );
+      expect(
+        (await database.select(database.trackTable).getSingle()).title,
+        'Renamed',
+      );
     },
   );
 }

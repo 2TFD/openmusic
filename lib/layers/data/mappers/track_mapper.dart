@@ -30,6 +30,7 @@ class TrackMapper {
           dto.addedAt ?? DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
       album: dto.album,
       imageUrl: dto.imageUrl,
+      metadataRevision: dto.metadataRevision,
     );
   }
 
@@ -49,6 +50,7 @@ class TrackMapper {
       addedAt: entity.addedAt,
       album: entity.album,
       imageUrl: entity.imageUrl,
+      metadataRevision: entity.metadataRevision,
     );
   }
 }

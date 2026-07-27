@@ -4,6 +4,10 @@ part of 'player_bloc.dart';
 
 sealed class PlayerEvent {}
 
+class PlayerRestoreRequested extends PlayerEvent {}
+
+class PlayerSessionFlushRequested extends PlayerEvent {}
+
 // Публичные — вызываются из UI
 class PlayerQueueSet extends PlayerEvent {
   final List<Track> tracks;
@@ -58,4 +62,9 @@ class _PlayerIndexUpdated extends PlayerEvent {
 class _PlayerProcessingUpdated extends PlayerEvent {
   final PlaybackProcessingState state;
   _PlayerProcessingUpdated(this.state);
+}
+
+class _PlayerPlaybackFailed extends PlayerEvent {
+  final Object error;
+  _PlayerPlaybackFailed(this.error);
 }

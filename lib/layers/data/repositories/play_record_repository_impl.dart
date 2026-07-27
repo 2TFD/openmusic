@@ -42,9 +42,5 @@ class PlayRecordRepositoryImpl implements PlayRecordRepository {
   }
 
   @override
-  Stream<List<PlayRecord>> watchPlayRecord() {
-    return localDataSource.watchPlayRecord().map(
-      (dtos) => dtos.map(PlayRecordMapper.toEntity).toList(),
-    );
-  }
+  Stream<void> watchChanges() => localDataSource.watchChanges();
 }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:drift/drift.dart';
 import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/core/utils/app_logger.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
@@ -14,7 +15,7 @@ class TrackRemovalRepositoryImpl implements TrackRemovalRepository {
 
   @override
   Future<void> removeTrack(String trackId) async {
-    final assets = await database.transaction<List<String>>(() async {
+    await database.transaction(() async {
       final track = await (database.select(
         database.trackTable,
       )..where((row) => row.id.equals(trackId))).getSingleOrNull();
@@ -24,6 +25,22 @@ class TrackRemovalRepositoryImpl implements TrackRemovalRepository {
         database.trackArtistTable,
       )..where((row) => row.trackId.equals(trackId))).get();
       final artistIds = artistRows.map((row) => row.artistId).toSet();
+
+      final assets = [
+        track.pathToFile,
+        track.imageUrl,
+      ].whereType<String>().where((asset) => asset.isNotEmpty).toSet();
+      for (final asset in assets) {
+        await database
+            .into(database.fileCleanupTaskTable)
+            .insert(
+              FileCleanupTaskTableCompanion.insert(
+                path: asset,
+                createdAt: DateTime.now(),
+              ),
+              mode: InsertMode.insertOrIgnore,
+            );
+      }
 
       await (database.delete(
         database.downloadTaskTable,
@@ -51,33 +68,43 @@ class TrackRemovalRepositoryImpl implements TrackRemovalRepository {
           )..where((row) => row.id.equals(artistId))).go();
         }
       }
-
-      return [track.pathToFile, track.imageUrl].whereType<String>().toList();
     });
 
-    for (final asset in assets) {
-      await _deleteOwnedAsset(asset);
+    await cleanupPending();
+  }
+
+  @override
+  Future<void> cleanupPending() async {
+    final tasks = await database.select(database.fileCleanupTaskTable).get();
+    for (final task in tasks) {
+      if (await _deleteOwnedAsset(task.path)) {
+        await (database.delete(
+          database.fileCleanupTaskTable,
+        )..where((row) => row.path.equals(task.path))).go();
+      }
     }
   }
 
-  Future<void> _deleteOwnedAsset(String storedPath) async {
+  Future<bool> _deleteOwnedAsset(String storedPath) async {
     if (storedPath.isEmpty || Uri.tryParse(storedPath)?.hasScheme == true) {
-      return;
+      return true;
     }
     final root = path.normalize(path.absolute(appDir));
     final candidate = path.normalize(
       path.isAbsolute(storedPath) ? storedPath : path.join(root, storedPath),
     );
-    if (candidate != root && !path.isWithin(root, candidate)) return;
+    if (candidate != root && !path.isWithin(root, candidate)) return true;
 
     try {
       final file = File(candidate);
       if (await file.exists()) await file.delete();
+      return true;
     } catch (error, stackTrace) {
       await AppLogger.log(
         '[TrackRemovalRepository] Failed to delete $candidate: '
         '$error, stackTrace: $stackTrace',
       );
+      return false;
     }
   }
 }

@@ -7,14 +7,12 @@ import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
 import 'package:openmusic/layers/domain/repositories/search_source.dart';
 import 'package:openmusic/layers/domain/repositories/track_repository.dart';
 import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
-import 'package:openmusic/layers/domain/usecases/add_track_to_playlist_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/build_playback_queue_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/clear_history_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/create_playlist_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/fetch_track_preview_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/generate_wave_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/get_history_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/get_playlists_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/get_statistic_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/remove_track_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/save_statistic_use_case.dart';
@@ -43,7 +41,7 @@ class BlocScope extends StatelessWidget {
       providers: [
         BlocProvider<TrackBloc>(
           create: (context) => TrackBloc(
-            trackChangesStream: getIt<TrackRepository>().watchTracks(),
+            trackChangesStream: getIt<TrackRepository>().watchChanges(),
             getTracksUseCase: GetTracksUseCase(getIt<TrackRepository>()),
             addTrackUseCase: getIt<AddTrackUseCase>(),
             removeTrackUseCase: RemoveTrackUseCase(
@@ -69,17 +67,12 @@ class BlocScope extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => PlaylistBloc(
-            getPlaylistsUseCase: GetPlaylistsUseCase(
-              getIt<PlaylistRepository>(),
-            ),
             createPlaylistUseCase: CreatePlaylistUseCase(
               getIt<PlaylistRepository>(),
             ),
-            addTrackToPlaylistUseCase: AddTrackToPlaylistUseCase(
-              getIt<PlaylistRepository>(),
-            ),
-            playlistChangesStream: getIt<PlaylistRepository>().watchPlaylist(),
-          )..add(LoadPlaylistEvent()),
+            playlistChangesStream: getIt<PlaylistRepository>()
+                .watchPlaylistSummaries(),
+          ),
         ),
         BlocProvider(
           create: (context) => PlayerBloc(
@@ -87,7 +80,10 @@ class BlocScope extends StatelessWidget {
             recordPlay: SaveRecordPlayUseCase(
               repo: getIt<PlayRecordRepository>(),
             ),
+            checkpoints: getIt(),
             buildQueue: BuildPlaybackQueueUseCase(),
+            restorePlayback: getIt(),
+            sessions: getIt(),
           ),
         ),
         BlocProvider(
@@ -96,7 +92,7 @@ class BlocScope extends StatelessWidget {
               repo: getIt<PlayRecordRepository>(),
             ),
             statisticChangesStream: getIt<PlayRecordRepository>()
-                .watchPlayRecord(),
+                .watchChanges(),
           )..add(const LoadStatisticEvent(StatsPeriod.twoWeeks)),
         ),
         BlocProvider(

@@ -13,6 +13,7 @@ class TrackTable extends Table {
   TextColumn get trackDescriptorJson => text().nullable()();
   TextColumn get embedding => text().nullable()();
   IntColumn get audioRevision => integer().withDefault(const Constant(0))();
+  IntColumn get metadataRevision => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column> get primaryKey => {id};
