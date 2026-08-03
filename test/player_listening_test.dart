@@ -14,6 +14,8 @@ import 'package:openmusic/layers/domain/repositories/track_repository.dart';
 import 'package:openmusic/layers/domain/usecases/build_playback_queue_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/save_statistic_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/restore_playback_session_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/skip_track_use_case.dart';
+import 'package:openmusic/core/services/audio_player/playback_command_bus_impl.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 
 void main() {
@@ -34,6 +36,8 @@ void main() {
           tracks: _FakeTrackRepository(),
         ),
         sessions: sessions,
+        skipTrack: const SkipTrackUseCase(),
+        commands: PlaybackCommandBusImpl(),
       );
       bloc.add(PlayerQueueSet([_track()], autoPlay: false));
       await _pump();

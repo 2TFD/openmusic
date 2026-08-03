@@ -103,6 +103,103 @@ class SoundcloudTrackSource implements TrackSource {
     }
   }
 
+  /// Максимум идентификаторов на один запрос `/tracks?ids=`.
+  static const _trackBatchSize = 50;
+
+  /// `/resolve` отдаёт первые несколько треков плейлиста целиком, а остальные —
+  /// заглушками `{id: N}`. Догружаем недостающие пачками вместо запроса на
+  /// каждый трек: 200 треков — это 4 запроса вместо 200.
+  Future<List<Map<String, dynamic>>> _hydratePlaylistTracks(
+    List<dynamic> rawTracks,
+    String clientId,
+  ) async {
+    final missingIds = <String>[];
+    for (final raw in rawTracks) {
+      if (raw is! Map) continue;
+      if (raw['media'] == null) missingIds.add(raw['id'].toString());
+    }
+
+    final fetched = <String, Map<String, dynamic>>{};
+    for (var start = 0; start < missingIds.length; start += _trackBatchSize) {
+      final batch = missingIds.skip(start).take(_trackBatchSize).join(',');
+      try {
+        final res = await _get(
+          'https://api-v2.soundcloud.com/tracks?ids=$batch&client_id=$clientId',
+        );
+        if (res.statusCode != 200) continue;
+        for (final item in res.data as List) {
+          if (item is Map) {
+            fetched[item['id'].toString()] = item.cast<String, dynamic>();
+          }
+        }
+      } catch (e, st) {
+        // Пачка могла упасть целиком — остальные всё равно грузим.
+        await AppLogger.log(
+          '[SoundCloudTrackSource._hydratePlaylistTracks] batch failed: '
+          '$e, \nst: $st',
+        );
+      }
+    }
+
+    // Порядок плейлиста важнее порядка ответа: ответ по ids его не сохраняет.
+    final result = <Map<String, dynamic>>[];
+    for (final raw in rawTracks) {
+      if (raw is! Map) continue;
+      if (raw['media'] != null) {
+        result.add(raw.cast<String, dynamic>());
+        continue;
+      }
+      final hydrated = fetched[raw['id'].toString()];
+      // Приватные, удалённые и недоступные в регионе треки в ответ не приходят.
+      if (hydrated != null) result.add(hydrated);
+    }
+    return result;
+  }
+
+  /// Стрим-ссылка здесь намеренно не резолвится: она живёт минуты, а
+  /// [downloadSoundCloudTrack] всё равно получает свежую по `originalUrl`.
+  /// Один лишний запрос на трек в экране подтверждения того не стоит.
+  TrackPreview? _previewFromTrackData(Map<String, dynamic> trackData) {
+    try {
+      final transcodings = trackData['media']?['transcodings'] as List?;
+      if (transcodings == null) return null;
+      // Нужен только факт наличия progressive; сама ссылка не берётся.
+      final hasProgressive = transcodings.any(
+        (t) => t is Map && t['format']?['protocol'] == 'progressive',
+      );
+      if (!hasProgressive) return null;
+
+      final permalinkUrl = trackData['permalink_url'] as String?;
+      final title = trackData['title'] as String?;
+      if (permalinkUrl == null || title == null) return null;
+
+      final duration = trackData['duration'];
+      return TrackPreview(
+        urlFile: '',
+        artworkUrl:
+            (trackData['artwork_url'] as String? ??
+                    trackData['calculated_artwork_url'] as String?)
+                ?.replaceAll('large', 't500x500'),
+        id: trackData['id'].toString(),
+        title: title,
+        source: SourceType.soundcloud,
+        originalUrl: permalinkUrl,
+        album: trackData['album'] as String?,
+        duration: duration is int ? Duration(milliseconds: duration) : null,
+        artist: trackData['user']?['username'] as String? ?? 'Unknown Artist',
+        artistId: trackData['user']?['id'] == null
+            ? null
+            : 'soundcloud:artist:${trackData['user']['id']}',
+      );
+    } catch (e, st) {
+      AppLogger.log(
+        '[SoundCloudTrackSource._previewFromTrackData] '
+        'skipped track ${trackData['id']}: $e, \nst: $st',
+      );
+      return null;
+    }
+  }
+
   Future<ResolvedTrackInput> _parseTrackPreviewFromPlaylist(
     String playlistUrl,
   ) async {
@@ -118,47 +215,10 @@ class SoundcloudTrackSource implements TrackSource {
       }
       final jsonPlaylistData = res.data;
       final listTrackData = jsonPlaylistData['tracks'] as List;
-      for (var trackIdData in listTrackData) {
-        try {
-          await Future.delayed(const Duration(milliseconds: 200));
-
-          final trackData = await _getTrackData(
-            trackIdData['id'].toString(),
-            clientId,
-          );
-          final transcodings = trackData['media']['transcodings'] as List;
-          final progressive = transcodings.firstWhere(
-            (t) => t['format']['protocol'] == 'progressive',
-            orElse: () => null,
-          );
-          if (progressive == null) {
-            continue;
-          }
-
-          final streamUrl = await getStreamUrl(progressive['url'], clientId);
-          previews.add(
-            TrackPreview(
-              urlFile: streamUrl,
-              artworkUrl:
-                  (trackData["artwork_url"] as String? ??
-                          trackData["calculated_artwork_url"] as String?)
-                      ?.replaceAll('large', 't500x500'),
-              id: trackData['id'].toString(),
-              title: trackData['title'],
-              source: SourceType.soundcloud,
-              originalUrl: trackData['permalink_url'],
-              album: trackData["album"],
-              duration: Duration(milliseconds: trackData["duration"]),
-              artist: trackData["user"]["username"],
-              artistId: 'soundcloud:artist:${trackData["user"]["id"]}',
-            ),
-          );
-        } catch (e, st) {
-          await AppLogger.log(
-            '[SoundCloudTrackSource._parseTrackPreviewFromPlaylist] Error processing track ${trackIdData['id']}: $e, \nst: $st',
-          );
-          continue;
-        }
+      final hydrated = await _hydratePlaylistTracks(listTrackData, clientId);
+      for (final trackData in hydrated) {
+        final preview = _previewFromTrackData(trackData);
+        if (preview != null) previews.add(preview);
       }
 
       if (previews.isEmpty) {
@@ -186,65 +246,54 @@ class SoundcloudTrackSource implements TrackSource {
     }
   }
 
+  /// Лайки отдаются страницами по [_likesPageSize]; идём по `next_href`, пока
+  /// он есть, поэтому потолка на количество лайков нет. Единственная защита —
+  /// от зацикливания, если API вернёт уже пройденную ссылку.
+  static const _likesPageSize = 200;
+
+  Future<List<Map<String, dynamic>>> _fetchAllLikes(
+    String userId,
+    String clientId,
+  ) async {
+    final items = <Map<String, dynamic>>[];
+    final visited = <String>{};
+    String? url =
+        'https://api-v2.soundcloud.com/users/$userId/likes'
+        '?client_id=$clientId&limit=$_likesPageSize';
+
+    while (url != null && visited.add(url)) {
+      final res = await _get(url);
+      if (res.statusCode != 200) {
+        // Первая страница обязательна, оборванный хвост — уже не повод падать.
+        if (items.isEmpty) throw const RemoteServiceFailure('SoundCloud likes');
+        break;
+      }
+      for (final item in res.data['collection'] as List<dynamic>) {
+        if (item is Map) items.add(item.cast<String, dynamic>());
+      }
+
+      final next = res.data['next_href'] as String?;
+      url = next == null
+          ? null
+          : next.contains('client_id=')
+          ? next
+          : '$next&client_id=$clientId';
+    }
+    return items;
+  }
+
   Future<ResolvedTrackInput> _parseTracksFromLikes(String profileUrl) async {
     try {
       final clientId = await getClientId();
       final userJson = await _resolveUserJson(profileUrl, clientId);
       final userId = userJson['id'].toString();
 
-      const limit = 200;
-      final likesUrl =
-          'https://api-v2.soundcloud.com/users/$userId/likes?client_id=$clientId&limit=$limit';
-      final res = await _get(likesUrl);
-      if (res.statusCode != 200) {
-        throw const RemoteServiceFailure('SoundCloud likes');
-      }
-
-      final collection = res.data['collection'] as List<dynamic>;
-      List<TrackPreview> previews = [];
-
-      for (final item in collection) {
-        try {
-          await Future.delayed(const Duration(milliseconds: 200));
-
-          final trackData = item['track'];
-          if (trackData == null) {
-            continue;
-          }
-
-          final transcodings = trackData['media']['transcodings'] as List;
-          final progressive = transcodings.firstWhere(
-            (t) => t['format']['protocol'] == 'progressive',
-            orElse: () => null,
-          );
-          if (progressive == null) {
-            continue;
-          }
-
-          final streamUrl = await getStreamUrl(progressive['url'], clientId);
-          previews.add(
-            TrackPreview(
-              urlFile: streamUrl,
-              artworkUrl:
-                  (trackData["artwork_url"] ??
-                          trackData["calculated_artwork_url"])
-                      ?.replaceAll('large', 't500x500'),
-              id: trackData['id'].toString(),
-              title: trackData['title'],
-              source: SourceType.soundcloud,
-              originalUrl: trackData['permalink_url'],
-              album: trackData["album"],
-              duration: Duration(milliseconds: trackData["duration"]),
-              artist: trackData["user"]["username"],
-              artistId: 'soundcloud:artist:${trackData["user"]["id"]}',
-            ),
-          );
-        } catch (e, st) {
-          await AppLogger.log(
-            '[SoundCloudTrackSource._parseTracksFromLikes] Error processing track: $e, \nst:$st',
-          );
-          continue;
-        }
+      final previews = <TrackPreview>[];
+      for (final item in await _fetchAllLikes(userId, clientId)) {
+        final trackData = item['track'];
+        if (trackData is! Map) continue;
+        final preview = _previewFromTrackData(trackData.cast<String, dynamic>());
+        if (preview != null) previews.add(preview);
       }
 
       if (previews.isEmpty) {

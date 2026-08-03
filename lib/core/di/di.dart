@@ -13,6 +13,8 @@ import 'package:openmusic/layers/data/datasources/local/playlist/playlist_local_
 import 'package:openmusic/layers/data/datasources/local/track/drift/track_drift_local_source.dart';
 import 'package:openmusic/layers/data/datasources/local/track/track_local_data_source.dart';
 import 'package:openmusic/core/services/audio_player/audio_player_service.dart';
+import 'package:openmusic/core/services/audio_player/playback_command_bus_impl.dart';
+import 'package:openmusic/layers/domain/repositories/playback_command_bus.dart';
 import 'package:openmusic/layers/data/datasources/local/play_record/drift/play_record_drift_local_source.dart';
 import 'package:openmusic/layers/data/datasources/local/play_record/play_record_local_data_source.dart';
 import 'package:openmusic/layers/data/datasources/remote/local_file_track_source.dart';
@@ -173,8 +175,12 @@ Future<void> configureDependencies({required String appDir}) async {
     ),
   );
 
-  getIt.registerLazySingleton<AudioPlayerPort>(
+  getIt.registerLazySingleton<AudioPlayerService>(
     () => AudioPlayerService(appDir: getIt<String>()),
+  );
+  getIt.registerLazySingleton<AudioPlayerPort>(() => getIt<AudioPlayerService>());
+  getIt.registerLazySingleton<PlaybackCommandBus>(
+    () => PlaybackCommandBusImpl(),
   );
 
   getIt.registerLazySingleton(() => WaveEngine());

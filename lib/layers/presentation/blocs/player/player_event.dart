@@ -68,3 +68,11 @@ class _PlayerPlaybackFailed extends PlayerEvent {
   final Object error;
   _PlayerPlaybackFailed(this.error);
 }
+
+/// Команда с экрана блокировки / наушников / Bluetooth. Приходит как обычное
+/// событие, чтобы решение принималось на актуальном state, а не на том, каким
+/// он был в момент нажатия.
+class _PlayerSystemCommandReceived extends PlayerEvent {
+  final PlaybackCommand command;
+  _PlayerSystemCommandReceived(this.command);
+}

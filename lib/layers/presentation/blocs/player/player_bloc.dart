@@ -8,10 +8,12 @@ import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/entities/playback_session.dart';
 import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
 import 'package:openmusic/layers/domain/repositories/listening_checkpoint_repository.dart';
+import 'package:openmusic/layers/domain/repositories/playback_command_bus.dart';
 import 'package:openmusic/layers/domain/repositories/playback_session_repository.dart';
 import 'package:openmusic/layers/domain/usecases/build_playback_queue_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/restore_playback_session_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/save_statistic_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/skip_track_use_case.dart';
 
 part 'player_event.dart';
 part 'player_state.dart';
@@ -23,7 +25,10 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   final BuildPlaybackQueueUseCase _buildQueue;
   final RestorePlaybackSessionUseCase _restorePlayback;
   final PlaybackSessionRepository _sessions;
+  final SkipTrackUseCase _skipTrack;
+  final PlaybackCommandBus _commands;
 
+  StreamSubscription? _commandSub;
   StreamSubscription? _positionSub;
   StreamSubscription? _durationSub;
   StreamSubscription? _playingSub;
@@ -44,12 +49,16 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     required BuildPlaybackQueueUseCase buildQueue,
     required RestorePlaybackSessionUseCase restorePlayback,
     required PlaybackSessionRepository sessions,
+    required SkipTrackUseCase skipTrack,
+    required PlaybackCommandBus commands,
   }) : _service = service,
        _recordPlay = recordPlay,
        _checkpoints = checkpoints,
        _buildQueue = buildQueue,
        _restorePlayback = restorePlayback,
        _sessions = sessions,
+       _skipTrack = skipTrack,
+       _commands = commands,
        super(const PlayerState(isRestoring: true)) {
     on<PlayerEvent>(_onEvent, transformer: _sequential());
 
@@ -72,9 +81,9 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       case PlayerTrackSelected():
         await _onTrackSelected(event, emit);
       case PlayerSkippedNext():
-        await _onSkipNext(event, emit);
+        await _onSkip(SkipDirection.next, emit);
       case PlayerSkippedPrevious():
-        await _onSkipPrev(event, emit);
+        await _onSkip(SkipDirection.previous, emit);
       case PlayerShuffleToggled():
         await _onShuffleToggle(event, emit);
       case PlayerRepeatCycled():
@@ -97,6 +106,34 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
             error: failureFromException(event.error).toLocaleKey(),
           ),
         );
+      case _PlayerSystemCommandReceived():
+        await _onSystemCommand(event, emit);
+    }
+  }
+
+  /// Системные команды переиспользуют те же обработчики, что и UI: политика
+  /// переключения, учёт прослушанного и запись сессии не должны зависеть от
+  /// того, откуда пришло нажатие.
+  Future<void> _onSystemCommand(
+    _PlayerSystemCommandReceived e,
+    Emitter<PlayerState> emit,
+  ) async {
+    switch (e.command) {
+      case PlayRequested():
+        if (!state.isPlaying) await _onPlayPause(PlayerPlayPauseToggled(), emit);
+      case PauseRequested():
+        if (state.isPlaying) await _onPlayPause(PlayerPlayPauseToggled(), emit);
+      case StopRequested():
+        if (state.isPlaying) await _onPlayPause(PlayerPlayPauseToggled(), emit);
+        await _flushSession();
+      case SkipNextRequested():
+        await _onSkip(SkipDirection.next, emit);
+      case SkipPreviousRequested():
+        await _onSkip(SkipDirection.previous, emit);
+      case SeekRequested(:final position):
+        await _onSeeked(PlayerSeeked(position), emit);
+      case QueueItemRequested(:final index):
+        await _onTrackSelected(PlayerTrackSelected(index: index), emit);
     }
   }
 
@@ -170,6 +207,12 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   }
 
   void _subscribe() {
+    _commandSub = _commands.commands.listen(
+      (command) => add(_PlayerSystemCommandReceived(command)),
+      onError: (e, st) => AppLogger.log(
+        '[PlayerBloc] command bus error: $e, stackTrace: $st',
+      ),
+    );
     _positionSub = _service.positionStream.listen(
       (pos) => add(_PlayerPositionUpdated(pos)),
       onError: (e, st) => AppLogger.log(
@@ -252,15 +295,21 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
 
   Future<void> _onSeeked(PlayerSeeked e, Emitter<PlayerState> emit) async {
     try {
-      _lastObservedPosition = null;
-      await _service.seek(e.position);
-      _lastSessionPosition = e.position;
-      emit(state.copyWith(position: e.position));
-      _scheduleSessionWrite(position: e.position);
+      await _seekTo(e.position, emit);
     } catch (e, st) {
       AppLogger.log('[PlayerBloc._onSeeked] Error: $e, stackTrace: $st');
       emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
     }
+  }
+
+  /// Сброс [_lastObservedPosition] обязателен: иначе следующий тик позиции
+  /// посчитает перемотку вперёд прослушанным временем и раздует статистику.
+  Future<void> _seekTo(Duration position, Emitter<PlayerState> emit) async {
+    _lastObservedPosition = null;
+    await _service.seek(position);
+    _lastSessionPosition = position;
+    emit(state.copyWith(position: position));
+    _scheduleSessionWrite(position: position);
   }
 
   Future<void> _onTrackSelected(
@@ -276,30 +325,30 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     }
   }
 
-  Future<void> _onSkipNext(
-    PlayerSkippedNext e,
+  Future<void> _onSkip(
+    SkipDirection direction,
     Emitter<PlayerState> emit,
   ) async {
+    if (state.currentTrack == null) return;
     try {
-      if (state.hasNext) await _service.skipToNext();
-    } catch (e, st) {
-      AppLogger.log('[PlayerBloc._onSkipNext] Error: $e, stackTrace: $st');
-      emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
-    }
-  }
-
-  Future<void> _onSkipPrev(
-    PlayerSkippedPrevious e,
-    Emitter<PlayerState> emit,
-  ) async {
-    try {
-      if (state.position.inSeconds > 3) {
-        await _service.seek(Duration.zero);
-      } else if (state.hasPrev) {
-        await _service.skipToPrevious();
+      final action = _skipTrack(
+        direction,
+        position: state.position,
+        hasNext: state.hasNext,
+        hasPrev: state.hasPrev,
+      );
+      switch (action) {
+        case RestartCurrentTrack():
+          await _seekTo(Duration.zero, emit);
+        case AdvanceToNextTrack():
+          await _service.skipToNext();
+        case AdvanceToPreviousTrack():
+          await _service.skipToPrevious();
+        case SkipRejected():
+          break;
       }
     } catch (e, st) {
-      AppLogger.log('[PlayerBloc._onSkipPrev] Error: $e, stackTrace: $st');
+      AppLogger.log('[PlayerBloc._onSkip] Error: $e, stackTrace: $st');
       emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
     }
   }
@@ -512,6 +561,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
 
   @override
   Future<void> close() async {
+    await _commandSub?.cancel();
     await _positionSub?.cancel();
     await _durationSub?.cancel();
     await _playingSub?.cancel();

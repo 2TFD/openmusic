@@ -128,25 +128,25 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
     );
   }
 
-  void _showAddTrackSheet(BuildContext ctx, Playlist playlist) {
+  void _showAddTrackSheet(BuildContext ctx) {
     final detailBloc = ctx.read<PlaylistDetailBloc>();
     final trackState = ctx.read<TrackBloc>().state;
-    final available = trackState is TrackLoaded
+    final allTracks = trackState is TrackLoaded
         ? trackState.tracks
-              .where((track) => !playlist.trackIds.contains(track.id))
-              .toList()
         : const <Track>[];
     showModalBottomSheet(
       context: ctx,
       backgroundColor: Colors.transparent,
       useRootNavigator: true,
       isScrollControlled: true,
-      builder: (sheetContext) => _AddTracksSheet(
-        tracks: available,
-        onAdd: (track) {
-          detailBloc.add(PlaylistDetailAddTrack(track));
-          sheetContext.pop();
-        },
+      builder: (_) => BlocProvider.value(
+        value: detailBloc,
+        child: _AddTracksSheet(
+          allTracks: allTracks,
+          onAdd: (track) {
+            detailBloc.add(PlaylistDetailAddTrack(track));
+          },
+        ),
       ),
     );
   }
@@ -323,7 +323,7 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
               ),
               const Spacer(),
               TextButton.icon(
-                onPressed: () => _showAddTrackSheet(context, playlist),
+                onPressed: () => _showAddTrackSheet(context),
                 icon: const Icon(Icons.add, size: 16),
                 label: Text(context.tr('playlist.addTrack')),
               ),
@@ -817,13 +817,28 @@ class _RenamePlaylistSheetState extends State<_RenamePlaylistSheet> {
 }
 
 class _AddTracksSheet extends StatelessWidget {
-  const _AddTracksSheet({required this.tracks, required this.onAdd});
+  const _AddTracksSheet({required this.allTracks, required this.onAdd});
 
-  final List<Track> tracks;
+  final List<Track> allTracks;
   final ValueChanged<Track> onAdd;
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<PlaylistDetailBloc, PlaylistDetailState>(
+      builder: (context, state) {
+        final playlist = state is PlaylistDetailLoaded ? state.playlist : null;
+        final tracks = playlist == null
+            ? const <Track>[]
+            : allTracks
+                  .where((track) => !playlist.trackIds.contains(track.id))
+                  .toList();
+
+        return _buildSheet(context, tracks);
+      },
+    );
+  }
+
+  Widget _buildSheet(BuildContext context, List<Track> tracks) {
     return Container(
       constraints: BoxConstraints(
         maxHeight: MediaQuery.sizeOf(context).height * 0.75,
@@ -864,7 +879,11 @@ class _AddTracksSheet extends StatelessWidget {
                     contentPadding: EdgeInsets.zero,
                     leading: ClipRRect(
                       borderRadius: BorderRadius.circular(AppRadius.s),
-                      child: CachedImage(url: track.imageUrl, size: 40),
+                      child: SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: CachedImage(url: track.imageUrl, size: 40),
+                      ),
                     ),
                     title: Text(track.title, style: AppText.bodyL),
                     subtitle: Text(

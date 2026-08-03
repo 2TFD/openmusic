@@ -9,6 +9,12 @@ class AudioPlayerService implements AudioPlayerPort {
 
   final String appDir;
   final AudioPlayer _player = AudioPlayer();
+
+  /// Только для инфраструктуры: [OpenmusicAudioHandler] зеркалит состояние
+  /// плеера в системную media session и читает то, что домену не нужно
+  /// (буфер, скорость, теги источников). Не часть [AudioPlayerPort].
+  AudioPlayer get rawPlayer => _player;
+
   @override
   Stream<Duration> get positionStream => _player.positionStream;
   @override

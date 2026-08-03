@@ -8,6 +8,7 @@ import 'package:openmusic/layers/domain/repositories/search_source.dart';
 import 'package:openmusic/layers/domain/repositories/track_repository.dart';
 import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
 import 'package:openmusic/layers/domain/usecases/build_playback_queue_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/skip_track_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/clear_history_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/create_playlist_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/fetch_track_preview_use_case.dart';
@@ -84,6 +85,8 @@ class BlocScope extends StatelessWidget {
             buildQueue: BuildPlaybackQueueUseCase(),
             restorePlayback: getIt(),
             sessions: getIt(),
+            skipTrack: const SkipTrackUseCase(),
+            commands: getIt(),
           ),
         ),
         BlocProvider(
