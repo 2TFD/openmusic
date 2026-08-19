@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:openmusic/core/di/di.dart';
 import 'package:openmusic/layers/domain/entities/statistic.dart';
+import 'package:openmusic/layers/domain/repositories/artist_repository.dart';
+import 'package:openmusic/layers/domain/repositories/download_task_repository.dart';
 import 'package:openmusic/layers/domain/repositories/play_record_repository.dart';
 import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
 import 'package:openmusic/layers/domain/repositories/search_source.dart';
@@ -16,8 +18,12 @@ import 'package:openmusic/layers/domain/usecases/generate_wave_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/get_history_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/get_statistic_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/remove_track_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/retry_track_download_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/save_statistic_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/update_track_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/watch_artist_summaries_use_case.dart';
+import 'package:openmusic/layers/presentation/blocs/artists/artists_cubit.dart';
+import 'package:openmusic/layers/presentation/blocs/download_status/download_status_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/history/history_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist/playlist_bloc.dart';
@@ -40,6 +46,11 @@ class BlocScope extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider(
+          create: (context) => ArtistsCubit(
+            WatchArtistSummariesUseCase(getIt<ArtistRepository>()),
+          ),
+        ),
         BlocProvider<TrackBloc>(
           create: (context) => TrackBloc(
             trackChangesStream: getIt<TrackRepository>().watchChanges(),
@@ -109,6 +120,14 @@ class BlocScope extends StatelessWidget {
         BlocProvider(
           create: (context) =>
               WaveBloc(generate: GenerateWaveUseCase(repo: getIt())),
+        ),
+        BlocProvider(
+          create: (context) => DownloadStatusCubit(
+            tasks: getIt<DownloadTaskRepository>().watchAll(),
+            retryDownload: RetryTrackDownloadUseCase(
+              getIt<DownloadTaskRepository>(),
+            ),
+          ),
         ),
 
         BlocProvider(

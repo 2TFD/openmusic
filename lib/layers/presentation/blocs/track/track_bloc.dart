@@ -93,8 +93,32 @@ class TrackBloc extends Bloc<TrackEvent, TrackState> {
     }
     try {
       await removeTrackUseCase(event.trackId);
-    } catch (e) {
-      emit(TrackError(failureFromException(e).toLocaleKey()));
+      _completeRemoveTrack(event);
+    } catch (e, stackTrace) {
+      await AppLogger.log(
+        '[TrackBloc] Remove failed for ${event.trackId}: '
+        '$e, stackTrace: $stackTrace',
+      );
+      if (current is TrackLoaded) {
+        emit(current);
+      } else {
+        emit(TrackError(failureFromException(e).toLocaleKey()));
+      }
+      _completeRemoveTrack(event, error: e, stackTrace: stackTrace);
+    }
+  }
+
+  void _completeRemoveTrack(
+    RemoveTrackEvent event, {
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
+    final completer = event.completer;
+    if (completer == null || completer.isCompleted) return;
+    if (error == null) {
+      completer.complete();
+    } else {
+      completer.completeError(error, stackTrace);
     }
   }
 

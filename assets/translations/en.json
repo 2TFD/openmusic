@@ -125,7 +125,12 @@
         "retry": "Try again",
         "cancel": "Cancel",
         "addToLibrary": "+ Add to library",
-        "addedToLibrary": "✓ Added to library"
+        "addedToLibrary": "✓ Added to library",
+        "deleteFromLibrary": "Delete from library",
+        "deleteTitle": "Delete track?",
+        "deleteConfirm": "This track will be removed from your library, playlists, and the app's local copy. This cannot be undone.",
+        "deleted": "Track deleted",
+        "deleteFailed": "Failed to delete track"
     },
     "snackbar": {
         "trackAdded": "Added",
@@ -138,6 +143,22 @@
         "errorGeneric": "Something went wrong",
         "copied": "Copied",
         "saved": "Saved"
+    },
+    "download": {
+        "failureTitle": "Could not download track",
+        "failureNetwork": "The internet connection appears to be unavailable. Check your network and try again.",
+        "failureSource": "The track source is unavailable or no longer returns the file.",
+        "failureRateLimited": "The source temporarily limited downloads. Try again later.",
+        "failureFileNotFound": "The source file was not found.",
+        "failurePermission": "The app does not have permission to read or save the file.",
+        "failureFileSystem": "The file could not be saved on this device.",
+        "failureUnsupported": "This format or stream is not supported.",
+        "failureUnknown": "The reason is unknown. Try downloading again or copy details for diagnostics.",
+        "retry": "Try again",
+        "retryQueued": "Download added to queue",
+        "retryFailed": "Could not retry download",
+        "copyDetails": "Copy details",
+        "detailsCopied": "Details copied"
     },
     "player": {
         "unknownTitle": "Unknown Title",
@@ -152,6 +173,8 @@
     },
     "wave": {
         "title": "my\nwave",
+        "sectionTitle": "Wave",
+        "mixTitle": "My wave",
         "seedsLabel": "Based on",
         "generating": "Generating wave...",
         "empty": "Add seeds to start",
@@ -166,6 +189,14 @@
         "noArtists": "No artists in library",
         "noTracksReady": "No tracks ready",
         "noResults": "No results",
+        "noMatches": "No matching tracks found",
+        "selectBasis": "Choose artists or tracks",
+        "basedOn": "Based on: {basis}",
+        "configure": "Configure wave",
+        "regenerate": "Generate again",
+        "build": "Build wave",
+        "play": "Play wave",
+        "pause": "Pause",
         "reset": "Reset wave"
     },
     "moods": {
@@ -177,13 +208,28 @@
     },
     "library": {
         "title": "Library",
+        "tracks": "Tracks",
+        "artists": "Artists",
         "filterAll": "All",
         "filterYoutube": "YouTube",
         "filterLocal": "Local",
         "filterSoundcloud": "SoundCloud",
         "filterUnknown": "Unknown",
         "empty": "No tracks yet",
-        "emptySub": "Add your first track with +"
+        "emptySub": "Add your first track with +",
+        "noArtists": "No artists yet"
+    },
+    "artist": {
+        "title": "Artist",
+        "tracks": "Tracks",
+        "playAll": "Play all",
+        "pause": "Pause",
+        "shuffle": "Shuffle",
+        "meta": "{count} tracks · {duration}",
+        "durationHoursMinutes": "{hours}h {minutes}m",
+        "durationMinutes": "{minutes}m",
+        "notFound": "This artist is no longer in your library",
+        "empty": "This artist has no tracks"
     },
     "statistics": {
         "totalTracks": "tracks",

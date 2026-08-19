@@ -149,6 +149,19 @@ class AudioPlayerService implements AudioPlayerPort {
   }
 
   @override
+  Future<void> clearQueue() async {
+    try {
+      await _player.pause();
+      await _player.clearAudioSources();
+    } catch (e, st) {
+      log(
+        '[AudioPlayerService.clearQueue] Error clearing queue: $e, stackTrace: $st',
+      );
+      rethrow;
+    }
+  }
+
+  @override
   Future<void> dispose() => _player.dispose();
 
   static PlaybackProcessingState _mapProcessingState(ProcessingState state) =>

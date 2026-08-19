@@ -5,5 +5,6 @@ class AppRouterNames {
   static String get playlist => 'playlist';
   static String get search => 'search';
   static String get allPlaylists => 'all_playlists';
+  static String get artist => 'artist';
   static String get settings => "settings_screen";
 }

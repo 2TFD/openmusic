@@ -8,6 +8,7 @@ class DownloadTaskMapper {
       originalUrl: entity.originalUrl,
       status: entity.status,
       createdAt: entity.createdAt,
+      failure: entity.failure,
     );
   }
 
@@ -17,6 +18,7 @@ class DownloadTaskMapper {
       originalUrl: dto.originalUrl,
       status: dto.status,
       createdAt: dto.createdAt,
+      failure: dto.failure,
     );
   }
 }

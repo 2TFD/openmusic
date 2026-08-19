@@ -16,6 +16,14 @@ class DownloadTaskDriftLocalSource implements DownloadTaskLocalDataSource {
   }
 
   @override
+  Stream<List<DownloadTaskDto>> watchAll() {
+    return database
+        .select(database.downloadTaskTable)
+        .watch()
+        .map((rows) => rows.map(DownloadTaskDto.fromDataClass).toList());
+  }
+
+  @override
   Future<bool> enqueue({
     required String trackId,
     required String originalUrl,
@@ -24,14 +32,19 @@ class DownloadTaskDriftLocalSource implements DownloadTaskLocalDataSource {
     final affected = await database.customUpdate(
       '''
 INSERT INTO download_task_table (
-  track_id, original_url, status, created_at, lease_owner, lease_until
-) VALUES (?, ?, ?, ?, NULL, NULL)
+  track_id, original_url, status, created_at, lease_owner, lease_until,
+  failure_code, failure_message, failure_details, failed_at
+) VALUES (?, ?, ?, ?, NULL, NULL, NULL, NULL, NULL, NULL)
 ON CONFLICT(track_id) DO UPDATE SET
   original_url = excluded.original_url,
   status = excluded.status,
   created_at = excluded.created_at,
   lease_owner = NULL,
-  lease_until = NULL
+  lease_until = NULL,
+  failure_code = NULL,
+  failure_message = NULL,
+  failure_details = NULL,
+  failed_at = NULL
 WHERE download_task_table.status IN (?, ?)
 ''',
       variables: [
@@ -56,7 +69,14 @@ WHERE download_task_table.status IN (?, ?)
     final rows = await database.customWriteReturning(
       '''
 UPDATE download_task_table
-SET status = ?, lease_owner = ?, lease_until = ?
+SET
+  status = ?,
+  lease_owner = ?,
+  lease_until = ?,
+  failure_code = NULL,
+  failure_message = NULL,
+  failure_details = NULL,
+  failed_at = NULL
 WHERE track_id = (
   SELECT track_id
   FROM download_task_table
@@ -69,7 +89,9 @@ AND (
   status = ?
   OR (status = ? AND (lease_until IS NULL OR lease_until < ?))
 )
-RETURNING track_id, original_url, status, created_at
+RETURNING
+  track_id, original_url, status, created_at,
+  failure_code, failure_message, failure_details, failed_at
 ''',
       variables: [
         Variable<String>(DownloadStatus.downloading.name),
@@ -92,6 +114,12 @@ RETURNING track_id, original_url, status, created_at
       originalUrl: row.read<String>('original_url'),
       status: DownloadStatus.values.byName(row.read<String>('status')),
       createdAt: row.read<DateTime>('created_at'),
+      failure: _failureFromColumns(
+        code: row.readNullable<String>('failure_code'),
+        message: row.readNullable<String>('failure_message'),
+        details: row.readNullable<String>('failure_details'),
+        failedAt: row.readNullable<DateTime>('failed_at'),
+      ),
     );
   }
 
@@ -135,6 +163,7 @@ RETURNING track_id, original_url, status, created_at
   Future<bool> markFailedIfOwned({
     required String trackId,
     required String ownerId,
+    required DownloadFailureInfo failure,
   }) async {
     final affected =
         await (database.update(database.downloadTaskTable)..where(
@@ -145,6 +174,10 @@ RETURNING track_id, original_url, status, created_at
                 status: Value(DownloadStatus.failed.name),
                 leaseOwner: const Value(null),
                 leaseUntil: const Value(null),
+                failureCode: Value(failure.code),
+                failureMessage: Value(failure.message),
+                failureDetails: Value(failure.details),
+                failedAt: Value(failure.failedAt),
               ),
             );
     return affected == 1;
@@ -156,5 +189,25 @@ RETURNING track_id, original_url, status, created_at
       database.downloadTaskTable,
     )..where((t) => t.trackId.equals(trackId))).getSingleOrNull();
     return row == null ? null : DownloadTaskDto.fromDataClass(row);
+  }
+
+  static DownloadFailureInfo? _failureFromColumns({
+    required String? code,
+    required String? message,
+    required String? details,
+    required DateTime? failedAt,
+  }) {
+    if (code == null &&
+        message == null &&
+        details == null &&
+        failedAt == null) {
+      return null;
+    }
+    return DownloadFailureInfo(
+      code: code ?? DownloadFailureCodes.unknown,
+      message: message ?? '',
+      details: details ?? '',
+      failedAt: failedAt ?? DateTime.fromMillisecondsSinceEpoch(0),
+    );
   }
 }

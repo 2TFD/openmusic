@@ -19,6 +19,11 @@ class DownloadTaskRepositoryImpl implements DownloadTaskRepository {
   }
 
   @override
+  Stream<List<DownloadTrackTask>> watchAll() => localDataSource.watchAll().map(
+    (tasks) => tasks.map(DownloadTaskMapper.toEntity).toList(),
+  );
+
+  @override
   Future<DownloadTrackTask?> claimNext({required String ownerId}) async {
     final dto = await localDataSource.claimNext(
       ownerId: ownerId,
@@ -42,6 +47,13 @@ class DownloadTaskRepositoryImpl implements DownloadTaskRepository {
   }) => localDataSource.releaseLease(trackId: trackId, ownerId: ownerId);
 
   @override
-  Future<bool> markFailed({required String trackId, required String ownerId}) =>
-      localDataSource.markFailedIfOwned(trackId: trackId, ownerId: ownerId);
+  Future<bool> markFailed({
+    required String trackId,
+    required String ownerId,
+    required DownloadFailureInfo failure,
+  }) => localDataSource.markFailedIfOwned(
+    trackId: trackId,
+    ownerId: ownerId,
+    failure: failure,
+  );
 }

@@ -6,9 +6,11 @@ import 'package:openmusic/core/app_router/app_router_names.dart';
 import 'package:openmusic/core/app_router/transitions/goo_transition_page.dart';
 import 'package:openmusic/core/di/di.dart';
 import 'package:openmusic/layers/presentation/blocs/embedding_status/embedding_status_cubit.dart';
+import 'package:openmusic/layers/presentation/blocs/artist_detail/artist_detail_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/import_music/import_music_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist_detail/playlist_detail_bloc.dart';
 import 'package:openmusic/layers/presentation/screens/all_playlists_screen.dart';
+import 'package:openmusic/layers/presentation/screens/artist_screen.dart';
 import 'package:openmusic/layers/presentation/screens/home_screen.dart';
 import 'package:openmusic/layers/presentation/screens/import_music_screen.dart';
 import 'package:openmusic/layers/presentation/screens/library_screen.dart';
@@ -55,6 +57,18 @@ class AppRouter {
                     getIt<PlaylistDetailBloc>()
                       ..add(PlaylistDetailLoad(playlistId)),
                 child: const PlaylistScreen(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/${AppRouterNames.artist}/:id',
+            name: AppRouterNames.artist,
+            builder: (context, state) {
+              final artistId = state.pathParameters['id'] ?? '';
+              return BlocProvider(
+                create: (_) =>
+                    getIt<ArtistDetailBloc>()..add(ArtistDetailLoad(artistId)),
+                child: const ArtistScreen(),
               );
             },
           ),

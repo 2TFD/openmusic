@@ -21,6 +21,7 @@ class PlaylistMapper {
       createdAt: model.createdAt,
       trackCount: model.trackCount,
       revision: model.revision,
+      coverImageUrls: model.coverImageUrls,
       description: model.description,
       imageUrl: model.imageUrl,
     );

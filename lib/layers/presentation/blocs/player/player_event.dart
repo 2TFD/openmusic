@@ -16,6 +16,13 @@ class PlayerQueueSet extends PlayerEvent {
   PlayerQueueSet(this.tracks, {this.startTrack, this.autoPlay = true});
 }
 
+class PlayerTrackRemoved extends PlayerEvent {
+  final String trackId;
+  final Completer<void>? completer;
+
+  PlayerTrackRemoved(this.trackId, {this.completer});
+}
+
 class PlayerPlayPauseToggled extends PlayerEvent {}
 
 class PlayerSeeked extends PlayerEvent {

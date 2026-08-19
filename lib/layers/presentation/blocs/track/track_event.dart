@@ -11,8 +11,9 @@ class LoadTracksEvent extends TrackEvent {}
 
 class RemoveTrackEvent extends TrackEvent {
   final String trackId;
+  final Completer<void>? completer;
 
-  const RemoveTrackEvent(this.trackId);
+  const RemoveTrackEvent(this.trackId, {this.completer});
 
   @override
   List<Object> get props => [trackId];

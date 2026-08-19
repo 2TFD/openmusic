@@ -2283,6 +2283,50 @@ class $DownloadTaskTableTable extends DownloadTaskTable
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _failureCodeMeta = const VerificationMeta(
+    'failureCode',
+  );
+  @override
+  late final GeneratedColumn<String> failureCode = GeneratedColumn<String>(
+    'failure_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _failureMessageMeta = const VerificationMeta(
+    'failureMessage',
+  );
+  @override
+  late final GeneratedColumn<String> failureMessage = GeneratedColumn<String>(
+    'failure_message',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _failureDetailsMeta = const VerificationMeta(
+    'failureDetails',
+  );
+  @override
+  late final GeneratedColumn<String> failureDetails = GeneratedColumn<String>(
+    'failure_details',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _failedAtMeta = const VerificationMeta(
+    'failedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> failedAt = GeneratedColumn<DateTime>(
+    'failed_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     trackId,
@@ -2291,6 +2335,10 @@ class $DownloadTaskTableTable extends DownloadTaskTable
     createdAt,
     leaseOwner,
     leaseUntil,
+    failureCode,
+    failureMessage,
+    failureDetails,
+    failedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2351,6 +2399,39 @@ class $DownloadTaskTableTable extends DownloadTaskTable
         leaseUntil.isAcceptableOrUnknown(data['lease_until']!, _leaseUntilMeta),
       );
     }
+    if (data.containsKey('failure_code')) {
+      context.handle(
+        _failureCodeMeta,
+        failureCode.isAcceptableOrUnknown(
+          data['failure_code']!,
+          _failureCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('failure_message')) {
+      context.handle(
+        _failureMessageMeta,
+        failureMessage.isAcceptableOrUnknown(
+          data['failure_message']!,
+          _failureMessageMeta,
+        ),
+      );
+    }
+    if (data.containsKey('failure_details')) {
+      context.handle(
+        _failureDetailsMeta,
+        failureDetails.isAcceptableOrUnknown(
+          data['failure_details']!,
+          _failureDetailsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('failed_at')) {
+      context.handle(
+        _failedAtMeta,
+        failedAt.isAcceptableOrUnknown(data['failed_at']!, _failedAtMeta),
+      );
+    }
     return context;
   }
 
@@ -2384,6 +2465,22 @@ class $DownloadTaskTableTable extends DownloadTaskTable
         DriftSqlType.dateTime,
         data['${effectivePrefix}lease_until'],
       ),
+      failureCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}failure_code'],
+      ),
+      failureMessage: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}failure_message'],
+      ),
+      failureDetails: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}failure_details'],
+      ),
+      failedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}failed_at'],
+      ),
     );
   }
 
@@ -2401,6 +2498,10 @@ class DownloadTaskTableData extends DataClass
   final DateTime createdAt;
   final String? leaseOwner;
   final DateTime? leaseUntil;
+  final String? failureCode;
+  final String? failureMessage;
+  final String? failureDetails;
+  final DateTime? failedAt;
   const DownloadTaskTableData({
     required this.trackId,
     required this.originalUrl,
@@ -2408,6 +2509,10 @@ class DownloadTaskTableData extends DataClass
     required this.createdAt,
     this.leaseOwner,
     this.leaseUntil,
+    this.failureCode,
+    this.failureMessage,
+    this.failureDetails,
+    this.failedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2421,6 +2526,18 @@ class DownloadTaskTableData extends DataClass
     }
     if (!nullToAbsent || leaseUntil != null) {
       map['lease_until'] = Variable<DateTime>(leaseUntil);
+    }
+    if (!nullToAbsent || failureCode != null) {
+      map['failure_code'] = Variable<String>(failureCode);
+    }
+    if (!nullToAbsent || failureMessage != null) {
+      map['failure_message'] = Variable<String>(failureMessage);
+    }
+    if (!nullToAbsent || failureDetails != null) {
+      map['failure_details'] = Variable<String>(failureDetails);
+    }
+    if (!nullToAbsent || failedAt != null) {
+      map['failed_at'] = Variable<DateTime>(failedAt);
     }
     return map;
   }
@@ -2437,6 +2554,18 @@ class DownloadTaskTableData extends DataClass
       leaseUntil: leaseUntil == null && nullToAbsent
           ? const Value.absent()
           : Value(leaseUntil),
+      failureCode: failureCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(failureCode),
+      failureMessage: failureMessage == null && nullToAbsent
+          ? const Value.absent()
+          : Value(failureMessage),
+      failureDetails: failureDetails == null && nullToAbsent
+          ? const Value.absent()
+          : Value(failureDetails),
+      failedAt: failedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(failedAt),
     );
   }
 
@@ -2452,6 +2581,10 @@ class DownloadTaskTableData extends DataClass
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       leaseOwner: serializer.fromJson<String?>(json['leaseOwner']),
       leaseUntil: serializer.fromJson<DateTime?>(json['leaseUntil']),
+      failureCode: serializer.fromJson<String?>(json['failureCode']),
+      failureMessage: serializer.fromJson<String?>(json['failureMessage']),
+      failureDetails: serializer.fromJson<String?>(json['failureDetails']),
+      failedAt: serializer.fromJson<DateTime?>(json['failedAt']),
     );
   }
   @override
@@ -2464,6 +2597,10 @@ class DownloadTaskTableData extends DataClass
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'leaseOwner': serializer.toJson<String?>(leaseOwner),
       'leaseUntil': serializer.toJson<DateTime?>(leaseUntil),
+      'failureCode': serializer.toJson<String?>(failureCode),
+      'failureMessage': serializer.toJson<String?>(failureMessage),
+      'failureDetails': serializer.toJson<String?>(failureDetails),
+      'failedAt': serializer.toJson<DateTime?>(failedAt),
     };
   }
 
@@ -2474,6 +2611,10 @@ class DownloadTaskTableData extends DataClass
     DateTime? createdAt,
     Value<String?> leaseOwner = const Value.absent(),
     Value<DateTime?> leaseUntil = const Value.absent(),
+    Value<String?> failureCode = const Value.absent(),
+    Value<String?> failureMessage = const Value.absent(),
+    Value<String?> failureDetails = const Value.absent(),
+    Value<DateTime?> failedAt = const Value.absent(),
   }) => DownloadTaskTableData(
     trackId: trackId ?? this.trackId,
     originalUrl: originalUrl ?? this.originalUrl,
@@ -2481,6 +2622,14 @@ class DownloadTaskTableData extends DataClass
     createdAt: createdAt ?? this.createdAt,
     leaseOwner: leaseOwner.present ? leaseOwner.value : this.leaseOwner,
     leaseUntil: leaseUntil.present ? leaseUntil.value : this.leaseUntil,
+    failureCode: failureCode.present ? failureCode.value : this.failureCode,
+    failureMessage: failureMessage.present
+        ? failureMessage.value
+        : this.failureMessage,
+    failureDetails: failureDetails.present
+        ? failureDetails.value
+        : this.failureDetails,
+    failedAt: failedAt.present ? failedAt.value : this.failedAt,
   );
   DownloadTaskTableData copyWithCompanion(DownloadTaskTableCompanion data) {
     return DownloadTaskTableData(
@@ -2496,6 +2645,16 @@ class DownloadTaskTableData extends DataClass
       leaseUntil: data.leaseUntil.present
           ? data.leaseUntil.value
           : this.leaseUntil,
+      failureCode: data.failureCode.present
+          ? data.failureCode.value
+          : this.failureCode,
+      failureMessage: data.failureMessage.present
+          ? data.failureMessage.value
+          : this.failureMessage,
+      failureDetails: data.failureDetails.present
+          ? data.failureDetails.value
+          : this.failureDetails,
+      failedAt: data.failedAt.present ? data.failedAt.value : this.failedAt,
     );
   }
 
@@ -2507,7 +2666,11 @@ class DownloadTaskTableData extends DataClass
           ..write('status: $status, ')
           ..write('createdAt: $createdAt, ')
           ..write('leaseOwner: $leaseOwner, ')
-          ..write('leaseUntil: $leaseUntil')
+          ..write('leaseUntil: $leaseUntil, ')
+          ..write('failureCode: $failureCode, ')
+          ..write('failureMessage: $failureMessage, ')
+          ..write('failureDetails: $failureDetails, ')
+          ..write('failedAt: $failedAt')
           ..write(')'))
         .toString();
   }
@@ -2520,6 +2683,10 @@ class DownloadTaskTableData extends DataClass
     createdAt,
     leaseOwner,
     leaseUntil,
+    failureCode,
+    failureMessage,
+    failureDetails,
+    failedAt,
   );
   @override
   bool operator ==(Object other) =>
@@ -2530,7 +2697,11 @@ class DownloadTaskTableData extends DataClass
           other.status == this.status &&
           other.createdAt == this.createdAt &&
           other.leaseOwner == this.leaseOwner &&
-          other.leaseUntil == this.leaseUntil);
+          other.leaseUntil == this.leaseUntil &&
+          other.failureCode == this.failureCode &&
+          other.failureMessage == this.failureMessage &&
+          other.failureDetails == this.failureDetails &&
+          other.failedAt == this.failedAt);
 }
 
 class DownloadTaskTableCompanion
@@ -2541,6 +2712,10 @@ class DownloadTaskTableCompanion
   final Value<DateTime> createdAt;
   final Value<String?> leaseOwner;
   final Value<DateTime?> leaseUntil;
+  final Value<String?> failureCode;
+  final Value<String?> failureMessage;
+  final Value<String?> failureDetails;
+  final Value<DateTime?> failedAt;
   final Value<int> rowid;
   const DownloadTaskTableCompanion({
     this.trackId = const Value.absent(),
@@ -2549,6 +2724,10 @@ class DownloadTaskTableCompanion
     this.createdAt = const Value.absent(),
     this.leaseOwner = const Value.absent(),
     this.leaseUntil = const Value.absent(),
+    this.failureCode = const Value.absent(),
+    this.failureMessage = const Value.absent(),
+    this.failureDetails = const Value.absent(),
+    this.failedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DownloadTaskTableCompanion.insert({
@@ -2558,6 +2737,10 @@ class DownloadTaskTableCompanion
     required DateTime createdAt,
     this.leaseOwner = const Value.absent(),
     this.leaseUntil = const Value.absent(),
+    this.failureCode = const Value.absent(),
+    this.failureMessage = const Value.absent(),
+    this.failureDetails = const Value.absent(),
+    this.failedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : trackId = Value(trackId),
        originalUrl = Value(originalUrl),
@@ -2570,6 +2753,10 @@ class DownloadTaskTableCompanion
     Expression<DateTime>? createdAt,
     Expression<String>? leaseOwner,
     Expression<DateTime>? leaseUntil,
+    Expression<String>? failureCode,
+    Expression<String>? failureMessage,
+    Expression<String>? failureDetails,
+    Expression<DateTime>? failedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2579,6 +2766,10 @@ class DownloadTaskTableCompanion
       if (createdAt != null) 'created_at': createdAt,
       if (leaseOwner != null) 'lease_owner': leaseOwner,
       if (leaseUntil != null) 'lease_until': leaseUntil,
+      if (failureCode != null) 'failure_code': failureCode,
+      if (failureMessage != null) 'failure_message': failureMessage,
+      if (failureDetails != null) 'failure_details': failureDetails,
+      if (failedAt != null) 'failed_at': failedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2590,6 +2781,10 @@ class DownloadTaskTableCompanion
     Value<DateTime>? createdAt,
     Value<String?>? leaseOwner,
     Value<DateTime?>? leaseUntil,
+    Value<String?>? failureCode,
+    Value<String?>? failureMessage,
+    Value<String?>? failureDetails,
+    Value<DateTime?>? failedAt,
     Value<int>? rowid,
   }) {
     return DownloadTaskTableCompanion(
@@ -2599,6 +2794,10 @@ class DownloadTaskTableCompanion
       createdAt: createdAt ?? this.createdAt,
       leaseOwner: leaseOwner ?? this.leaseOwner,
       leaseUntil: leaseUntil ?? this.leaseUntil,
+      failureCode: failureCode ?? this.failureCode,
+      failureMessage: failureMessage ?? this.failureMessage,
+      failureDetails: failureDetails ?? this.failureDetails,
+      failedAt: failedAt ?? this.failedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2624,6 +2823,18 @@ class DownloadTaskTableCompanion
     if (leaseUntil.present) {
       map['lease_until'] = Variable<DateTime>(leaseUntil.value);
     }
+    if (failureCode.present) {
+      map['failure_code'] = Variable<String>(failureCode.value);
+    }
+    if (failureMessage.present) {
+      map['failure_message'] = Variable<String>(failureMessage.value);
+    }
+    if (failureDetails.present) {
+      map['failure_details'] = Variable<String>(failureDetails.value);
+    }
+    if (failedAt.present) {
+      map['failed_at'] = Variable<DateTime>(failedAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2639,6 +2850,10 @@ class DownloadTaskTableCompanion
           ..write('createdAt: $createdAt, ')
           ..write('leaseOwner: $leaseOwner, ')
           ..write('leaseUntil: $leaseUntil, ')
+          ..write('failureCode: $failureCode, ')
+          ..write('failureMessage: $failureMessage, ')
+          ..write('failureDetails: $failureDetails, ')
+          ..write('failedAt: $failedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -6962,6 +7177,10 @@ typedef $$DownloadTaskTableTableCreateCompanionBuilder =
       required DateTime createdAt,
       Value<String?> leaseOwner,
       Value<DateTime?> leaseUntil,
+      Value<String?> failureCode,
+      Value<String?> failureMessage,
+      Value<String?> failureDetails,
+      Value<DateTime?> failedAt,
       Value<int> rowid,
     });
 typedef $$DownloadTaskTableTableUpdateCompanionBuilder =
@@ -6972,6 +7191,10 @@ typedef $$DownloadTaskTableTableUpdateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<String?> leaseOwner,
       Value<DateTime?> leaseUntil,
+      Value<String?> failureCode,
+      Value<String?> failureMessage,
+      Value<String?> failureDetails,
+      Value<DateTime?> failedAt,
       Value<int> rowid,
     });
 
@@ -7011,6 +7234,26 @@ class $$DownloadTaskTableTableFilterComposer
 
   ColumnFilters<DateTime> get leaseUntil => $composableBuilder(
     column: $table.leaseUntil,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get failureCode => $composableBuilder(
+    column: $table.failureCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get failureMessage => $composableBuilder(
+    column: $table.failureMessage,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get failureDetails => $composableBuilder(
+    column: $table.failureDetails,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get failedAt => $composableBuilder(
+    column: $table.failedAt,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -7053,6 +7296,26 @@ class $$DownloadTaskTableTableOrderingComposer
     column: $table.leaseUntil,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get failureCode => $composableBuilder(
+    column: $table.failureCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get failureMessage => $composableBuilder(
+    column: $table.failureMessage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get failureDetails => $composableBuilder(
+    column: $table.failureDetails,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get failedAt => $composableBuilder(
+    column: $table.failedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$DownloadTaskTableTableAnnotationComposer
@@ -7087,6 +7350,24 @@ class $$DownloadTaskTableTableAnnotationComposer
     column: $table.leaseUntil,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get failureCode => $composableBuilder(
+    column: $table.failureCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get failureMessage => $composableBuilder(
+    column: $table.failureMessage,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get failureDetails => $composableBuilder(
+    column: $table.failureDetails,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get failedAt =>
+      $composableBuilder(column: $table.failedAt, builder: (column) => column);
 }
 
 class $$DownloadTaskTableTableTableManager
@@ -7135,6 +7416,10 @@ class $$DownloadTaskTableTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<String?> leaseOwner = const Value.absent(),
                 Value<DateTime?> leaseUntil = const Value.absent(),
+                Value<String?> failureCode = const Value.absent(),
+                Value<String?> failureMessage = const Value.absent(),
+                Value<String?> failureDetails = const Value.absent(),
+                Value<DateTime?> failedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DownloadTaskTableCompanion(
                 trackId: trackId,
@@ -7143,6 +7428,10 @@ class $$DownloadTaskTableTableTableManager
                 createdAt: createdAt,
                 leaseOwner: leaseOwner,
                 leaseUntil: leaseUntil,
+                failureCode: failureCode,
+                failureMessage: failureMessage,
+                failureDetails: failureDetails,
+                failedAt: failedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -7153,6 +7442,10 @@ class $$DownloadTaskTableTableTableManager
                 required DateTime createdAt,
                 Value<String?> leaseOwner = const Value.absent(),
                 Value<DateTime?> leaseUntil = const Value.absent(),
+                Value<String?> failureCode = const Value.absent(),
+                Value<String?> failureMessage = const Value.absent(),
+                Value<String?> failureDetails = const Value.absent(),
+                Value<DateTime?> failedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DownloadTaskTableCompanion.insert(
                 trackId: trackId,
@@ -7161,6 +7454,10 @@ class $$DownloadTaskTableTableTableManager
                 createdAt: createdAt,
                 leaseOwner: leaseOwner,
                 leaseUntil: leaseUntil,
+                failureCode: failureCode,
+                failureMessage: failureMessage,
+                failureDetails: failureDetails,
+                failedAt: failedAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

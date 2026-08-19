@@ -46,6 +46,66 @@ void main() {
     await bloc.close();
     await changes.close();
   });
+
+  test('remove track optimistically updates loaded tracks', () async {
+    final changes = StreamController<void>();
+    final removeTrack = _RecordingRemoveTrackUseCase();
+    final bloc = TrackBloc(
+      getTracksUseCase: _FakeGetTracksUseCase([
+        [_track('a'), _track('b')],
+      ]),
+      addTrackUseCase: _UnusedAddTrackUseCase(),
+      searchUseCase: _UnusedSearchUseCase(),
+      removeTrackUseCase: removeTrack,
+      updateTrackUseCase: _UnusedUpdateTrackUseCase(),
+      trackChangesStream: changes.stream,
+    );
+    addTearDown(() async {
+      await bloc.close();
+      await changes.close();
+    });
+    bloc.add(LoadTracksEvent());
+    await pumpEventQueue();
+
+    final removed = Completer<void>();
+    bloc.add(RemoveTrackEvent('a', completer: removed));
+    await removed.future;
+
+    expect(removeTrack.ids, ['a']);
+    expect((bloc.state as TrackLoaded).tracks.map((track) => track.id), ['b']);
+  });
+
+  test(
+    'failed remove restores loaded tracks and completes with error',
+    () async {
+      final changes = StreamController<void>();
+      final bloc = TrackBloc(
+        getTracksUseCase: _FakeGetTracksUseCase([
+          [_track('a'), _track('b')],
+        ]),
+        addTrackUseCase: _UnusedAddTrackUseCase(),
+        searchUseCase: _UnusedSearchUseCase(),
+        removeTrackUseCase: _FailingRemoveTrackUseCase(),
+        updateTrackUseCase: _UnusedUpdateTrackUseCase(),
+        trackChangesStream: changes.stream,
+      );
+      addTearDown(() async {
+        await bloc.close();
+        await changes.close();
+      });
+      bloc.add(LoadTracksEvent());
+      await pumpEventQueue();
+
+      final removed = Completer<void>();
+      bloc.add(RemoveTrackEvent('a', completer: removed));
+
+      await expectLater(removed.future, throwsStateError);
+      expect((bloc.state as TrackLoaded).tracks.map((track) => track.id), [
+        'a',
+        'b',
+      ]);
+    },
+  );
 }
 
 Track _track(String id) {
@@ -76,3 +136,15 @@ class _UnusedSearchUseCase extends Fake implements SearchUseCase {}
 class _UnusedRemoveTrackUseCase extends Fake implements RemoveTrackUseCase {}
 
 class _UnusedUpdateTrackUseCase extends Fake implements UpdateTrackUseCase {}
+
+class _RecordingRemoveTrackUseCase extends Fake implements RemoveTrackUseCase {
+  final ids = <String>[];
+
+  @override
+  Future<void> call(String trackId) async => ids.add(trackId);
+}
+
+class _FailingRemoveTrackUseCase extends Fake implements RemoveTrackUseCase {
+  @override
+  Future<void> call(String trackId) async => throw StateError('failed');
+}

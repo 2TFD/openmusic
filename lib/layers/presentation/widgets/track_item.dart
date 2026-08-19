@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
+import 'package:openmusic/layers/domain/entities/download_track_task.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/presentation/widgets/cached_image.dart';
 
@@ -10,6 +11,10 @@ class TrackItem extends StatelessWidget {
   final bool isPlaying;
   final bool isAvailable;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
+  final VoidCallback? onMoreTap;
+  final DownloadTrackTask? downloadTask;
+  final VoidCallback? onDownloadStatusTap;
 
   const TrackItem({
     super.key,
@@ -18,12 +23,17 @@ class TrackItem extends StatelessWidget {
     required this.isPlaying,
     required this.isAvailable,
     required this.onTap,
+    this.onLongPress,
+    this.onMoreTap,
+    this.downloadTask,
+    this.onDownloadStatusTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      onLongPress: onLongPress,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
         decoration: isCurrent
@@ -69,25 +79,60 @@ class TrackItem extends StatelessWidget {
                       fontSize: 11,
                       color: AppColors.muted,
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
             const SizedBox(width: 12),
-            track.filePath == null
-                ? const Icon(Icons.cloud_off_sharp, color: AppColors.muted)
-                : isCurrent
-                ? _PlayingIndicator(isPlaying: isPlaying)
-                : Text(
-                    _formatDuration(track.duration),
-                    style: GoogleFonts.figtree(
-                      fontSize: 11,
-                      color: AppColors.muted2,
-                    ),
-                  ),
+            _TrailingControls(status: _buildStatus(), onMoreTap: onMoreTap),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildStatus() {
+    if (track.filePath == null) {
+      final status = downloadTask?.status;
+      if (status == DownloadStatus.failed) {
+        return IconButton(
+          key: ValueKey('track-download-failed-${track.id}'),
+          onPressed: onDownloadStatusTap,
+          icon: const Icon(
+            Icons.error_outline,
+            color: AppColors.error,
+            size: 20,
+          ),
+          visualDensity: VisualDensity.compact,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints.tightFor(width: 32, height: 32),
+        );
+      }
+      if (status == DownloadStatus.downloading) {
+        return const SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(
+            strokeWidth: 1.5,
+            color: AppColors.muted,
+          ),
+        );
+      }
+      if (status == DownloadStatus.queued) {
+        return const Icon(
+          Icons.cloud_download_outlined,
+          color: AppColors.muted,
+          size: 20,
+        );
+      }
+      return const Icon(Icons.cloud_off_sharp, color: AppColors.muted);
+    }
+    if (isCurrent) return _PlayingIndicator(isPlaying: isPlaying);
+    return Text(
+      _formatDuration(track.duration),
+      style: GoogleFonts.figtree(fontSize: 11, color: AppColors.muted2),
+      overflow: TextOverflow.ellipsis,
     );
   }
 
@@ -95,6 +140,32 @@ class TrackItem extends StatelessWidget {
     final m = d.inMinutes;
     final s = (d.inSeconds % 60).toString().padLeft(2, '0');
     return '$m:$s';
+  }
+}
+
+class _TrailingControls extends StatelessWidget {
+  final Widget status;
+  final VoidCallback? onMoreTap;
+
+  const _TrailingControls({required this.status, required this.onMoreTap});
+
+  @override
+  Widget build(BuildContext context) {
+    if (onMoreTap == null) return status;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(width: 36, child: Center(child: status)),
+        const SizedBox(width: 4),
+        IconButton(
+          onPressed: onMoreTap,
+          icon: const Icon(Icons.more_vert, color: AppColors.muted, size: 20),
+          visualDensity: VisualDensity.compact,
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints.tightFor(width: 32, height: 32),
+        ),
+      ],
+    );
   }
 }
 

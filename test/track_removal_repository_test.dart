@@ -136,6 +136,43 @@ void main() {
     expect(await protected.exists(), isTrue);
   });
 
+  test(
+    'local import removal deletes the app copy but keeps the source file',
+    () async {
+      final root = await Directory.systemTemp.createTemp('openmusic_copy_');
+      final outside = await Directory.systemTemp.createTemp(
+        'openmusic_source_',
+      );
+      addTearDown(() => root.delete(recursive: true));
+      addTearDown(() => outside.delete(recursive: true));
+      final source = File('${outside.path}/source.mp3');
+      final copy = File('${root.path}/copy.mp3');
+      await source.writeAsString('source');
+      await copy.writeAsString('copy');
+      final database = AppDatabase(NativeDatabase.memory());
+      addTearDown(database.close);
+      await database
+          .into(database.trackTable)
+          .insert(
+            TrackTableCompanion.insert(
+              id: 'track-3',
+              title: 'Track',
+              sourceType: 'localFile',
+              sourceUri: source.path,
+              pathToFile: const Value('copy.mp3'),
+            ),
+          );
+
+      await TrackRemovalRepositoryImpl(
+        database: database,
+        appDir: root.path,
+      ).removeTrack('track-3');
+
+      expect(await copy.exists(), isFalse);
+      expect(await source.exists(), isTrue);
+    },
+  );
+
   test('pending cleanup survives until a later retry', () async {
     final root = await Directory.systemTemp.createTemp('openmusic_retry_');
     addTearDown(() => root.delete(recursive: true));

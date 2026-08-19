@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:openmusic/core/utils/app_logger.dart';
+import 'package:openmusic/core/services/download/download_failure_classifier.dart';
 import 'package:openmusic/core/services/track_source_resolver.dart';
 import 'package:openmusic/core/services/task_lease.dart';
 import 'package:openmusic/layers/domain/entities/download_track_task.dart';
@@ -88,7 +89,10 @@ class DownloadWorker {
         );
         if (task != null) {
           final trackId = task.trackId;
-          final terminalUpdate = cancellation?.isCancelled == true
+          final terminalUpdate =
+              cancellation?.isCancelled == true ||
+                  e is OperationCancelledException ||
+                  e is TaskLeaseLostException
               ? downloadRepository.releaseLease(
                   trackId: trackId,
                   ownerId: _ownerId,
@@ -96,6 +100,12 @@ class DownloadWorker {
               : downloadRepository.markFailed(
                   trackId: trackId,
                   ownerId: _ownerId,
+                  failure: DownloadFailureClassifier.classify(
+                    e,
+                    st,
+                    trackId: trackId,
+                    originalUrl: task.originalUrl,
+                  ),
                 );
           await terminalUpdate.catchError((e2) {
             AppLogger.log(

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:openmusic/layers/data/models/playlist_dto.dart';
 import 'package:openmusic/layers/data/models/track_dto.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
+import 'package:openmusic/layers/data/datasources/local/artist/drift/artist_drift_local_source.dart';
 import 'package:openmusic/layers/data/datasources/local/playlist/drift/playlist_drift_local_source.dart';
 import 'package:openmusic/layers/data/datasources/local/track/drift/track_drift_local_source.dart';
 
@@ -10,11 +11,13 @@ void main() {
   late AppDatabase database;
   late TrackDriftLocalSource tracks;
   late PlaylistDriftLocalSource playlists;
+  late ArtistDriftLocalSource artists;
 
   setUp(() {
     database = AppDatabase(NativeDatabase.memory());
     tracks = TrackDriftLocalSource(database);
     playlists = PlaylistDriftLocalSource(database);
+    artists = ArtistDriftLocalSource(database);
   });
 
   tearDown(() => database.close());
@@ -127,20 +130,113 @@ ORDER BY position
 
     expect((await updated)!.trackIds, ['track-1']);
   });
+
+  test(
+    'playlist summaries include first track covers in playlist order',
+    () async {
+      await tracks.saveTrack(_track('track-empty'));
+      await tracks.saveTrack(_track('track-1', imageUrl: 'https://img/1.jpg'));
+      await tracks.saveTrack(_track('track-2', imageUrl: 'https://img/2.jpg'));
+      await tracks.saveTrack(_track('track-3', imageUrl: 'https://img/3.jpg'));
+      await tracks.saveTrack(_track('track-4', imageUrl: 'https://img/4.jpg'));
+      await tracks.saveTrack(_track('track-5', imageUrl: 'https://img/5.jpg'));
+      await playlists.savePlaylist(
+        PlaylistDto(
+          id: 'playlist-1',
+          name: 'Playlist',
+          trackIds: const [
+            'track-empty',
+            'track-2',
+            'track-1',
+            'track-3',
+            'track-4',
+            'track-5',
+          ],
+          createdAt: DateTime.utc(2026),
+        ),
+      );
+
+      final summaries = await playlists.watchPlaylistSummaries().first;
+
+      expect(summaries.single.coverImageUrls, [
+        'https://img/2.jpg',
+        'https://img/1.jpg',
+        'https://img/3.jpg',
+        'https://img/4.jpg',
+      ]);
+    },
+  );
+
+  test('artist summaries aggregate tracks and unique recent covers', () async {
+    const alpha = ArtistDto(id: 'artist-alpha', name: 'Alpha');
+    const legacyAlpha = ArtistDto(
+      id: 'legacy-track-specific-alpha',
+      name: ' alpha ',
+    );
+    const beta = ArtistDto(id: 'artist-beta', name: 'Beta');
+    await tracks.saveTrack(
+      _track(
+        'alpha-old',
+        artists: const [alpha],
+        imageUrl: 'https://img/shared.jpg',
+        durationMs: 1000,
+        addedAt: DateTime.utc(2026, 1),
+      ),
+    );
+    await tracks.saveTrack(
+      _track(
+        'alpha-middle',
+        artists: const [legacyAlpha, beta],
+        imageUrl: 'https://img/shared.jpg',
+        durationMs: 2000,
+        addedAt: DateTime.utc(2026, 2),
+      ),
+    );
+    await tracks.saveTrack(
+      _track(
+        'alpha-new',
+        artists: const [alpha],
+        imageUrl: 'https://img/new.jpg',
+        durationMs: 3000,
+        addedAt: DateTime.utc(2026, 3),
+      ),
+    );
+
+    final summaries = await artists.watchArtistSummaries().first;
+    final alphaSummary = summaries.first;
+
+    expect(summaries.map((artist) => artist.name), ['Alpha', 'Beta']);
+    expect(alphaSummary.id, alpha.id);
+    expect(alphaSummary.trackCount, 3);
+    expect(alphaSummary.totalDurationMs, 6000);
+    expect(alphaSummary.coverImageUrls, [
+      'https://img/new.jpg',
+      'https://img/shared.jpg',
+    ]);
+    expect(await artists.getTrackIdsByArtist(alpha.id), [
+      'alpha-new',
+      'alpha-middle',
+      'alpha-old',
+    ]);
+  });
 }
 
 TrackDto _track(
   String id, {
   List<ArtistDto> artists = const [ArtistDto(id: 'artist', name: 'Artist')],
+  String? imageUrl,
+  int durationMs = 1000,
+  DateTime? addedAt,
 }) {
   return TrackDto(
     id: id,
     title: id,
     filePath: null,
     artists: artists,
-    durationMs: 1000,
+    durationMs: durationMs,
     sourceType: 'localFile',
     originalUrl: '/$id.mp3',
-    addedAt: DateTime.utc(2026),
+    addedAt: addedAt ?? DateTime.utc(2026),
+    imageUrl: imageUrl,
   );
 }

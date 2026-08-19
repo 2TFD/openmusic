@@ -77,6 +77,57 @@ void main() {
     await pumpEventQueue(times: 50);
     expect(bloc.state, isA<PlaylistDetailDeleted>());
   });
+
+  test('rename stores a manual cover URL from a real image link', () async {
+    final database = AppDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    final trackSource = TrackDriftLocalSource(database);
+    final playlistSource = PlaylistDriftLocalSource(database);
+    final trackRepository = TrackRepositoryImpl(localDataSource: trackSource);
+    final playlistRepository = PlaylistRepositoryImpl(
+      localDataSource: playlistSource,
+    );
+    await trackSource.saveTrack(_track('a'));
+    await playlistSource.savePlaylist(
+      PlaylistDto(
+        id: 'playlist',
+        name: 'Playlist',
+        trackIds: const ['a'],
+        createdAt: DateTime.utc(2026),
+      ),
+    );
+    final bloc = PlaylistDetailBloc(
+      getPlaylistWithTracks: GetPlaylistWithTracksUseCase(
+        playlistRepository: playlistRepository,
+        trackRepository: trackRepository,
+      ),
+      updatePlaylist: UpdatePlaylistUseCase(playlistRepository),
+      deletePlaylist: DeletePlaylistUseCase(playlistRepository),
+      addTrack: AddTrackToPlaylistUseCase(playlistRepository),
+      watchPlaylist: WatchPlaylistUseCase(playlistRepository),
+      trackChanges: trackRepository.watchChanges(),
+    );
+    addTearDown(bloc.close);
+
+    bloc.add(const PlaylistDetailLoad('playlist'));
+    await pumpEventQueue(times: 50);
+    bloc.add(
+      const PlaylistDetailRename(
+        name: 'Playlist',
+        imageUrl:
+            'https://i.pinimg.com/736x/94/32/f8/9432f8198cfdf440aacfe0930e4bd513.jpg',
+      ),
+    );
+    await pumpEventQueue(times: 50);
+
+    const coverUrl =
+        'https://i.pinimg.com/736x/94/32/f8/9432f8198cfdf440aacfe0930e4bd513.jpg';
+    expect((bloc.state as PlaylistDetailLoaded).playlist.imageUrl, coverUrl);
+    expect(
+      (await playlistRepository.getPlaylistById('playlist'))!.imageUrl,
+      coverUrl,
+    );
+  });
 }
 
 TrackDto _track(String id) {

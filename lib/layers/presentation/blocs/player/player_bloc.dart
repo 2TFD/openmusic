@@ -74,6 +74,8 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
         await _flushSession();
       case PlayerQueueSet():
         await _onQueueSet(event, emit);
+      case PlayerTrackRemoved():
+        await _onTrackRemoved(event, emit);
       case PlayerPlayPauseToggled():
         await _onPlayPause(event, emit);
       case PlayerSeeked():
@@ -120,7 +122,8 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   ) async {
     switch (e.command) {
       case PlayRequested():
-        if (!state.isPlaying) await _onPlayPause(PlayerPlayPauseToggled(), emit);
+        if (!state.isPlaying)
+          await _onPlayPause(PlayerPlayPauseToggled(), emit);
       case PauseRequested():
         if (state.isPlaying) await _onPlayPause(PlayerPlayPauseToggled(), emit);
       case StopRequested():
@@ -209,9 +212,8 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   void _subscribe() {
     _commandSub = _commands.commands.listen(
       (command) => add(_PlayerSystemCommandReceived(command)),
-      onError: (e, st) => AppLogger.log(
-        '[PlayerBloc] command bus error: $e, stackTrace: $st',
-      ),
+      onError: (e, st) =>
+          AppLogger.log('[PlayerBloc] command bus error: $e, stackTrace: $st'),
     );
     _positionSub = _service.positionStream.listen(
       (pos) => add(_PlayerPositionUpdated(pos)),
@@ -274,6 +276,111 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     } catch (e, st) {
       AppLogger.log('[PlayerBloc._onQueueSet] Error: $e, stackTrace: $st');
       emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
+    }
+  }
+
+  Future<void> _onTrackRemoved(
+    PlayerTrackRemoved e,
+    Emitter<PlayerState> emit,
+  ) async {
+    try {
+      await _removeTrackFromPlayback(e.trackId, emit);
+      _completeTrackRemoval(e);
+    } catch (error, stackTrace) {
+      await AppLogger.log(
+        '[PlayerBloc._onTrackRemoved] Error removing ${e.trackId}: '
+        '$error, stackTrace: $stackTrace',
+      );
+      _completeTrackRemoval(e, error: error, stackTrace: stackTrace);
+      emit(state.copyWith(error: failureFromException(error).toLocaleKey()));
+    }
+  }
+
+  Future<void> _removeTrackFromPlayback(
+    String trackId,
+    Emitter<PlayerState> emit,
+  ) async {
+    if (!state.queue.any((track) => track.id == trackId)) return;
+
+    final wasPlaying = state.isPlaying;
+    final removedCurrent = state.currentTrack?.id == trackId;
+    final nextQueue = state.queue
+        .where((track) => track.id != trackId)
+        .toList();
+
+    if (removedCurrent) await _recordCurrentPlay();
+
+    if (nextQueue.isEmpty) {
+      await _service.clearQueue();
+      _resetListening(null);
+      _lastSessionPosition = Duration.zero;
+      emit(
+        state.copyWith(
+          queue: const [],
+          currentIndex: 0,
+          currentTrack: null,
+          isPlaying: false,
+          isLoading: false,
+          position: Duration.zero,
+          duration: Duration.zero,
+          shuffleIndices: null,
+        ),
+      );
+      _scheduleSessionWrite(replaceQueue: true, position: Duration.zero);
+      return;
+    }
+
+    final currentTrackId = state.currentTrack?.id;
+    final nextIndex = removedCurrent
+        ? min(state.currentIndex, nextQueue.length - 1)
+        : nextQueue.indexWhere((track) => track.id == currentTrackId);
+    final normalizedIndex = nextIndex < 0
+        ? min(state.currentIndex, nextQueue.length - 1)
+        : nextIndex;
+    final position = removedCurrent ? Duration.zero : state.position;
+    final nextTrack = nextQueue[normalizedIndex];
+
+    await _service.setQueue(
+      nextQueue,
+      index: normalizedIndex,
+      initialPosition: position,
+    );
+    await _service.setLoopMode(state.loopMode);
+    await _service.setShuffleModeEnabled(state.isShuffleEnabled);
+
+    if (removedCurrent) {
+      _resetListening(nextTrack);
+    } else {
+      _lastObservedPosition = null;
+    }
+    _lastSessionPosition = position;
+
+    emit(
+      state.copyWith(
+        queue: nextQueue,
+        currentIndex: normalizedIndex,
+        currentTrack: nextTrack,
+        isLoading: false,
+        position: position,
+        duration: removedCurrent ? nextTrack.duration : state.duration,
+        shuffleIndices: state.isShuffleEnabled ? _service.shuffleIndices : null,
+      ),
+    );
+    _scheduleSessionWrite(replaceQueue: true, position: position);
+    if (wasPlaying) _startPlayback();
+  }
+
+  void _completeTrackRemoval(
+    PlayerTrackRemoved event, {
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
+    final completer = event.completer;
+    if (completer == null || completer.isCompleted) return;
+    if (error == null) {
+      completer.complete();
+    } else {
+      completer.completeError(error, stackTrace);
     }
   }
 

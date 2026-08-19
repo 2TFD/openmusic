@@ -11,6 +11,12 @@ void main() {
       originalUrl: 'https://example.com/track-1',
       status: DownloadStatus.downloading,
       createdAt: createdAt,
+      failure: DownloadFailureInfo(
+        code: DownloadFailureCodes.sourceUnavailable,
+        message: 'Source unavailable',
+        details: 'trackId: track-1\nstackTrace: ...',
+        failedAt: DateTime.utc(2026, 7, 24, 12, 31),
+      ),
     );
 
     final entity = DownloadTaskMapper.toEntity(dto);
@@ -20,5 +26,9 @@ void main() {
     expect(roundTrip.originalUrl, dto.originalUrl);
     expect(roundTrip.status, dto.status);
     expect(roundTrip.createdAt, dto.createdAt);
+    expect(roundTrip.failure?.code, dto.failure?.code);
+    expect(roundTrip.failure?.message, dto.failure?.message);
+    expect(roundTrip.failure?.details, dto.failure?.details);
+    expect(roundTrip.failure?.failedAt, dto.failure?.failedAt);
   });
 }

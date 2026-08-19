@@ -33,14 +33,19 @@ class TrackIngestionRepositoryImpl implements TrackIngestionRepository {
       await database.customUpdate(
         '''
 INSERT INTO download_task_table (
-  track_id, original_url, status, created_at, lease_owner, lease_until
-) VALUES (?, ?, ?, ?, NULL, NULL)
+  track_id, original_url, status, created_at, lease_owner, lease_until,
+  failure_code, failure_message, failure_details, failed_at
+) VALUES (?, ?, ?, ?, NULL, NULL, NULL, NULL, NULL, NULL)
 ON CONFLICT(track_id) DO UPDATE SET
   original_url = excluded.original_url,
   status = excluded.status,
   created_at = excluded.created_at,
   lease_owner = NULL,
-  lease_until = NULL
+  lease_until = NULL,
+  failure_code = NULL,
+  failure_message = NULL,
+  failure_details = NULL,
+  failed_at = NULL
 WHERE download_task_table.status IN (?, ?)
 ''',
         variables: [

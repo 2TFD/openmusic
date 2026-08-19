@@ -28,6 +28,7 @@ void main() {
       await legacy.customStatement(
         'ALTER TABLE playlist_table DROP COLUMN revision',
       );
+      await _dropDownloadFailureColumns(legacy);
       await legacy.customStatement('DROP TABLE file_cleanup_task_table');
       await legacy.customStatement('DROP TABLE listening_checkpoint_table');
       await legacy.customStatement(
@@ -51,6 +52,9 @@ void main() {
           .get();
       final playlistColumns = await migrated
           .customSelect('PRAGMA table_info(playlist_table)')
+          .get();
+      final downloadColumns = await migrated
+          .customSelect('PRAGMA table_info(download_task_table)')
           .get();
       final downloadIndexes = await migrated
           .customSelect('PRAGMA index_list(download_task_table)')
@@ -77,6 +81,15 @@ void main() {
       expect(
         playlistColumns.map((row) => row.read<String>('name')),
         contains('revision'),
+      );
+      expect(
+        downloadColumns.map((row) => row.read<String>('name')),
+        containsAll([
+          'failure_code',
+          'failure_message',
+          'failure_details',
+          'failed_at',
+        ]),
       );
       expect(
         downloadIndexes.map((row) => row.read<String>('name')),
@@ -292,6 +305,7 @@ ORDER BY position
     await legacy.customStatement('DROP TABLE playback_queue_item_table');
     await legacy.customStatement('DROP TABLE playback_session_table');
     await legacy.customStatement('DROP TABLE app_navigation_state_table');
+    await _dropDownloadFailureColumns(legacy);
     await legacy.customStatement('PRAGMA user_version = 9');
     await legacy.close();
 
@@ -329,6 +343,7 @@ Future<void> _restoreLegacyBaseTables(
   await database.customStatement(
     'DROP INDEX IF EXISTS idx_embedding_task_claim',
   );
+  await _dropDownloadFailureColumns(database);
   final embeddingTaskColumns = await database
       .customSelect('PRAGMA table_info(embedding_task_table)')
       .get();
@@ -382,5 +397,24 @@ CREATE TABLE playlist_table (
       'ALTER TABLE play_record_table RENAME COLUMN'
       ' listened_duration_milliseconds TO listened_duration_milisecond',
     );
+  }
+}
+
+Future<void> _dropDownloadFailureColumns(AppDatabase database) async {
+  final columns = await database
+      .customSelect('PRAGMA table_info(download_task_table)')
+      .get();
+  final existingNames = columns.map((row) => row.read<String>('name')).toSet();
+  for (final column in [
+    'failure_code',
+    'failure_message',
+    'failure_details',
+    'failed_at',
+  ]) {
+    if (existingNames.contains(column)) {
+      await database.customStatement(
+        'ALTER TABLE download_task_table DROP COLUMN $column',
+      );
+    }
   }
 }

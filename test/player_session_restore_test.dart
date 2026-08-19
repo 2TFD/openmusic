@@ -141,6 +141,113 @@ void main() {
     expect(state.hasPrev, isFalse);
     expect(state.hasNext, isTrue);
   });
+
+  test(
+    'removing a non-current track keeps playback on the current one',
+    () async {
+      final sessions = _MemorySessions(null);
+      final player = _FakeAudioPlayer();
+      final tracks = [_track('a'), _track('b'), _track('c')];
+      final bloc = _bloc(player: player, sessions: sessions, tracks: tracks);
+      addTearDown(() async {
+        await bloc.close();
+        await player.close();
+      });
+      await bloc.stream.firstWhere((state) => !state.isRestoring);
+
+      bloc.add(PlayerQueueSet(tracks, startTrack: tracks[1], autoPlay: false));
+      await bloc.stream.firstWhere((state) => state.currentTrack?.id == 'b');
+      bloc.add(PlayerSeeked(const Duration(seconds: 42)));
+      await bloc.stream.firstWhere(
+        (state) => state.position == const Duration(seconds: 42),
+      );
+
+      final removed = Completer<void>();
+      bloc.add(PlayerTrackRemoved('a', completer: removed));
+      await removed.future;
+
+      expect(player.queue.map((track) => track.id), ['b', 'c']);
+      expect(player.initialIndex, 0);
+      expect(player.initialPosition, const Duration(seconds: 42));
+      expect(bloc.state.currentTrack?.id, 'b');
+      expect(bloc.state.position, const Duration(seconds: 42));
+    },
+  );
+
+  test('removing the current track advances to the next track', () async {
+    final sessions = _MemorySessions(null);
+    final player = _FakeAudioPlayer();
+    final tracks = [_track('a'), _track('b'), _track('c')];
+    final bloc = _bloc(player: player, sessions: sessions, tracks: tracks);
+    addTearDown(() async {
+      await bloc.close();
+      await player.close();
+    });
+    await bloc.stream.firstWhere((state) => !state.isRestoring);
+
+    bloc.add(PlayerQueueSet(tracks, startTrack: tracks[1], autoPlay: false));
+    await bloc.stream.firstWhere((state) => state.currentTrack?.id == 'b');
+
+    final removed = Completer<void>();
+    bloc.add(PlayerTrackRemoved('b', completer: removed));
+    await removed.future;
+
+    expect(player.queue.map((track) => track.id), ['a', 'c']);
+    expect(player.initialIndex, 1);
+    expect(player.initialPosition, Duration.zero);
+    expect(bloc.state.currentTrack?.id, 'c');
+    expect(bloc.state.position, Duration.zero);
+  });
+
+  test('removing the last current track steps back to previous', () async {
+    final sessions = _MemorySessions(null);
+    final player = _FakeAudioPlayer();
+    final tracks = [_track('a'), _track('b')];
+    final bloc = _bloc(player: player, sessions: sessions, tracks: tracks);
+    addTearDown(() async {
+      await bloc.close();
+      await player.close();
+    });
+    await bloc.stream.firstWhere((state) => !state.isRestoring);
+
+    bloc.add(PlayerQueueSet(tracks, startTrack: tracks[1], autoPlay: false));
+    await bloc.stream.firstWhere((state) => state.currentTrack?.id == 'b');
+
+    final removed = Completer<void>();
+    bloc.add(PlayerTrackRemoved('b', completer: removed));
+    await removed.future;
+
+    expect(player.queue.map((track) => track.id), ['a']);
+    expect(player.initialIndex, 0);
+    expect(bloc.state.currentTrack?.id, 'a');
+  });
+
+  test('removing the only queued track clears playback and session', () async {
+    final sessions = _MemorySessions(null);
+    final player = _FakeAudioPlayer();
+    final track = _track('a');
+    final bloc = _bloc(player: player, sessions: sessions, tracks: [track]);
+    addTearDown(() async {
+      await bloc.close();
+      await player.close();
+    });
+    await bloc.stream.firstWhere((state) => !state.isRestoring);
+
+    bloc.add(PlayerQueueSet([track], autoPlay: false));
+    await bloc.stream.firstWhere((state) => state.currentTrack?.id == 'a');
+
+    final removed = Completer<void>();
+    bloc.add(PlayerTrackRemoved('a', completer: removed));
+    await removed.future;
+    bloc.add(PlayerSessionFlushRequested());
+    await Future<void>.delayed(const Duration(milliseconds: 30));
+
+    expect(player.clearQueueCalls, 1);
+    expect(bloc.state.queue, isEmpty);
+    expect(bloc.state.currentTrack, isNull);
+    expect(bloc.state.isPlaying, isFalse);
+    expect(sessions.value, isNull);
+  });
 }
 
 PlayerBloc _bloc({
@@ -189,6 +296,7 @@ class _FakeAudioPlayer implements AudioPlayerPort {
   int pauseCalls = 0;
   int playCalls = 0;
   int setQueueCalls = 0;
+  int clearQueueCalls = 0;
   Completer<void>? _playCompleter;
 
   @override
@@ -214,6 +322,15 @@ class _FakeAudioPlayer implements AudioPlayerPort {
     queue = tracks;
     initialIndex = index;
     this.initialPosition = initialPosition;
+  }
+
+  @override
+  Future<void> clearQueue() async {
+    clearQueueCalls++;
+    queue = const [];
+    initialIndex = 0;
+    initialPosition = Duration.zero;
+    _playing.add(false);
   }
 
   @override

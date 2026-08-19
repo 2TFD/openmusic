@@ -5,12 +5,12 @@ import 'dart:math';
 class WaveEngine {
   static List<Track> generate(WaveConfig config, List<Track> tracks) {
     if (tracks.isEmpty) return [];
-    final seedNames = config.seeds.map((seed) => seed.toLowerCase()).toSet();
+    final seedNames = config.seeds.map(_normalizeArtistName).toSet();
     final targetsById = <String, Track>{
       for (final track in config.tracks) track.id: track,
       for (final track in tracks)
         if (track.artists.any(
-          (artist) => seedNames.contains(artist.name.toLowerCase()),
+          (artist) => seedNames.contains(_normalizeArtistName(artist.name)),
         ))
           track.id: track,
     };
@@ -27,6 +27,10 @@ class WaveEngine {
       targets,
       tracks,
     ).take(config.queueSize).map((entry) => entry.track).toList();
+  }
+
+  static String _normalizeArtistName(String name) {
+    return name.trim().toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
   }
 
   static List<_SimilarTrack> _getSimilarTracks(

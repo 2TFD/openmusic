@@ -90,6 +90,7 @@ class PlaylistSummary extends Equatable {
     required this.createdAt,
     required this.trackCount,
     required this.revision,
+    this.coverImageUrls = const [],
     this.description,
     this.imageUrl,
   });
@@ -99,6 +100,7 @@ class PlaylistSummary extends Equatable {
   final DateTime createdAt;
   final int trackCount;
   final int revision;
+  final List<String> coverImageUrls;
   final String? description;
   final String? imageUrl;
 
@@ -109,6 +111,7 @@ class PlaylistSummary extends Equatable {
     createdAt,
     trackCount,
     revision,
+    coverImageUrls,
     description,
     imageUrl,
   ];

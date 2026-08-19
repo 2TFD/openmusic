@@ -8,12 +8,12 @@ import 'package:openmusic/layers/domain/entities/wave_config.dart';
 void main() {
   test('artist seeds become targets and are excluded from candidates', () {
     final seedA = _track('seed-a', artist: 'Selected', vector: const [1, 0]);
-    final seedB = _track('seed-b', artist: 'Selected', vector: const [1, 0]);
+    final seedB = _track('seed-b', artist: ' Selected ', vector: const [1, 0]);
     final near = _track('near', artist: 'Other', vector: const [0.9, 0.1]);
     final far = _track('far', artist: 'Other', vector: const [0, 1]);
 
     final result = WaveEngine.generate(
-      const WaveConfig(seeds: ['selected'], tracks: []),
+      const WaveConfig(seeds: ['  SELECTED  '], tracks: []),
       [seedA, seedB, far, near],
     );
 

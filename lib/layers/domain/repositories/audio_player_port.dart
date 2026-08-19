@@ -25,5 +25,6 @@ abstract class AudioPlayerPort {
     int index = 0,
     Duration initialPosition = Duration.zero,
   });
+  Future<void> clearQueue();
   Future<void> dispose();
 }

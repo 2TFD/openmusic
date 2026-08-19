@@ -7,6 +7,7 @@ import 'package:openmusic/core/app_router/app_router_names.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
 import 'package:openmusic/layers/domain/entities/playlist.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist/playlist_bloc.dart';
+import 'package:openmusic/layers/presentation/widgets/playlist_cover.dart';
 import 'package:openmusic/layers/presentation/widgets/sheets/create_playlist_sheet.dart';
 
 class AllPlaylistsScreen extends StatelessWidget {
@@ -164,30 +165,15 @@ class _PlaylistGridCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: ClipRRect(
+              child: PlaylistCover(
+                imageUrl: playlist.imageUrl,
+                generatedImageUrls: playlist.coverImageUrls,
+                width: double.infinity,
+                height: double.infinity,
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(14),
                 ),
-                child: Container(
-                  width: double.infinity,
-                  color: AppColors.surface2,
-                  child: playlist.imageUrl != null
-                      ? Image.network(
-                          playlist.imageUrl!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              const Icon(
-                                Icons.music_note,
-                                size: 48,
-                                color: AppColors.muted2,
-                              ),
-                        )
-                      : const Icon(
-                          Icons.music_note,
-                          size: 48,
-                          color: AppColors.muted2,
-                        ),
-                ),
+                placeholderIconSize: 48,
               ),
             ),
             Padding(

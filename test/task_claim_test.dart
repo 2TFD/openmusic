@@ -140,7 +140,11 @@ void main() {
       ownerId: 'owner-a',
       leaseUntil: DateTime.now().add(const Duration(minutes: 1)),
     );
-    await source.markFailedIfOwned(trackId: 'failed-task', ownerId: 'owner-a');
+    await source.markFailedIfOwned(
+      trackId: 'failed-task',
+      ownerId: 'owner-a',
+      failure: _downloadFailure(),
+    );
 
     final enqueued = await source.enqueue(
       trackId: 'failed-task',
@@ -156,6 +160,41 @@ void main() {
     expect(row.status, DownloadStatus.queued.name);
     expect(row.leaseOwner, isNull);
     expect(row.leaseUntil, isNull);
+    expect(row.failureCode, isNull);
+    expect(row.failureMessage, isNull);
+    expect(row.failureDetails, isNull);
+    expect(row.failedAt, isNull);
+  });
+
+  test('download failure metadata is stored for diagnostics', () async {
+    final source = DownloadTaskDriftLocalSource(database);
+    final failure = _downloadFailure();
+    await source.enqueue(
+      trackId: 'diagnostic-task',
+      originalUrl: 'https://example.com/diagnostic',
+      createdAt: DateTime.now(),
+    );
+    await source.claimNext(
+      ownerId: 'owner-a',
+      leaseUntil: DateTime.now().add(const Duration(minutes: 1)),
+    );
+
+    final marked = await source.markFailedIfOwned(
+      trackId: 'diagnostic-task',
+      ownerId: 'owner-a',
+      failure: failure,
+    );
+    final stored = await source.getByTrackId('diagnostic-task');
+
+    expect(marked, isTrue);
+    expect(stored?.status, DownloadStatus.failed);
+    expect(stored?.failure?.code, DownloadFailureCodes.network);
+    expect(stored?.failure?.message, 'Network request failed');
+    expect(stored?.failure?.details, contains('stackTrace'));
+    expect(
+      stored?.failure?.failedAt.isAtSameMomentAs(failure.failedAt),
+      isTrue,
+    );
   });
 
   test('only one concurrent caller can claim an embedding task', () async {
@@ -279,6 +318,13 @@ void main() {
     );
   });
 }
+
+DownloadFailureInfo _downloadFailure() => DownloadFailureInfo(
+  code: DownloadFailureCodes.network,
+  message: 'Network request failed',
+  details: 'stackTrace',
+  failedAt: DateTime.utc(2026, 8, 18),
+);
 
 (AppDatabase, AppDatabase) _openIndependentDatabases(File file) {
   final previous = driftRuntimeOptions.dontWarnAboutMultipleDatabases;

@@ -10,6 +10,7 @@ import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist_detail/playlist_detail_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/track/track_bloc.dart';
 import 'package:openmusic/layers/presentation/widgets/cached_image.dart';
+import 'package:openmusic/layers/presentation/widgets/playlist_cover.dart';
 import 'package:openmusic/layers/presentation/widgets/snackbars/custom_snack_bar.dart';
 import 'package:openmusic/layers/presentation/widgets/track_item.dart';
 
@@ -254,7 +255,7 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
 
     return CustomScrollView(
       slivers: [
-        SliverToBoxAdapter(child: _buildHeader(playlist, tracks.length)),
+        SliverToBoxAdapter(child: _buildHeader(playlist, tracks)),
         if (tracks.isNotEmpty)
           SliverToBoxAdapter(
             child: Padding(
@@ -360,16 +361,29 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
     );
   }
 
-  Widget _buildHeader(Playlist playlist, int trackCount) {
+  Widget _buildHeader(Playlist playlist, List<Track> tracks) {
+    final generatedImageUrls = tracks
+        .map((track) => track.imageUrl?.trim())
+        .whereType<String>()
+        .where((url) => url.isNotEmpty)
+        .take(4)
+        .toList(growable: false);
+    final hasCover =
+        (playlist.imageUrl?.trim().isNotEmpty ?? false) ||
+        generatedImageUrls.isNotEmpty;
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 12, 24, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (playlist.imageUrl != null) ...[
-            ClipRRect(
+          if (hasCover) ...[
+            PlaylistCover(
+              imageUrl: playlist.imageUrl,
+              generatedImageUrls: generatedImageUrls,
+              width: 120,
+              height: 120,
               borderRadius: BorderRadius.circular(AppRadius.m),
-              child: CachedImage(url: playlist.imageUrl, size: 120),
             ),
             const SizedBox(height: 16),
           ],
@@ -380,7 +394,9 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
           ],
           const SizedBox(height: 6),
           Text(
-            'common.trackCount'.tr(namedArgs: {'count': trackCount.toString()}),
+            'common.trackCount'.tr(
+              namedArgs: {'count': tracks.length.toString()},
+            ),
             style: AppText.bodyXS,
           ),
         ],

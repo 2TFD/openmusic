@@ -11,7 +11,12 @@ class WaveInitial extends WaveState {}
 
 class WaveGenerating extends WaveState {
   final WaveConfig config;
-  const WaveGenerating(this.config);
+  final List<Track> previousTracks;
+
+  const WaveGenerating(this.config, {this.previousTracks = const []});
+
+  @override
+  List<Object> get props => [config, previousTracks];
 }
 
 class WaveReady extends WaveState {
@@ -19,15 +24,30 @@ class WaveReady extends WaveState {
   final WaveConfig config;
 
   const WaveReady({required this.tracks, required this.config});
+
+  @override
+  List<Object> get props => [tracks, config];
 }
 
 class WaveEmpty extends WaveState {
   final WaveConfig config;
   const WaveEmpty(this.config);
+
+  @override
+  List<Object> get props => [config];
 }
 
 class WaveError extends WaveState {
   final String error;
   final WaveConfig config;
-  const WaveError({required this.error, required this.config});
+  final List<Track> previousTracks;
+
+  const WaveError({
+    required this.error,
+    required this.config,
+    this.previousTracks = const [],
+  });
+
+  @override
+  List<Object> get props => [error, config, previousTracks];
 }

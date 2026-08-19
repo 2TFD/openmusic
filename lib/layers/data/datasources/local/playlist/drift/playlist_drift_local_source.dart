@@ -178,14 +178,32 @@ SELECT
   playlist.description,
   playlist.image_url,
   playlist.revision,
-  COUNT(relation.track_id) AS track_count
+  COUNT(relation.track_id) AS track_count,
+  (
+    SELECT json_group_array(image_url)
+    FROM (
+      SELECT track.image_url AS image_url
+      FROM playlist_track_table AS cover_relation
+      INNER JOIN track_table AS track
+        ON track.id = cover_relation.track_id
+      WHERE cover_relation.playlist_id = playlist.id
+        AND track.image_url IS NOT NULL
+        AND track.image_url <> ''
+      ORDER BY cover_relation.position ASC
+      LIMIT 4
+    )
+  ) AS cover_image_urls_json
 FROM playlist_table AS playlist
 LEFT JOIN playlist_track_table AS relation
   ON relation.playlist_id = playlist.id
 GROUP BY playlist.id
 ORDER BY playlist.created_at DESC, playlist.id ASC
 ''',
-          readsFrom: {database.playlistTable, database.playlistTrackTable},
+          readsFrom: {
+            database.playlistTable,
+            database.playlistTrackTable,
+            database.trackTable,
+          },
         )
         .watch()
         .map(
@@ -201,6 +219,9 @@ ORDER BY playlist.created_at DESC, playlist.id ASC
                   imageUrl: row.readNullable<String>('image_url'),
                   revision: row.read<int>('revision'),
                   trackCount: row.read<int>('track_count'),
+                  coverImageUrls: _decodeCoverImageUrls(
+                    row.readNullable<String>('cover_image_urls_json'),
+                  ),
                 ),
               )
               .toList(),
@@ -252,6 +273,22 @@ ORDER BY playlist.created_at DESC, playlist.id ASC
         trackIds: orderedTracks.map((item) => item.$2).toList(),
       );
     }).toList();
+  }
+
+  static List<String> _decodeCoverImageUrls(String? source) {
+    if (source == null || source.trim().isEmpty) return const [];
+    try {
+      final decoded = jsonDecode(source);
+      if (decoded is! List) return const [];
+      return decoded
+          .whereType<String>()
+          .map((url) => url.trim())
+          .where((url) => url.isNotEmpty)
+          .take(4)
+          .toList(growable: false);
+    } on FormatException {
+      return const [];
+    }
   }
 
   PlaylistTableCompanion _playlistCompanion(

@@ -11,7 +11,7 @@ import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist/playlist_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/statistic/statistic_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/track/track_bloc.dart';
-import 'package:openmusic/layers/presentation/widgets/cached_image.dart';
+import 'package:openmusic/layers/presentation/widgets/playlist_cover.dart';
 import 'package:openmusic/layers/presentation/widgets/sheets/create_playlist_sheet.dart';
 import 'package:openmusic/layers/presentation/widgets/track_item.dart';
 import 'package:openmusic/layers/presentation/widgets/wave_card.dart';
@@ -502,24 +502,14 @@ class _PlaylistCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
+            PlaylistCover(
+              imageUrl: data.imageUrl,
+              generatedImageUrls: data.coverImageUrls,
               width: 130,
               height: 130,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: AppColors.surface,
-                border: Border.all(color: AppColors.border),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: data.imageUrl != null
-                    ? CachedImage(url: data.imageUrl, size: 130)
-                    : const Icon(
-                        Icons.music_note,
-                        color: AppColors.muted2,
-                        size: 16,
-                      ),
-              ),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppColors.border),
+              placeholderIconSize: 16,
             ),
             const SizedBox(height: 8),
             Text(

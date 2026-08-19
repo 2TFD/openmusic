@@ -38,7 +38,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -151,6 +151,12 @@ FROM track_table
         await m.createTable(playbackSessionTable);
         await m.createTable(playbackQueueItemTable);
         await m.createTable(appNavigationStateTable);
+      }
+      if (from < 11) {
+        await m.addColumn(downloadTaskTable, downloadTaskTable.failureCode);
+        await m.addColumn(downloadTaskTable, downloadTaskTable.failureMessage);
+        await m.addColumn(downloadTaskTable, downloadTaskTable.failureDetails);
+        await m.addColumn(downloadTaskTable, downloadTaskTable.failedAt);
       }
     },
     beforeOpen: (details) async {

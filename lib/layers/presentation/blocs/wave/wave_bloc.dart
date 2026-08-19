@@ -17,12 +17,20 @@ class WaveBloc extends Bloc<WaveEvent, WaveState> {
     : _generate = generate,
       super(WaveInitial()) {
     on<WaveInitialized>(_onInitialized);
+    on<WaveConfigApplied>(_onConfigApplied);
     on<WaveSeedSelected>(_onSeedSelected);
     on<WaveSeedDeselected>(_onSeedDeselected);
     on<WaveRefreshRequested>(_onRefreshRequested);
     on<WaveTrackSelected>(_onTrackSelected);
     on<WaveTrackDeselected>(_onTrackDeselected);
     on<WaveResetRequested>(_onResetRequested);
+  }
+
+  Future<void> _onConfigApplied(
+    WaveConfigApplied e,
+    Emitter<WaveState> emit,
+  ) async {
+    await _generateAndEmit(e.config, emit);
   }
 
   Future<void> _onInitialized(
@@ -36,7 +44,8 @@ class WaveBloc extends Bloc<WaveEvent, WaveState> {
     WaveResetRequested e,
     Emitter<WaveState> emit,
   ) async {
-    await _generateAndEmit(const WaveConfig(tracks: [], seeds: []), emit);
+    _generationRevision++;
+    emit(const WaveEmpty(WaveConfig(tracks: [], seeds: [])));
   }
 
   Future<void> _onTrackSelected(
@@ -103,15 +112,26 @@ class WaveBloc extends Bloc<WaveEvent, WaveState> {
     _ => const WaveConfig(seeds: [], tracks: []),
   };
 
+  int _generationRevision = 0;
+
+  List<Track> get _visibleTracks => switch (state) {
+    WaveReady(:final tracks) => tracks,
+    WaveGenerating(:final previousTracks) => previousTracks,
+    WaveError(:final previousTracks) => previousTracks,
+    _ => const [],
+  };
+
   Future<void> _generateAndEmit(
     WaveConfig config,
     Emitter<WaveState> emit,
   ) async {
-    emit(WaveGenerating(config));
+    final revision = ++_generationRevision;
+    final previousTracks = _visibleTracks;
+    emit(WaveGenerating(config, previousTracks: previousTracks));
     try {
       final tracks = await _generate.execute(config);
 
-      if (emit.isDone) return;
+      if (emit.isDone || revision != _generationRevision) return;
       if (tracks.isEmpty) {
         emit(WaveEmpty(config));
         return;
@@ -119,9 +139,13 @@ class WaveBloc extends Bloc<WaveEvent, WaveState> {
       emit(WaveReady(tracks: tracks, config: config));
     } catch (e) {
       log(failureFromException(e).toString(), error: e);
-      if (emit.isDone) return;
+      if (emit.isDone || revision != _generationRevision) return;
       emit(
-        WaveError(error: failureFromException(e).toLocaleKey(), config: config),
+        WaveError(
+          error: failureFromException(e).toLocaleKey(),
+          config: config,
+          previousTracks: previousTracks,
+        ),
       );
     }
   }

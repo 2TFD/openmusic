@@ -17,12 +17,7 @@ class Artist extends Equatable {
   List<Object?> get props => [id, name, genres, imageUrl];
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'genres': genres,
-      'imageUrl': imageUrl,
-    };
+    return {'id': id, 'name': name, 'genres': genres, 'imageUrl': imageUrl};
   }
 
   factory Artist.fromJson(Map<String, dynamic> json) {
@@ -47,4 +42,29 @@ class Artist extends Equatable {
       imageUrl: imageUrl ?? this.imageUrl,
     );
   }
+}
+
+class ArtistSummary extends Equatable {
+  final String id;
+  final String name;
+  final int trackCount;
+  final Duration totalDuration;
+  final List<String> coverImageUrls;
+
+  const ArtistSummary({
+    required this.id,
+    required this.name,
+    required this.trackCount,
+    required this.totalDuration,
+    this.coverImageUrls = const [],
+  });
+
+  @override
+  List<Object> get props => [
+    id,
+    name,
+    trackCount,
+    totalDuration,
+    coverImageUrls,
+  ];
 }

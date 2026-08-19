@@ -4,6 +4,8 @@ import 'package:openmusic/core/services/download/download_worker.dart';
 import 'package:openmusic/core/services/embedding/embedding_engine.dart';
 import 'package:openmusic/core/services/embedding/embedding_worker.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
+import 'package:openmusic/layers/data/datasources/local/artist/artist_local_data_source.dart';
+import 'package:openmusic/layers/data/datasources/local/artist/drift/artist_drift_local_source.dart';
 import 'package:openmusic/layers/data/datasources/local/download_task/download_task_local_data_source.dart';
 import 'package:openmusic/layers/data/datasources/local/download_task/drift/download_task_drift_local_source.dart';
 import 'package:openmusic/layers/data/datasources/local/embedding_task/drift/embedding_task_drift_local_source.dart';
@@ -20,6 +22,7 @@ import 'package:openmusic/layers/data/datasources/local/play_record/play_record_
 import 'package:openmusic/layers/data/datasources/remote/local_file_track_source.dart';
 import 'package:openmusic/layers/data/datasources/remote/soundcloud_track_source.dart';
 import 'package:openmusic/layers/data/repositories/download_repository_impl.dart';
+import 'package:openmusic/layers/data/repositories/artist_repository_impl.dart';
 import 'package:openmusic/layers/data/repositories/embedding_task_repository_impl.dart';
 import 'package:openmusic/layers/data/repositories/play_record_repository_impl.dart';
 import 'package:openmusic/layers/data/repositories/playlist_repository_impl.dart';
@@ -31,6 +34,7 @@ import 'package:openmusic/layers/data/repositories/playback_session_repository_i
 import 'package:openmusic/layers/data/repositories/track_ingestion_repository_impl.dart';
 import 'package:openmusic/layers/data/repositories/track_download_completion_repository_impl.dart';
 import 'package:openmusic/layers/domain/repositories/download_task_repository.dart';
+import 'package:openmusic/layers/domain/repositories/artist_repository.dart';
 import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
 import 'package:openmusic/layers/domain/repositories/embedding_task_repository.dart';
 import 'package:openmusic/layers/domain/repositories/local_track_picker.dart';
@@ -50,14 +54,17 @@ import 'package:openmusic/layers/domain/usecases/add_track_to_playlist_use_case.
 import 'package:openmusic/layers/domain/usecases/complete_track_download_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/delete_playlist_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/get_playlist_with_tracks_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/get_artist_tracks_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/import_local_tracks_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/pick_local_tracks_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/update_playlist_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/watch_playlist_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/watch_artist_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/recover_listening_checkpoint_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/restore_playback_session_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/save_statistic_use_case.dart';
 import 'package:openmusic/layers/presentation/blocs/embedding_status/embedding_status_cubit.dart';
+import 'package:openmusic/layers/presentation/blocs/artist_detail/artist_detail_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/import_music/import_music_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist_detail/playlist_detail_bloc.dart';
 
@@ -80,6 +87,10 @@ Future<void> configureDependencies({required String appDir}) async {
     TrackDriftLocalSource(getIt<AppDatabase>()),
   );
 
+  getIt.registerLazySingleton<ArtistLocalDataSource>(
+    () => ArtistDriftLocalSource(getIt<AppDatabase>()),
+  );
+
   getIt.registerLazySingleton<DownloadTaskLocalDataSource>(
     () => DownloadTaskDriftLocalSource(getIt<AppDatabase>()),
   );
@@ -100,6 +111,13 @@ Future<void> configureDependencies({required String appDir}) async {
 
   getIt.registerSingleton<TrackRepository>(
     TrackRepositoryImpl(localDataSource: getIt<TrackLocalDataSource>()),
+  );
+
+  getIt.registerLazySingleton<ArtistRepository>(
+    () => ArtistRepositoryImpl(
+      localDataSource: getIt<ArtistLocalDataSource>(),
+      trackRepository: getIt<TrackRepository>(),
+    ),
   );
 
   getIt.registerLazySingleton<TrackRemovalRepository>(
@@ -178,7 +196,9 @@ Future<void> configureDependencies({required String appDir}) async {
   getIt.registerLazySingleton<AudioPlayerService>(
     () => AudioPlayerService(appDir: getIt<String>()),
   );
-  getIt.registerLazySingleton<AudioPlayerPort>(() => getIt<AudioPlayerService>());
+  getIt.registerLazySingleton<AudioPlayerPort>(
+    () => getIt<AudioPlayerService>(),
+  );
   getIt.registerLazySingleton<PlaybackCommandBus>(
     () => PlaybackCommandBusImpl(),
   );
@@ -241,6 +261,12 @@ Future<void> configureDependencies({required String appDir}) async {
       addTrack: AddTrackToPlaylistUseCase(getIt()),
       watchPlaylist: WatchPlaylistUseCase(getIt()),
       trackChanges: getIt<TrackRepository>().watchChanges(),
+    ),
+  );
+  getIt.registerFactory(
+    () => ArtistDetailBloc(
+      watchArtist: WatchArtistUseCase(getIt<ArtistRepository>()),
+      getArtistTracks: GetArtistTracksUseCase(getIt<ArtistRepository>()),
     ),
   );
 }
