@@ -1,0 +1,113 @@
+import 'dart:convert';
+
+import 'package:openmusic/layers/data/database/app_database.dart';
+import 'package:openmusic/layers/domain/entities/source.dart';
+
+class ListeningSummaryDto {
+  final String id;
+  final String trackId;
+  final String trackTitle;
+  final String artistName;
+  final SourceType sourceType;
+  final int listenedMs;
+  final DateTime playedAt;
+
+  ListeningSummaryDto({
+    required this.id,
+    required this.trackId,
+    required this.trackTitle,
+    required this.artistName,
+    required this.sourceType,
+    required this.listenedMs,
+    required this.playedAt,
+  });
+
+  ListeningSummaryDto copyWith({
+    String? id,
+    String? trackId,
+    String? trackTitle,
+    String? artistName,
+    SourceType? sourceType,
+    int? listenedMs,
+    DateTime? playedAt,
+  }) {
+    return ListeningSummaryDto(
+      id: id ?? this.id,
+      trackId: trackId ?? this.trackId,
+      trackTitle: trackTitle ?? this.trackTitle,
+      artistName: artistName ?? this.artistName,
+      sourceType: sourceType ?? this.sourceType,
+      listenedMs: listenedMs ?? this.listenedMs,
+      playedAt: playedAt ?? this.playedAt,
+    );
+  }
+
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'trackId': trackId,
+    'trackTitle': trackTitle,
+    'artistName': artistName,
+    'sourceType': sourceType.name,
+    'listenedMs': listenedMs,
+    'playedAt': playedAt.millisecondsSinceEpoch,
+  };
+
+  factory ListeningSummaryDto.fromMap(Map<String, dynamic> map) {
+    return ListeningSummaryDto(
+      id: map['id'] as String,
+      trackId: map['trackId'] as String,
+      trackTitle: map['trackTitle'] as String,
+      artistName: map['artistName'] as String,
+      sourceType: SourceType.values.firstWhere(
+        (type) => type.name == map['sourceType'],
+        orElse: () => SourceType.unknown,
+      ),
+      listenedMs: map['listenedMs'] as int,
+      playedAt: DateTime.fromMillisecondsSinceEpoch(map['playedAt'] as int),
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory ListeningSummaryDto.fromJson(String source) =>
+      ListeningSummaryDto.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  factory ListeningSummaryDto.fromDataClass(ListeningSummaryTableData data) {
+    return ListeningSummaryDto(
+      id: data.id,
+      trackId: data.trackId,
+      trackTitle: data.trackTitle,
+      artistName: data.artistName,
+      sourceType: SourceType.values.firstWhere(
+        (type) => type.name == data.sourceType,
+        orElse: () => SourceType.unknown,
+      ),
+      listenedMs: data.listenedDurationMilliseconds,
+      playedAt: data.playedAt,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is ListeningSummaryDto &&
+            other.id == id &&
+            other.trackId == trackId &&
+            other.trackTitle == trackTitle &&
+            other.artistName == artistName &&
+            other.sourceType == sourceType &&
+            other.listenedMs == listenedMs &&
+            other.playedAt == playedAt;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    trackId,
+    trackTitle,
+    artistName,
+    sourceType,
+    listenedMs,
+    playedAt,
+  );
+}

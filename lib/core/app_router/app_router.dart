@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:openmusic/core/app_router/app_router_names.dart';
 import 'package:openmusic/core/app_router/transitions/goo_transition_page.dart';
 import 'package:openmusic/core/di/di.dart';
-import 'package:openmusic/layers/presentation/blocs/embedding_status/embedding_status_cubit.dart';
+import 'package:openmusic/layers/presentation/blocs/music_analysis_status/music_analysis_status_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/artist_detail/artist_detail_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/import_music/import_music_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist_detail/playlist_detail_bloc.dart';
@@ -86,7 +86,7 @@ class AppRouter {
             path: '/${AppRouterNames.settings}',
             name: AppRouterNames.settings,
             builder: (context, state) => BlocProvider(
-              create: (_) => getIt<EmbeddingStatusCubit>(),
+              create: (_) => getIt<MusicAnalysisStatusCubit>()..initialize(),
               child: const SettingsScreen(),
             ),
           ),

@@ -5,7 +5,6 @@ import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
 import 'package:openmusic/layers/data/repositories/track_download_completion_repository_impl.dart';
 import 'package:openmusic/layers/domain/entities/download_track_task.dart';
-import 'package:openmusic/layers/domain/entities/embedding_task.dart';
 
 void main() {
   late AppDatabase database;
@@ -18,27 +17,20 @@ void main() {
 
   tearDown(() => database.close());
 
-  test(
-    'claimed completion commits track, embedding task, and queue removal',
-    () async {
-      await _insertTrack(database, 'track-1');
-      await _insertClaimedDownload(database, 'track-1', 'owner-a');
+  test('claimed completion commits track and queue removal', () async {
+    await _insertTrack(database, 'track-1');
+    await _insertClaimedDownload(database, 'track-1', 'owner-a');
 
-      final completed = await repository.completeClaimed(
-        trackId: 'track-1',
-        filePath: 'track-1.mp3',
-        ownerId: 'owner-a',
-      );
+    final completed = await repository.completeClaimed(
+      trackId: 'track-1',
+      filePath: 'track-1.mp3',
+      ownerId: 'owner-a',
+    );
 
-      expect(completed, isTrue);
-      expect((await _track(database, 'track-1'))?.pathToFile, 'track-1.mp3');
-      expect(
-        (await _embedding(database, 'track-1'))?.status,
-        EmbeddingStatus.queued.name,
-      );
-      expect(await _download(database, 'track-1'), isNull);
-    },
-  );
+    expect(completed, isTrue);
+    expect((await _track(database, 'track-1'))?.pathToFile, 'track-1.mp3');
+    expect(await _download(database, 'track-1'), isNull);
+  });
 
   test('wrong owner cannot partially complete a claimed download', () async {
     await _insertTrack(database, 'track-2');
@@ -52,7 +44,6 @@ void main() {
 
     expect(completed, isFalse);
     expect((await _track(database, 'track-2'))?.pathToFile, isNull);
-    expect(await _embedding(database, 'track-2'), isNull);
     expect(await _download(database, 'track-2'), isNotNull);
   });
 
@@ -71,58 +62,32 @@ void main() {
       );
 
       expect(await _download(database, 'missing-track'), isNotNull);
-      expect(await _embedding(database, 'missing-track'), isNull);
     },
   );
 
-  test(
-    'local completion atomically updates track and queues embedding',
-    () async {
-      await _insertTrack(database, 'local-track');
+  test('local completion atomically updates track audio', () async {
+    await _insertTrack(database, 'local-track');
 
-      await repository.completeLocal(
-        trackId: 'local-track',
-        filePath: 'local-track.flac',
-      );
+    await repository.completeLocal(
+      trackId: 'local-track',
+      filePath: 'local-track.flac',
+    );
 
-      expect(
-        (await _track(database, 'local-track'))?.pathToFile,
-        'local-track.flac',
-      );
-      expect(
-        (await _embedding(database, 'local-track'))?.status,
-        EmbeddingStatus.queued.name,
-      );
-    },
-  );
+    expect(
+      (await _track(database, 'local-track'))?.pathToFile,
+      'local-track.flac',
+    );
+  });
 
-  test(
-    'audio replacement clears embedding and advances task revision',
-    () async {
-      await _insertTrack(database, 'replacement');
-      await repository.completeLocal(
-        trackId: 'replacement',
-        filePath: 'old.mp3',
-      );
-      await (database.update(database.trackTable)
-            ..where((track) => track.id.equals('replacement')))
-          .write(const TrackTableCompanion(embedding: Value('[1.0]')));
+  test('audio replacement advances the audio revision', () async {
+    await _insertTrack(database, 'replacement');
+    await repository.completeLocal(trackId: 'replacement', filePath: 'old.mp3');
+    await repository.completeLocal(trackId: 'replacement', filePath: 'new.mp3');
 
-      await repository.completeLocal(
-        trackId: 'replacement',
-        filePath: 'new.mp3',
-      );
-
-      final track = await _track(database, 'replacement');
-      final task = await _embedding(database, 'replacement');
-      expect(track?.pathToFile, 'new.mp3');
-      expect(track?.embedding, isNull);
-      expect(track?.audioRevision, 2);
-      expect(task?.filePath, 'new.mp3');
-      expect(task?.audioRevision, 2);
-      expect(task?.status, EmbeddingStatus.queued.name);
-    },
-  );
+    final track = await _track(database, 'replacement');
+    expect(track?.pathToFile, 'new.mp3');
+    expect(track?.audioRevision, 2);
+  });
 }
 
 Future<void> _insertTrack(AppDatabase database, String id) async {
@@ -161,13 +126,6 @@ Future<TrackTableData?> _track(AppDatabase database, String trackId) =>
     (database.select(
       database.trackTable,
     )..where((track) => track.id.equals(trackId))).getSingleOrNull();
-
-Future<EmbeddingTaskTableData?> _embedding(
-  AppDatabase database,
-  String trackId,
-) => (database.select(
-  database.embeddingTaskTable,
-)..where((task) => task.trackId.equals(trackId))).getSingleOrNull();
 
 Future<DownloadTaskTableData?> _download(
   AppDatabase database,

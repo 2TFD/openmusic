@@ -4,22 +4,22 @@ import 'package:openmusic/core/di/di.dart';
 import 'package:openmusic/layers/domain/entities/statistic.dart';
 import 'package:openmusic/layers/domain/repositories/artist_repository.dart';
 import 'package:openmusic/layers/domain/repositories/download_task_repository.dart';
-import 'package:openmusic/layers/domain/repositories/play_record_repository.dart';
+import 'package:openmusic/layers/domain/repositories/listening_summary_repository.dart';
 import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
 import 'package:openmusic/layers/domain/repositories/search_source.dart';
 import 'package:openmusic/layers/domain/repositories/track_repository.dart';
 import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
 import 'package:openmusic/layers/domain/usecases/build_playback_queue_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/generate_wave_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/skip_track_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/clear_history_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/create_playlist_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/fetch_track_preview_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/generate_wave_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/get_history_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/get_statistic_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/remove_track_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/retry_track_download_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/save_statistic_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/save_listening_summary_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/update_track_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/watch_artist_summaries_use_case.dart';
 import 'package:openmusic/layers/presentation/blocs/artists/artists_cubit.dart';
@@ -89,8 +89,8 @@ class BlocScope extends StatelessWidget {
         BlocProvider(
           create: (context) => PlayerBloc(
             service: getIt<AudioPlayerPort>(),
-            recordPlay: SaveRecordPlayUseCase(
-              repo: getIt<PlayRecordRepository>(),
+            saveListeningSummary: SaveListeningSummaryUseCase(
+              repo: getIt<ListeningSummaryRepository>(),
             ),
             checkpoints: getIt(),
             buildQueue: BuildPlaybackQueueUseCase(),
@@ -98,14 +98,15 @@ class BlocScope extends StatelessWidget {
             sessions: getIt(),
             skipTrack: const SkipTrackUseCase(),
             commands: getIt(),
+            listeningTracker: getIt(),
           ),
         ),
         BlocProvider(
           create: (context) => StatisticBloc(
             getStatistics: GetStatisticsUseCase(
-              repo: getIt<PlayRecordRepository>(),
+              repo: getIt<ListeningSummaryRepository>(),
             ),
-            statisticChangesStream: getIt<PlayRecordRepository>()
+            statisticChangesStream: getIt<ListeningSummaryRepository>()
                 .watchChanges(),
           )..add(const LoadStatisticEvent(StatsPeriod.twoWeeks)),
         ),
@@ -118,8 +119,7 @@ class BlocScope extends StatelessWidget {
           ),
         ),
         BlocProvider(
-          create: (context) =>
-              WaveBloc(generate: GenerateWaveUseCase(repo: getIt())),
+          create: (context) => WaveBloc(generate: getIt<GenerateWaveUseCase>()),
         ),
         BlocProvider(
           create: (context) => DownloadStatusCubit(
@@ -133,11 +133,11 @@ class BlocScope extends StatelessWidget {
         BlocProvider(
           create: (context) => HistoryBloc(
             getHistoryUseCase: GetHistoryUseCase(
-              playRecordRepository: getIt<PlayRecordRepository>(),
+              listeningSummaryRepository: getIt<ListeningSummaryRepository>(),
               trackRepository: getIt<TrackRepository>(),
             ),
             clearHistoryUseCase: ClearHistoryUseCase(
-              playRecordRepository: getIt<PlayRecordRepository>(),
+              listeningSummaryRepository: getIt<ListeningSummaryRepository>(),
             ),
           )..add(const LoadHistoryEvent()),
         ),

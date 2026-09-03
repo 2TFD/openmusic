@@ -41,14 +41,14 @@ class SkipTrackUseCase {
     required bool hasPrev,
   }) {
     return switch (direction) {
-      SkipDirection.next => hasNext
-          ? const AdvanceToNextTrack()
-          : const SkipRejected(),
+      SkipDirection.next =>
+        hasNext ? const AdvanceToNextTrack() : const SkipRejected(),
       // На первом треке «назад» тоже перематывает в начало: молча ничего не
       // делать — худший из вариантов, юзер считает кнопку сломанной.
-      SkipDirection.previous => position > restartThreshold || !hasPrev
-          ? const RestartCurrentTrack()
-          : const AdvanceToPreviousTrack(),
+      SkipDirection.previous =>
+        position > restartThreshold || !hasPrev
+            ? const RestartCurrentTrack()
+            : const AdvanceToPreviousTrack(),
     };
   }
 }

@@ -46,9 +46,6 @@ class TrackRemovalRepositoryImpl implements TrackRemovalRepository {
         database.downloadTaskTable,
       )..where((row) => row.trackId.equals(trackId))).go();
       await (database.delete(
-        database.embeddingTaskTable,
-      )..where((row) => row.trackId.equals(trackId))).go();
-      await (database.delete(
         database.playlistTrackTable,
       )..where((row) => row.trackId.equals(trackId))).go();
       await (database.delete(

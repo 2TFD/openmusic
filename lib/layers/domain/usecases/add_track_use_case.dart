@@ -8,8 +8,11 @@ import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/entities/track_preview.dart';
 import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
 import 'package:openmusic/layers/domain/repositories/track_ingestion_repository.dart';
+import 'package:openmusic/layers/domain/repositories/track_content_identity_service.dart';
 import 'package:openmusic/layers/domain/repositories/track_repository.dart';
 import 'package:openmusic/layers/domain/repositories/track_source.dart';
+import 'package:openmusic/layers/domain/usecases/queue_music_analysis_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/queue_lyrics_resolution_use_case.dart';
 
 class AddTrackItemFailure {
   const AddTrackItemFailure({required this.preview, required this.failure});
@@ -42,12 +45,18 @@ class AddTrackUseCase {
     required this.trackRepository,
     required this.ingestionRepository,
     required this.playlistRepository,
+    required this.contentIdentityService,
+    this.queueAnalysis,
+    this.queueLyrics,
   });
 
   final TrackSourceResolver trackResolver;
   final TrackRepository trackRepository;
   final TrackIngestionRepository ingestionRepository;
   final PlaylistRepository playlistRepository;
+  final TrackContentIdentityService contentIdentityService;
+  final QueueMusicAnalysisUseCase? queueAnalysis;
+  final QueueLyricsResolutionUseCase? queueLyrics;
 
   Future<AddTrackResult> execute(String input) async {
     try {
@@ -124,12 +133,31 @@ class AddTrackUseCase {
     TrackPreview preview,
   ) async {
     try {
+      final contentIdentity = await contentIdentityService.createFor(preview);
       final existingTrack = await trackRepository.getTrackById(preview.id);
       if (existingTrack?.filePath != null) {
-        return _AddTrackOutcome.success(existingTrack!);
+        if (existingTrack!.contentIdentity == null && contentIdentity != null) {
+          final withIdentity = existingTrack.copyWith(
+            contentIdentity: contentIdentity,
+          );
+          final persisted = preview.source == SourceType.localFile
+              ? await ingestionRepository.ingestLocal(
+                  withIdentity,
+                  filePath: existingTrack.filePath!,
+                )
+              : await ingestionRepository.ingestRemote(withIdentity);
+          await _queueAnalysisIfAvailable(persisted);
+          return _AddTrackOutcome.success(persisted);
+        }
+        await _queueAnalysisIfAvailable(existingTrack);
+        return _AddTrackOutcome.success(existingTrack);
       }
 
-      final track = existingTrack ?? preview.toTrack(null);
+      final track = existingTrack == null
+          ? preview.toTrack(null, contentIdentity: contentIdentity)
+          : existingTrack.contentIdentity == null
+          ? existingTrack.copyWith(contentIdentity: contentIdentity)
+          : existingTrack;
 
       if (preview.source == SourceType.localFile) {
         final path = await source.download(preview);
@@ -137,6 +165,7 @@ class AddTrackUseCase {
           track,
           filePath: path,
         );
+        await _queueAnalysisIfAvailable(persisted);
         return _AddTrackOutcome.success(persisted);
       }
 
@@ -151,6 +180,32 @@ class AddTrackUseCase {
           preview: preview,
           failure: failureFromException(error),
         ),
+      );
+    }
+  }
+
+  Future<void> _queueAnalysisIfAvailable(Track track) async {
+    if (track.filePath == null) return;
+    final queue = queueAnalysis;
+    if (queue != null) {
+      try {
+        await queue(track);
+      } catch (error, stackTrace) {
+        // Background backfill recovers queue failures independently.
+        await AppLogger.log(
+          '[AddTrackUseCase] Analysis queue failed for ${track.id}: '
+          '$error, stackTrace: $stackTrace',
+        );
+      }
+    }
+    final lyricsQueue = queueLyrics;
+    if (lyricsQueue == null) return;
+    try {
+      await lyricsQueue(track);
+    } catch (error, stackTrace) {
+      await AppLogger.log(
+        '[AddTrackUseCase] Lyrics queue failed for ${track.id}: '
+        '$error, stackTrace: $stackTrace',
       );
     }
   }

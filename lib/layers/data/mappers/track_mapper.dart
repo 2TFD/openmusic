@@ -9,8 +9,8 @@ class TrackMapper {
       trackDescriptor: dto.trackDescriptorJson != null
           ? TrackDescriptor.fromJson(dto.trackDescriptorJson!)
           : null,
-      embedding: dto.embedding,
       id: dto.id,
+      contentIdentity: dto.contentIdentity,
       title: dto.title,
       filePath: dto.filePath,
       artists: dto.artists
@@ -30,6 +30,7 @@ class TrackMapper {
           dto.addedAt ?? DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
       album: dto.album,
       imageUrl: dto.imageUrl,
+      audioRevision: dto.audioRevision,
       metadataRevision: dto.metadataRevision,
     );
   }
@@ -37,8 +38,8 @@ class TrackMapper {
   static TrackDto toDto(Track entity) {
     return TrackDto(
       trackDescriptorJson: entity.trackDescriptor?.toJson(),
-      embedding: entity.embedding,
       id: entity.id,
+      contentIdentity: entity.contentIdentity,
       title: entity.title,
       filePath: entity.filePath,
       artists: entity.artists
@@ -50,6 +51,7 @@ class TrackMapper {
       addedAt: entity.addedAt,
       album: entity.album,
       imageUrl: entity.imageUrl,
+      audioRevision: entity.audioRevision,
       metadataRevision: entity.metadataRevision,
     );
   }

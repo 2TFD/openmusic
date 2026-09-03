@@ -19,6 +19,7 @@ class ArtistDto extends Equatable {
 class TrackDto extends Equatable {
   const TrackDto({
     required this.id,
+    this.contentIdentity,
     required this.title,
     required this.filePath,
     required this.artists,
@@ -29,11 +30,12 @@ class TrackDto extends Equatable {
     this.album,
     this.imageUrl,
     this.trackDescriptorJson,
-    this.embedding,
+    this.audioRevision = 0,
     this.metadataRevision = 0,
   });
 
   final String id;
+  final String? contentIdentity;
   final String title;
   final String? filePath;
   final List<ArtistDto> artists;
@@ -44,11 +46,12 @@ class TrackDto extends Equatable {
   final String? album;
   final String? imageUrl;
   final String? trackDescriptorJson;
-  final List<double>? embedding;
+  final int audioRevision;
   final int metadataRevision;
 
   Map<String, dynamic> toJson() => {
     'id': id,
+    'contentIdentity': contentIdentity,
     'title': title,
     'filePath': filePath,
     'artists': artists.map((artist) => artist.toJson()).toList(),
@@ -59,7 +62,7 @@ class TrackDto extends Equatable {
     'album': album,
     'imageUrl': imageUrl,
     'trackDescriptorJson': trackDescriptorJson,
-    'embedding': embedding,
+    'audioRevision': audioRevision,
     'metadataRevision': metadataRevision,
   };
 
@@ -74,6 +77,7 @@ class TrackDto extends Equatable {
     };
     return TrackDto(
       id: json['id'] as String,
+      contentIdentity: json['contentIdentity'] as String?,
       title: json['title'] as String,
       filePath: json['filePath'] as String?,
       artists: artists,
@@ -88,9 +92,7 @@ class TrackDto extends Equatable {
       album: json['album'] as String?,
       imageUrl: json['imageUrl'] as String?,
       trackDescriptorJson: json['trackDescriptorJson'] as String?,
-      embedding: json['embedding'] != null
-          ? List<double>.from(json['embedding'] as List)
-          : null,
+      audioRevision: json['audioRevision'] as int? ?? 0,
       metadataRevision: json['metadataRevision'] as int? ?? 0,
     );
   }
@@ -110,6 +112,7 @@ class TrackDto extends Equatable {
   @override
   List<Object?> get props => [
     id,
+    contentIdentity,
     title,
     filePath,
     artists,
@@ -120,7 +123,7 @@ class TrackDto extends Equatable {
     album,
     imageUrl,
     trackDescriptorJson,
-    embedding,
+    audioRevision,
     metadataRevision,
   ];
 }

@@ -3,12 +3,12 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
-class $PlayRecordTableTable extends PlayRecordTable
-    with TableInfo<$PlayRecordTableTable, PlayRecordTableData> {
+class $ListeningSummaryTableTable extends ListeningSummaryTable
+    with TableInfo<$ListeningSummaryTableTable, ListeningSummaryTableData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $PlayRecordTableTable(this.attachedDatabase, [this._alias]);
+  $ListeningSummaryTableTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -98,10 +98,10 @@ class $PlayRecordTableTable extends PlayRecordTable
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'play_record_table';
+  static const String $name = 'listening_summary_table';
   @override
   VerificationContext validateIntegrity(
-    Insertable<PlayRecordTableData> instance, {
+    Insertable<ListeningSummaryTableData> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -168,9 +168,12 @@ class $PlayRecordTableTable extends PlayRecordTable
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  PlayRecordTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  ListeningSummaryTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return PlayRecordTableData(
+    return ListeningSummaryTableData(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -203,13 +206,13 @@ class $PlayRecordTableTable extends PlayRecordTable
   }
 
   @override
-  $PlayRecordTableTable createAlias(String alias) {
-    return $PlayRecordTableTable(attachedDatabase, alias);
+  $ListeningSummaryTableTable createAlias(String alias) {
+    return $ListeningSummaryTableTable(attachedDatabase, alias);
   }
 }
 
-class PlayRecordTableData extends DataClass
-    implements Insertable<PlayRecordTableData> {
+class ListeningSummaryTableData extends DataClass
+    implements Insertable<ListeningSummaryTableData> {
   final String id;
   final String trackId;
   final String trackTitle;
@@ -217,7 +220,7 @@ class PlayRecordTableData extends DataClass
   final String sourceType;
   final int listenedDurationMilliseconds;
   final DateTime playedAt;
-  const PlayRecordTableData({
+  const ListeningSummaryTableData({
     required this.id,
     required this.trackId,
     required this.trackTitle,
@@ -241,8 +244,8 @@ class PlayRecordTableData extends DataClass
     return map;
   }
 
-  PlayRecordTableCompanion toCompanion(bool nullToAbsent) {
-    return PlayRecordTableCompanion(
+  ListeningSummaryTableCompanion toCompanion(bool nullToAbsent) {
+    return ListeningSummaryTableCompanion(
       id: Value(id),
       trackId: Value(trackId),
       trackTitle: Value(trackTitle),
@@ -253,12 +256,12 @@ class PlayRecordTableData extends DataClass
     );
   }
 
-  factory PlayRecordTableData.fromJson(
+  factory ListeningSummaryTableData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return PlayRecordTableData(
+    return ListeningSummaryTableData(
       id: serializer.fromJson<String>(json['id']),
       trackId: serializer.fromJson<String>(json['trackId']),
       trackTitle: serializer.fromJson<String>(json['trackTitle']),
@@ -286,7 +289,7 @@ class PlayRecordTableData extends DataClass
     };
   }
 
-  PlayRecordTableData copyWith({
+  ListeningSummaryTableData copyWith({
     String? id,
     String? trackId,
     String? trackTitle,
@@ -294,7 +297,7 @@ class PlayRecordTableData extends DataClass
     String? sourceType,
     int? listenedDurationMilliseconds,
     DateTime? playedAt,
-  }) => PlayRecordTableData(
+  }) => ListeningSummaryTableData(
     id: id ?? this.id,
     trackId: trackId ?? this.trackId,
     trackTitle: trackTitle ?? this.trackTitle,
@@ -304,8 +307,10 @@ class PlayRecordTableData extends DataClass
         listenedDurationMilliseconds ?? this.listenedDurationMilliseconds,
     playedAt: playedAt ?? this.playedAt,
   );
-  PlayRecordTableData copyWithCompanion(PlayRecordTableCompanion data) {
-    return PlayRecordTableData(
+  ListeningSummaryTableData copyWithCompanion(
+    ListeningSummaryTableCompanion data,
+  ) {
+    return ListeningSummaryTableData(
       id: data.id.present ? data.id.value : this.id,
       trackId: data.trackId.present ? data.trackId.value : this.trackId,
       trackTitle: data.trackTitle.present
@@ -326,7 +331,7 @@ class PlayRecordTableData extends DataClass
 
   @override
   String toString() {
-    return (StringBuffer('PlayRecordTableData(')
+    return (StringBuffer('ListeningSummaryTableData(')
           ..write('id: $id, ')
           ..write('trackId: $trackId, ')
           ..write('trackTitle: $trackTitle, ')
@@ -353,7 +358,7 @@ class PlayRecordTableData extends DataClass
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is PlayRecordTableData &&
+      (other is ListeningSummaryTableData &&
           other.id == this.id &&
           other.trackId == this.trackId &&
           other.trackTitle == this.trackTitle &&
@@ -364,7 +369,8 @@ class PlayRecordTableData extends DataClass
           other.playedAt == this.playedAt);
 }
 
-class PlayRecordTableCompanion extends UpdateCompanion<PlayRecordTableData> {
+class ListeningSummaryTableCompanion
+    extends UpdateCompanion<ListeningSummaryTableData> {
   final Value<String> id;
   final Value<String> trackId;
   final Value<String> trackTitle;
@@ -373,7 +379,7 @@ class PlayRecordTableCompanion extends UpdateCompanion<PlayRecordTableData> {
   final Value<int> listenedDurationMilliseconds;
   final Value<DateTime> playedAt;
   final Value<int> rowid;
-  const PlayRecordTableCompanion({
+  const ListeningSummaryTableCompanion({
     this.id = const Value.absent(),
     this.trackId = const Value.absent(),
     this.trackTitle = const Value.absent(),
@@ -383,7 +389,7 @@ class PlayRecordTableCompanion extends UpdateCompanion<PlayRecordTableData> {
     this.playedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  PlayRecordTableCompanion.insert({
+  ListeningSummaryTableCompanion.insert({
     required String id,
     required String trackId,
     required String trackTitle,
@@ -399,7 +405,7 @@ class PlayRecordTableCompanion extends UpdateCompanion<PlayRecordTableData> {
        sourceType = Value(sourceType),
        listenedDurationMilliseconds = Value(listenedDurationMilliseconds),
        playedAt = Value(playedAt);
-  static Insertable<PlayRecordTableData> custom({
+  static Insertable<ListeningSummaryTableData> custom({
     Expression<String>? id,
     Expression<String>? trackId,
     Expression<String>? trackTitle,
@@ -422,7 +428,7 @@ class PlayRecordTableCompanion extends UpdateCompanion<PlayRecordTableData> {
     });
   }
 
-  PlayRecordTableCompanion copyWith({
+  ListeningSummaryTableCompanion copyWith({
     Value<String>? id,
     Value<String>? trackId,
     Value<String>? trackTitle,
@@ -432,7 +438,7 @@ class PlayRecordTableCompanion extends UpdateCompanion<PlayRecordTableData> {
     Value<DateTime>? playedAt,
     Value<int>? rowid,
   }) {
-    return PlayRecordTableCompanion(
+    return ListeningSummaryTableCompanion(
       id: id ?? this.id,
       trackId: trackId ?? this.trackId,
       trackTitle: trackTitle ?? this.trackTitle,
@@ -479,7 +485,7 @@ class PlayRecordTableCompanion extends UpdateCompanion<PlayRecordTableData> {
 
   @override
   String toString() {
-    return (StringBuffer('PlayRecordTableCompanion(')
+    return (StringBuffer('ListeningSummaryTableCompanion(')
           ..write('id: $id, ')
           ..write('trackId: $trackId, ')
           ..write('trackTitle: $trackTitle, ')
@@ -924,6 +930,17 @@ class $TrackTableTable extends TrackTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _contentIdentityMeta = const VerificationMeta(
+    'contentIdentity',
+  );
+  @override
+  late final GeneratedColumn<String> contentIdentity = GeneratedColumn<String>(
+    'content_identity',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
@@ -1019,17 +1036,6 @@ class $TrackTableTable extends TrackTable
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
-  static const VerificationMeta _embeddingMeta = const VerificationMeta(
-    'embedding',
-  );
-  @override
-  late final GeneratedColumn<String> embedding = GeneratedColumn<String>(
-    'embedding',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
   static const VerificationMeta _audioRevisionMeta = const VerificationMeta(
     'audioRevision',
   );
@@ -1057,6 +1063,7 @@ class $TrackTableTable extends TrackTable
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    contentIdentity,
     title,
     pathToFile,
     durationMs,
@@ -1066,7 +1073,6 @@ class $TrackTableTable extends TrackTable
     album,
     imageUrl,
     trackDescriptorJson,
-    embedding,
     audioRevision,
     metadataRevision,
   ];
@@ -1086,6 +1092,15 @@ class $TrackTableTable extends TrackTable
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     } else if (isInserting) {
       context.missing(_idMeta);
+    }
+    if (data.containsKey('content_identity')) {
+      context.handle(
+        _contentIdentityMeta,
+        contentIdentity.isAcceptableOrUnknown(
+          data['content_identity']!,
+          _contentIdentityMeta,
+        ),
+      );
     }
     if (data.containsKey('title')) {
       context.handle(
@@ -1153,12 +1168,6 @@ class $TrackTableTable extends TrackTable
         ),
       );
     }
-    if (data.containsKey('embedding')) {
-      context.handle(
-        _embeddingMeta,
-        embedding.isAcceptableOrUnknown(data['embedding']!, _embeddingMeta),
-      );
-    }
     if (data.containsKey('audio_revision')) {
       context.handle(
         _audioRevisionMeta,
@@ -1190,6 +1199,10 @@ class $TrackTableTable extends TrackTable
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
+      contentIdentity: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}content_identity'],
+      ),
       title: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}title'],
@@ -1226,10 +1239,6 @@ class $TrackTableTable extends TrackTable
         DriftSqlType.string,
         data['${effectivePrefix}track_descriptor_json'],
       ),
-      embedding: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}embedding'],
-      ),
       audioRevision: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}audio_revision'],
@@ -1249,6 +1258,7 @@ class $TrackTableTable extends TrackTable
 
 class TrackTableData extends DataClass implements Insertable<TrackTableData> {
   final String id;
+  final String? contentIdentity;
   final String title;
   final String? pathToFile;
   final int? durationMs;
@@ -1258,11 +1268,11 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
   final String? album;
   final String? imageUrl;
   final String? trackDescriptorJson;
-  final String? embedding;
   final int audioRevision;
   final int metadataRevision;
   const TrackTableData({
     required this.id,
+    this.contentIdentity,
     required this.title,
     this.pathToFile,
     this.durationMs,
@@ -1272,7 +1282,6 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
     this.album,
     this.imageUrl,
     this.trackDescriptorJson,
-    this.embedding,
     required this.audioRevision,
     required this.metadataRevision,
   });
@@ -1280,6 +1289,9 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    if (!nullToAbsent || contentIdentity != null) {
+      map['content_identity'] = Variable<String>(contentIdentity);
+    }
     map['title'] = Variable<String>(title);
     if (!nullToAbsent || pathToFile != null) {
       map['path_to_file'] = Variable<String>(pathToFile);
@@ -1301,9 +1313,6 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
     if (!nullToAbsent || trackDescriptorJson != null) {
       map['track_descriptor_json'] = Variable<String>(trackDescriptorJson);
     }
-    if (!nullToAbsent || embedding != null) {
-      map['embedding'] = Variable<String>(embedding);
-    }
     map['audio_revision'] = Variable<int>(audioRevision);
     map['metadata_revision'] = Variable<int>(metadataRevision);
     return map;
@@ -1312,6 +1321,9 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
   TrackTableCompanion toCompanion(bool nullToAbsent) {
     return TrackTableCompanion(
       id: Value(id),
+      contentIdentity: contentIdentity == null && nullToAbsent
+          ? const Value.absent()
+          : Value(contentIdentity),
       title: Value(title),
       pathToFile: pathToFile == null && nullToAbsent
           ? const Value.absent()
@@ -1333,9 +1345,6 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
       trackDescriptorJson: trackDescriptorJson == null && nullToAbsent
           ? const Value.absent()
           : Value(trackDescriptorJson),
-      embedding: embedding == null && nullToAbsent
-          ? const Value.absent()
-          : Value(embedding),
       audioRevision: Value(audioRevision),
       metadataRevision: Value(metadataRevision),
     );
@@ -1348,6 +1357,7 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return TrackTableData(
       id: serializer.fromJson<String>(json['id']),
+      contentIdentity: serializer.fromJson<String?>(json['contentIdentity']),
       title: serializer.fromJson<String>(json['title']),
       pathToFile: serializer.fromJson<String?>(json['pathToFile']),
       durationMs: serializer.fromJson<int?>(json['durationMs']),
@@ -1359,7 +1369,6 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
       trackDescriptorJson: serializer.fromJson<String?>(
         json['trackDescriptorJson'],
       ),
-      embedding: serializer.fromJson<String?>(json['embedding']),
       audioRevision: serializer.fromJson<int>(json['audioRevision']),
       metadataRevision: serializer.fromJson<int>(json['metadataRevision']),
     );
@@ -1369,6 +1378,7 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'contentIdentity': serializer.toJson<String?>(contentIdentity),
       'title': serializer.toJson<String>(title),
       'pathToFile': serializer.toJson<String?>(pathToFile),
       'durationMs': serializer.toJson<int?>(durationMs),
@@ -1378,7 +1388,6 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
       'album': serializer.toJson<String?>(album),
       'imageUrl': serializer.toJson<String?>(imageUrl),
       'trackDescriptorJson': serializer.toJson<String?>(trackDescriptorJson),
-      'embedding': serializer.toJson<String?>(embedding),
       'audioRevision': serializer.toJson<int>(audioRevision),
       'metadataRevision': serializer.toJson<int>(metadataRevision),
     };
@@ -1386,6 +1395,7 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
 
   TrackTableData copyWith({
     String? id,
+    Value<String?> contentIdentity = const Value.absent(),
     String? title,
     Value<String?> pathToFile = const Value.absent(),
     Value<int?> durationMs = const Value.absent(),
@@ -1395,11 +1405,13 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
     Value<String?> album = const Value.absent(),
     Value<String?> imageUrl = const Value.absent(),
     Value<String?> trackDescriptorJson = const Value.absent(),
-    Value<String?> embedding = const Value.absent(),
     int? audioRevision,
     int? metadataRevision,
   }) => TrackTableData(
     id: id ?? this.id,
+    contentIdentity: contentIdentity.present
+        ? contentIdentity.value
+        : this.contentIdentity,
     title: title ?? this.title,
     pathToFile: pathToFile.present ? pathToFile.value : this.pathToFile,
     durationMs: durationMs.present ? durationMs.value : this.durationMs,
@@ -1411,13 +1423,15 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
     trackDescriptorJson: trackDescriptorJson.present
         ? trackDescriptorJson.value
         : this.trackDescriptorJson,
-    embedding: embedding.present ? embedding.value : this.embedding,
     audioRevision: audioRevision ?? this.audioRevision,
     metadataRevision: metadataRevision ?? this.metadataRevision,
   );
   TrackTableData copyWithCompanion(TrackTableCompanion data) {
     return TrackTableData(
       id: data.id.present ? data.id.value : this.id,
+      contentIdentity: data.contentIdentity.present
+          ? data.contentIdentity.value
+          : this.contentIdentity,
       title: data.title.present ? data.title.value : this.title,
       pathToFile: data.pathToFile.present
           ? data.pathToFile.value
@@ -1435,7 +1449,6 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
       trackDescriptorJson: data.trackDescriptorJson.present
           ? data.trackDescriptorJson.value
           : this.trackDescriptorJson,
-      embedding: data.embedding.present ? data.embedding.value : this.embedding,
       audioRevision: data.audioRevision.present
           ? data.audioRevision.value
           : this.audioRevision,
@@ -1449,6 +1462,7 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
   String toString() {
     return (StringBuffer('TrackTableData(')
           ..write('id: $id, ')
+          ..write('contentIdentity: $contentIdentity, ')
           ..write('title: $title, ')
           ..write('pathToFile: $pathToFile, ')
           ..write('durationMs: $durationMs, ')
@@ -1458,7 +1472,6 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
           ..write('album: $album, ')
           ..write('imageUrl: $imageUrl, ')
           ..write('trackDescriptorJson: $trackDescriptorJson, ')
-          ..write('embedding: $embedding, ')
           ..write('audioRevision: $audioRevision, ')
           ..write('metadataRevision: $metadataRevision')
           ..write(')'))
@@ -1468,6 +1481,7 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
   @override
   int get hashCode => Object.hash(
     id,
+    contentIdentity,
     title,
     pathToFile,
     durationMs,
@@ -1477,7 +1491,6 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
     album,
     imageUrl,
     trackDescriptorJson,
-    embedding,
     audioRevision,
     metadataRevision,
   );
@@ -1486,6 +1499,7 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
       identical(this, other) ||
       (other is TrackTableData &&
           other.id == this.id &&
+          other.contentIdentity == this.contentIdentity &&
           other.title == this.title &&
           other.pathToFile == this.pathToFile &&
           other.durationMs == this.durationMs &&
@@ -1495,13 +1509,13 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
           other.album == this.album &&
           other.imageUrl == this.imageUrl &&
           other.trackDescriptorJson == this.trackDescriptorJson &&
-          other.embedding == this.embedding &&
           other.audioRevision == this.audioRevision &&
           other.metadataRevision == this.metadataRevision);
 }
 
 class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
   final Value<String> id;
+  final Value<String?> contentIdentity;
   final Value<String> title;
   final Value<String?> pathToFile;
   final Value<int?> durationMs;
@@ -1511,12 +1525,12 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
   final Value<String?> album;
   final Value<String?> imageUrl;
   final Value<String?> trackDescriptorJson;
-  final Value<String?> embedding;
   final Value<int> audioRevision;
   final Value<int> metadataRevision;
   final Value<int> rowid;
   const TrackTableCompanion({
     this.id = const Value.absent(),
+    this.contentIdentity = const Value.absent(),
     this.title = const Value.absent(),
     this.pathToFile = const Value.absent(),
     this.durationMs = const Value.absent(),
@@ -1526,13 +1540,13 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
     this.album = const Value.absent(),
     this.imageUrl = const Value.absent(),
     this.trackDescriptorJson = const Value.absent(),
-    this.embedding = const Value.absent(),
     this.audioRevision = const Value.absent(),
     this.metadataRevision = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   TrackTableCompanion.insert({
     required String id,
+    this.contentIdentity = const Value.absent(),
     required String title,
     this.pathToFile = const Value.absent(),
     this.durationMs = const Value.absent(),
@@ -1542,7 +1556,6 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
     this.album = const Value.absent(),
     this.imageUrl = const Value.absent(),
     this.trackDescriptorJson = const Value.absent(),
-    this.embedding = const Value.absent(),
     this.audioRevision = const Value.absent(),
     this.metadataRevision = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1552,6 +1565,7 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
        sourceUri = Value(sourceUri);
   static Insertable<TrackTableData> custom({
     Expression<String>? id,
+    Expression<String>? contentIdentity,
     Expression<String>? title,
     Expression<String>? pathToFile,
     Expression<int>? durationMs,
@@ -1561,13 +1575,13 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
     Expression<String>? album,
     Expression<String>? imageUrl,
     Expression<String>? trackDescriptorJson,
-    Expression<String>? embedding,
     Expression<int>? audioRevision,
     Expression<int>? metadataRevision,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (contentIdentity != null) 'content_identity': contentIdentity,
       if (title != null) 'title': title,
       if (pathToFile != null) 'path_to_file': pathToFile,
       if (durationMs != null) 'duration_ms': durationMs,
@@ -1578,7 +1592,6 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
       if (imageUrl != null) 'image_url': imageUrl,
       if (trackDescriptorJson != null)
         'track_descriptor_json': trackDescriptorJson,
-      if (embedding != null) 'embedding': embedding,
       if (audioRevision != null) 'audio_revision': audioRevision,
       if (metadataRevision != null) 'metadata_revision': metadataRevision,
       if (rowid != null) 'rowid': rowid,
@@ -1587,6 +1600,7 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
 
   TrackTableCompanion copyWith({
     Value<String>? id,
+    Value<String?>? contentIdentity,
     Value<String>? title,
     Value<String?>? pathToFile,
     Value<int?>? durationMs,
@@ -1596,13 +1610,13 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
     Value<String?>? album,
     Value<String?>? imageUrl,
     Value<String?>? trackDescriptorJson,
-    Value<String?>? embedding,
     Value<int>? audioRevision,
     Value<int>? metadataRevision,
     Value<int>? rowid,
   }) {
     return TrackTableCompanion(
       id: id ?? this.id,
+      contentIdentity: contentIdentity ?? this.contentIdentity,
       title: title ?? this.title,
       pathToFile: pathToFile ?? this.pathToFile,
       durationMs: durationMs ?? this.durationMs,
@@ -1612,7 +1626,6 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
       album: album ?? this.album,
       imageUrl: imageUrl ?? this.imageUrl,
       trackDescriptorJson: trackDescriptorJson ?? this.trackDescriptorJson,
-      embedding: embedding ?? this.embedding,
       audioRevision: audioRevision ?? this.audioRevision,
       metadataRevision: metadataRevision ?? this.metadataRevision,
       rowid: rowid ?? this.rowid,
@@ -1624,6 +1637,9 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<String>(id.value);
+    }
+    if (contentIdentity.present) {
+      map['content_identity'] = Variable<String>(contentIdentity.value);
     }
     if (title.present) {
       map['title'] = Variable<String>(title.value);
@@ -1654,9 +1670,6 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
         trackDescriptorJson.value,
       );
     }
-    if (embedding.present) {
-      map['embedding'] = Variable<String>(embedding.value);
-    }
     if (audioRevision.present) {
       map['audio_revision'] = Variable<int>(audioRevision.value);
     }
@@ -1673,6 +1686,7 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
   String toString() {
     return (StringBuffer('TrackTableCompanion(')
           ..write('id: $id, ')
+          ..write('contentIdentity: $contentIdentity, ')
           ..write('title: $title, ')
           ..write('pathToFile: $pathToFile, ')
           ..write('durationMs: $durationMs, ')
@@ -1682,531 +1696,8 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
           ..write('album: $album, ')
           ..write('imageUrl: $imageUrl, ')
           ..write('trackDescriptorJson: $trackDescriptorJson, ')
-          ..write('embedding: $embedding, ')
           ..write('audioRevision: $audioRevision, ')
           ..write('metadataRevision: $metadataRevision, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $EmbeddingTaskTableTable extends EmbeddingTaskTable
-    with TableInfo<$EmbeddingTaskTableTable, EmbeddingTaskTableData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $EmbeddingTaskTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
-  );
-  static const VerificationMeta _trackIdMeta = const VerificationMeta(
-    'trackId',
-  );
-  @override
-  late final GeneratedColumn<String> trackId = GeneratedColumn<String>(
-    'track_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _statusMeta = const VerificationMeta('status');
-  @override
-  late final GeneratedColumn<String> status = GeneratedColumn<String>(
-    'status',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _filePathMeta = const VerificationMeta(
-    'filePath',
-  );
-  @override
-  late final GeneratedColumn<String> filePath = GeneratedColumn<String>(
-    'file_path',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-    'created_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _audioRevisionMeta = const VerificationMeta(
-    'audioRevision',
-  );
-  @override
-  late final GeneratedColumn<int> audioRevision = GeneratedColumn<int>(
-    'audio_revision',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(0),
-  );
-  static const VerificationMeta _leaseOwnerMeta = const VerificationMeta(
-    'leaseOwner',
-  );
-  @override
-  late final GeneratedColumn<String> leaseOwner = GeneratedColumn<String>(
-    'lease_owner',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _leaseUntilMeta = const VerificationMeta(
-    'leaseUntil',
-  );
-  @override
-  late final GeneratedColumn<DateTime> leaseUntil = GeneratedColumn<DateTime>(
-    'lease_until',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    trackId,
-    status,
-    filePath,
-    createdAt,
-    audioRevision,
-    leaseOwner,
-    leaseUntil,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'embedding_task_table';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<EmbeddingTaskTableData> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
-    if (data.containsKey('track_id')) {
-      context.handle(
-        _trackIdMeta,
-        trackId.isAcceptableOrUnknown(data['track_id']!, _trackIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_trackIdMeta);
-    }
-    if (data.containsKey('status')) {
-      context.handle(
-        _statusMeta,
-        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_statusMeta);
-    }
-    if (data.containsKey('file_path')) {
-      context.handle(
-        _filePathMeta,
-        filePath.isAcceptableOrUnknown(data['file_path']!, _filePathMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_filePathMeta);
-    }
-    if (data.containsKey('created_at')) {
-      context.handle(
-        _createdAtMeta,
-        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_createdAtMeta);
-    }
-    if (data.containsKey('audio_revision')) {
-      context.handle(
-        _audioRevisionMeta,
-        audioRevision.isAcceptableOrUnknown(
-          data['audio_revision']!,
-          _audioRevisionMeta,
-        ),
-      );
-    }
-    if (data.containsKey('lease_owner')) {
-      context.handle(
-        _leaseOwnerMeta,
-        leaseOwner.isAcceptableOrUnknown(data['lease_owner']!, _leaseOwnerMeta),
-      );
-    }
-    if (data.containsKey('lease_until')) {
-      context.handle(
-        _leaseUntilMeta,
-        leaseUntil.isAcceptableOrUnknown(data['lease_until']!, _leaseUntilMeta),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {trackId};
-  @override
-  EmbeddingTaskTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return EmbeddingTaskTableData(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      trackId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}track_id'],
-      )!,
-      status: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}status'],
-      )!,
-      filePath: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}file_path'],
-      )!,
-      createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}created_at'],
-      )!,
-      audioRevision: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}audio_revision'],
-      )!,
-      leaseOwner: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}lease_owner'],
-      ),
-      leaseUntil: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}lease_until'],
-      ),
-    );
-  }
-
-  @override
-  $EmbeddingTaskTableTable createAlias(String alias) {
-    return $EmbeddingTaskTableTable(attachedDatabase, alias);
-  }
-}
-
-class EmbeddingTaskTableData extends DataClass
-    implements Insertable<EmbeddingTaskTableData> {
-  final String id;
-  final String trackId;
-  final String status;
-  final String filePath;
-  final DateTime createdAt;
-  final int audioRevision;
-  final String? leaseOwner;
-  final DateTime? leaseUntil;
-  const EmbeddingTaskTableData({
-    required this.id,
-    required this.trackId,
-    required this.status,
-    required this.filePath,
-    required this.createdAt,
-    required this.audioRevision,
-    this.leaseOwner,
-    this.leaseUntil,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['track_id'] = Variable<String>(trackId);
-    map['status'] = Variable<String>(status);
-    map['file_path'] = Variable<String>(filePath);
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['audio_revision'] = Variable<int>(audioRevision);
-    if (!nullToAbsent || leaseOwner != null) {
-      map['lease_owner'] = Variable<String>(leaseOwner);
-    }
-    if (!nullToAbsent || leaseUntil != null) {
-      map['lease_until'] = Variable<DateTime>(leaseUntil);
-    }
-    return map;
-  }
-
-  EmbeddingTaskTableCompanion toCompanion(bool nullToAbsent) {
-    return EmbeddingTaskTableCompanion(
-      id: Value(id),
-      trackId: Value(trackId),
-      status: Value(status),
-      filePath: Value(filePath),
-      createdAt: Value(createdAt),
-      audioRevision: Value(audioRevision),
-      leaseOwner: leaseOwner == null && nullToAbsent
-          ? const Value.absent()
-          : Value(leaseOwner),
-      leaseUntil: leaseUntil == null && nullToAbsent
-          ? const Value.absent()
-          : Value(leaseUntil),
-    );
-  }
-
-  factory EmbeddingTaskTableData.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return EmbeddingTaskTableData(
-      id: serializer.fromJson<String>(json['id']),
-      trackId: serializer.fromJson<String>(json['trackId']),
-      status: serializer.fromJson<String>(json['status']),
-      filePath: serializer.fromJson<String>(json['filePath']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      audioRevision: serializer.fromJson<int>(json['audioRevision']),
-      leaseOwner: serializer.fromJson<String?>(json['leaseOwner']),
-      leaseUntil: serializer.fromJson<DateTime?>(json['leaseUntil']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'trackId': serializer.toJson<String>(trackId),
-      'status': serializer.toJson<String>(status),
-      'filePath': serializer.toJson<String>(filePath),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'audioRevision': serializer.toJson<int>(audioRevision),
-      'leaseOwner': serializer.toJson<String?>(leaseOwner),
-      'leaseUntil': serializer.toJson<DateTime?>(leaseUntil),
-    };
-  }
-
-  EmbeddingTaskTableData copyWith({
-    String? id,
-    String? trackId,
-    String? status,
-    String? filePath,
-    DateTime? createdAt,
-    int? audioRevision,
-    Value<String?> leaseOwner = const Value.absent(),
-    Value<DateTime?> leaseUntil = const Value.absent(),
-  }) => EmbeddingTaskTableData(
-    id: id ?? this.id,
-    trackId: trackId ?? this.trackId,
-    status: status ?? this.status,
-    filePath: filePath ?? this.filePath,
-    createdAt: createdAt ?? this.createdAt,
-    audioRevision: audioRevision ?? this.audioRevision,
-    leaseOwner: leaseOwner.present ? leaseOwner.value : this.leaseOwner,
-    leaseUntil: leaseUntil.present ? leaseUntil.value : this.leaseUntil,
-  );
-  EmbeddingTaskTableData copyWithCompanion(EmbeddingTaskTableCompanion data) {
-    return EmbeddingTaskTableData(
-      id: data.id.present ? data.id.value : this.id,
-      trackId: data.trackId.present ? data.trackId.value : this.trackId,
-      status: data.status.present ? data.status.value : this.status,
-      filePath: data.filePath.present ? data.filePath.value : this.filePath,
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      audioRevision: data.audioRevision.present
-          ? data.audioRevision.value
-          : this.audioRevision,
-      leaseOwner: data.leaseOwner.present
-          ? data.leaseOwner.value
-          : this.leaseOwner,
-      leaseUntil: data.leaseUntil.present
-          ? data.leaseUntil.value
-          : this.leaseUntil,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('EmbeddingTaskTableData(')
-          ..write('id: $id, ')
-          ..write('trackId: $trackId, ')
-          ..write('status: $status, ')
-          ..write('filePath: $filePath, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('audioRevision: $audioRevision, ')
-          ..write('leaseOwner: $leaseOwner, ')
-          ..write('leaseUntil: $leaseUntil')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    trackId,
-    status,
-    filePath,
-    createdAt,
-    audioRevision,
-    leaseOwner,
-    leaseUntil,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is EmbeddingTaskTableData &&
-          other.id == this.id &&
-          other.trackId == this.trackId &&
-          other.status == this.status &&
-          other.filePath == this.filePath &&
-          other.createdAt == this.createdAt &&
-          other.audioRevision == this.audioRevision &&
-          other.leaseOwner == this.leaseOwner &&
-          other.leaseUntil == this.leaseUntil);
-}
-
-class EmbeddingTaskTableCompanion
-    extends UpdateCompanion<EmbeddingTaskTableData> {
-  final Value<String> id;
-  final Value<String> trackId;
-  final Value<String> status;
-  final Value<String> filePath;
-  final Value<DateTime> createdAt;
-  final Value<int> audioRevision;
-  final Value<String?> leaseOwner;
-  final Value<DateTime?> leaseUntil;
-  final Value<int> rowid;
-  const EmbeddingTaskTableCompanion({
-    this.id = const Value.absent(),
-    this.trackId = const Value.absent(),
-    this.status = const Value.absent(),
-    this.filePath = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.audioRevision = const Value.absent(),
-    this.leaseOwner = const Value.absent(),
-    this.leaseUntil = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  EmbeddingTaskTableCompanion.insert({
-    required String id,
-    required String trackId,
-    required String status,
-    required String filePath,
-    required DateTime createdAt,
-    this.audioRevision = const Value.absent(),
-    this.leaseOwner = const Value.absent(),
-    this.leaseUntil = const Value.absent(),
-    this.rowid = const Value.absent(),
-  }) : id = Value(id),
-       trackId = Value(trackId),
-       status = Value(status),
-       filePath = Value(filePath),
-       createdAt = Value(createdAt);
-  static Insertable<EmbeddingTaskTableData> custom({
-    Expression<String>? id,
-    Expression<String>? trackId,
-    Expression<String>? status,
-    Expression<String>? filePath,
-    Expression<DateTime>? createdAt,
-    Expression<int>? audioRevision,
-    Expression<String>? leaseOwner,
-    Expression<DateTime>? leaseUntil,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (trackId != null) 'track_id': trackId,
-      if (status != null) 'status': status,
-      if (filePath != null) 'file_path': filePath,
-      if (createdAt != null) 'created_at': createdAt,
-      if (audioRevision != null) 'audio_revision': audioRevision,
-      if (leaseOwner != null) 'lease_owner': leaseOwner,
-      if (leaseUntil != null) 'lease_until': leaseUntil,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  EmbeddingTaskTableCompanion copyWith({
-    Value<String>? id,
-    Value<String>? trackId,
-    Value<String>? status,
-    Value<String>? filePath,
-    Value<DateTime>? createdAt,
-    Value<int>? audioRevision,
-    Value<String?>? leaseOwner,
-    Value<DateTime?>? leaseUntil,
-    Value<int>? rowid,
-  }) {
-    return EmbeddingTaskTableCompanion(
-      id: id ?? this.id,
-      trackId: trackId ?? this.trackId,
-      status: status ?? this.status,
-      filePath: filePath ?? this.filePath,
-      createdAt: createdAt ?? this.createdAt,
-      audioRevision: audioRevision ?? this.audioRevision,
-      leaseOwner: leaseOwner ?? this.leaseOwner,
-      leaseUntil: leaseUntil ?? this.leaseUntil,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (trackId.present) {
-      map['track_id'] = Variable<String>(trackId.value);
-    }
-    if (status.present) {
-      map['status'] = Variable<String>(status.value);
-    }
-    if (filePath.present) {
-      map['file_path'] = Variable<String>(filePath.value);
-    }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (audioRevision.present) {
-      map['audio_revision'] = Variable<int>(audioRevision.value);
-    }
-    if (leaseOwner.present) {
-      map['lease_owner'] = Variable<String>(leaseOwner.value);
-    }
-    if (leaseUntil.present) {
-      map['lease_until'] = Variable<DateTime>(leaseUntil.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('EmbeddingTaskTableCompanion(')
-          ..write('id: $id, ')
-          ..write('trackId: $trackId, ')
-          ..write('status: $status, ')
-          ..write('filePath: $filePath, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('audioRevision: $audioRevision, ')
-          ..write('leaseOwner: $leaseOwner, ')
-          ..write('leaseUntil: $leaseUntil, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -5400,16 +4891,6964 @@ class AppNavigationStateTableCompanion
   }
 }
 
+class $TrackEmbeddingTableTable extends TrackEmbeddingTable
+    with TableInfo<$TrackEmbeddingTableTable, TrackEmbeddingTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TrackEmbeddingTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _trackIdMeta = const VerificationMeta(
+    'trackId',
+  );
+  @override
+  late final GeneratedColumn<String> trackId = GeneratedColumn<String>(
+    'track_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES track_table (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _modalityMeta = const VerificationMeta(
+    'modality',
+  );
+  @override
+  late final GeneratedColumn<String> modality = GeneratedColumn<String>(
+    'modality',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _modelIdMeta = const VerificationMeta(
+    'modelId',
+  );
+  @override
+  late final GeneratedColumn<String> modelId = GeneratedColumn<String>(
+    'model_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _modelVersionMeta = const VerificationMeta(
+    'modelVersion',
+  );
+  @override
+  late final GeneratedColumn<String> modelVersion = GeneratedColumn<String>(
+    'model_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _preprocessingVersionMeta =
+      const VerificationMeta('preprocessingVersion');
+  @override
+  late final GeneratedColumn<String> preprocessingVersion =
+      GeneratedColumn<String>(
+        'preprocessing_version',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('legacy-unknown'),
+      );
+  static const VerificationMeta _providerMeta = const VerificationMeta(
+    'provider',
+  );
+  @override
+  late final GeneratedColumn<String> provider = GeneratedColumn<String>(
+    'provider',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _audioRevisionMeta = const VerificationMeta(
+    'audioRevision',
+  );
+  @override
+  late final GeneratedColumn<int> audioRevision = GeneratedColumn<int>(
+    'audio_revision',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _contentRevisionMeta = const VerificationMeta(
+    'contentRevision',
+  );
+  @override
+  late final GeneratedColumn<String> contentRevision = GeneratedColumn<String>(
+    'content_revision',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dtypeMeta = const VerificationMeta('dtype');
+  @override
+  late final GeneratedColumn<String> dtype = GeneratedColumn<String>(
+    'dtype',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('float32'),
+  );
+  static const VerificationMeta _normalizedMeta = const VerificationMeta(
+    'normalized',
+  );
+  @override
+  late final GeneratedColumn<bool> normalized = GeneratedColumn<bool>(
+    'normalized',
+    aliasedName,
+    true,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("normalized" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _dimensionsMeta = const VerificationMeta(
+    'dimensions',
+  );
+  @override
+  late final GeneratedColumn<int> dimensions = GeneratedColumn<int>(
+    'dimensions',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _vectorMeta = const VerificationMeta('vector');
+  @override
+  late final GeneratedColumn<Uint8List> vector = GeneratedColumn<Uint8List>(
+    'vector',
+    aliasedName,
+    false,
+    type: DriftSqlType.blob,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    trackId,
+    modality,
+    modelId,
+    modelVersion,
+    preprocessingVersion,
+    provider,
+    audioRevision,
+    contentRevision,
+    dtype,
+    normalized,
+    dimensions,
+    vector,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'track_embedding_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TrackEmbeddingTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('track_id')) {
+      context.handle(
+        _trackIdMeta,
+        trackId.isAcceptableOrUnknown(data['track_id']!, _trackIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_trackIdMeta);
+    }
+    if (data.containsKey('modality')) {
+      context.handle(
+        _modalityMeta,
+        modality.isAcceptableOrUnknown(data['modality']!, _modalityMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_modalityMeta);
+    }
+    if (data.containsKey('model_id')) {
+      context.handle(
+        _modelIdMeta,
+        modelId.isAcceptableOrUnknown(data['model_id']!, _modelIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_modelIdMeta);
+    }
+    if (data.containsKey('model_version')) {
+      context.handle(
+        _modelVersionMeta,
+        modelVersion.isAcceptableOrUnknown(
+          data['model_version']!,
+          _modelVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_modelVersionMeta);
+    }
+    if (data.containsKey('preprocessing_version')) {
+      context.handle(
+        _preprocessingVersionMeta,
+        preprocessingVersion.isAcceptableOrUnknown(
+          data['preprocessing_version']!,
+          _preprocessingVersionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('provider')) {
+      context.handle(
+        _providerMeta,
+        provider.isAcceptableOrUnknown(data['provider']!, _providerMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_providerMeta);
+    }
+    if (data.containsKey('audio_revision')) {
+      context.handle(
+        _audioRevisionMeta,
+        audioRevision.isAcceptableOrUnknown(
+          data['audio_revision']!,
+          _audioRevisionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('content_revision')) {
+      context.handle(
+        _contentRevisionMeta,
+        contentRevision.isAcceptableOrUnknown(
+          data['content_revision']!,
+          _contentRevisionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('dtype')) {
+      context.handle(
+        _dtypeMeta,
+        dtype.isAcceptableOrUnknown(data['dtype']!, _dtypeMeta),
+      );
+    }
+    if (data.containsKey('normalized')) {
+      context.handle(
+        _normalizedMeta,
+        normalized.isAcceptableOrUnknown(data['normalized']!, _normalizedMeta),
+      );
+    }
+    if (data.containsKey('dimensions')) {
+      context.handle(
+        _dimensionsMeta,
+        dimensions.isAcceptableOrUnknown(data['dimensions']!, _dimensionsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dimensionsMeta);
+    }
+    if (data.containsKey('vector')) {
+      context.handle(
+        _vectorMeta,
+        vector.isAcceptableOrUnknown(data['vector']!, _vectorMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_vectorMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {
+    trackId,
+    modality,
+    modelId,
+    modelVersion,
+    preprocessingVersion,
+    provider,
+  };
+  @override
+  TrackEmbeddingTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TrackEmbeddingTableData(
+      trackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}track_id'],
+      )!,
+      modality: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}modality'],
+      )!,
+      modelId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}model_id'],
+      )!,
+      modelVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}model_version'],
+      )!,
+      preprocessingVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}preprocessing_version'],
+      )!,
+      provider: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}provider'],
+      )!,
+      audioRevision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}audio_revision'],
+      ),
+      contentRevision: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}content_revision'],
+      ),
+      dtype: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}dtype'],
+      )!,
+      normalized: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}normalized'],
+      ),
+      dimensions: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}dimensions'],
+      )!,
+      vector: attachedDatabase.typeMapping.read(
+        DriftSqlType.blob,
+        data['${effectivePrefix}vector'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $TrackEmbeddingTableTable createAlias(String alias) {
+    return $TrackEmbeddingTableTable(attachedDatabase, alias);
+  }
+}
+
+class TrackEmbeddingTableData extends DataClass
+    implements Insertable<TrackEmbeddingTableData> {
+  final String trackId;
+  final String modality;
+  final String modelId;
+  final String modelVersion;
+  final String preprocessingVersion;
+  final String provider;
+  final int? audioRevision;
+  final String? contentRevision;
+  final String dtype;
+  final bool? normalized;
+  final int dimensions;
+  final Uint8List vector;
+  final DateTime createdAt;
+  const TrackEmbeddingTableData({
+    required this.trackId,
+    required this.modality,
+    required this.modelId,
+    required this.modelVersion,
+    required this.preprocessingVersion,
+    required this.provider,
+    this.audioRevision,
+    this.contentRevision,
+    required this.dtype,
+    this.normalized,
+    required this.dimensions,
+    required this.vector,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['track_id'] = Variable<String>(trackId);
+    map['modality'] = Variable<String>(modality);
+    map['model_id'] = Variable<String>(modelId);
+    map['model_version'] = Variable<String>(modelVersion);
+    map['preprocessing_version'] = Variable<String>(preprocessingVersion);
+    map['provider'] = Variable<String>(provider);
+    if (!nullToAbsent || audioRevision != null) {
+      map['audio_revision'] = Variable<int>(audioRevision);
+    }
+    if (!nullToAbsent || contentRevision != null) {
+      map['content_revision'] = Variable<String>(contentRevision);
+    }
+    map['dtype'] = Variable<String>(dtype);
+    if (!nullToAbsent || normalized != null) {
+      map['normalized'] = Variable<bool>(normalized);
+    }
+    map['dimensions'] = Variable<int>(dimensions);
+    map['vector'] = Variable<Uint8List>(vector);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  TrackEmbeddingTableCompanion toCompanion(bool nullToAbsent) {
+    return TrackEmbeddingTableCompanion(
+      trackId: Value(trackId),
+      modality: Value(modality),
+      modelId: Value(modelId),
+      modelVersion: Value(modelVersion),
+      preprocessingVersion: Value(preprocessingVersion),
+      provider: Value(provider),
+      audioRevision: audioRevision == null && nullToAbsent
+          ? const Value.absent()
+          : Value(audioRevision),
+      contentRevision: contentRevision == null && nullToAbsent
+          ? const Value.absent()
+          : Value(contentRevision),
+      dtype: Value(dtype),
+      normalized: normalized == null && nullToAbsent
+          ? const Value.absent()
+          : Value(normalized),
+      dimensions: Value(dimensions),
+      vector: Value(vector),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory TrackEmbeddingTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TrackEmbeddingTableData(
+      trackId: serializer.fromJson<String>(json['trackId']),
+      modality: serializer.fromJson<String>(json['modality']),
+      modelId: serializer.fromJson<String>(json['modelId']),
+      modelVersion: serializer.fromJson<String>(json['modelVersion']),
+      preprocessingVersion: serializer.fromJson<String>(
+        json['preprocessingVersion'],
+      ),
+      provider: serializer.fromJson<String>(json['provider']),
+      audioRevision: serializer.fromJson<int?>(json['audioRevision']),
+      contentRevision: serializer.fromJson<String?>(json['contentRevision']),
+      dtype: serializer.fromJson<String>(json['dtype']),
+      normalized: serializer.fromJson<bool?>(json['normalized']),
+      dimensions: serializer.fromJson<int>(json['dimensions']),
+      vector: serializer.fromJson<Uint8List>(json['vector']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'trackId': serializer.toJson<String>(trackId),
+      'modality': serializer.toJson<String>(modality),
+      'modelId': serializer.toJson<String>(modelId),
+      'modelVersion': serializer.toJson<String>(modelVersion),
+      'preprocessingVersion': serializer.toJson<String>(preprocessingVersion),
+      'provider': serializer.toJson<String>(provider),
+      'audioRevision': serializer.toJson<int?>(audioRevision),
+      'contentRevision': serializer.toJson<String?>(contentRevision),
+      'dtype': serializer.toJson<String>(dtype),
+      'normalized': serializer.toJson<bool?>(normalized),
+      'dimensions': serializer.toJson<int>(dimensions),
+      'vector': serializer.toJson<Uint8List>(vector),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  TrackEmbeddingTableData copyWith({
+    String? trackId,
+    String? modality,
+    String? modelId,
+    String? modelVersion,
+    String? preprocessingVersion,
+    String? provider,
+    Value<int?> audioRevision = const Value.absent(),
+    Value<String?> contentRevision = const Value.absent(),
+    String? dtype,
+    Value<bool?> normalized = const Value.absent(),
+    int? dimensions,
+    Uint8List? vector,
+    DateTime? createdAt,
+  }) => TrackEmbeddingTableData(
+    trackId: trackId ?? this.trackId,
+    modality: modality ?? this.modality,
+    modelId: modelId ?? this.modelId,
+    modelVersion: modelVersion ?? this.modelVersion,
+    preprocessingVersion: preprocessingVersion ?? this.preprocessingVersion,
+    provider: provider ?? this.provider,
+    audioRevision: audioRevision.present
+        ? audioRevision.value
+        : this.audioRevision,
+    contentRevision: contentRevision.present
+        ? contentRevision.value
+        : this.contentRevision,
+    dtype: dtype ?? this.dtype,
+    normalized: normalized.present ? normalized.value : this.normalized,
+    dimensions: dimensions ?? this.dimensions,
+    vector: vector ?? this.vector,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  TrackEmbeddingTableData copyWithCompanion(TrackEmbeddingTableCompanion data) {
+    return TrackEmbeddingTableData(
+      trackId: data.trackId.present ? data.trackId.value : this.trackId,
+      modality: data.modality.present ? data.modality.value : this.modality,
+      modelId: data.modelId.present ? data.modelId.value : this.modelId,
+      modelVersion: data.modelVersion.present
+          ? data.modelVersion.value
+          : this.modelVersion,
+      preprocessingVersion: data.preprocessingVersion.present
+          ? data.preprocessingVersion.value
+          : this.preprocessingVersion,
+      provider: data.provider.present ? data.provider.value : this.provider,
+      audioRevision: data.audioRevision.present
+          ? data.audioRevision.value
+          : this.audioRevision,
+      contentRevision: data.contentRevision.present
+          ? data.contentRevision.value
+          : this.contentRevision,
+      dtype: data.dtype.present ? data.dtype.value : this.dtype,
+      normalized: data.normalized.present
+          ? data.normalized.value
+          : this.normalized,
+      dimensions: data.dimensions.present
+          ? data.dimensions.value
+          : this.dimensions,
+      vector: data.vector.present ? data.vector.value : this.vector,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TrackEmbeddingTableData(')
+          ..write('trackId: $trackId, ')
+          ..write('modality: $modality, ')
+          ..write('modelId: $modelId, ')
+          ..write('modelVersion: $modelVersion, ')
+          ..write('preprocessingVersion: $preprocessingVersion, ')
+          ..write('provider: $provider, ')
+          ..write('audioRevision: $audioRevision, ')
+          ..write('contentRevision: $contentRevision, ')
+          ..write('dtype: $dtype, ')
+          ..write('normalized: $normalized, ')
+          ..write('dimensions: $dimensions, ')
+          ..write('vector: $vector, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    trackId,
+    modality,
+    modelId,
+    modelVersion,
+    preprocessingVersion,
+    provider,
+    audioRevision,
+    contentRevision,
+    dtype,
+    normalized,
+    dimensions,
+    $driftBlobEquality.hash(vector),
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TrackEmbeddingTableData &&
+          other.trackId == this.trackId &&
+          other.modality == this.modality &&
+          other.modelId == this.modelId &&
+          other.modelVersion == this.modelVersion &&
+          other.preprocessingVersion == this.preprocessingVersion &&
+          other.provider == this.provider &&
+          other.audioRevision == this.audioRevision &&
+          other.contentRevision == this.contentRevision &&
+          other.dtype == this.dtype &&
+          other.normalized == this.normalized &&
+          other.dimensions == this.dimensions &&
+          $driftBlobEquality.equals(other.vector, this.vector) &&
+          other.createdAt == this.createdAt);
+}
+
+class TrackEmbeddingTableCompanion
+    extends UpdateCompanion<TrackEmbeddingTableData> {
+  final Value<String> trackId;
+  final Value<String> modality;
+  final Value<String> modelId;
+  final Value<String> modelVersion;
+  final Value<String> preprocessingVersion;
+  final Value<String> provider;
+  final Value<int?> audioRevision;
+  final Value<String?> contentRevision;
+  final Value<String> dtype;
+  final Value<bool?> normalized;
+  final Value<int> dimensions;
+  final Value<Uint8List> vector;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const TrackEmbeddingTableCompanion({
+    this.trackId = const Value.absent(),
+    this.modality = const Value.absent(),
+    this.modelId = const Value.absent(),
+    this.modelVersion = const Value.absent(),
+    this.preprocessingVersion = const Value.absent(),
+    this.provider = const Value.absent(),
+    this.audioRevision = const Value.absent(),
+    this.contentRevision = const Value.absent(),
+    this.dtype = const Value.absent(),
+    this.normalized = const Value.absent(),
+    this.dimensions = const Value.absent(),
+    this.vector = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TrackEmbeddingTableCompanion.insert({
+    required String trackId,
+    required String modality,
+    required String modelId,
+    required String modelVersion,
+    this.preprocessingVersion = const Value.absent(),
+    required String provider,
+    this.audioRevision = const Value.absent(),
+    this.contentRevision = const Value.absent(),
+    this.dtype = const Value.absent(),
+    this.normalized = const Value.absent(),
+    required int dimensions,
+    required Uint8List vector,
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  }) : trackId = Value(trackId),
+       modality = Value(modality),
+       modelId = Value(modelId),
+       modelVersion = Value(modelVersion),
+       provider = Value(provider),
+       dimensions = Value(dimensions),
+       vector = Value(vector),
+       createdAt = Value(createdAt);
+  static Insertable<TrackEmbeddingTableData> custom({
+    Expression<String>? trackId,
+    Expression<String>? modality,
+    Expression<String>? modelId,
+    Expression<String>? modelVersion,
+    Expression<String>? preprocessingVersion,
+    Expression<String>? provider,
+    Expression<int>? audioRevision,
+    Expression<String>? contentRevision,
+    Expression<String>? dtype,
+    Expression<bool>? normalized,
+    Expression<int>? dimensions,
+    Expression<Uint8List>? vector,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (trackId != null) 'track_id': trackId,
+      if (modality != null) 'modality': modality,
+      if (modelId != null) 'model_id': modelId,
+      if (modelVersion != null) 'model_version': modelVersion,
+      if (preprocessingVersion != null)
+        'preprocessing_version': preprocessingVersion,
+      if (provider != null) 'provider': provider,
+      if (audioRevision != null) 'audio_revision': audioRevision,
+      if (contentRevision != null) 'content_revision': contentRevision,
+      if (dtype != null) 'dtype': dtype,
+      if (normalized != null) 'normalized': normalized,
+      if (dimensions != null) 'dimensions': dimensions,
+      if (vector != null) 'vector': vector,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TrackEmbeddingTableCompanion copyWith({
+    Value<String>? trackId,
+    Value<String>? modality,
+    Value<String>? modelId,
+    Value<String>? modelVersion,
+    Value<String>? preprocessingVersion,
+    Value<String>? provider,
+    Value<int?>? audioRevision,
+    Value<String?>? contentRevision,
+    Value<String>? dtype,
+    Value<bool?>? normalized,
+    Value<int>? dimensions,
+    Value<Uint8List>? vector,
+    Value<DateTime>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return TrackEmbeddingTableCompanion(
+      trackId: trackId ?? this.trackId,
+      modality: modality ?? this.modality,
+      modelId: modelId ?? this.modelId,
+      modelVersion: modelVersion ?? this.modelVersion,
+      preprocessingVersion: preprocessingVersion ?? this.preprocessingVersion,
+      provider: provider ?? this.provider,
+      audioRevision: audioRevision ?? this.audioRevision,
+      contentRevision: contentRevision ?? this.contentRevision,
+      dtype: dtype ?? this.dtype,
+      normalized: normalized ?? this.normalized,
+      dimensions: dimensions ?? this.dimensions,
+      vector: vector ?? this.vector,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (trackId.present) {
+      map['track_id'] = Variable<String>(trackId.value);
+    }
+    if (modality.present) {
+      map['modality'] = Variable<String>(modality.value);
+    }
+    if (modelId.present) {
+      map['model_id'] = Variable<String>(modelId.value);
+    }
+    if (modelVersion.present) {
+      map['model_version'] = Variable<String>(modelVersion.value);
+    }
+    if (preprocessingVersion.present) {
+      map['preprocessing_version'] = Variable<String>(
+        preprocessingVersion.value,
+      );
+    }
+    if (provider.present) {
+      map['provider'] = Variable<String>(provider.value);
+    }
+    if (audioRevision.present) {
+      map['audio_revision'] = Variable<int>(audioRevision.value);
+    }
+    if (contentRevision.present) {
+      map['content_revision'] = Variable<String>(contentRevision.value);
+    }
+    if (dtype.present) {
+      map['dtype'] = Variable<String>(dtype.value);
+    }
+    if (normalized.present) {
+      map['normalized'] = Variable<bool>(normalized.value);
+    }
+    if (dimensions.present) {
+      map['dimensions'] = Variable<int>(dimensions.value);
+    }
+    if (vector.present) {
+      map['vector'] = Variable<Uint8List>(vector.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TrackEmbeddingTableCompanion(')
+          ..write('trackId: $trackId, ')
+          ..write('modality: $modality, ')
+          ..write('modelId: $modelId, ')
+          ..write('modelVersion: $modelVersion, ')
+          ..write('preprocessingVersion: $preprocessingVersion, ')
+          ..write('provider: $provider, ')
+          ..write('audioRevision: $audioRevision, ')
+          ..write('contentRevision: $contentRevision, ')
+          ..write('dtype: $dtype, ')
+          ..write('normalized: $normalized, ')
+          ..write('dimensions: $dimensions, ')
+          ..write('vector: $vector, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ListeningEventTableTable extends ListeningEventTable
+    with TableInfo<$ListeningEventTableTable, ListeningEventTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ListeningEventTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sessionIdMeta = const VerificationMeta(
+    'sessionId',
+  );
+  @override
+  late final GeneratedColumn<String> sessionId = GeneratedColumn<String>(
+    'session_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _trackIdMeta = const VerificationMeta(
+    'trackId',
+  );
+  @override
+  late final GeneratedColumn<String> trackId = GeneratedColumn<String>(
+    'track_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _occurredAtMeta = const VerificationMeta(
+    'occurredAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> occurredAt = GeneratedColumn<DateTime>(
+    'occurred_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _positionMsMeta = const VerificationMeta(
+    'positionMs',
+  );
+  @override
+  late final GeneratedColumn<int> positionMs = GeneratedColumn<int>(
+    'position_ms',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _listenedMsMeta = const VerificationMeta(
+    'listenedMs',
+  );
+  @override
+  late final GeneratedColumn<int> listenedMs = GeneratedColumn<int>(
+    'listened_ms',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _durationMsMeta = const VerificationMeta(
+    'durationMs',
+  );
+  @override
+  late final GeneratedColumn<int> durationMs = GeneratedColumn<int>(
+    'duration_ms',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _previousTrackIdMeta = const VerificationMeta(
+    'previousTrackId',
+  );
+  @override
+  late final GeneratedColumn<String> previousTrackId = GeneratedColumn<String>(
+    'previous_track_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _transitionReasonMeta = const VerificationMeta(
+    'transitionReason',
+  );
+  @override
+  late final GeneratedColumn<String> transitionReason = GeneratedColumn<String>(
+    'transition_reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    sessionId,
+    trackId,
+    type,
+    occurredAt,
+    positionMs,
+    listenedMs,
+    durationMs,
+    previousTrackId,
+    transitionReason,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'listening_event_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ListeningEventTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('session_id')) {
+      context.handle(
+        _sessionIdMeta,
+        sessionId.isAcceptableOrUnknown(data['session_id']!, _sessionIdMeta),
+      );
+    }
+    if (data.containsKey('track_id')) {
+      context.handle(
+        _trackIdMeta,
+        trackId.isAcceptableOrUnknown(data['track_id']!, _trackIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_trackIdMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('occurred_at')) {
+      context.handle(
+        _occurredAtMeta,
+        occurredAt.isAcceptableOrUnknown(data['occurred_at']!, _occurredAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_occurredAtMeta);
+    }
+    if (data.containsKey('position_ms')) {
+      context.handle(
+        _positionMsMeta,
+        positionMs.isAcceptableOrUnknown(data['position_ms']!, _positionMsMeta),
+      );
+    }
+    if (data.containsKey('listened_ms')) {
+      context.handle(
+        _listenedMsMeta,
+        listenedMs.isAcceptableOrUnknown(data['listened_ms']!, _listenedMsMeta),
+      );
+    }
+    if (data.containsKey('duration_ms')) {
+      context.handle(
+        _durationMsMeta,
+        durationMs.isAcceptableOrUnknown(data['duration_ms']!, _durationMsMeta),
+      );
+    }
+    if (data.containsKey('previous_track_id')) {
+      context.handle(
+        _previousTrackIdMeta,
+        previousTrackId.isAcceptableOrUnknown(
+          data['previous_track_id']!,
+          _previousTrackIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('transition_reason')) {
+      context.handle(
+        _transitionReasonMeta,
+        transitionReason.isAcceptableOrUnknown(
+          data['transition_reason']!,
+          _transitionReasonMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ListeningEventTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ListeningEventTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      sessionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}session_id'],
+      ),
+      trackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}track_id'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      occurredAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}occurred_at'],
+      )!,
+      positionMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position_ms'],
+      ),
+      listenedMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}listened_ms'],
+      ),
+      durationMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_ms'],
+      ),
+      previousTrackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}previous_track_id'],
+      ),
+      transitionReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}transition_reason'],
+      ),
+    );
+  }
+
+  @override
+  $ListeningEventTableTable createAlias(String alias) {
+    return $ListeningEventTableTable(attachedDatabase, alias);
+  }
+}
+
+class ListeningEventTableData extends DataClass
+    implements Insertable<ListeningEventTableData> {
+  final String id;
+  final String? sessionId;
+  final String trackId;
+  final String type;
+  final DateTime occurredAt;
+  final int? positionMs;
+  final int? listenedMs;
+  final int? durationMs;
+  final String? previousTrackId;
+  final String? transitionReason;
+  const ListeningEventTableData({
+    required this.id,
+    this.sessionId,
+    required this.trackId,
+    required this.type,
+    required this.occurredAt,
+    this.positionMs,
+    this.listenedMs,
+    this.durationMs,
+    this.previousTrackId,
+    this.transitionReason,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    if (!nullToAbsent || sessionId != null) {
+      map['session_id'] = Variable<String>(sessionId);
+    }
+    map['track_id'] = Variable<String>(trackId);
+    map['type'] = Variable<String>(type);
+    map['occurred_at'] = Variable<DateTime>(occurredAt);
+    if (!nullToAbsent || positionMs != null) {
+      map['position_ms'] = Variable<int>(positionMs);
+    }
+    if (!nullToAbsent || listenedMs != null) {
+      map['listened_ms'] = Variable<int>(listenedMs);
+    }
+    if (!nullToAbsent || durationMs != null) {
+      map['duration_ms'] = Variable<int>(durationMs);
+    }
+    if (!nullToAbsent || previousTrackId != null) {
+      map['previous_track_id'] = Variable<String>(previousTrackId);
+    }
+    if (!nullToAbsent || transitionReason != null) {
+      map['transition_reason'] = Variable<String>(transitionReason);
+    }
+    return map;
+  }
+
+  ListeningEventTableCompanion toCompanion(bool nullToAbsent) {
+    return ListeningEventTableCompanion(
+      id: Value(id),
+      sessionId: sessionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sessionId),
+      trackId: Value(trackId),
+      type: Value(type),
+      occurredAt: Value(occurredAt),
+      positionMs: positionMs == null && nullToAbsent
+          ? const Value.absent()
+          : Value(positionMs),
+      listenedMs: listenedMs == null && nullToAbsent
+          ? const Value.absent()
+          : Value(listenedMs),
+      durationMs: durationMs == null && nullToAbsent
+          ? const Value.absent()
+          : Value(durationMs),
+      previousTrackId: previousTrackId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(previousTrackId),
+      transitionReason: transitionReason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(transitionReason),
+    );
+  }
+
+  factory ListeningEventTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ListeningEventTableData(
+      id: serializer.fromJson<String>(json['id']),
+      sessionId: serializer.fromJson<String?>(json['sessionId']),
+      trackId: serializer.fromJson<String>(json['trackId']),
+      type: serializer.fromJson<String>(json['type']),
+      occurredAt: serializer.fromJson<DateTime>(json['occurredAt']),
+      positionMs: serializer.fromJson<int?>(json['positionMs']),
+      listenedMs: serializer.fromJson<int?>(json['listenedMs']),
+      durationMs: serializer.fromJson<int?>(json['durationMs']),
+      previousTrackId: serializer.fromJson<String?>(json['previousTrackId']),
+      transitionReason: serializer.fromJson<String?>(json['transitionReason']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'sessionId': serializer.toJson<String?>(sessionId),
+      'trackId': serializer.toJson<String>(trackId),
+      'type': serializer.toJson<String>(type),
+      'occurredAt': serializer.toJson<DateTime>(occurredAt),
+      'positionMs': serializer.toJson<int?>(positionMs),
+      'listenedMs': serializer.toJson<int?>(listenedMs),
+      'durationMs': serializer.toJson<int?>(durationMs),
+      'previousTrackId': serializer.toJson<String?>(previousTrackId),
+      'transitionReason': serializer.toJson<String?>(transitionReason),
+    };
+  }
+
+  ListeningEventTableData copyWith({
+    String? id,
+    Value<String?> sessionId = const Value.absent(),
+    String? trackId,
+    String? type,
+    DateTime? occurredAt,
+    Value<int?> positionMs = const Value.absent(),
+    Value<int?> listenedMs = const Value.absent(),
+    Value<int?> durationMs = const Value.absent(),
+    Value<String?> previousTrackId = const Value.absent(),
+    Value<String?> transitionReason = const Value.absent(),
+  }) => ListeningEventTableData(
+    id: id ?? this.id,
+    sessionId: sessionId.present ? sessionId.value : this.sessionId,
+    trackId: trackId ?? this.trackId,
+    type: type ?? this.type,
+    occurredAt: occurredAt ?? this.occurredAt,
+    positionMs: positionMs.present ? positionMs.value : this.positionMs,
+    listenedMs: listenedMs.present ? listenedMs.value : this.listenedMs,
+    durationMs: durationMs.present ? durationMs.value : this.durationMs,
+    previousTrackId: previousTrackId.present
+        ? previousTrackId.value
+        : this.previousTrackId,
+    transitionReason: transitionReason.present
+        ? transitionReason.value
+        : this.transitionReason,
+  );
+  ListeningEventTableData copyWithCompanion(ListeningEventTableCompanion data) {
+    return ListeningEventTableData(
+      id: data.id.present ? data.id.value : this.id,
+      sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
+      trackId: data.trackId.present ? data.trackId.value : this.trackId,
+      type: data.type.present ? data.type.value : this.type,
+      occurredAt: data.occurredAt.present
+          ? data.occurredAt.value
+          : this.occurredAt,
+      positionMs: data.positionMs.present
+          ? data.positionMs.value
+          : this.positionMs,
+      listenedMs: data.listenedMs.present
+          ? data.listenedMs.value
+          : this.listenedMs,
+      durationMs: data.durationMs.present
+          ? data.durationMs.value
+          : this.durationMs,
+      previousTrackId: data.previousTrackId.present
+          ? data.previousTrackId.value
+          : this.previousTrackId,
+      transitionReason: data.transitionReason.present
+          ? data.transitionReason.value
+          : this.transitionReason,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ListeningEventTableData(')
+          ..write('id: $id, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('trackId: $trackId, ')
+          ..write('type: $type, ')
+          ..write('occurredAt: $occurredAt, ')
+          ..write('positionMs: $positionMs, ')
+          ..write('listenedMs: $listenedMs, ')
+          ..write('durationMs: $durationMs, ')
+          ..write('previousTrackId: $previousTrackId, ')
+          ..write('transitionReason: $transitionReason')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    sessionId,
+    trackId,
+    type,
+    occurredAt,
+    positionMs,
+    listenedMs,
+    durationMs,
+    previousTrackId,
+    transitionReason,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ListeningEventTableData &&
+          other.id == this.id &&
+          other.sessionId == this.sessionId &&
+          other.trackId == this.trackId &&
+          other.type == this.type &&
+          other.occurredAt == this.occurredAt &&
+          other.positionMs == this.positionMs &&
+          other.listenedMs == this.listenedMs &&
+          other.durationMs == this.durationMs &&
+          other.previousTrackId == this.previousTrackId &&
+          other.transitionReason == this.transitionReason);
+}
+
+class ListeningEventTableCompanion
+    extends UpdateCompanion<ListeningEventTableData> {
+  final Value<String> id;
+  final Value<String?> sessionId;
+  final Value<String> trackId;
+  final Value<String> type;
+  final Value<DateTime> occurredAt;
+  final Value<int?> positionMs;
+  final Value<int?> listenedMs;
+  final Value<int?> durationMs;
+  final Value<String?> previousTrackId;
+  final Value<String?> transitionReason;
+  final Value<int> rowid;
+  const ListeningEventTableCompanion({
+    this.id = const Value.absent(),
+    this.sessionId = const Value.absent(),
+    this.trackId = const Value.absent(),
+    this.type = const Value.absent(),
+    this.occurredAt = const Value.absent(),
+    this.positionMs = const Value.absent(),
+    this.listenedMs = const Value.absent(),
+    this.durationMs = const Value.absent(),
+    this.previousTrackId = const Value.absent(),
+    this.transitionReason = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ListeningEventTableCompanion.insert({
+    required String id,
+    this.sessionId = const Value.absent(),
+    required String trackId,
+    required String type,
+    required DateTime occurredAt,
+    this.positionMs = const Value.absent(),
+    this.listenedMs = const Value.absent(),
+    this.durationMs = const Value.absent(),
+    this.previousTrackId = const Value.absent(),
+    this.transitionReason = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       trackId = Value(trackId),
+       type = Value(type),
+       occurredAt = Value(occurredAt);
+  static Insertable<ListeningEventTableData> custom({
+    Expression<String>? id,
+    Expression<String>? sessionId,
+    Expression<String>? trackId,
+    Expression<String>? type,
+    Expression<DateTime>? occurredAt,
+    Expression<int>? positionMs,
+    Expression<int>? listenedMs,
+    Expression<int>? durationMs,
+    Expression<String>? previousTrackId,
+    Expression<String>? transitionReason,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (sessionId != null) 'session_id': sessionId,
+      if (trackId != null) 'track_id': trackId,
+      if (type != null) 'type': type,
+      if (occurredAt != null) 'occurred_at': occurredAt,
+      if (positionMs != null) 'position_ms': positionMs,
+      if (listenedMs != null) 'listened_ms': listenedMs,
+      if (durationMs != null) 'duration_ms': durationMs,
+      if (previousTrackId != null) 'previous_track_id': previousTrackId,
+      if (transitionReason != null) 'transition_reason': transitionReason,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ListeningEventTableCompanion copyWith({
+    Value<String>? id,
+    Value<String?>? sessionId,
+    Value<String>? trackId,
+    Value<String>? type,
+    Value<DateTime>? occurredAt,
+    Value<int?>? positionMs,
+    Value<int?>? listenedMs,
+    Value<int?>? durationMs,
+    Value<String?>? previousTrackId,
+    Value<String?>? transitionReason,
+    Value<int>? rowid,
+  }) {
+    return ListeningEventTableCompanion(
+      id: id ?? this.id,
+      sessionId: sessionId ?? this.sessionId,
+      trackId: trackId ?? this.trackId,
+      type: type ?? this.type,
+      occurredAt: occurredAt ?? this.occurredAt,
+      positionMs: positionMs ?? this.positionMs,
+      listenedMs: listenedMs ?? this.listenedMs,
+      durationMs: durationMs ?? this.durationMs,
+      previousTrackId: previousTrackId ?? this.previousTrackId,
+      transitionReason: transitionReason ?? this.transitionReason,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (sessionId.present) {
+      map['session_id'] = Variable<String>(sessionId.value);
+    }
+    if (trackId.present) {
+      map['track_id'] = Variable<String>(trackId.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (occurredAt.present) {
+      map['occurred_at'] = Variable<DateTime>(occurredAt.value);
+    }
+    if (positionMs.present) {
+      map['position_ms'] = Variable<int>(positionMs.value);
+    }
+    if (listenedMs.present) {
+      map['listened_ms'] = Variable<int>(listenedMs.value);
+    }
+    if (durationMs.present) {
+      map['duration_ms'] = Variable<int>(durationMs.value);
+    }
+    if (previousTrackId.present) {
+      map['previous_track_id'] = Variable<String>(previousTrackId.value);
+    }
+    if (transitionReason.present) {
+      map['transition_reason'] = Variable<String>(transitionReason.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ListeningEventTableCompanion(')
+          ..write('id: $id, ')
+          ..write('sessionId: $sessionId, ')
+          ..write('trackId: $trackId, ')
+          ..write('type: $type, ')
+          ..write('occurredAt: $occurredAt, ')
+          ..write('positionMs: $positionMs, ')
+          ..write('listenedMs: $listenedMs, ')
+          ..write('durationMs: $durationMs, ')
+          ..write('previousTrackId: $previousTrackId, ')
+          ..write('transitionReason: $transitionReason, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TrackTemporalEmbeddingTableTable extends TrackTemporalEmbeddingTable
+    with
+        TableInfo<
+          $TrackTemporalEmbeddingTableTable,
+          TrackTemporalEmbeddingTableData
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TrackTemporalEmbeddingTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _trackIdMeta = const VerificationMeta(
+    'trackId',
+  );
+  @override
+  late final GeneratedColumn<String> trackId = GeneratedColumn<String>(
+    'track_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES track_table (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _representationMeta = const VerificationMeta(
+    'representation',
+  );
+  @override
+  late final GeneratedColumn<String> representation = GeneratedColumn<String>(
+    'representation',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _modelIdMeta = const VerificationMeta(
+    'modelId',
+  );
+  @override
+  late final GeneratedColumn<String> modelId = GeneratedColumn<String>(
+    'model_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _modelVersionMeta = const VerificationMeta(
+    'modelVersion',
+  );
+  @override
+  late final GeneratedColumn<String> modelVersion = GeneratedColumn<String>(
+    'model_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _preprocessingVersionMeta =
+      const VerificationMeta('preprocessingVersion');
+  @override
+  late final GeneratedColumn<String> preprocessingVersion =
+      GeneratedColumn<String>(
+        'preprocessing_version',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _providerMeta = const VerificationMeta(
+    'provider',
+  );
+  @override
+  late final GeneratedColumn<String> provider = GeneratedColumn<String>(
+    'provider',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _audioRevisionMeta = const VerificationMeta(
+    'audioRevision',
+  );
+  @override
+  late final GeneratedColumn<int> audioRevision = GeneratedColumn<int>(
+    'audio_revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dimensionMeta = const VerificationMeta(
+    'dimension',
+  );
+  @override
+  late final GeneratedColumn<int> dimension = GeneratedColumn<int>(
+    'dimension',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dtypeMeta = const VerificationMeta('dtype');
+  @override
+  late final GeneratedColumn<String> dtype = GeneratedColumn<String>(
+    'dtype',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _normalizedMeta = const VerificationMeta(
+    'normalized',
+  );
+  @override
+  late final GeneratedColumn<bool> normalized = GeneratedColumn<bool>(
+    'normalized',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("normalized" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _numberOfSegmentsMeta = const VerificationMeta(
+    'numberOfSegments',
+  );
+  @override
+  late final GeneratedColumn<int> numberOfSegments = GeneratedColumn<int>(
+    'number_of_segments',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _meanAdjacentDistanceMeta =
+      const VerificationMeta('meanAdjacentDistance');
+  @override
+  late final GeneratedColumn<double> meanAdjacentDistance =
+      GeneratedColumn<double>(
+        'mean_adjacent_distance',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _maxAdjacentDistanceMeta =
+      const VerificationMeta('maxAdjacentDistance');
+  @override
+  late final GeneratedColumn<double> maxAdjacentDistance =
+      GeneratedColumn<double>(
+        'max_adjacent_distance',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _trajectoryVarianceMeta =
+      const VerificationMeta('trajectoryVariance');
+  @override
+  late final GeneratedColumn<double> trajectoryVariance =
+      GeneratedColumn<double>(
+        'trajectory_variance',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _largestTransitionIndexMeta =
+      const VerificationMeta('largestTransitionIndex');
+  @override
+  late final GeneratedColumn<int> largestTransitionIndex = GeneratedColumn<int>(
+    'largest_transition_index',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    trackId,
+    representation,
+    modelId,
+    modelVersion,
+    preprocessingVersion,
+    provider,
+    audioRevision,
+    dimension,
+    dtype,
+    normalized,
+    createdAt,
+    numberOfSegments,
+    meanAdjacentDistance,
+    maxAdjacentDistance,
+    trajectoryVariance,
+    largestTransitionIndex,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'track_temporal_embedding_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TrackTemporalEmbeddingTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('track_id')) {
+      context.handle(
+        _trackIdMeta,
+        trackId.isAcceptableOrUnknown(data['track_id']!, _trackIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_trackIdMeta);
+    }
+    if (data.containsKey('representation')) {
+      context.handle(
+        _representationMeta,
+        representation.isAcceptableOrUnknown(
+          data['representation']!,
+          _representationMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_representationMeta);
+    }
+    if (data.containsKey('model_id')) {
+      context.handle(
+        _modelIdMeta,
+        modelId.isAcceptableOrUnknown(data['model_id']!, _modelIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_modelIdMeta);
+    }
+    if (data.containsKey('model_version')) {
+      context.handle(
+        _modelVersionMeta,
+        modelVersion.isAcceptableOrUnknown(
+          data['model_version']!,
+          _modelVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_modelVersionMeta);
+    }
+    if (data.containsKey('preprocessing_version')) {
+      context.handle(
+        _preprocessingVersionMeta,
+        preprocessingVersion.isAcceptableOrUnknown(
+          data['preprocessing_version']!,
+          _preprocessingVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_preprocessingVersionMeta);
+    }
+    if (data.containsKey('provider')) {
+      context.handle(
+        _providerMeta,
+        provider.isAcceptableOrUnknown(data['provider']!, _providerMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_providerMeta);
+    }
+    if (data.containsKey('audio_revision')) {
+      context.handle(
+        _audioRevisionMeta,
+        audioRevision.isAcceptableOrUnknown(
+          data['audio_revision']!,
+          _audioRevisionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_audioRevisionMeta);
+    }
+    if (data.containsKey('dimension')) {
+      context.handle(
+        _dimensionMeta,
+        dimension.isAcceptableOrUnknown(data['dimension']!, _dimensionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dimensionMeta);
+    }
+    if (data.containsKey('dtype')) {
+      context.handle(
+        _dtypeMeta,
+        dtype.isAcceptableOrUnknown(data['dtype']!, _dtypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dtypeMeta);
+    }
+    if (data.containsKey('normalized')) {
+      context.handle(
+        _normalizedMeta,
+        normalized.isAcceptableOrUnknown(data['normalized']!, _normalizedMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_normalizedMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('number_of_segments')) {
+      context.handle(
+        _numberOfSegmentsMeta,
+        numberOfSegments.isAcceptableOrUnknown(
+          data['number_of_segments']!,
+          _numberOfSegmentsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_numberOfSegmentsMeta);
+    }
+    if (data.containsKey('mean_adjacent_distance')) {
+      context.handle(
+        _meanAdjacentDistanceMeta,
+        meanAdjacentDistance.isAcceptableOrUnknown(
+          data['mean_adjacent_distance']!,
+          _meanAdjacentDistanceMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_meanAdjacentDistanceMeta);
+    }
+    if (data.containsKey('max_adjacent_distance')) {
+      context.handle(
+        _maxAdjacentDistanceMeta,
+        maxAdjacentDistance.isAcceptableOrUnknown(
+          data['max_adjacent_distance']!,
+          _maxAdjacentDistanceMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_maxAdjacentDistanceMeta);
+    }
+    if (data.containsKey('trajectory_variance')) {
+      context.handle(
+        _trajectoryVarianceMeta,
+        trajectoryVariance.isAcceptableOrUnknown(
+          data['trajectory_variance']!,
+          _trajectoryVarianceMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_trajectoryVarianceMeta);
+    }
+    if (data.containsKey('largest_transition_index')) {
+      context.handle(
+        _largestTransitionIndexMeta,
+        largestTransitionIndex.isAcceptableOrUnknown(
+          data['largest_transition_index']!,
+          _largestTransitionIndexMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {
+      trackId,
+      representation,
+      modelId,
+      modelVersion,
+      preprocessingVersion,
+      provider,
+      audioRevision,
+    },
+  ];
+  @override
+  TrackTemporalEmbeddingTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TrackTemporalEmbeddingTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      trackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}track_id'],
+      )!,
+      representation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}representation'],
+      )!,
+      modelId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}model_id'],
+      )!,
+      modelVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}model_version'],
+      )!,
+      preprocessingVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}preprocessing_version'],
+      )!,
+      provider: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}provider'],
+      )!,
+      audioRevision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}audio_revision'],
+      )!,
+      dimension: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}dimension'],
+      )!,
+      dtype: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}dtype'],
+      )!,
+      normalized: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}normalized'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      numberOfSegments: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}number_of_segments'],
+      )!,
+      meanAdjacentDistance: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}mean_adjacent_distance'],
+      )!,
+      maxAdjacentDistance: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}max_adjacent_distance'],
+      )!,
+      trajectoryVariance: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}trajectory_variance'],
+      )!,
+      largestTransitionIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}largest_transition_index'],
+      ),
+    );
+  }
+
+  @override
+  $TrackTemporalEmbeddingTableTable createAlias(String alias) {
+    return $TrackTemporalEmbeddingTableTable(attachedDatabase, alias);
+  }
+}
+
+class TrackTemporalEmbeddingTableData extends DataClass
+    implements Insertable<TrackTemporalEmbeddingTableData> {
+  final String id;
+  final String trackId;
+  final String representation;
+  final String modelId;
+  final String modelVersion;
+  final String preprocessingVersion;
+  final String provider;
+  final int audioRevision;
+  final int dimension;
+  final String dtype;
+  final bool normalized;
+  final DateTime createdAt;
+  final int numberOfSegments;
+  final double meanAdjacentDistance;
+  final double maxAdjacentDistance;
+  final double trajectoryVariance;
+  final int? largestTransitionIndex;
+  const TrackTemporalEmbeddingTableData({
+    required this.id,
+    required this.trackId,
+    required this.representation,
+    required this.modelId,
+    required this.modelVersion,
+    required this.preprocessingVersion,
+    required this.provider,
+    required this.audioRevision,
+    required this.dimension,
+    required this.dtype,
+    required this.normalized,
+    required this.createdAt,
+    required this.numberOfSegments,
+    required this.meanAdjacentDistance,
+    required this.maxAdjacentDistance,
+    required this.trajectoryVariance,
+    this.largestTransitionIndex,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['track_id'] = Variable<String>(trackId);
+    map['representation'] = Variable<String>(representation);
+    map['model_id'] = Variable<String>(modelId);
+    map['model_version'] = Variable<String>(modelVersion);
+    map['preprocessing_version'] = Variable<String>(preprocessingVersion);
+    map['provider'] = Variable<String>(provider);
+    map['audio_revision'] = Variable<int>(audioRevision);
+    map['dimension'] = Variable<int>(dimension);
+    map['dtype'] = Variable<String>(dtype);
+    map['normalized'] = Variable<bool>(normalized);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['number_of_segments'] = Variable<int>(numberOfSegments);
+    map['mean_adjacent_distance'] = Variable<double>(meanAdjacentDistance);
+    map['max_adjacent_distance'] = Variable<double>(maxAdjacentDistance);
+    map['trajectory_variance'] = Variable<double>(trajectoryVariance);
+    if (!nullToAbsent || largestTransitionIndex != null) {
+      map['largest_transition_index'] = Variable<int>(largestTransitionIndex);
+    }
+    return map;
+  }
+
+  TrackTemporalEmbeddingTableCompanion toCompanion(bool nullToAbsent) {
+    return TrackTemporalEmbeddingTableCompanion(
+      id: Value(id),
+      trackId: Value(trackId),
+      representation: Value(representation),
+      modelId: Value(modelId),
+      modelVersion: Value(modelVersion),
+      preprocessingVersion: Value(preprocessingVersion),
+      provider: Value(provider),
+      audioRevision: Value(audioRevision),
+      dimension: Value(dimension),
+      dtype: Value(dtype),
+      normalized: Value(normalized),
+      createdAt: Value(createdAt),
+      numberOfSegments: Value(numberOfSegments),
+      meanAdjacentDistance: Value(meanAdjacentDistance),
+      maxAdjacentDistance: Value(maxAdjacentDistance),
+      trajectoryVariance: Value(trajectoryVariance),
+      largestTransitionIndex: largestTransitionIndex == null && nullToAbsent
+          ? const Value.absent()
+          : Value(largestTransitionIndex),
+    );
+  }
+
+  factory TrackTemporalEmbeddingTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TrackTemporalEmbeddingTableData(
+      id: serializer.fromJson<String>(json['id']),
+      trackId: serializer.fromJson<String>(json['trackId']),
+      representation: serializer.fromJson<String>(json['representation']),
+      modelId: serializer.fromJson<String>(json['modelId']),
+      modelVersion: serializer.fromJson<String>(json['modelVersion']),
+      preprocessingVersion: serializer.fromJson<String>(
+        json['preprocessingVersion'],
+      ),
+      provider: serializer.fromJson<String>(json['provider']),
+      audioRevision: serializer.fromJson<int>(json['audioRevision']),
+      dimension: serializer.fromJson<int>(json['dimension']),
+      dtype: serializer.fromJson<String>(json['dtype']),
+      normalized: serializer.fromJson<bool>(json['normalized']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      numberOfSegments: serializer.fromJson<int>(json['numberOfSegments']),
+      meanAdjacentDistance: serializer.fromJson<double>(
+        json['meanAdjacentDistance'],
+      ),
+      maxAdjacentDistance: serializer.fromJson<double>(
+        json['maxAdjacentDistance'],
+      ),
+      trajectoryVariance: serializer.fromJson<double>(
+        json['trajectoryVariance'],
+      ),
+      largestTransitionIndex: serializer.fromJson<int?>(
+        json['largestTransitionIndex'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'trackId': serializer.toJson<String>(trackId),
+      'representation': serializer.toJson<String>(representation),
+      'modelId': serializer.toJson<String>(modelId),
+      'modelVersion': serializer.toJson<String>(modelVersion),
+      'preprocessingVersion': serializer.toJson<String>(preprocessingVersion),
+      'provider': serializer.toJson<String>(provider),
+      'audioRevision': serializer.toJson<int>(audioRevision),
+      'dimension': serializer.toJson<int>(dimension),
+      'dtype': serializer.toJson<String>(dtype),
+      'normalized': serializer.toJson<bool>(normalized),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'numberOfSegments': serializer.toJson<int>(numberOfSegments),
+      'meanAdjacentDistance': serializer.toJson<double>(meanAdjacentDistance),
+      'maxAdjacentDistance': serializer.toJson<double>(maxAdjacentDistance),
+      'trajectoryVariance': serializer.toJson<double>(trajectoryVariance),
+      'largestTransitionIndex': serializer.toJson<int?>(largestTransitionIndex),
+    };
+  }
+
+  TrackTemporalEmbeddingTableData copyWith({
+    String? id,
+    String? trackId,
+    String? representation,
+    String? modelId,
+    String? modelVersion,
+    String? preprocessingVersion,
+    String? provider,
+    int? audioRevision,
+    int? dimension,
+    String? dtype,
+    bool? normalized,
+    DateTime? createdAt,
+    int? numberOfSegments,
+    double? meanAdjacentDistance,
+    double? maxAdjacentDistance,
+    double? trajectoryVariance,
+    Value<int?> largestTransitionIndex = const Value.absent(),
+  }) => TrackTemporalEmbeddingTableData(
+    id: id ?? this.id,
+    trackId: trackId ?? this.trackId,
+    representation: representation ?? this.representation,
+    modelId: modelId ?? this.modelId,
+    modelVersion: modelVersion ?? this.modelVersion,
+    preprocessingVersion: preprocessingVersion ?? this.preprocessingVersion,
+    provider: provider ?? this.provider,
+    audioRevision: audioRevision ?? this.audioRevision,
+    dimension: dimension ?? this.dimension,
+    dtype: dtype ?? this.dtype,
+    normalized: normalized ?? this.normalized,
+    createdAt: createdAt ?? this.createdAt,
+    numberOfSegments: numberOfSegments ?? this.numberOfSegments,
+    meanAdjacentDistance: meanAdjacentDistance ?? this.meanAdjacentDistance,
+    maxAdjacentDistance: maxAdjacentDistance ?? this.maxAdjacentDistance,
+    trajectoryVariance: trajectoryVariance ?? this.trajectoryVariance,
+    largestTransitionIndex: largestTransitionIndex.present
+        ? largestTransitionIndex.value
+        : this.largestTransitionIndex,
+  );
+  TrackTemporalEmbeddingTableData copyWithCompanion(
+    TrackTemporalEmbeddingTableCompanion data,
+  ) {
+    return TrackTemporalEmbeddingTableData(
+      id: data.id.present ? data.id.value : this.id,
+      trackId: data.trackId.present ? data.trackId.value : this.trackId,
+      representation: data.representation.present
+          ? data.representation.value
+          : this.representation,
+      modelId: data.modelId.present ? data.modelId.value : this.modelId,
+      modelVersion: data.modelVersion.present
+          ? data.modelVersion.value
+          : this.modelVersion,
+      preprocessingVersion: data.preprocessingVersion.present
+          ? data.preprocessingVersion.value
+          : this.preprocessingVersion,
+      provider: data.provider.present ? data.provider.value : this.provider,
+      audioRevision: data.audioRevision.present
+          ? data.audioRevision.value
+          : this.audioRevision,
+      dimension: data.dimension.present ? data.dimension.value : this.dimension,
+      dtype: data.dtype.present ? data.dtype.value : this.dtype,
+      normalized: data.normalized.present
+          ? data.normalized.value
+          : this.normalized,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      numberOfSegments: data.numberOfSegments.present
+          ? data.numberOfSegments.value
+          : this.numberOfSegments,
+      meanAdjacentDistance: data.meanAdjacentDistance.present
+          ? data.meanAdjacentDistance.value
+          : this.meanAdjacentDistance,
+      maxAdjacentDistance: data.maxAdjacentDistance.present
+          ? data.maxAdjacentDistance.value
+          : this.maxAdjacentDistance,
+      trajectoryVariance: data.trajectoryVariance.present
+          ? data.trajectoryVariance.value
+          : this.trajectoryVariance,
+      largestTransitionIndex: data.largestTransitionIndex.present
+          ? data.largestTransitionIndex.value
+          : this.largestTransitionIndex,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TrackTemporalEmbeddingTableData(')
+          ..write('id: $id, ')
+          ..write('trackId: $trackId, ')
+          ..write('representation: $representation, ')
+          ..write('modelId: $modelId, ')
+          ..write('modelVersion: $modelVersion, ')
+          ..write('preprocessingVersion: $preprocessingVersion, ')
+          ..write('provider: $provider, ')
+          ..write('audioRevision: $audioRevision, ')
+          ..write('dimension: $dimension, ')
+          ..write('dtype: $dtype, ')
+          ..write('normalized: $normalized, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('numberOfSegments: $numberOfSegments, ')
+          ..write('meanAdjacentDistance: $meanAdjacentDistance, ')
+          ..write('maxAdjacentDistance: $maxAdjacentDistance, ')
+          ..write('trajectoryVariance: $trajectoryVariance, ')
+          ..write('largestTransitionIndex: $largestTransitionIndex')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    trackId,
+    representation,
+    modelId,
+    modelVersion,
+    preprocessingVersion,
+    provider,
+    audioRevision,
+    dimension,
+    dtype,
+    normalized,
+    createdAt,
+    numberOfSegments,
+    meanAdjacentDistance,
+    maxAdjacentDistance,
+    trajectoryVariance,
+    largestTransitionIndex,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TrackTemporalEmbeddingTableData &&
+          other.id == this.id &&
+          other.trackId == this.trackId &&
+          other.representation == this.representation &&
+          other.modelId == this.modelId &&
+          other.modelVersion == this.modelVersion &&
+          other.preprocessingVersion == this.preprocessingVersion &&
+          other.provider == this.provider &&
+          other.audioRevision == this.audioRevision &&
+          other.dimension == this.dimension &&
+          other.dtype == this.dtype &&
+          other.normalized == this.normalized &&
+          other.createdAt == this.createdAt &&
+          other.numberOfSegments == this.numberOfSegments &&
+          other.meanAdjacentDistance == this.meanAdjacentDistance &&
+          other.maxAdjacentDistance == this.maxAdjacentDistance &&
+          other.trajectoryVariance == this.trajectoryVariance &&
+          other.largestTransitionIndex == this.largestTransitionIndex);
+}
+
+class TrackTemporalEmbeddingTableCompanion
+    extends UpdateCompanion<TrackTemporalEmbeddingTableData> {
+  final Value<String> id;
+  final Value<String> trackId;
+  final Value<String> representation;
+  final Value<String> modelId;
+  final Value<String> modelVersion;
+  final Value<String> preprocessingVersion;
+  final Value<String> provider;
+  final Value<int> audioRevision;
+  final Value<int> dimension;
+  final Value<String> dtype;
+  final Value<bool> normalized;
+  final Value<DateTime> createdAt;
+  final Value<int> numberOfSegments;
+  final Value<double> meanAdjacentDistance;
+  final Value<double> maxAdjacentDistance;
+  final Value<double> trajectoryVariance;
+  final Value<int?> largestTransitionIndex;
+  final Value<int> rowid;
+  const TrackTemporalEmbeddingTableCompanion({
+    this.id = const Value.absent(),
+    this.trackId = const Value.absent(),
+    this.representation = const Value.absent(),
+    this.modelId = const Value.absent(),
+    this.modelVersion = const Value.absent(),
+    this.preprocessingVersion = const Value.absent(),
+    this.provider = const Value.absent(),
+    this.audioRevision = const Value.absent(),
+    this.dimension = const Value.absent(),
+    this.dtype = const Value.absent(),
+    this.normalized = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.numberOfSegments = const Value.absent(),
+    this.meanAdjacentDistance = const Value.absent(),
+    this.maxAdjacentDistance = const Value.absent(),
+    this.trajectoryVariance = const Value.absent(),
+    this.largestTransitionIndex = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TrackTemporalEmbeddingTableCompanion.insert({
+    required String id,
+    required String trackId,
+    required String representation,
+    required String modelId,
+    required String modelVersion,
+    required String preprocessingVersion,
+    required String provider,
+    required int audioRevision,
+    required int dimension,
+    required String dtype,
+    required bool normalized,
+    required DateTime createdAt,
+    required int numberOfSegments,
+    required double meanAdjacentDistance,
+    required double maxAdjacentDistance,
+    required double trajectoryVariance,
+    this.largestTransitionIndex = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       trackId = Value(trackId),
+       representation = Value(representation),
+       modelId = Value(modelId),
+       modelVersion = Value(modelVersion),
+       preprocessingVersion = Value(preprocessingVersion),
+       provider = Value(provider),
+       audioRevision = Value(audioRevision),
+       dimension = Value(dimension),
+       dtype = Value(dtype),
+       normalized = Value(normalized),
+       createdAt = Value(createdAt),
+       numberOfSegments = Value(numberOfSegments),
+       meanAdjacentDistance = Value(meanAdjacentDistance),
+       maxAdjacentDistance = Value(maxAdjacentDistance),
+       trajectoryVariance = Value(trajectoryVariance);
+  static Insertable<TrackTemporalEmbeddingTableData> custom({
+    Expression<String>? id,
+    Expression<String>? trackId,
+    Expression<String>? representation,
+    Expression<String>? modelId,
+    Expression<String>? modelVersion,
+    Expression<String>? preprocessingVersion,
+    Expression<String>? provider,
+    Expression<int>? audioRevision,
+    Expression<int>? dimension,
+    Expression<String>? dtype,
+    Expression<bool>? normalized,
+    Expression<DateTime>? createdAt,
+    Expression<int>? numberOfSegments,
+    Expression<double>? meanAdjacentDistance,
+    Expression<double>? maxAdjacentDistance,
+    Expression<double>? trajectoryVariance,
+    Expression<int>? largestTransitionIndex,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (trackId != null) 'track_id': trackId,
+      if (representation != null) 'representation': representation,
+      if (modelId != null) 'model_id': modelId,
+      if (modelVersion != null) 'model_version': modelVersion,
+      if (preprocessingVersion != null)
+        'preprocessing_version': preprocessingVersion,
+      if (provider != null) 'provider': provider,
+      if (audioRevision != null) 'audio_revision': audioRevision,
+      if (dimension != null) 'dimension': dimension,
+      if (dtype != null) 'dtype': dtype,
+      if (normalized != null) 'normalized': normalized,
+      if (createdAt != null) 'created_at': createdAt,
+      if (numberOfSegments != null) 'number_of_segments': numberOfSegments,
+      if (meanAdjacentDistance != null)
+        'mean_adjacent_distance': meanAdjacentDistance,
+      if (maxAdjacentDistance != null)
+        'max_adjacent_distance': maxAdjacentDistance,
+      if (trajectoryVariance != null) 'trajectory_variance': trajectoryVariance,
+      if (largestTransitionIndex != null)
+        'largest_transition_index': largestTransitionIndex,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TrackTemporalEmbeddingTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? trackId,
+    Value<String>? representation,
+    Value<String>? modelId,
+    Value<String>? modelVersion,
+    Value<String>? preprocessingVersion,
+    Value<String>? provider,
+    Value<int>? audioRevision,
+    Value<int>? dimension,
+    Value<String>? dtype,
+    Value<bool>? normalized,
+    Value<DateTime>? createdAt,
+    Value<int>? numberOfSegments,
+    Value<double>? meanAdjacentDistance,
+    Value<double>? maxAdjacentDistance,
+    Value<double>? trajectoryVariance,
+    Value<int?>? largestTransitionIndex,
+    Value<int>? rowid,
+  }) {
+    return TrackTemporalEmbeddingTableCompanion(
+      id: id ?? this.id,
+      trackId: trackId ?? this.trackId,
+      representation: representation ?? this.representation,
+      modelId: modelId ?? this.modelId,
+      modelVersion: modelVersion ?? this.modelVersion,
+      preprocessingVersion: preprocessingVersion ?? this.preprocessingVersion,
+      provider: provider ?? this.provider,
+      audioRevision: audioRevision ?? this.audioRevision,
+      dimension: dimension ?? this.dimension,
+      dtype: dtype ?? this.dtype,
+      normalized: normalized ?? this.normalized,
+      createdAt: createdAt ?? this.createdAt,
+      numberOfSegments: numberOfSegments ?? this.numberOfSegments,
+      meanAdjacentDistance: meanAdjacentDistance ?? this.meanAdjacentDistance,
+      maxAdjacentDistance: maxAdjacentDistance ?? this.maxAdjacentDistance,
+      trajectoryVariance: trajectoryVariance ?? this.trajectoryVariance,
+      largestTransitionIndex:
+          largestTransitionIndex ?? this.largestTransitionIndex,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (trackId.present) {
+      map['track_id'] = Variable<String>(trackId.value);
+    }
+    if (representation.present) {
+      map['representation'] = Variable<String>(representation.value);
+    }
+    if (modelId.present) {
+      map['model_id'] = Variable<String>(modelId.value);
+    }
+    if (modelVersion.present) {
+      map['model_version'] = Variable<String>(modelVersion.value);
+    }
+    if (preprocessingVersion.present) {
+      map['preprocessing_version'] = Variable<String>(
+        preprocessingVersion.value,
+      );
+    }
+    if (provider.present) {
+      map['provider'] = Variable<String>(provider.value);
+    }
+    if (audioRevision.present) {
+      map['audio_revision'] = Variable<int>(audioRevision.value);
+    }
+    if (dimension.present) {
+      map['dimension'] = Variable<int>(dimension.value);
+    }
+    if (dtype.present) {
+      map['dtype'] = Variable<String>(dtype.value);
+    }
+    if (normalized.present) {
+      map['normalized'] = Variable<bool>(normalized.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (numberOfSegments.present) {
+      map['number_of_segments'] = Variable<int>(numberOfSegments.value);
+    }
+    if (meanAdjacentDistance.present) {
+      map['mean_adjacent_distance'] = Variable<double>(
+        meanAdjacentDistance.value,
+      );
+    }
+    if (maxAdjacentDistance.present) {
+      map['max_adjacent_distance'] = Variable<double>(
+        maxAdjacentDistance.value,
+      );
+    }
+    if (trajectoryVariance.present) {
+      map['trajectory_variance'] = Variable<double>(trajectoryVariance.value);
+    }
+    if (largestTransitionIndex.present) {
+      map['largest_transition_index'] = Variable<int>(
+        largestTransitionIndex.value,
+      );
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TrackTemporalEmbeddingTableCompanion(')
+          ..write('id: $id, ')
+          ..write('trackId: $trackId, ')
+          ..write('representation: $representation, ')
+          ..write('modelId: $modelId, ')
+          ..write('modelVersion: $modelVersion, ')
+          ..write('preprocessingVersion: $preprocessingVersion, ')
+          ..write('provider: $provider, ')
+          ..write('audioRevision: $audioRevision, ')
+          ..write('dimension: $dimension, ')
+          ..write('dtype: $dtype, ')
+          ..write('normalized: $normalized, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('numberOfSegments: $numberOfSegments, ')
+          ..write('meanAdjacentDistance: $meanAdjacentDistance, ')
+          ..write('maxAdjacentDistance: $maxAdjacentDistance, ')
+          ..write('trajectoryVariance: $trajectoryVariance, ')
+          ..write('largestTransitionIndex: $largestTransitionIndex, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TrackTemporalEmbeddingSegmentTableTable
+    extends TrackTemporalEmbeddingSegmentTable
+    with
+        TableInfo<
+          $TrackTemporalEmbeddingSegmentTableTable,
+          TrackTemporalEmbeddingSegmentTableData
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TrackTemporalEmbeddingSegmentTableTable(
+    this.attachedDatabase, [
+    this._alias,
+  ]);
+  static const VerificationMeta _temporalEmbeddingIdMeta =
+      const VerificationMeta('temporalEmbeddingId');
+  @override
+  late final GeneratedColumn<String> temporalEmbeddingId =
+      GeneratedColumn<String>(
+        'temporal_embedding_id',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+        defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES track_temporal_embedding_table (id) ON DELETE CASCADE',
+        ),
+      );
+  static const VerificationMeta _segmentIndexMeta = const VerificationMeta(
+    'segmentIndex',
+  );
+  @override
+  late final GeneratedColumn<int> segmentIndex = GeneratedColumn<int>(
+    'segment_index',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startMsMeta = const VerificationMeta(
+    'startMs',
+  );
+  @override
+  late final GeneratedColumn<int> startMs = GeneratedColumn<int>(
+    'start_ms',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endMsMeta = const VerificationMeta('endMs');
+  @override
+  late final GeneratedColumn<int> endMs = GeneratedColumn<int>(
+    'end_ms',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dimensionsMeta = const VerificationMeta(
+    'dimensions',
+  );
+  @override
+  late final GeneratedColumn<int> dimensions = GeneratedColumn<int>(
+    'dimensions',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _vectorMeta = const VerificationMeta('vector');
+  @override
+  late final GeneratedColumn<Uint8List> vector = GeneratedColumn<Uint8List>(
+    'vector',
+    aliasedName,
+    false,
+    type: DriftSqlType.blob,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    temporalEmbeddingId,
+    segmentIndex,
+    startMs,
+    endMs,
+    dimensions,
+    vector,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'track_temporal_embedding_segment_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TrackTemporalEmbeddingSegmentTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('temporal_embedding_id')) {
+      context.handle(
+        _temporalEmbeddingIdMeta,
+        temporalEmbeddingId.isAcceptableOrUnknown(
+          data['temporal_embedding_id']!,
+          _temporalEmbeddingIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_temporalEmbeddingIdMeta);
+    }
+    if (data.containsKey('segment_index')) {
+      context.handle(
+        _segmentIndexMeta,
+        segmentIndex.isAcceptableOrUnknown(
+          data['segment_index']!,
+          _segmentIndexMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_segmentIndexMeta);
+    }
+    if (data.containsKey('start_ms')) {
+      context.handle(
+        _startMsMeta,
+        startMs.isAcceptableOrUnknown(data['start_ms']!, _startMsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startMsMeta);
+    }
+    if (data.containsKey('end_ms')) {
+      context.handle(
+        _endMsMeta,
+        endMs.isAcceptableOrUnknown(data['end_ms']!, _endMsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_endMsMeta);
+    }
+    if (data.containsKey('dimensions')) {
+      context.handle(
+        _dimensionsMeta,
+        dimensions.isAcceptableOrUnknown(data['dimensions']!, _dimensionsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dimensionsMeta);
+    }
+    if (data.containsKey('vector')) {
+      context.handle(
+        _vectorMeta,
+        vector.isAcceptableOrUnknown(data['vector']!, _vectorMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_vectorMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {temporalEmbeddingId, segmentIndex};
+  @override
+  TrackTemporalEmbeddingSegmentTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TrackTemporalEmbeddingSegmentTableData(
+      temporalEmbeddingId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}temporal_embedding_id'],
+      )!,
+      segmentIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}segment_index'],
+      )!,
+      startMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}start_ms'],
+      )!,
+      endMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}end_ms'],
+      )!,
+      dimensions: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}dimensions'],
+      )!,
+      vector: attachedDatabase.typeMapping.read(
+        DriftSqlType.blob,
+        data['${effectivePrefix}vector'],
+      )!,
+    );
+  }
+
+  @override
+  $TrackTemporalEmbeddingSegmentTableTable createAlias(String alias) {
+    return $TrackTemporalEmbeddingSegmentTableTable(attachedDatabase, alias);
+  }
+}
+
+class TrackTemporalEmbeddingSegmentTableData extends DataClass
+    implements Insertable<TrackTemporalEmbeddingSegmentTableData> {
+  final String temporalEmbeddingId;
+  final int segmentIndex;
+  final int startMs;
+  final int endMs;
+  final int dimensions;
+  final Uint8List vector;
+  const TrackTemporalEmbeddingSegmentTableData({
+    required this.temporalEmbeddingId,
+    required this.segmentIndex,
+    required this.startMs,
+    required this.endMs,
+    required this.dimensions,
+    required this.vector,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['temporal_embedding_id'] = Variable<String>(temporalEmbeddingId);
+    map['segment_index'] = Variable<int>(segmentIndex);
+    map['start_ms'] = Variable<int>(startMs);
+    map['end_ms'] = Variable<int>(endMs);
+    map['dimensions'] = Variable<int>(dimensions);
+    map['vector'] = Variable<Uint8List>(vector);
+    return map;
+  }
+
+  TrackTemporalEmbeddingSegmentTableCompanion toCompanion(bool nullToAbsent) {
+    return TrackTemporalEmbeddingSegmentTableCompanion(
+      temporalEmbeddingId: Value(temporalEmbeddingId),
+      segmentIndex: Value(segmentIndex),
+      startMs: Value(startMs),
+      endMs: Value(endMs),
+      dimensions: Value(dimensions),
+      vector: Value(vector),
+    );
+  }
+
+  factory TrackTemporalEmbeddingSegmentTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TrackTemporalEmbeddingSegmentTableData(
+      temporalEmbeddingId: serializer.fromJson<String>(
+        json['temporalEmbeddingId'],
+      ),
+      segmentIndex: serializer.fromJson<int>(json['segmentIndex']),
+      startMs: serializer.fromJson<int>(json['startMs']),
+      endMs: serializer.fromJson<int>(json['endMs']),
+      dimensions: serializer.fromJson<int>(json['dimensions']),
+      vector: serializer.fromJson<Uint8List>(json['vector']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'temporalEmbeddingId': serializer.toJson<String>(temporalEmbeddingId),
+      'segmentIndex': serializer.toJson<int>(segmentIndex),
+      'startMs': serializer.toJson<int>(startMs),
+      'endMs': serializer.toJson<int>(endMs),
+      'dimensions': serializer.toJson<int>(dimensions),
+      'vector': serializer.toJson<Uint8List>(vector),
+    };
+  }
+
+  TrackTemporalEmbeddingSegmentTableData copyWith({
+    String? temporalEmbeddingId,
+    int? segmentIndex,
+    int? startMs,
+    int? endMs,
+    int? dimensions,
+    Uint8List? vector,
+  }) => TrackTemporalEmbeddingSegmentTableData(
+    temporalEmbeddingId: temporalEmbeddingId ?? this.temporalEmbeddingId,
+    segmentIndex: segmentIndex ?? this.segmentIndex,
+    startMs: startMs ?? this.startMs,
+    endMs: endMs ?? this.endMs,
+    dimensions: dimensions ?? this.dimensions,
+    vector: vector ?? this.vector,
+  );
+  TrackTemporalEmbeddingSegmentTableData copyWithCompanion(
+    TrackTemporalEmbeddingSegmentTableCompanion data,
+  ) {
+    return TrackTemporalEmbeddingSegmentTableData(
+      temporalEmbeddingId: data.temporalEmbeddingId.present
+          ? data.temporalEmbeddingId.value
+          : this.temporalEmbeddingId,
+      segmentIndex: data.segmentIndex.present
+          ? data.segmentIndex.value
+          : this.segmentIndex,
+      startMs: data.startMs.present ? data.startMs.value : this.startMs,
+      endMs: data.endMs.present ? data.endMs.value : this.endMs,
+      dimensions: data.dimensions.present
+          ? data.dimensions.value
+          : this.dimensions,
+      vector: data.vector.present ? data.vector.value : this.vector,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TrackTemporalEmbeddingSegmentTableData(')
+          ..write('temporalEmbeddingId: $temporalEmbeddingId, ')
+          ..write('segmentIndex: $segmentIndex, ')
+          ..write('startMs: $startMs, ')
+          ..write('endMs: $endMs, ')
+          ..write('dimensions: $dimensions, ')
+          ..write('vector: $vector')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    temporalEmbeddingId,
+    segmentIndex,
+    startMs,
+    endMs,
+    dimensions,
+    $driftBlobEquality.hash(vector),
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TrackTemporalEmbeddingSegmentTableData &&
+          other.temporalEmbeddingId == this.temporalEmbeddingId &&
+          other.segmentIndex == this.segmentIndex &&
+          other.startMs == this.startMs &&
+          other.endMs == this.endMs &&
+          other.dimensions == this.dimensions &&
+          $driftBlobEquality.equals(other.vector, this.vector));
+}
+
+class TrackTemporalEmbeddingSegmentTableCompanion
+    extends UpdateCompanion<TrackTemporalEmbeddingSegmentTableData> {
+  final Value<String> temporalEmbeddingId;
+  final Value<int> segmentIndex;
+  final Value<int> startMs;
+  final Value<int> endMs;
+  final Value<int> dimensions;
+  final Value<Uint8List> vector;
+  final Value<int> rowid;
+  const TrackTemporalEmbeddingSegmentTableCompanion({
+    this.temporalEmbeddingId = const Value.absent(),
+    this.segmentIndex = const Value.absent(),
+    this.startMs = const Value.absent(),
+    this.endMs = const Value.absent(),
+    this.dimensions = const Value.absent(),
+    this.vector = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TrackTemporalEmbeddingSegmentTableCompanion.insert({
+    required String temporalEmbeddingId,
+    required int segmentIndex,
+    required int startMs,
+    required int endMs,
+    required int dimensions,
+    required Uint8List vector,
+    this.rowid = const Value.absent(),
+  }) : temporalEmbeddingId = Value(temporalEmbeddingId),
+       segmentIndex = Value(segmentIndex),
+       startMs = Value(startMs),
+       endMs = Value(endMs),
+       dimensions = Value(dimensions),
+       vector = Value(vector);
+  static Insertable<TrackTemporalEmbeddingSegmentTableData> custom({
+    Expression<String>? temporalEmbeddingId,
+    Expression<int>? segmentIndex,
+    Expression<int>? startMs,
+    Expression<int>? endMs,
+    Expression<int>? dimensions,
+    Expression<Uint8List>? vector,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (temporalEmbeddingId != null)
+        'temporal_embedding_id': temporalEmbeddingId,
+      if (segmentIndex != null) 'segment_index': segmentIndex,
+      if (startMs != null) 'start_ms': startMs,
+      if (endMs != null) 'end_ms': endMs,
+      if (dimensions != null) 'dimensions': dimensions,
+      if (vector != null) 'vector': vector,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TrackTemporalEmbeddingSegmentTableCompanion copyWith({
+    Value<String>? temporalEmbeddingId,
+    Value<int>? segmentIndex,
+    Value<int>? startMs,
+    Value<int>? endMs,
+    Value<int>? dimensions,
+    Value<Uint8List>? vector,
+    Value<int>? rowid,
+  }) {
+    return TrackTemporalEmbeddingSegmentTableCompanion(
+      temporalEmbeddingId: temporalEmbeddingId ?? this.temporalEmbeddingId,
+      segmentIndex: segmentIndex ?? this.segmentIndex,
+      startMs: startMs ?? this.startMs,
+      endMs: endMs ?? this.endMs,
+      dimensions: dimensions ?? this.dimensions,
+      vector: vector ?? this.vector,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (temporalEmbeddingId.present) {
+      map['temporal_embedding_id'] = Variable<String>(
+        temporalEmbeddingId.value,
+      );
+    }
+    if (segmentIndex.present) {
+      map['segment_index'] = Variable<int>(segmentIndex.value);
+    }
+    if (startMs.present) {
+      map['start_ms'] = Variable<int>(startMs.value);
+    }
+    if (endMs.present) {
+      map['end_ms'] = Variable<int>(endMs.value);
+    }
+    if (dimensions.present) {
+      map['dimensions'] = Variable<int>(dimensions.value);
+    }
+    if (vector.present) {
+      map['vector'] = Variable<Uint8List>(vector.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TrackTemporalEmbeddingSegmentTableCompanion(')
+          ..write('temporalEmbeddingId: $temporalEmbeddingId, ')
+          ..write('segmentIndex: $segmentIndex, ')
+          ..write('startMs: $startMs, ')
+          ..write('endMs: $endMs, ')
+          ..write('dimensions: $dimensions, ')
+          ..write('vector: $vector, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MusicAnalysisTaskTableTable extends MusicAnalysisTaskTable
+    with TableInfo<$MusicAnalysisTaskTableTable, MusicAnalysisTaskTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MusicAnalysisTaskTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _trackIdMeta = const VerificationMeta(
+    'trackId',
+  );
+  @override
+  late final GeneratedColumn<String> trackId = GeneratedColumn<String>(
+    'track_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES track_table (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _requestedRepresentationsMeta =
+      const VerificationMeta('requestedRepresentations');
+  @override
+  late final GeneratedColumn<String> requestedRepresentations =
+      GeneratedColumn<String>(
+        'requested_representations',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _audioRevisionMeta = const VerificationMeta(
+    'audioRevision',
+  );
+  @override
+  late final GeneratedColumn<int> audioRevision = GeneratedColumn<int>(
+    'audio_revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _attemptCountMeta = const VerificationMeta(
+    'attemptCount',
+  );
+  @override
+  late final GeneratedColumn<int> attemptCount = GeneratedColumn<int>(
+    'attempt_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _lastErrorCodeMeta = const VerificationMeta(
+    'lastErrorCode',
+  );
+  @override
+  late final GeneratedColumn<String> lastErrorCode = GeneratedColumn<String>(
+    'last_error_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastErrorMeta = const VerificationMeta(
+    'lastError',
+  );
+  @override
+  late final GeneratedColumn<String> lastError = GeneratedColumn<String>(
+    'last_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    trackId,
+    requestedRepresentations,
+    audioRevision,
+    status,
+    attemptCount,
+    lastErrorCode,
+    lastError,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'music_analysis_task_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MusicAnalysisTaskTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('track_id')) {
+      context.handle(
+        _trackIdMeta,
+        trackId.isAcceptableOrUnknown(data['track_id']!, _trackIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_trackIdMeta);
+    }
+    if (data.containsKey('requested_representations')) {
+      context.handle(
+        _requestedRepresentationsMeta,
+        requestedRepresentations.isAcceptableOrUnknown(
+          data['requested_representations']!,
+          _requestedRepresentationsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_requestedRepresentationsMeta);
+    }
+    if (data.containsKey('audio_revision')) {
+      context.handle(
+        _audioRevisionMeta,
+        audioRevision.isAcceptableOrUnknown(
+          data['audio_revision']!,
+          _audioRevisionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_audioRevisionMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('attempt_count')) {
+      context.handle(
+        _attemptCountMeta,
+        attemptCount.isAcceptableOrUnknown(
+          data['attempt_count']!,
+          _attemptCountMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_error_code')) {
+      context.handle(
+        _lastErrorCodeMeta,
+        lastErrorCode.isAcceptableOrUnknown(
+          data['last_error_code']!,
+          _lastErrorCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_error')) {
+      context.handle(
+        _lastErrorMeta,
+        lastError.isAcceptableOrUnknown(data['last_error']!, _lastErrorMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MusicAnalysisTaskTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MusicAnalysisTaskTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      trackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}track_id'],
+      )!,
+      requestedRepresentations: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}requested_representations'],
+      )!,
+      audioRevision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}audio_revision'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      attemptCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}attempt_count'],
+      )!,
+      lastErrorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_error_code'],
+      ),
+      lastError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_error'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $MusicAnalysisTaskTableTable createAlias(String alias) {
+    return $MusicAnalysisTaskTableTable(attachedDatabase, alias);
+  }
+}
+
+class MusicAnalysisTaskTableData extends DataClass
+    implements Insertable<MusicAnalysisTaskTableData> {
+  final String id;
+  final String trackId;
+  final String requestedRepresentations;
+  final int audioRevision;
+  final String status;
+  final int attemptCount;
+  final String? lastErrorCode;
+  final String? lastError;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const MusicAnalysisTaskTableData({
+    required this.id,
+    required this.trackId,
+    required this.requestedRepresentations,
+    required this.audioRevision,
+    required this.status,
+    required this.attemptCount,
+    this.lastErrorCode,
+    this.lastError,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['track_id'] = Variable<String>(trackId);
+    map['requested_representations'] = Variable<String>(
+      requestedRepresentations,
+    );
+    map['audio_revision'] = Variable<int>(audioRevision);
+    map['status'] = Variable<String>(status);
+    map['attempt_count'] = Variable<int>(attemptCount);
+    if (!nullToAbsent || lastErrorCode != null) {
+      map['last_error_code'] = Variable<String>(lastErrorCode);
+    }
+    if (!nullToAbsent || lastError != null) {
+      map['last_error'] = Variable<String>(lastError);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  MusicAnalysisTaskTableCompanion toCompanion(bool nullToAbsent) {
+    return MusicAnalysisTaskTableCompanion(
+      id: Value(id),
+      trackId: Value(trackId),
+      requestedRepresentations: Value(requestedRepresentations),
+      audioRevision: Value(audioRevision),
+      status: Value(status),
+      attemptCount: Value(attemptCount),
+      lastErrorCode: lastErrorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastErrorCode),
+      lastError: lastError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastError),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory MusicAnalysisTaskTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MusicAnalysisTaskTableData(
+      id: serializer.fromJson<String>(json['id']),
+      trackId: serializer.fromJson<String>(json['trackId']),
+      requestedRepresentations: serializer.fromJson<String>(
+        json['requestedRepresentations'],
+      ),
+      audioRevision: serializer.fromJson<int>(json['audioRevision']),
+      status: serializer.fromJson<String>(json['status']),
+      attemptCount: serializer.fromJson<int>(json['attemptCount']),
+      lastErrorCode: serializer.fromJson<String?>(json['lastErrorCode']),
+      lastError: serializer.fromJson<String?>(json['lastError']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'trackId': serializer.toJson<String>(trackId),
+      'requestedRepresentations': serializer.toJson<String>(
+        requestedRepresentations,
+      ),
+      'audioRevision': serializer.toJson<int>(audioRevision),
+      'status': serializer.toJson<String>(status),
+      'attemptCount': serializer.toJson<int>(attemptCount),
+      'lastErrorCode': serializer.toJson<String?>(lastErrorCode),
+      'lastError': serializer.toJson<String?>(lastError),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  MusicAnalysisTaskTableData copyWith({
+    String? id,
+    String? trackId,
+    String? requestedRepresentations,
+    int? audioRevision,
+    String? status,
+    int? attemptCount,
+    Value<String?> lastErrorCode = const Value.absent(),
+    Value<String?> lastError = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => MusicAnalysisTaskTableData(
+    id: id ?? this.id,
+    trackId: trackId ?? this.trackId,
+    requestedRepresentations:
+        requestedRepresentations ?? this.requestedRepresentations,
+    audioRevision: audioRevision ?? this.audioRevision,
+    status: status ?? this.status,
+    attemptCount: attemptCount ?? this.attemptCount,
+    lastErrorCode: lastErrorCode.present
+        ? lastErrorCode.value
+        : this.lastErrorCode,
+    lastError: lastError.present ? lastError.value : this.lastError,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  MusicAnalysisTaskTableData copyWithCompanion(
+    MusicAnalysisTaskTableCompanion data,
+  ) {
+    return MusicAnalysisTaskTableData(
+      id: data.id.present ? data.id.value : this.id,
+      trackId: data.trackId.present ? data.trackId.value : this.trackId,
+      requestedRepresentations: data.requestedRepresentations.present
+          ? data.requestedRepresentations.value
+          : this.requestedRepresentations,
+      audioRevision: data.audioRevision.present
+          ? data.audioRevision.value
+          : this.audioRevision,
+      status: data.status.present ? data.status.value : this.status,
+      attemptCount: data.attemptCount.present
+          ? data.attemptCount.value
+          : this.attemptCount,
+      lastErrorCode: data.lastErrorCode.present
+          ? data.lastErrorCode.value
+          : this.lastErrorCode,
+      lastError: data.lastError.present ? data.lastError.value : this.lastError,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MusicAnalysisTaskTableData(')
+          ..write('id: $id, ')
+          ..write('trackId: $trackId, ')
+          ..write('requestedRepresentations: $requestedRepresentations, ')
+          ..write('audioRevision: $audioRevision, ')
+          ..write('status: $status, ')
+          ..write('attemptCount: $attemptCount, ')
+          ..write('lastErrorCode: $lastErrorCode, ')
+          ..write('lastError: $lastError, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    trackId,
+    requestedRepresentations,
+    audioRevision,
+    status,
+    attemptCount,
+    lastErrorCode,
+    lastError,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MusicAnalysisTaskTableData &&
+          other.id == this.id &&
+          other.trackId == this.trackId &&
+          other.requestedRepresentations == this.requestedRepresentations &&
+          other.audioRevision == this.audioRevision &&
+          other.status == this.status &&
+          other.attemptCount == this.attemptCount &&
+          other.lastErrorCode == this.lastErrorCode &&
+          other.lastError == this.lastError &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class MusicAnalysisTaskTableCompanion
+    extends UpdateCompanion<MusicAnalysisTaskTableData> {
+  final Value<String> id;
+  final Value<String> trackId;
+  final Value<String> requestedRepresentations;
+  final Value<int> audioRevision;
+  final Value<String> status;
+  final Value<int> attemptCount;
+  final Value<String?> lastErrorCode;
+  final Value<String?> lastError;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const MusicAnalysisTaskTableCompanion({
+    this.id = const Value.absent(),
+    this.trackId = const Value.absent(),
+    this.requestedRepresentations = const Value.absent(),
+    this.audioRevision = const Value.absent(),
+    this.status = const Value.absent(),
+    this.attemptCount = const Value.absent(),
+    this.lastErrorCode = const Value.absent(),
+    this.lastError = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  MusicAnalysisTaskTableCompanion.insert({
+    required String id,
+    required String trackId,
+    required String requestedRepresentations,
+    required int audioRevision,
+    required String status,
+    this.attemptCount = const Value.absent(),
+    this.lastErrorCode = const Value.absent(),
+    this.lastError = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       trackId = Value(trackId),
+       requestedRepresentations = Value(requestedRepresentations),
+       audioRevision = Value(audioRevision),
+       status = Value(status),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<MusicAnalysisTaskTableData> custom({
+    Expression<String>? id,
+    Expression<String>? trackId,
+    Expression<String>? requestedRepresentations,
+    Expression<int>? audioRevision,
+    Expression<String>? status,
+    Expression<int>? attemptCount,
+    Expression<String>? lastErrorCode,
+    Expression<String>? lastError,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (trackId != null) 'track_id': trackId,
+      if (requestedRepresentations != null)
+        'requested_representations': requestedRepresentations,
+      if (audioRevision != null) 'audio_revision': audioRevision,
+      if (status != null) 'status': status,
+      if (attemptCount != null) 'attempt_count': attemptCount,
+      if (lastErrorCode != null) 'last_error_code': lastErrorCode,
+      if (lastError != null) 'last_error': lastError,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  MusicAnalysisTaskTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? trackId,
+    Value<String>? requestedRepresentations,
+    Value<int>? audioRevision,
+    Value<String>? status,
+    Value<int>? attemptCount,
+    Value<String?>? lastErrorCode,
+    Value<String?>? lastError,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return MusicAnalysisTaskTableCompanion(
+      id: id ?? this.id,
+      trackId: trackId ?? this.trackId,
+      requestedRepresentations:
+          requestedRepresentations ?? this.requestedRepresentations,
+      audioRevision: audioRevision ?? this.audioRevision,
+      status: status ?? this.status,
+      attemptCount: attemptCount ?? this.attemptCount,
+      lastErrorCode: lastErrorCode ?? this.lastErrorCode,
+      lastError: lastError ?? this.lastError,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (trackId.present) {
+      map['track_id'] = Variable<String>(trackId.value);
+    }
+    if (requestedRepresentations.present) {
+      map['requested_representations'] = Variable<String>(
+        requestedRepresentations.value,
+      );
+    }
+    if (audioRevision.present) {
+      map['audio_revision'] = Variable<int>(audioRevision.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (attemptCount.present) {
+      map['attempt_count'] = Variable<int>(attemptCount.value);
+    }
+    if (lastErrorCode.present) {
+      map['last_error_code'] = Variable<String>(lastErrorCode.value);
+    }
+    if (lastError.present) {
+      map['last_error'] = Variable<String>(lastError.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MusicAnalysisTaskTableCompanion(')
+          ..write('id: $id, ')
+          ..write('trackId: $trackId, ')
+          ..write('requestedRepresentations: $requestedRepresentations, ')
+          ..write('audioRevision: $audioRevision, ')
+          ..write('status: $status, ')
+          ..write('attemptCount: $attemptCount, ')
+          ..write('lastErrorCode: $lastErrorCode, ')
+          ..write('lastError: $lastError, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MusicAnalysisSettingsTableTable extends MusicAnalysisSettingsTable
+    with
+        TableInfo<
+          $MusicAnalysisSettingsTableTable,
+          MusicAnalysisSettingsTableData
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MusicAnalysisSettingsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _serverEnabledMeta = const VerificationMeta(
+    'serverEnabled',
+  );
+  @override
+  late final GeneratedColumn<bool> serverEnabled = GeneratedColumn<bool>(
+    'server_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("server_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, serverEnabled, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'music_analysis_settings_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MusicAnalysisSettingsTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('server_enabled')) {
+      context.handle(
+        _serverEnabledMeta,
+        serverEnabled.isAcceptableOrUnknown(
+          data['server_enabled']!,
+          _serverEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MusicAnalysisSettingsTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MusicAnalysisSettingsTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      serverEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}server_enabled'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $MusicAnalysisSettingsTableTable createAlias(String alias) {
+    return $MusicAnalysisSettingsTableTable(attachedDatabase, alias);
+  }
+}
+
+class MusicAnalysisSettingsTableData extends DataClass
+    implements Insertable<MusicAnalysisSettingsTableData> {
+  final int id;
+  final bool serverEnabled;
+  final DateTime updatedAt;
+  const MusicAnalysisSettingsTableData({
+    required this.id,
+    required this.serverEnabled,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['server_enabled'] = Variable<bool>(serverEnabled);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  MusicAnalysisSettingsTableCompanion toCompanion(bool nullToAbsent) {
+    return MusicAnalysisSettingsTableCompanion(
+      id: Value(id),
+      serverEnabled: Value(serverEnabled),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory MusicAnalysisSettingsTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MusicAnalysisSettingsTableData(
+      id: serializer.fromJson<int>(json['id']),
+      serverEnabled: serializer.fromJson<bool>(json['serverEnabled']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'serverEnabled': serializer.toJson<bool>(serverEnabled),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  MusicAnalysisSettingsTableData copyWith({
+    int? id,
+    bool? serverEnabled,
+    DateTime? updatedAt,
+  }) => MusicAnalysisSettingsTableData(
+    id: id ?? this.id,
+    serverEnabled: serverEnabled ?? this.serverEnabled,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  MusicAnalysisSettingsTableData copyWithCompanion(
+    MusicAnalysisSettingsTableCompanion data,
+  ) {
+    return MusicAnalysisSettingsTableData(
+      id: data.id.present ? data.id.value : this.id,
+      serverEnabled: data.serverEnabled.present
+          ? data.serverEnabled.value
+          : this.serverEnabled,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MusicAnalysisSettingsTableData(')
+          ..write('id: $id, ')
+          ..write('serverEnabled: $serverEnabled, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, serverEnabled, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MusicAnalysisSettingsTableData &&
+          other.id == this.id &&
+          other.serverEnabled == this.serverEnabled &&
+          other.updatedAt == this.updatedAt);
+}
+
+class MusicAnalysisSettingsTableCompanion
+    extends UpdateCompanion<MusicAnalysisSettingsTableData> {
+  final Value<int> id;
+  final Value<bool> serverEnabled;
+  final Value<DateTime> updatedAt;
+  const MusicAnalysisSettingsTableCompanion({
+    this.id = const Value.absent(),
+    this.serverEnabled = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  MusicAnalysisSettingsTableCompanion.insert({
+    this.id = const Value.absent(),
+    this.serverEnabled = const Value.absent(),
+    required DateTime updatedAt,
+  }) : updatedAt = Value(updatedAt);
+  static Insertable<MusicAnalysisSettingsTableData> custom({
+    Expression<int>? id,
+    Expression<bool>? serverEnabled,
+    Expression<DateTime>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (serverEnabled != null) 'server_enabled': serverEnabled,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  MusicAnalysisSettingsTableCompanion copyWith({
+    Value<int>? id,
+    Value<bool>? serverEnabled,
+    Value<DateTime>? updatedAt,
+  }) {
+    return MusicAnalysisSettingsTableCompanion(
+      id: id ?? this.id,
+      serverEnabled: serverEnabled ?? this.serverEnabled,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (serverEnabled.present) {
+      map['server_enabled'] = Variable<bool>(serverEnabled.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MusicAnalysisSettingsTableCompanion(')
+          ..write('id: $id, ')
+          ..write('serverEnabled: $serverEnabled, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SimilarityEvaluationTableTable extends SimilarityEvaluationTable
+    with
+        TableInfo<
+          $SimilarityEvaluationTableTable,
+          SimilarityEvaluationTableData
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SimilarityEvaluationTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _seedTrackIdMeta = const VerificationMeta(
+    'seedTrackId',
+  );
+  @override
+  late final GeneratedColumn<String> seedTrackId = GeneratedColumn<String>(
+    'seed_track_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES track_table (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _candidateTrackIdMeta = const VerificationMeta(
+    'candidateTrackId',
+  );
+  @override
+  late final GeneratedColumn<String> candidateTrackId = GeneratedColumn<String>(
+    'candidate_track_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES track_table (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _methodVersionMeta = const VerificationMeta(
+    'methodVersion',
+  );
+  @override
+  late final GeneratedColumn<String> methodVersion = GeneratedColumn<String>(
+    'method_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceRepresentationModelIdMeta =
+      const VerificationMeta('sourceRepresentationModelId');
+  @override
+  late final GeneratedColumn<String> sourceRepresentationModelId =
+      GeneratedColumn<String>(
+        'source_representation_model_id',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _sourceRepresentationModelVersionMeta =
+      const VerificationMeta('sourceRepresentationModelVersion');
+  @override
+  late final GeneratedColumn<String> sourceRepresentationModelVersion =
+      GeneratedColumn<String>(
+        'source_representation_model_version',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _sourcePreprocessingVersionMeta =
+      const VerificationMeta('sourcePreprocessingVersion');
+  @override
+  late final GeneratedColumn<String> sourcePreprocessingVersion =
+      GeneratedColumn<String>(
+        'source_preprocessing_version',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _scoreShownMeta = const VerificationMeta(
+    'scoreShown',
+  );
+  @override
+  late final GeneratedColumn<double> scoreShown = GeneratedColumn<double>(
+    'score_shown',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rawDistanceMeta = const VerificationMeta(
+    'rawDistance',
+  );
+  @override
+  late final GeneratedColumn<double> rawDistance = GeneratedColumn<double>(
+    'raw_distance',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _soundRatingMeta = const VerificationMeta(
+    'soundRating',
+  );
+  @override
+  late final GeneratedColumn<int> soundRating = GeneratedColumn<int>(
+    'sound_rating',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _atmosphereRatingMeta = const VerificationMeta(
+    'atmosphereRating',
+  );
+  @override
+  late final GeneratedColumn<int> atmosphereRating = GeneratedColumn<int>(
+    'atmosphere_rating',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _trajectoryRatingMeta = const VerificationMeta(
+    'trajectoryRating',
+  );
+  @override
+  late final GeneratedColumn<int> trajectoryRating = GeneratedColumn<int>(
+    'trajectory_rating',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _wouldListenNextMeta = const VerificationMeta(
+    'wouldListenNext',
+  );
+  @override
+  late final GeneratedColumn<bool> wouldListenNext = GeneratedColumn<bool>(
+    'would_listen_next',
+    aliasedName,
+    true,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("would_listen_next" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    seedTrackId,
+    candidateTrackId,
+    methodVersion,
+    sourceRepresentationModelId,
+    sourceRepresentationModelVersion,
+    sourcePreprocessingVersion,
+    scoreShown,
+    rawDistance,
+    soundRating,
+    atmosphereRating,
+    trajectoryRating,
+    wouldListenNext,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'similarity_evaluation_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SimilarityEvaluationTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('seed_track_id')) {
+      context.handle(
+        _seedTrackIdMeta,
+        seedTrackId.isAcceptableOrUnknown(
+          data['seed_track_id']!,
+          _seedTrackIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_seedTrackIdMeta);
+    }
+    if (data.containsKey('candidate_track_id')) {
+      context.handle(
+        _candidateTrackIdMeta,
+        candidateTrackId.isAcceptableOrUnknown(
+          data['candidate_track_id']!,
+          _candidateTrackIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_candidateTrackIdMeta);
+    }
+    if (data.containsKey('method_version')) {
+      context.handle(
+        _methodVersionMeta,
+        methodVersion.isAcceptableOrUnknown(
+          data['method_version']!,
+          _methodVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_methodVersionMeta);
+    }
+    if (data.containsKey('source_representation_model_id')) {
+      context.handle(
+        _sourceRepresentationModelIdMeta,
+        sourceRepresentationModelId.isAcceptableOrUnknown(
+          data['source_representation_model_id']!,
+          _sourceRepresentationModelIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceRepresentationModelIdMeta);
+    }
+    if (data.containsKey('source_representation_model_version')) {
+      context.handle(
+        _sourceRepresentationModelVersionMeta,
+        sourceRepresentationModelVersion.isAcceptableOrUnknown(
+          data['source_representation_model_version']!,
+          _sourceRepresentationModelVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceRepresentationModelVersionMeta);
+    }
+    if (data.containsKey('source_preprocessing_version')) {
+      context.handle(
+        _sourcePreprocessingVersionMeta,
+        sourcePreprocessingVersion.isAcceptableOrUnknown(
+          data['source_preprocessing_version']!,
+          _sourcePreprocessingVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_sourcePreprocessingVersionMeta);
+    }
+    if (data.containsKey('score_shown')) {
+      context.handle(
+        _scoreShownMeta,
+        scoreShown.isAcceptableOrUnknown(data['score_shown']!, _scoreShownMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_scoreShownMeta);
+    }
+    if (data.containsKey('raw_distance')) {
+      context.handle(
+        _rawDistanceMeta,
+        rawDistance.isAcceptableOrUnknown(
+          data['raw_distance']!,
+          _rawDistanceMeta,
+        ),
+      );
+    }
+    if (data.containsKey('sound_rating')) {
+      context.handle(
+        _soundRatingMeta,
+        soundRating.isAcceptableOrUnknown(
+          data['sound_rating']!,
+          _soundRatingMeta,
+        ),
+      );
+    }
+    if (data.containsKey('atmosphere_rating')) {
+      context.handle(
+        _atmosphereRatingMeta,
+        atmosphereRating.isAcceptableOrUnknown(
+          data['atmosphere_rating']!,
+          _atmosphereRatingMeta,
+        ),
+      );
+    }
+    if (data.containsKey('trajectory_rating')) {
+      context.handle(
+        _trajectoryRatingMeta,
+        trajectoryRating.isAcceptableOrUnknown(
+          data['trajectory_rating']!,
+          _trajectoryRatingMeta,
+        ),
+      );
+    }
+    if (data.containsKey('would_listen_next')) {
+      context.handle(
+        _wouldListenNextMeta,
+        wouldListenNext.isAcceptableOrUnknown(
+          data['would_listen_next']!,
+          _wouldListenNextMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {
+      seedTrackId,
+      candidateTrackId,
+      methodVersion,
+      sourceRepresentationModelId,
+      sourceRepresentationModelVersion,
+      sourcePreprocessingVersion,
+    },
+  ];
+  @override
+  SimilarityEvaluationTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SimilarityEvaluationTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      seedTrackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}seed_track_id'],
+      )!,
+      candidateTrackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}candidate_track_id'],
+      )!,
+      methodVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}method_version'],
+      )!,
+      sourceRepresentationModelId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_representation_model_id'],
+      )!,
+      sourceRepresentationModelVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_representation_model_version'],
+      )!,
+      sourcePreprocessingVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_preprocessing_version'],
+      )!,
+      scoreShown: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}score_shown'],
+      )!,
+      rawDistance: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}raw_distance'],
+      ),
+      soundRating: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sound_rating'],
+      ),
+      atmosphereRating: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}atmosphere_rating'],
+      ),
+      trajectoryRating: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}trajectory_rating'],
+      ),
+      wouldListenNext: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}would_listen_next'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SimilarityEvaluationTableTable createAlias(String alias) {
+    return $SimilarityEvaluationTableTable(attachedDatabase, alias);
+  }
+}
+
+class SimilarityEvaluationTableData extends DataClass
+    implements Insertable<SimilarityEvaluationTableData> {
+  final String id;
+  final String seedTrackId;
+  final String candidateTrackId;
+  final String methodVersion;
+  final String sourceRepresentationModelId;
+  final String sourceRepresentationModelVersion;
+  final String sourcePreprocessingVersion;
+  final double scoreShown;
+  final double? rawDistance;
+  final int? soundRating;
+  final int? atmosphereRating;
+  final int? trajectoryRating;
+  final bool? wouldListenNext;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const SimilarityEvaluationTableData({
+    required this.id,
+    required this.seedTrackId,
+    required this.candidateTrackId,
+    required this.methodVersion,
+    required this.sourceRepresentationModelId,
+    required this.sourceRepresentationModelVersion,
+    required this.sourcePreprocessingVersion,
+    required this.scoreShown,
+    this.rawDistance,
+    this.soundRating,
+    this.atmosphereRating,
+    this.trajectoryRating,
+    this.wouldListenNext,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['seed_track_id'] = Variable<String>(seedTrackId);
+    map['candidate_track_id'] = Variable<String>(candidateTrackId);
+    map['method_version'] = Variable<String>(methodVersion);
+    map['source_representation_model_id'] = Variable<String>(
+      sourceRepresentationModelId,
+    );
+    map['source_representation_model_version'] = Variable<String>(
+      sourceRepresentationModelVersion,
+    );
+    map['source_preprocessing_version'] = Variable<String>(
+      sourcePreprocessingVersion,
+    );
+    map['score_shown'] = Variable<double>(scoreShown);
+    if (!nullToAbsent || rawDistance != null) {
+      map['raw_distance'] = Variable<double>(rawDistance);
+    }
+    if (!nullToAbsent || soundRating != null) {
+      map['sound_rating'] = Variable<int>(soundRating);
+    }
+    if (!nullToAbsent || atmosphereRating != null) {
+      map['atmosphere_rating'] = Variable<int>(atmosphereRating);
+    }
+    if (!nullToAbsent || trajectoryRating != null) {
+      map['trajectory_rating'] = Variable<int>(trajectoryRating);
+    }
+    if (!nullToAbsent || wouldListenNext != null) {
+      map['would_listen_next'] = Variable<bool>(wouldListenNext);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  SimilarityEvaluationTableCompanion toCompanion(bool nullToAbsent) {
+    return SimilarityEvaluationTableCompanion(
+      id: Value(id),
+      seedTrackId: Value(seedTrackId),
+      candidateTrackId: Value(candidateTrackId),
+      methodVersion: Value(methodVersion),
+      sourceRepresentationModelId: Value(sourceRepresentationModelId),
+      sourceRepresentationModelVersion: Value(sourceRepresentationModelVersion),
+      sourcePreprocessingVersion: Value(sourcePreprocessingVersion),
+      scoreShown: Value(scoreShown),
+      rawDistance: rawDistance == null && nullToAbsent
+          ? const Value.absent()
+          : Value(rawDistance),
+      soundRating: soundRating == null && nullToAbsent
+          ? const Value.absent()
+          : Value(soundRating),
+      atmosphereRating: atmosphereRating == null && nullToAbsent
+          ? const Value.absent()
+          : Value(atmosphereRating),
+      trajectoryRating: trajectoryRating == null && nullToAbsent
+          ? const Value.absent()
+          : Value(trajectoryRating),
+      wouldListenNext: wouldListenNext == null && nullToAbsent
+          ? const Value.absent()
+          : Value(wouldListenNext),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory SimilarityEvaluationTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SimilarityEvaluationTableData(
+      id: serializer.fromJson<String>(json['id']),
+      seedTrackId: serializer.fromJson<String>(json['seedTrackId']),
+      candidateTrackId: serializer.fromJson<String>(json['candidateTrackId']),
+      methodVersion: serializer.fromJson<String>(json['methodVersion']),
+      sourceRepresentationModelId: serializer.fromJson<String>(
+        json['sourceRepresentationModelId'],
+      ),
+      sourceRepresentationModelVersion: serializer.fromJson<String>(
+        json['sourceRepresentationModelVersion'],
+      ),
+      sourcePreprocessingVersion: serializer.fromJson<String>(
+        json['sourcePreprocessingVersion'],
+      ),
+      scoreShown: serializer.fromJson<double>(json['scoreShown']),
+      rawDistance: serializer.fromJson<double?>(json['rawDistance']),
+      soundRating: serializer.fromJson<int?>(json['soundRating']),
+      atmosphereRating: serializer.fromJson<int?>(json['atmosphereRating']),
+      trajectoryRating: serializer.fromJson<int?>(json['trajectoryRating']),
+      wouldListenNext: serializer.fromJson<bool?>(json['wouldListenNext']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'seedTrackId': serializer.toJson<String>(seedTrackId),
+      'candidateTrackId': serializer.toJson<String>(candidateTrackId),
+      'methodVersion': serializer.toJson<String>(methodVersion),
+      'sourceRepresentationModelId': serializer.toJson<String>(
+        sourceRepresentationModelId,
+      ),
+      'sourceRepresentationModelVersion': serializer.toJson<String>(
+        sourceRepresentationModelVersion,
+      ),
+      'sourcePreprocessingVersion': serializer.toJson<String>(
+        sourcePreprocessingVersion,
+      ),
+      'scoreShown': serializer.toJson<double>(scoreShown),
+      'rawDistance': serializer.toJson<double?>(rawDistance),
+      'soundRating': serializer.toJson<int?>(soundRating),
+      'atmosphereRating': serializer.toJson<int?>(atmosphereRating),
+      'trajectoryRating': serializer.toJson<int?>(trajectoryRating),
+      'wouldListenNext': serializer.toJson<bool?>(wouldListenNext),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  SimilarityEvaluationTableData copyWith({
+    String? id,
+    String? seedTrackId,
+    String? candidateTrackId,
+    String? methodVersion,
+    String? sourceRepresentationModelId,
+    String? sourceRepresentationModelVersion,
+    String? sourcePreprocessingVersion,
+    double? scoreShown,
+    Value<double?> rawDistance = const Value.absent(),
+    Value<int?> soundRating = const Value.absent(),
+    Value<int?> atmosphereRating = const Value.absent(),
+    Value<int?> trajectoryRating = const Value.absent(),
+    Value<bool?> wouldListenNext = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => SimilarityEvaluationTableData(
+    id: id ?? this.id,
+    seedTrackId: seedTrackId ?? this.seedTrackId,
+    candidateTrackId: candidateTrackId ?? this.candidateTrackId,
+    methodVersion: methodVersion ?? this.methodVersion,
+    sourceRepresentationModelId:
+        sourceRepresentationModelId ?? this.sourceRepresentationModelId,
+    sourceRepresentationModelVersion:
+        sourceRepresentationModelVersion ??
+        this.sourceRepresentationModelVersion,
+    sourcePreprocessingVersion:
+        sourcePreprocessingVersion ?? this.sourcePreprocessingVersion,
+    scoreShown: scoreShown ?? this.scoreShown,
+    rawDistance: rawDistance.present ? rawDistance.value : this.rawDistance,
+    soundRating: soundRating.present ? soundRating.value : this.soundRating,
+    atmosphereRating: atmosphereRating.present
+        ? atmosphereRating.value
+        : this.atmosphereRating,
+    trajectoryRating: trajectoryRating.present
+        ? trajectoryRating.value
+        : this.trajectoryRating,
+    wouldListenNext: wouldListenNext.present
+        ? wouldListenNext.value
+        : this.wouldListenNext,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  SimilarityEvaluationTableData copyWithCompanion(
+    SimilarityEvaluationTableCompanion data,
+  ) {
+    return SimilarityEvaluationTableData(
+      id: data.id.present ? data.id.value : this.id,
+      seedTrackId: data.seedTrackId.present
+          ? data.seedTrackId.value
+          : this.seedTrackId,
+      candidateTrackId: data.candidateTrackId.present
+          ? data.candidateTrackId.value
+          : this.candidateTrackId,
+      methodVersion: data.methodVersion.present
+          ? data.methodVersion.value
+          : this.methodVersion,
+      sourceRepresentationModelId: data.sourceRepresentationModelId.present
+          ? data.sourceRepresentationModelId.value
+          : this.sourceRepresentationModelId,
+      sourceRepresentationModelVersion:
+          data.sourceRepresentationModelVersion.present
+          ? data.sourceRepresentationModelVersion.value
+          : this.sourceRepresentationModelVersion,
+      sourcePreprocessingVersion: data.sourcePreprocessingVersion.present
+          ? data.sourcePreprocessingVersion.value
+          : this.sourcePreprocessingVersion,
+      scoreShown: data.scoreShown.present
+          ? data.scoreShown.value
+          : this.scoreShown,
+      rawDistance: data.rawDistance.present
+          ? data.rawDistance.value
+          : this.rawDistance,
+      soundRating: data.soundRating.present
+          ? data.soundRating.value
+          : this.soundRating,
+      atmosphereRating: data.atmosphereRating.present
+          ? data.atmosphereRating.value
+          : this.atmosphereRating,
+      trajectoryRating: data.trajectoryRating.present
+          ? data.trajectoryRating.value
+          : this.trajectoryRating,
+      wouldListenNext: data.wouldListenNext.present
+          ? data.wouldListenNext.value
+          : this.wouldListenNext,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SimilarityEvaluationTableData(')
+          ..write('id: $id, ')
+          ..write('seedTrackId: $seedTrackId, ')
+          ..write('candidateTrackId: $candidateTrackId, ')
+          ..write('methodVersion: $methodVersion, ')
+          ..write('sourceRepresentationModelId: $sourceRepresentationModelId, ')
+          ..write(
+            'sourceRepresentationModelVersion: $sourceRepresentationModelVersion, ',
+          )
+          ..write('sourcePreprocessingVersion: $sourcePreprocessingVersion, ')
+          ..write('scoreShown: $scoreShown, ')
+          ..write('rawDistance: $rawDistance, ')
+          ..write('soundRating: $soundRating, ')
+          ..write('atmosphereRating: $atmosphereRating, ')
+          ..write('trajectoryRating: $trajectoryRating, ')
+          ..write('wouldListenNext: $wouldListenNext, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    seedTrackId,
+    candidateTrackId,
+    methodVersion,
+    sourceRepresentationModelId,
+    sourceRepresentationModelVersion,
+    sourcePreprocessingVersion,
+    scoreShown,
+    rawDistance,
+    soundRating,
+    atmosphereRating,
+    trajectoryRating,
+    wouldListenNext,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SimilarityEvaluationTableData &&
+          other.id == this.id &&
+          other.seedTrackId == this.seedTrackId &&
+          other.candidateTrackId == this.candidateTrackId &&
+          other.methodVersion == this.methodVersion &&
+          other.sourceRepresentationModelId ==
+              this.sourceRepresentationModelId &&
+          other.sourceRepresentationModelVersion ==
+              this.sourceRepresentationModelVersion &&
+          other.sourcePreprocessingVersion == this.sourcePreprocessingVersion &&
+          other.scoreShown == this.scoreShown &&
+          other.rawDistance == this.rawDistance &&
+          other.soundRating == this.soundRating &&
+          other.atmosphereRating == this.atmosphereRating &&
+          other.trajectoryRating == this.trajectoryRating &&
+          other.wouldListenNext == this.wouldListenNext &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class SimilarityEvaluationTableCompanion
+    extends UpdateCompanion<SimilarityEvaluationTableData> {
+  final Value<String> id;
+  final Value<String> seedTrackId;
+  final Value<String> candidateTrackId;
+  final Value<String> methodVersion;
+  final Value<String> sourceRepresentationModelId;
+  final Value<String> sourceRepresentationModelVersion;
+  final Value<String> sourcePreprocessingVersion;
+  final Value<double> scoreShown;
+  final Value<double?> rawDistance;
+  final Value<int?> soundRating;
+  final Value<int?> atmosphereRating;
+  final Value<int?> trajectoryRating;
+  final Value<bool?> wouldListenNext;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const SimilarityEvaluationTableCompanion({
+    this.id = const Value.absent(),
+    this.seedTrackId = const Value.absent(),
+    this.candidateTrackId = const Value.absent(),
+    this.methodVersion = const Value.absent(),
+    this.sourceRepresentationModelId = const Value.absent(),
+    this.sourceRepresentationModelVersion = const Value.absent(),
+    this.sourcePreprocessingVersion = const Value.absent(),
+    this.scoreShown = const Value.absent(),
+    this.rawDistance = const Value.absent(),
+    this.soundRating = const Value.absent(),
+    this.atmosphereRating = const Value.absent(),
+    this.trajectoryRating = const Value.absent(),
+    this.wouldListenNext = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SimilarityEvaluationTableCompanion.insert({
+    required String id,
+    required String seedTrackId,
+    required String candidateTrackId,
+    required String methodVersion,
+    required String sourceRepresentationModelId,
+    required String sourceRepresentationModelVersion,
+    required String sourcePreprocessingVersion,
+    required double scoreShown,
+    this.rawDistance = const Value.absent(),
+    this.soundRating = const Value.absent(),
+    this.atmosphereRating = const Value.absent(),
+    this.trajectoryRating = const Value.absent(),
+    this.wouldListenNext = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       seedTrackId = Value(seedTrackId),
+       candidateTrackId = Value(candidateTrackId),
+       methodVersion = Value(methodVersion),
+       sourceRepresentationModelId = Value(sourceRepresentationModelId),
+       sourceRepresentationModelVersion = Value(
+         sourceRepresentationModelVersion,
+       ),
+       sourcePreprocessingVersion = Value(sourcePreprocessingVersion),
+       scoreShown = Value(scoreShown),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<SimilarityEvaluationTableData> custom({
+    Expression<String>? id,
+    Expression<String>? seedTrackId,
+    Expression<String>? candidateTrackId,
+    Expression<String>? methodVersion,
+    Expression<String>? sourceRepresentationModelId,
+    Expression<String>? sourceRepresentationModelVersion,
+    Expression<String>? sourcePreprocessingVersion,
+    Expression<double>? scoreShown,
+    Expression<double>? rawDistance,
+    Expression<int>? soundRating,
+    Expression<int>? atmosphereRating,
+    Expression<int>? trajectoryRating,
+    Expression<bool>? wouldListenNext,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (seedTrackId != null) 'seed_track_id': seedTrackId,
+      if (candidateTrackId != null) 'candidate_track_id': candidateTrackId,
+      if (methodVersion != null) 'method_version': methodVersion,
+      if (sourceRepresentationModelId != null)
+        'source_representation_model_id': sourceRepresentationModelId,
+      if (sourceRepresentationModelVersion != null)
+        'source_representation_model_version': sourceRepresentationModelVersion,
+      if (sourcePreprocessingVersion != null)
+        'source_preprocessing_version': sourcePreprocessingVersion,
+      if (scoreShown != null) 'score_shown': scoreShown,
+      if (rawDistance != null) 'raw_distance': rawDistance,
+      if (soundRating != null) 'sound_rating': soundRating,
+      if (atmosphereRating != null) 'atmosphere_rating': atmosphereRating,
+      if (trajectoryRating != null) 'trajectory_rating': trajectoryRating,
+      if (wouldListenNext != null) 'would_listen_next': wouldListenNext,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SimilarityEvaluationTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? seedTrackId,
+    Value<String>? candidateTrackId,
+    Value<String>? methodVersion,
+    Value<String>? sourceRepresentationModelId,
+    Value<String>? sourceRepresentationModelVersion,
+    Value<String>? sourcePreprocessingVersion,
+    Value<double>? scoreShown,
+    Value<double?>? rawDistance,
+    Value<int?>? soundRating,
+    Value<int?>? atmosphereRating,
+    Value<int?>? trajectoryRating,
+    Value<bool?>? wouldListenNext,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return SimilarityEvaluationTableCompanion(
+      id: id ?? this.id,
+      seedTrackId: seedTrackId ?? this.seedTrackId,
+      candidateTrackId: candidateTrackId ?? this.candidateTrackId,
+      methodVersion: methodVersion ?? this.methodVersion,
+      sourceRepresentationModelId:
+          sourceRepresentationModelId ?? this.sourceRepresentationModelId,
+      sourceRepresentationModelVersion:
+          sourceRepresentationModelVersion ??
+          this.sourceRepresentationModelVersion,
+      sourcePreprocessingVersion:
+          sourcePreprocessingVersion ?? this.sourcePreprocessingVersion,
+      scoreShown: scoreShown ?? this.scoreShown,
+      rawDistance: rawDistance ?? this.rawDistance,
+      soundRating: soundRating ?? this.soundRating,
+      atmosphereRating: atmosphereRating ?? this.atmosphereRating,
+      trajectoryRating: trajectoryRating ?? this.trajectoryRating,
+      wouldListenNext: wouldListenNext ?? this.wouldListenNext,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (seedTrackId.present) {
+      map['seed_track_id'] = Variable<String>(seedTrackId.value);
+    }
+    if (candidateTrackId.present) {
+      map['candidate_track_id'] = Variable<String>(candidateTrackId.value);
+    }
+    if (methodVersion.present) {
+      map['method_version'] = Variable<String>(methodVersion.value);
+    }
+    if (sourceRepresentationModelId.present) {
+      map['source_representation_model_id'] = Variable<String>(
+        sourceRepresentationModelId.value,
+      );
+    }
+    if (sourceRepresentationModelVersion.present) {
+      map['source_representation_model_version'] = Variable<String>(
+        sourceRepresentationModelVersion.value,
+      );
+    }
+    if (sourcePreprocessingVersion.present) {
+      map['source_preprocessing_version'] = Variable<String>(
+        sourcePreprocessingVersion.value,
+      );
+    }
+    if (scoreShown.present) {
+      map['score_shown'] = Variable<double>(scoreShown.value);
+    }
+    if (rawDistance.present) {
+      map['raw_distance'] = Variable<double>(rawDistance.value);
+    }
+    if (soundRating.present) {
+      map['sound_rating'] = Variable<int>(soundRating.value);
+    }
+    if (atmosphereRating.present) {
+      map['atmosphere_rating'] = Variable<int>(atmosphereRating.value);
+    }
+    if (trajectoryRating.present) {
+      map['trajectory_rating'] = Variable<int>(trajectoryRating.value);
+    }
+    if (wouldListenNext.present) {
+      map['would_listen_next'] = Variable<bool>(wouldListenNext.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SimilarityEvaluationTableCompanion(')
+          ..write('id: $id, ')
+          ..write('seedTrackId: $seedTrackId, ')
+          ..write('candidateTrackId: $candidateTrackId, ')
+          ..write('methodVersion: $methodVersion, ')
+          ..write('sourceRepresentationModelId: $sourceRepresentationModelId, ')
+          ..write(
+            'sourceRepresentationModelVersion: $sourceRepresentationModelVersion, ',
+          )
+          ..write('sourcePreprocessingVersion: $sourcePreprocessingVersion, ')
+          ..write('scoreShown: $scoreShown, ')
+          ..write('rawDistance: $rawDistance, ')
+          ..write('soundRating: $soundRating, ')
+          ..write('atmosphereRating: $atmosphereRating, ')
+          ..write('trajectoryRating: $trajectoryRating, ')
+          ..write('wouldListenNext: $wouldListenNext, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TrackLyricsTableTable extends TrackLyricsTable
+    with TableInfo<$TrackLyricsTableTable, TrackLyricsTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TrackLyricsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _trackIdMeta = const VerificationMeta(
+    'trackId',
+  );
+  @override
+  late final GeneratedColumn<String> trackId = GeneratedColumn<String>(
+    'track_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES track_table (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _sourceMeta = const VerificationMeta('source');
+  @override
+  late final GeneratedColumn<String> source = GeneratedColumn<String>(
+    'source',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceIdMeta = const VerificationMeta(
+    'sourceId',
+  );
+  @override
+  late final GeneratedColumn<String> sourceId = GeneratedColumn<String>(
+    'source_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _plainTextMeta = const VerificationMeta(
+    'plainText',
+  );
+  @override
+  late final GeneratedColumn<String> plainText = GeneratedColumn<String>(
+    'plain_text',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _syncedTextMeta = const VerificationMeta(
+    'syncedText',
+  );
+  @override
+  late final GeneratedColumn<String> syncedText = GeneratedColumn<String>(
+    'synced_text',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _languageMeta = const VerificationMeta(
+    'language',
+  );
+  @override
+  late final GeneratedColumn<String> language = GeneratedColumn<String>(
+    'language',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _contentHashMeta = const VerificationMeta(
+    'contentHash',
+  );
+  @override
+  late final GeneratedColumn<String> contentHash = GeneratedColumn<String>(
+    'content_hash',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isInstrumentalMeta = const VerificationMeta(
+    'isInstrumental',
+  );
+  @override
+  late final GeneratedColumn<bool> isInstrumental = GeneratedColumn<bool>(
+    'is_instrumental',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_instrumental" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _matchConfidenceMeta = const VerificationMeta(
+    'matchConfidence',
+  );
+  @override
+  late final GeneratedColumn<double> matchConfidence = GeneratedColumn<double>(
+    'match_confidence',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _matchedTitleMeta = const VerificationMeta(
+    'matchedTitle',
+  );
+  @override
+  late final GeneratedColumn<String> matchedTitle = GeneratedColumn<String>(
+    'matched_title',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _matchedArtistMeta = const VerificationMeta(
+    'matchedArtist',
+  );
+  @override
+  late final GeneratedColumn<String> matchedArtist = GeneratedColumn<String>(
+    'matched_artist',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _matchedDurationMsMeta = const VerificationMeta(
+    'matchedDurationMs',
+  );
+  @override
+  late final GeneratedColumn<int> matchedDurationMs = GeneratedColumn<int>(
+    'matched_duration_ms',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fetchedAtMeta = const VerificationMeta(
+    'fetchedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> fetchedAt = GeneratedColumn<DateTime>(
+    'fetched_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    trackId,
+    source,
+    sourceId,
+    plainText,
+    syncedText,
+    language,
+    contentHash,
+    isInstrumental,
+    matchConfidence,
+    matchedTitle,
+    matchedArtist,
+    matchedDurationMs,
+    fetchedAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'track_lyrics_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TrackLyricsTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('track_id')) {
+      context.handle(
+        _trackIdMeta,
+        trackId.isAcceptableOrUnknown(data['track_id']!, _trackIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_trackIdMeta);
+    }
+    if (data.containsKey('source')) {
+      context.handle(
+        _sourceMeta,
+        source.isAcceptableOrUnknown(data['source']!, _sourceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sourceMeta);
+    }
+    if (data.containsKey('source_id')) {
+      context.handle(
+        _sourceIdMeta,
+        sourceId.isAcceptableOrUnknown(data['source_id']!, _sourceIdMeta),
+      );
+    }
+    if (data.containsKey('plain_text')) {
+      context.handle(
+        _plainTextMeta,
+        plainText.isAcceptableOrUnknown(data['plain_text']!, _plainTextMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_plainTextMeta);
+    }
+    if (data.containsKey('synced_text')) {
+      context.handle(
+        _syncedTextMeta,
+        syncedText.isAcceptableOrUnknown(data['synced_text']!, _syncedTextMeta),
+      );
+    }
+    if (data.containsKey('language')) {
+      context.handle(
+        _languageMeta,
+        language.isAcceptableOrUnknown(data['language']!, _languageMeta),
+      );
+    }
+    if (data.containsKey('content_hash')) {
+      context.handle(
+        _contentHashMeta,
+        contentHash.isAcceptableOrUnknown(
+          data['content_hash']!,
+          _contentHashMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_contentHashMeta);
+    }
+    if (data.containsKey('is_instrumental')) {
+      context.handle(
+        _isInstrumentalMeta,
+        isInstrumental.isAcceptableOrUnknown(
+          data['is_instrumental']!,
+          _isInstrumentalMeta,
+        ),
+      );
+    }
+    if (data.containsKey('match_confidence')) {
+      context.handle(
+        _matchConfidenceMeta,
+        matchConfidence.isAcceptableOrUnknown(
+          data['match_confidence']!,
+          _matchConfidenceMeta,
+        ),
+      );
+    }
+    if (data.containsKey('matched_title')) {
+      context.handle(
+        _matchedTitleMeta,
+        matchedTitle.isAcceptableOrUnknown(
+          data['matched_title']!,
+          _matchedTitleMeta,
+        ),
+      );
+    }
+    if (data.containsKey('matched_artist')) {
+      context.handle(
+        _matchedArtistMeta,
+        matchedArtist.isAcceptableOrUnknown(
+          data['matched_artist']!,
+          _matchedArtistMeta,
+        ),
+      );
+    }
+    if (data.containsKey('matched_duration_ms')) {
+      context.handle(
+        _matchedDurationMsMeta,
+        matchedDurationMs.isAcceptableOrUnknown(
+          data['matched_duration_ms']!,
+          _matchedDurationMsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('fetched_at')) {
+      context.handle(
+        _fetchedAtMeta,
+        fetchedAt.isAcceptableOrUnknown(data['fetched_at']!, _fetchedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fetchedAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {trackId};
+  @override
+  TrackLyricsTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TrackLyricsTableData(
+      trackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}track_id'],
+      )!,
+      source: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source'],
+      )!,
+      sourceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_id'],
+      ),
+      plainText: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}plain_text'],
+      )!,
+      syncedText: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}synced_text'],
+      ),
+      language: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}language'],
+      ),
+      contentHash: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}content_hash'],
+      )!,
+      isInstrumental: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_instrumental'],
+      )!,
+      matchConfidence: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}match_confidence'],
+      ),
+      matchedTitle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}matched_title'],
+      ),
+      matchedArtist: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}matched_artist'],
+      ),
+      matchedDurationMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}matched_duration_ms'],
+      ),
+      fetchedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}fetched_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $TrackLyricsTableTable createAlias(String alias) {
+    return $TrackLyricsTableTable(attachedDatabase, alias);
+  }
+}
+
+class TrackLyricsTableData extends DataClass
+    implements Insertable<TrackLyricsTableData> {
+  final String trackId;
+  final String source;
+  final String? sourceId;
+  final String plainText;
+  final String? syncedText;
+  final String? language;
+  final String contentHash;
+  final bool isInstrumental;
+  final double? matchConfidence;
+  final String? matchedTitle;
+  final String? matchedArtist;
+  final int? matchedDurationMs;
+  final DateTime fetchedAt;
+  final DateTime updatedAt;
+  const TrackLyricsTableData({
+    required this.trackId,
+    required this.source,
+    this.sourceId,
+    required this.plainText,
+    this.syncedText,
+    this.language,
+    required this.contentHash,
+    required this.isInstrumental,
+    this.matchConfidence,
+    this.matchedTitle,
+    this.matchedArtist,
+    this.matchedDurationMs,
+    required this.fetchedAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['track_id'] = Variable<String>(trackId);
+    map['source'] = Variable<String>(source);
+    if (!nullToAbsent || sourceId != null) {
+      map['source_id'] = Variable<String>(sourceId);
+    }
+    map['plain_text'] = Variable<String>(plainText);
+    if (!nullToAbsent || syncedText != null) {
+      map['synced_text'] = Variable<String>(syncedText);
+    }
+    if (!nullToAbsent || language != null) {
+      map['language'] = Variable<String>(language);
+    }
+    map['content_hash'] = Variable<String>(contentHash);
+    map['is_instrumental'] = Variable<bool>(isInstrumental);
+    if (!nullToAbsent || matchConfidence != null) {
+      map['match_confidence'] = Variable<double>(matchConfidence);
+    }
+    if (!nullToAbsent || matchedTitle != null) {
+      map['matched_title'] = Variable<String>(matchedTitle);
+    }
+    if (!nullToAbsent || matchedArtist != null) {
+      map['matched_artist'] = Variable<String>(matchedArtist);
+    }
+    if (!nullToAbsent || matchedDurationMs != null) {
+      map['matched_duration_ms'] = Variable<int>(matchedDurationMs);
+    }
+    map['fetched_at'] = Variable<DateTime>(fetchedAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  TrackLyricsTableCompanion toCompanion(bool nullToAbsent) {
+    return TrackLyricsTableCompanion(
+      trackId: Value(trackId),
+      source: Value(source),
+      sourceId: sourceId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceId),
+      plainText: Value(plainText),
+      syncedText: syncedText == null && nullToAbsent
+          ? const Value.absent()
+          : Value(syncedText),
+      language: language == null && nullToAbsent
+          ? const Value.absent()
+          : Value(language),
+      contentHash: Value(contentHash),
+      isInstrumental: Value(isInstrumental),
+      matchConfidence: matchConfidence == null && nullToAbsent
+          ? const Value.absent()
+          : Value(matchConfidence),
+      matchedTitle: matchedTitle == null && nullToAbsent
+          ? const Value.absent()
+          : Value(matchedTitle),
+      matchedArtist: matchedArtist == null && nullToAbsent
+          ? const Value.absent()
+          : Value(matchedArtist),
+      matchedDurationMs: matchedDurationMs == null && nullToAbsent
+          ? const Value.absent()
+          : Value(matchedDurationMs),
+      fetchedAt: Value(fetchedAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory TrackLyricsTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TrackLyricsTableData(
+      trackId: serializer.fromJson<String>(json['trackId']),
+      source: serializer.fromJson<String>(json['source']),
+      sourceId: serializer.fromJson<String?>(json['sourceId']),
+      plainText: serializer.fromJson<String>(json['plainText']),
+      syncedText: serializer.fromJson<String?>(json['syncedText']),
+      language: serializer.fromJson<String?>(json['language']),
+      contentHash: serializer.fromJson<String>(json['contentHash']),
+      isInstrumental: serializer.fromJson<bool>(json['isInstrumental']),
+      matchConfidence: serializer.fromJson<double?>(json['matchConfidence']),
+      matchedTitle: serializer.fromJson<String?>(json['matchedTitle']),
+      matchedArtist: serializer.fromJson<String?>(json['matchedArtist']),
+      matchedDurationMs: serializer.fromJson<int?>(json['matchedDurationMs']),
+      fetchedAt: serializer.fromJson<DateTime>(json['fetchedAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'trackId': serializer.toJson<String>(trackId),
+      'source': serializer.toJson<String>(source),
+      'sourceId': serializer.toJson<String?>(sourceId),
+      'plainText': serializer.toJson<String>(plainText),
+      'syncedText': serializer.toJson<String?>(syncedText),
+      'language': serializer.toJson<String?>(language),
+      'contentHash': serializer.toJson<String>(contentHash),
+      'isInstrumental': serializer.toJson<bool>(isInstrumental),
+      'matchConfidence': serializer.toJson<double?>(matchConfidence),
+      'matchedTitle': serializer.toJson<String?>(matchedTitle),
+      'matchedArtist': serializer.toJson<String?>(matchedArtist),
+      'matchedDurationMs': serializer.toJson<int?>(matchedDurationMs),
+      'fetchedAt': serializer.toJson<DateTime>(fetchedAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  TrackLyricsTableData copyWith({
+    String? trackId,
+    String? source,
+    Value<String?> sourceId = const Value.absent(),
+    String? plainText,
+    Value<String?> syncedText = const Value.absent(),
+    Value<String?> language = const Value.absent(),
+    String? contentHash,
+    bool? isInstrumental,
+    Value<double?> matchConfidence = const Value.absent(),
+    Value<String?> matchedTitle = const Value.absent(),
+    Value<String?> matchedArtist = const Value.absent(),
+    Value<int?> matchedDurationMs = const Value.absent(),
+    DateTime? fetchedAt,
+    DateTime? updatedAt,
+  }) => TrackLyricsTableData(
+    trackId: trackId ?? this.trackId,
+    source: source ?? this.source,
+    sourceId: sourceId.present ? sourceId.value : this.sourceId,
+    plainText: plainText ?? this.plainText,
+    syncedText: syncedText.present ? syncedText.value : this.syncedText,
+    language: language.present ? language.value : this.language,
+    contentHash: contentHash ?? this.contentHash,
+    isInstrumental: isInstrumental ?? this.isInstrumental,
+    matchConfidence: matchConfidence.present
+        ? matchConfidence.value
+        : this.matchConfidence,
+    matchedTitle: matchedTitle.present ? matchedTitle.value : this.matchedTitle,
+    matchedArtist: matchedArtist.present
+        ? matchedArtist.value
+        : this.matchedArtist,
+    matchedDurationMs: matchedDurationMs.present
+        ? matchedDurationMs.value
+        : this.matchedDurationMs,
+    fetchedAt: fetchedAt ?? this.fetchedAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  TrackLyricsTableData copyWithCompanion(TrackLyricsTableCompanion data) {
+    return TrackLyricsTableData(
+      trackId: data.trackId.present ? data.trackId.value : this.trackId,
+      source: data.source.present ? data.source.value : this.source,
+      sourceId: data.sourceId.present ? data.sourceId.value : this.sourceId,
+      plainText: data.plainText.present ? data.plainText.value : this.plainText,
+      syncedText: data.syncedText.present
+          ? data.syncedText.value
+          : this.syncedText,
+      language: data.language.present ? data.language.value : this.language,
+      contentHash: data.contentHash.present
+          ? data.contentHash.value
+          : this.contentHash,
+      isInstrumental: data.isInstrumental.present
+          ? data.isInstrumental.value
+          : this.isInstrumental,
+      matchConfidence: data.matchConfidence.present
+          ? data.matchConfidence.value
+          : this.matchConfidence,
+      matchedTitle: data.matchedTitle.present
+          ? data.matchedTitle.value
+          : this.matchedTitle,
+      matchedArtist: data.matchedArtist.present
+          ? data.matchedArtist.value
+          : this.matchedArtist,
+      matchedDurationMs: data.matchedDurationMs.present
+          ? data.matchedDurationMs.value
+          : this.matchedDurationMs,
+      fetchedAt: data.fetchedAt.present ? data.fetchedAt.value : this.fetchedAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TrackLyricsTableData(')
+          ..write('trackId: $trackId, ')
+          ..write('source: $source, ')
+          ..write('sourceId: $sourceId, ')
+          ..write('plainText: $plainText, ')
+          ..write('syncedText: $syncedText, ')
+          ..write('language: $language, ')
+          ..write('contentHash: $contentHash, ')
+          ..write('isInstrumental: $isInstrumental, ')
+          ..write('matchConfidence: $matchConfidence, ')
+          ..write('matchedTitle: $matchedTitle, ')
+          ..write('matchedArtist: $matchedArtist, ')
+          ..write('matchedDurationMs: $matchedDurationMs, ')
+          ..write('fetchedAt: $fetchedAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    trackId,
+    source,
+    sourceId,
+    plainText,
+    syncedText,
+    language,
+    contentHash,
+    isInstrumental,
+    matchConfidence,
+    matchedTitle,
+    matchedArtist,
+    matchedDurationMs,
+    fetchedAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TrackLyricsTableData &&
+          other.trackId == this.trackId &&
+          other.source == this.source &&
+          other.sourceId == this.sourceId &&
+          other.plainText == this.plainText &&
+          other.syncedText == this.syncedText &&
+          other.language == this.language &&
+          other.contentHash == this.contentHash &&
+          other.isInstrumental == this.isInstrumental &&
+          other.matchConfidence == this.matchConfidence &&
+          other.matchedTitle == this.matchedTitle &&
+          other.matchedArtist == this.matchedArtist &&
+          other.matchedDurationMs == this.matchedDurationMs &&
+          other.fetchedAt == this.fetchedAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class TrackLyricsTableCompanion extends UpdateCompanion<TrackLyricsTableData> {
+  final Value<String> trackId;
+  final Value<String> source;
+  final Value<String?> sourceId;
+  final Value<String> plainText;
+  final Value<String?> syncedText;
+  final Value<String?> language;
+  final Value<String> contentHash;
+  final Value<bool> isInstrumental;
+  final Value<double?> matchConfidence;
+  final Value<String?> matchedTitle;
+  final Value<String?> matchedArtist;
+  final Value<int?> matchedDurationMs;
+  final Value<DateTime> fetchedAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const TrackLyricsTableCompanion({
+    this.trackId = const Value.absent(),
+    this.source = const Value.absent(),
+    this.sourceId = const Value.absent(),
+    this.plainText = const Value.absent(),
+    this.syncedText = const Value.absent(),
+    this.language = const Value.absent(),
+    this.contentHash = const Value.absent(),
+    this.isInstrumental = const Value.absent(),
+    this.matchConfidence = const Value.absent(),
+    this.matchedTitle = const Value.absent(),
+    this.matchedArtist = const Value.absent(),
+    this.matchedDurationMs = const Value.absent(),
+    this.fetchedAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TrackLyricsTableCompanion.insert({
+    required String trackId,
+    required String source,
+    this.sourceId = const Value.absent(),
+    required String plainText,
+    this.syncedText = const Value.absent(),
+    this.language = const Value.absent(),
+    required String contentHash,
+    this.isInstrumental = const Value.absent(),
+    this.matchConfidence = const Value.absent(),
+    this.matchedTitle = const Value.absent(),
+    this.matchedArtist = const Value.absent(),
+    this.matchedDurationMs = const Value.absent(),
+    required DateTime fetchedAt,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : trackId = Value(trackId),
+       source = Value(source),
+       plainText = Value(plainText),
+       contentHash = Value(contentHash),
+       fetchedAt = Value(fetchedAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<TrackLyricsTableData> custom({
+    Expression<String>? trackId,
+    Expression<String>? source,
+    Expression<String>? sourceId,
+    Expression<String>? plainText,
+    Expression<String>? syncedText,
+    Expression<String>? language,
+    Expression<String>? contentHash,
+    Expression<bool>? isInstrumental,
+    Expression<double>? matchConfidence,
+    Expression<String>? matchedTitle,
+    Expression<String>? matchedArtist,
+    Expression<int>? matchedDurationMs,
+    Expression<DateTime>? fetchedAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (trackId != null) 'track_id': trackId,
+      if (source != null) 'source': source,
+      if (sourceId != null) 'source_id': sourceId,
+      if (plainText != null) 'plain_text': plainText,
+      if (syncedText != null) 'synced_text': syncedText,
+      if (language != null) 'language': language,
+      if (contentHash != null) 'content_hash': contentHash,
+      if (isInstrumental != null) 'is_instrumental': isInstrumental,
+      if (matchConfidence != null) 'match_confidence': matchConfidence,
+      if (matchedTitle != null) 'matched_title': matchedTitle,
+      if (matchedArtist != null) 'matched_artist': matchedArtist,
+      if (matchedDurationMs != null) 'matched_duration_ms': matchedDurationMs,
+      if (fetchedAt != null) 'fetched_at': fetchedAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TrackLyricsTableCompanion copyWith({
+    Value<String>? trackId,
+    Value<String>? source,
+    Value<String?>? sourceId,
+    Value<String>? plainText,
+    Value<String?>? syncedText,
+    Value<String?>? language,
+    Value<String>? contentHash,
+    Value<bool>? isInstrumental,
+    Value<double?>? matchConfidence,
+    Value<String?>? matchedTitle,
+    Value<String?>? matchedArtist,
+    Value<int?>? matchedDurationMs,
+    Value<DateTime>? fetchedAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return TrackLyricsTableCompanion(
+      trackId: trackId ?? this.trackId,
+      source: source ?? this.source,
+      sourceId: sourceId ?? this.sourceId,
+      plainText: plainText ?? this.plainText,
+      syncedText: syncedText ?? this.syncedText,
+      language: language ?? this.language,
+      contentHash: contentHash ?? this.contentHash,
+      isInstrumental: isInstrumental ?? this.isInstrumental,
+      matchConfidence: matchConfidence ?? this.matchConfidence,
+      matchedTitle: matchedTitle ?? this.matchedTitle,
+      matchedArtist: matchedArtist ?? this.matchedArtist,
+      matchedDurationMs: matchedDurationMs ?? this.matchedDurationMs,
+      fetchedAt: fetchedAt ?? this.fetchedAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (trackId.present) {
+      map['track_id'] = Variable<String>(trackId.value);
+    }
+    if (source.present) {
+      map['source'] = Variable<String>(source.value);
+    }
+    if (sourceId.present) {
+      map['source_id'] = Variable<String>(sourceId.value);
+    }
+    if (plainText.present) {
+      map['plain_text'] = Variable<String>(plainText.value);
+    }
+    if (syncedText.present) {
+      map['synced_text'] = Variable<String>(syncedText.value);
+    }
+    if (language.present) {
+      map['language'] = Variable<String>(language.value);
+    }
+    if (contentHash.present) {
+      map['content_hash'] = Variable<String>(contentHash.value);
+    }
+    if (isInstrumental.present) {
+      map['is_instrumental'] = Variable<bool>(isInstrumental.value);
+    }
+    if (matchConfidence.present) {
+      map['match_confidence'] = Variable<double>(matchConfidence.value);
+    }
+    if (matchedTitle.present) {
+      map['matched_title'] = Variable<String>(matchedTitle.value);
+    }
+    if (matchedArtist.present) {
+      map['matched_artist'] = Variable<String>(matchedArtist.value);
+    }
+    if (matchedDurationMs.present) {
+      map['matched_duration_ms'] = Variable<int>(matchedDurationMs.value);
+    }
+    if (fetchedAt.present) {
+      map['fetched_at'] = Variable<DateTime>(fetchedAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TrackLyricsTableCompanion(')
+          ..write('trackId: $trackId, ')
+          ..write('source: $source, ')
+          ..write('sourceId: $sourceId, ')
+          ..write('plainText: $plainText, ')
+          ..write('syncedText: $syncedText, ')
+          ..write('language: $language, ')
+          ..write('contentHash: $contentHash, ')
+          ..write('isInstrumental: $isInstrumental, ')
+          ..write('matchConfidence: $matchConfidence, ')
+          ..write('matchedTitle: $matchedTitle, ')
+          ..write('matchedArtist: $matchedArtist, ')
+          ..write('matchedDurationMs: $matchedDurationMs, ')
+          ..write('fetchedAt: $fetchedAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $LyricsResolutionStateTableTable extends LyricsResolutionStateTable
+    with
+        TableInfo<
+          $LyricsResolutionStateTableTable,
+          LyricsResolutionStateTableData
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LyricsResolutionStateTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _trackIdMeta = const VerificationMeta(
+    'trackId',
+  );
+  @override
+  late final GeneratedColumn<String> trackId = GeneratedColumn<String>(
+    'track_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES track_table (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _providerMeta = const VerificationMeta(
+    'provider',
+  );
+  @override
+  late final GeneratedColumn<String> provider = GeneratedColumn<String>(
+    'provider',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _metadataRevisionMeta = const VerificationMeta(
+    'metadataRevision',
+  );
+  @override
+  late final GeneratedColumn<int> metadataRevision = GeneratedColumn<int>(
+    'metadata_revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _attemptCountMeta = const VerificationMeta(
+    'attemptCount',
+  );
+  @override
+  late final GeneratedColumn<int> attemptCount = GeneratedColumn<int>(
+    'attempt_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _lastErrorCodeMeta = const VerificationMeta(
+    'lastErrorCode',
+  );
+  @override
+  late final GeneratedColumn<String> lastErrorCode = GeneratedColumn<String>(
+    'last_error_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastErrorMeta = const VerificationMeta(
+    'lastError',
+  );
+  @override
+  late final GeneratedColumn<String> lastError = GeneratedColumn<String>(
+    'last_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nextRetryAtMeta = const VerificationMeta(
+    'nextRetryAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> nextRetryAt = GeneratedColumn<DateTime>(
+    'next_retry_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastAttemptAtMeta = const VerificationMeta(
+    'lastAttemptAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastAttemptAt =
+      GeneratedColumn<DateTime>(
+        'last_attempt_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    trackId,
+    status,
+    provider,
+    metadataRevision,
+    attemptCount,
+    lastErrorCode,
+    lastError,
+    nextRetryAt,
+    lastAttemptAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'lyrics_resolution_state_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LyricsResolutionStateTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('track_id')) {
+      context.handle(
+        _trackIdMeta,
+        trackId.isAcceptableOrUnknown(data['track_id']!, _trackIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_trackIdMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('provider')) {
+      context.handle(
+        _providerMeta,
+        provider.isAcceptableOrUnknown(data['provider']!, _providerMeta),
+      );
+    }
+    if (data.containsKey('metadata_revision')) {
+      context.handle(
+        _metadataRevisionMeta,
+        metadataRevision.isAcceptableOrUnknown(
+          data['metadata_revision']!,
+          _metadataRevisionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('attempt_count')) {
+      context.handle(
+        _attemptCountMeta,
+        attemptCount.isAcceptableOrUnknown(
+          data['attempt_count']!,
+          _attemptCountMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_error_code')) {
+      context.handle(
+        _lastErrorCodeMeta,
+        lastErrorCode.isAcceptableOrUnknown(
+          data['last_error_code']!,
+          _lastErrorCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_error')) {
+      context.handle(
+        _lastErrorMeta,
+        lastError.isAcceptableOrUnknown(data['last_error']!, _lastErrorMeta),
+      );
+    }
+    if (data.containsKey('next_retry_at')) {
+      context.handle(
+        _nextRetryAtMeta,
+        nextRetryAt.isAcceptableOrUnknown(
+          data['next_retry_at']!,
+          _nextRetryAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_attempt_at')) {
+      context.handle(
+        _lastAttemptAtMeta,
+        lastAttemptAt.isAcceptableOrUnknown(
+          data['last_attempt_at']!,
+          _lastAttemptAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {trackId};
+  @override
+  LyricsResolutionStateTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LyricsResolutionStateTableData(
+      trackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}track_id'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      provider: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}provider'],
+      ),
+      metadataRevision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}metadata_revision'],
+      )!,
+      attemptCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}attempt_count'],
+      )!,
+      lastErrorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_error_code'],
+      ),
+      lastError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_error'],
+      ),
+      nextRetryAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}next_retry_at'],
+      ),
+      lastAttemptAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_attempt_at'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $LyricsResolutionStateTableTable createAlias(String alias) {
+    return $LyricsResolutionStateTableTable(attachedDatabase, alias);
+  }
+}
+
+class LyricsResolutionStateTableData extends DataClass
+    implements Insertable<LyricsResolutionStateTableData> {
+  final String trackId;
+  final String status;
+  final String? provider;
+  final int metadataRevision;
+  final int attemptCount;
+  final String? lastErrorCode;
+  final String? lastError;
+  final DateTime? nextRetryAt;
+  final DateTime? lastAttemptAt;
+  final DateTime updatedAt;
+  const LyricsResolutionStateTableData({
+    required this.trackId,
+    required this.status,
+    this.provider,
+    required this.metadataRevision,
+    required this.attemptCount,
+    this.lastErrorCode,
+    this.lastError,
+    this.nextRetryAt,
+    this.lastAttemptAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['track_id'] = Variable<String>(trackId);
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || provider != null) {
+      map['provider'] = Variable<String>(provider);
+    }
+    map['metadata_revision'] = Variable<int>(metadataRevision);
+    map['attempt_count'] = Variable<int>(attemptCount);
+    if (!nullToAbsent || lastErrorCode != null) {
+      map['last_error_code'] = Variable<String>(lastErrorCode);
+    }
+    if (!nullToAbsent || lastError != null) {
+      map['last_error'] = Variable<String>(lastError);
+    }
+    if (!nullToAbsent || nextRetryAt != null) {
+      map['next_retry_at'] = Variable<DateTime>(nextRetryAt);
+    }
+    if (!nullToAbsent || lastAttemptAt != null) {
+      map['last_attempt_at'] = Variable<DateTime>(lastAttemptAt);
+    }
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  LyricsResolutionStateTableCompanion toCompanion(bool nullToAbsent) {
+    return LyricsResolutionStateTableCompanion(
+      trackId: Value(trackId),
+      status: Value(status),
+      provider: provider == null && nullToAbsent
+          ? const Value.absent()
+          : Value(provider),
+      metadataRevision: Value(metadataRevision),
+      attemptCount: Value(attemptCount),
+      lastErrorCode: lastErrorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastErrorCode),
+      lastError: lastError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastError),
+      nextRetryAt: nextRetryAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nextRetryAt),
+      lastAttemptAt: lastAttemptAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastAttemptAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory LyricsResolutionStateTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LyricsResolutionStateTableData(
+      trackId: serializer.fromJson<String>(json['trackId']),
+      status: serializer.fromJson<String>(json['status']),
+      provider: serializer.fromJson<String?>(json['provider']),
+      metadataRevision: serializer.fromJson<int>(json['metadataRevision']),
+      attemptCount: serializer.fromJson<int>(json['attemptCount']),
+      lastErrorCode: serializer.fromJson<String?>(json['lastErrorCode']),
+      lastError: serializer.fromJson<String?>(json['lastError']),
+      nextRetryAt: serializer.fromJson<DateTime?>(json['nextRetryAt']),
+      lastAttemptAt: serializer.fromJson<DateTime?>(json['lastAttemptAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'trackId': serializer.toJson<String>(trackId),
+      'status': serializer.toJson<String>(status),
+      'provider': serializer.toJson<String?>(provider),
+      'metadataRevision': serializer.toJson<int>(metadataRevision),
+      'attemptCount': serializer.toJson<int>(attemptCount),
+      'lastErrorCode': serializer.toJson<String?>(lastErrorCode),
+      'lastError': serializer.toJson<String?>(lastError),
+      'nextRetryAt': serializer.toJson<DateTime?>(nextRetryAt),
+      'lastAttemptAt': serializer.toJson<DateTime?>(lastAttemptAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  LyricsResolutionStateTableData copyWith({
+    String? trackId,
+    String? status,
+    Value<String?> provider = const Value.absent(),
+    int? metadataRevision,
+    int? attemptCount,
+    Value<String?> lastErrorCode = const Value.absent(),
+    Value<String?> lastError = const Value.absent(),
+    Value<DateTime?> nextRetryAt = const Value.absent(),
+    Value<DateTime?> lastAttemptAt = const Value.absent(),
+    DateTime? updatedAt,
+  }) => LyricsResolutionStateTableData(
+    trackId: trackId ?? this.trackId,
+    status: status ?? this.status,
+    provider: provider.present ? provider.value : this.provider,
+    metadataRevision: metadataRevision ?? this.metadataRevision,
+    attemptCount: attemptCount ?? this.attemptCount,
+    lastErrorCode: lastErrorCode.present
+        ? lastErrorCode.value
+        : this.lastErrorCode,
+    lastError: lastError.present ? lastError.value : this.lastError,
+    nextRetryAt: nextRetryAt.present ? nextRetryAt.value : this.nextRetryAt,
+    lastAttemptAt: lastAttemptAt.present
+        ? lastAttemptAt.value
+        : this.lastAttemptAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  LyricsResolutionStateTableData copyWithCompanion(
+    LyricsResolutionStateTableCompanion data,
+  ) {
+    return LyricsResolutionStateTableData(
+      trackId: data.trackId.present ? data.trackId.value : this.trackId,
+      status: data.status.present ? data.status.value : this.status,
+      provider: data.provider.present ? data.provider.value : this.provider,
+      metadataRevision: data.metadataRevision.present
+          ? data.metadataRevision.value
+          : this.metadataRevision,
+      attemptCount: data.attemptCount.present
+          ? data.attemptCount.value
+          : this.attemptCount,
+      lastErrorCode: data.lastErrorCode.present
+          ? data.lastErrorCode.value
+          : this.lastErrorCode,
+      lastError: data.lastError.present ? data.lastError.value : this.lastError,
+      nextRetryAt: data.nextRetryAt.present
+          ? data.nextRetryAt.value
+          : this.nextRetryAt,
+      lastAttemptAt: data.lastAttemptAt.present
+          ? data.lastAttemptAt.value
+          : this.lastAttemptAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LyricsResolutionStateTableData(')
+          ..write('trackId: $trackId, ')
+          ..write('status: $status, ')
+          ..write('provider: $provider, ')
+          ..write('metadataRevision: $metadataRevision, ')
+          ..write('attemptCount: $attemptCount, ')
+          ..write('lastErrorCode: $lastErrorCode, ')
+          ..write('lastError: $lastError, ')
+          ..write('nextRetryAt: $nextRetryAt, ')
+          ..write('lastAttemptAt: $lastAttemptAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    trackId,
+    status,
+    provider,
+    metadataRevision,
+    attemptCount,
+    lastErrorCode,
+    lastError,
+    nextRetryAt,
+    lastAttemptAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LyricsResolutionStateTableData &&
+          other.trackId == this.trackId &&
+          other.status == this.status &&
+          other.provider == this.provider &&
+          other.metadataRevision == this.metadataRevision &&
+          other.attemptCount == this.attemptCount &&
+          other.lastErrorCode == this.lastErrorCode &&
+          other.lastError == this.lastError &&
+          other.nextRetryAt == this.nextRetryAt &&
+          other.lastAttemptAt == this.lastAttemptAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class LyricsResolutionStateTableCompanion
+    extends UpdateCompanion<LyricsResolutionStateTableData> {
+  final Value<String> trackId;
+  final Value<String> status;
+  final Value<String?> provider;
+  final Value<int> metadataRevision;
+  final Value<int> attemptCount;
+  final Value<String?> lastErrorCode;
+  final Value<String?> lastError;
+  final Value<DateTime?> nextRetryAt;
+  final Value<DateTime?> lastAttemptAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const LyricsResolutionStateTableCompanion({
+    this.trackId = const Value.absent(),
+    this.status = const Value.absent(),
+    this.provider = const Value.absent(),
+    this.metadataRevision = const Value.absent(),
+    this.attemptCount = const Value.absent(),
+    this.lastErrorCode = const Value.absent(),
+    this.lastError = const Value.absent(),
+    this.nextRetryAt = const Value.absent(),
+    this.lastAttemptAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LyricsResolutionStateTableCompanion.insert({
+    required String trackId,
+    required String status,
+    this.provider = const Value.absent(),
+    this.metadataRevision = const Value.absent(),
+    this.attemptCount = const Value.absent(),
+    this.lastErrorCode = const Value.absent(),
+    this.lastError = const Value.absent(),
+    this.nextRetryAt = const Value.absent(),
+    this.lastAttemptAt = const Value.absent(),
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : trackId = Value(trackId),
+       status = Value(status),
+       updatedAt = Value(updatedAt);
+  static Insertable<LyricsResolutionStateTableData> custom({
+    Expression<String>? trackId,
+    Expression<String>? status,
+    Expression<String>? provider,
+    Expression<int>? metadataRevision,
+    Expression<int>? attemptCount,
+    Expression<String>? lastErrorCode,
+    Expression<String>? lastError,
+    Expression<DateTime>? nextRetryAt,
+    Expression<DateTime>? lastAttemptAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (trackId != null) 'track_id': trackId,
+      if (status != null) 'status': status,
+      if (provider != null) 'provider': provider,
+      if (metadataRevision != null) 'metadata_revision': metadataRevision,
+      if (attemptCount != null) 'attempt_count': attemptCount,
+      if (lastErrorCode != null) 'last_error_code': lastErrorCode,
+      if (lastError != null) 'last_error': lastError,
+      if (nextRetryAt != null) 'next_retry_at': nextRetryAt,
+      if (lastAttemptAt != null) 'last_attempt_at': lastAttemptAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LyricsResolutionStateTableCompanion copyWith({
+    Value<String>? trackId,
+    Value<String>? status,
+    Value<String?>? provider,
+    Value<int>? metadataRevision,
+    Value<int>? attemptCount,
+    Value<String?>? lastErrorCode,
+    Value<String?>? lastError,
+    Value<DateTime?>? nextRetryAt,
+    Value<DateTime?>? lastAttemptAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return LyricsResolutionStateTableCompanion(
+      trackId: trackId ?? this.trackId,
+      status: status ?? this.status,
+      provider: provider ?? this.provider,
+      metadataRevision: metadataRevision ?? this.metadataRevision,
+      attemptCount: attemptCount ?? this.attemptCount,
+      lastErrorCode: lastErrorCode ?? this.lastErrorCode,
+      lastError: lastError ?? this.lastError,
+      nextRetryAt: nextRetryAt ?? this.nextRetryAt,
+      lastAttemptAt: lastAttemptAt ?? this.lastAttemptAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (trackId.present) {
+      map['track_id'] = Variable<String>(trackId.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (provider.present) {
+      map['provider'] = Variable<String>(provider.value);
+    }
+    if (metadataRevision.present) {
+      map['metadata_revision'] = Variable<int>(metadataRevision.value);
+    }
+    if (attemptCount.present) {
+      map['attempt_count'] = Variable<int>(attemptCount.value);
+    }
+    if (lastErrorCode.present) {
+      map['last_error_code'] = Variable<String>(lastErrorCode.value);
+    }
+    if (lastError.present) {
+      map['last_error'] = Variable<String>(lastError.value);
+    }
+    if (nextRetryAt.present) {
+      map['next_retry_at'] = Variable<DateTime>(nextRetryAt.value);
+    }
+    if (lastAttemptAt.present) {
+      map['last_attempt_at'] = Variable<DateTime>(lastAttemptAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LyricsResolutionStateTableCompanion(')
+          ..write('trackId: $trackId, ')
+          ..write('status: $status, ')
+          ..write('provider: $provider, ')
+          ..write('metadataRevision: $metadataRevision, ')
+          ..write('attemptCount: $attemptCount, ')
+          ..write('lastErrorCode: $lastErrorCode, ')
+          ..write('lastError: $lastError, ')
+          ..write('nextRetryAt: $nextRetryAt, ')
+          ..write('lastAttemptAt: $lastAttemptAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $LyricsResolutionTaskTableTable extends LyricsResolutionTaskTable
+    with
+        TableInfo<
+          $LyricsResolutionTaskTableTable,
+          LyricsResolutionTaskTableData
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $LyricsResolutionTaskTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _trackIdMeta = const VerificationMeta(
+    'trackId',
+  );
+  @override
+  late final GeneratedColumn<String> trackId = GeneratedColumn<String>(
+    'track_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES track_table (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _attemptCountMeta = const VerificationMeta(
+    'attemptCount',
+  );
+  @override
+  late final GeneratedColumn<int> attemptCount = GeneratedColumn<int>(
+    'attempt_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _nextAttemptAtMeta = const VerificationMeta(
+    'nextAttemptAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> nextAttemptAt =
+      GeneratedColumn<DateTime>(
+        'next_attempt_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _lastErrorCodeMeta = const VerificationMeta(
+    'lastErrorCode',
+  );
+  @override
+  late final GeneratedColumn<String> lastErrorCode = GeneratedColumn<String>(
+    'last_error_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastErrorMeta = const VerificationMeta(
+    'lastError',
+  );
+  @override
+  late final GeneratedColumn<String> lastError = GeneratedColumn<String>(
+    'last_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    trackId,
+    status,
+    attemptCount,
+    nextAttemptAt,
+    lastErrorCode,
+    lastError,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'lyrics_resolution_task_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<LyricsResolutionTaskTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('track_id')) {
+      context.handle(
+        _trackIdMeta,
+        trackId.isAcceptableOrUnknown(data['track_id']!, _trackIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_trackIdMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('attempt_count')) {
+      context.handle(
+        _attemptCountMeta,
+        attemptCount.isAcceptableOrUnknown(
+          data['attempt_count']!,
+          _attemptCountMeta,
+        ),
+      );
+    }
+    if (data.containsKey('next_attempt_at')) {
+      context.handle(
+        _nextAttemptAtMeta,
+        nextAttemptAt.isAcceptableOrUnknown(
+          data['next_attempt_at']!,
+          _nextAttemptAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_error_code')) {
+      context.handle(
+        _lastErrorCodeMeta,
+        lastErrorCode.isAcceptableOrUnknown(
+          data['last_error_code']!,
+          _lastErrorCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_error')) {
+      context.handle(
+        _lastErrorMeta,
+        lastError.isAcceptableOrUnknown(data['last_error']!, _lastErrorMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {trackId},
+  ];
+  @override
+  LyricsResolutionTaskTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return LyricsResolutionTaskTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      trackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}track_id'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      attemptCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}attempt_count'],
+      )!,
+      nextAttemptAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}next_attempt_at'],
+      ),
+      lastErrorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_error_code'],
+      ),
+      lastError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_error'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $LyricsResolutionTaskTableTable createAlias(String alias) {
+    return $LyricsResolutionTaskTableTable(attachedDatabase, alias);
+  }
+}
+
+class LyricsResolutionTaskTableData extends DataClass
+    implements Insertable<LyricsResolutionTaskTableData> {
+  final String id;
+  final String trackId;
+  final String status;
+  final int attemptCount;
+  final DateTime? nextAttemptAt;
+  final String? lastErrorCode;
+  final String? lastError;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const LyricsResolutionTaskTableData({
+    required this.id,
+    required this.trackId,
+    required this.status,
+    required this.attemptCount,
+    this.nextAttemptAt,
+    this.lastErrorCode,
+    this.lastError,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['track_id'] = Variable<String>(trackId);
+    map['status'] = Variable<String>(status);
+    map['attempt_count'] = Variable<int>(attemptCount);
+    if (!nullToAbsent || nextAttemptAt != null) {
+      map['next_attempt_at'] = Variable<DateTime>(nextAttemptAt);
+    }
+    if (!nullToAbsent || lastErrorCode != null) {
+      map['last_error_code'] = Variable<String>(lastErrorCode);
+    }
+    if (!nullToAbsent || lastError != null) {
+      map['last_error'] = Variable<String>(lastError);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  LyricsResolutionTaskTableCompanion toCompanion(bool nullToAbsent) {
+    return LyricsResolutionTaskTableCompanion(
+      id: Value(id),
+      trackId: Value(trackId),
+      status: Value(status),
+      attemptCount: Value(attemptCount),
+      nextAttemptAt: nextAttemptAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nextAttemptAt),
+      lastErrorCode: lastErrorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastErrorCode),
+      lastError: lastError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastError),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory LyricsResolutionTaskTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return LyricsResolutionTaskTableData(
+      id: serializer.fromJson<String>(json['id']),
+      trackId: serializer.fromJson<String>(json['trackId']),
+      status: serializer.fromJson<String>(json['status']),
+      attemptCount: serializer.fromJson<int>(json['attemptCount']),
+      nextAttemptAt: serializer.fromJson<DateTime?>(json['nextAttemptAt']),
+      lastErrorCode: serializer.fromJson<String?>(json['lastErrorCode']),
+      lastError: serializer.fromJson<String?>(json['lastError']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'trackId': serializer.toJson<String>(trackId),
+      'status': serializer.toJson<String>(status),
+      'attemptCount': serializer.toJson<int>(attemptCount),
+      'nextAttemptAt': serializer.toJson<DateTime?>(nextAttemptAt),
+      'lastErrorCode': serializer.toJson<String?>(lastErrorCode),
+      'lastError': serializer.toJson<String?>(lastError),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  LyricsResolutionTaskTableData copyWith({
+    String? id,
+    String? trackId,
+    String? status,
+    int? attemptCount,
+    Value<DateTime?> nextAttemptAt = const Value.absent(),
+    Value<String?> lastErrorCode = const Value.absent(),
+    Value<String?> lastError = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => LyricsResolutionTaskTableData(
+    id: id ?? this.id,
+    trackId: trackId ?? this.trackId,
+    status: status ?? this.status,
+    attemptCount: attemptCount ?? this.attemptCount,
+    nextAttemptAt: nextAttemptAt.present
+        ? nextAttemptAt.value
+        : this.nextAttemptAt,
+    lastErrorCode: lastErrorCode.present
+        ? lastErrorCode.value
+        : this.lastErrorCode,
+    lastError: lastError.present ? lastError.value : this.lastError,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  LyricsResolutionTaskTableData copyWithCompanion(
+    LyricsResolutionTaskTableCompanion data,
+  ) {
+    return LyricsResolutionTaskTableData(
+      id: data.id.present ? data.id.value : this.id,
+      trackId: data.trackId.present ? data.trackId.value : this.trackId,
+      status: data.status.present ? data.status.value : this.status,
+      attemptCount: data.attemptCount.present
+          ? data.attemptCount.value
+          : this.attemptCount,
+      nextAttemptAt: data.nextAttemptAt.present
+          ? data.nextAttemptAt.value
+          : this.nextAttemptAt,
+      lastErrorCode: data.lastErrorCode.present
+          ? data.lastErrorCode.value
+          : this.lastErrorCode,
+      lastError: data.lastError.present ? data.lastError.value : this.lastError,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LyricsResolutionTaskTableData(')
+          ..write('id: $id, ')
+          ..write('trackId: $trackId, ')
+          ..write('status: $status, ')
+          ..write('attemptCount: $attemptCount, ')
+          ..write('nextAttemptAt: $nextAttemptAt, ')
+          ..write('lastErrorCode: $lastErrorCode, ')
+          ..write('lastError: $lastError, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    trackId,
+    status,
+    attemptCount,
+    nextAttemptAt,
+    lastErrorCode,
+    lastError,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is LyricsResolutionTaskTableData &&
+          other.id == this.id &&
+          other.trackId == this.trackId &&
+          other.status == this.status &&
+          other.attemptCount == this.attemptCount &&
+          other.nextAttemptAt == this.nextAttemptAt &&
+          other.lastErrorCode == this.lastErrorCode &&
+          other.lastError == this.lastError &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class LyricsResolutionTaskTableCompanion
+    extends UpdateCompanion<LyricsResolutionTaskTableData> {
+  final Value<String> id;
+  final Value<String> trackId;
+  final Value<String> status;
+  final Value<int> attemptCount;
+  final Value<DateTime?> nextAttemptAt;
+  final Value<String?> lastErrorCode;
+  final Value<String?> lastError;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const LyricsResolutionTaskTableCompanion({
+    this.id = const Value.absent(),
+    this.trackId = const Value.absent(),
+    this.status = const Value.absent(),
+    this.attemptCount = const Value.absent(),
+    this.nextAttemptAt = const Value.absent(),
+    this.lastErrorCode = const Value.absent(),
+    this.lastError = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  LyricsResolutionTaskTableCompanion.insert({
+    required String id,
+    required String trackId,
+    required String status,
+    this.attemptCount = const Value.absent(),
+    this.nextAttemptAt = const Value.absent(),
+    this.lastErrorCode = const Value.absent(),
+    this.lastError = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       trackId = Value(trackId),
+       status = Value(status),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<LyricsResolutionTaskTableData> custom({
+    Expression<String>? id,
+    Expression<String>? trackId,
+    Expression<String>? status,
+    Expression<int>? attemptCount,
+    Expression<DateTime>? nextAttemptAt,
+    Expression<String>? lastErrorCode,
+    Expression<String>? lastError,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (trackId != null) 'track_id': trackId,
+      if (status != null) 'status': status,
+      if (attemptCount != null) 'attempt_count': attemptCount,
+      if (nextAttemptAt != null) 'next_attempt_at': nextAttemptAt,
+      if (lastErrorCode != null) 'last_error_code': lastErrorCode,
+      if (lastError != null) 'last_error': lastError,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  LyricsResolutionTaskTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? trackId,
+    Value<String>? status,
+    Value<int>? attemptCount,
+    Value<DateTime?>? nextAttemptAt,
+    Value<String?>? lastErrorCode,
+    Value<String?>? lastError,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return LyricsResolutionTaskTableCompanion(
+      id: id ?? this.id,
+      trackId: trackId ?? this.trackId,
+      status: status ?? this.status,
+      attemptCount: attemptCount ?? this.attemptCount,
+      nextAttemptAt: nextAttemptAt ?? this.nextAttemptAt,
+      lastErrorCode: lastErrorCode ?? this.lastErrorCode,
+      lastError: lastError ?? this.lastError,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (trackId.present) {
+      map['track_id'] = Variable<String>(trackId.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (attemptCount.present) {
+      map['attempt_count'] = Variable<int>(attemptCount.value);
+    }
+    if (nextAttemptAt.present) {
+      map['next_attempt_at'] = Variable<DateTime>(nextAttemptAt.value);
+    }
+    if (lastErrorCode.present) {
+      map['last_error_code'] = Variable<String>(lastErrorCode.value);
+    }
+    if (lastError.present) {
+      map['last_error'] = Variable<String>(lastError.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('LyricsResolutionTaskTableCompanion(')
+          ..write('id: $id, ')
+          ..write('trackId: $trackId, ')
+          ..write('status: $status, ')
+          ..write('attemptCount: $attemptCount, ')
+          ..write('nextAttemptAt: $nextAttemptAt, ')
+          ..write('lastErrorCode: $lastErrorCode, ')
+          ..write('lastError: $lastError, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
-  late final $PlayRecordTableTable playRecordTable = $PlayRecordTableTable(
-    this,
-  );
+  late final $ListeningSummaryTableTable listeningSummaryTable =
+      $ListeningSummaryTableTable(this);
   late final $PlaylistTableTable playlistTable = $PlaylistTableTable(this);
   late final $TrackTableTable trackTable = $TrackTableTable(this);
-  late final $EmbeddingTaskTableTable embeddingTaskTable =
-      $EmbeddingTaskTableTable(this);
   late final $DownloadTaskTableTable downloadTaskTable =
       $DownloadTaskTableTable(this);
   late final $ArtistTableTable artistTable = $ArtistTableTable(this);
@@ -5428,15 +11867,37 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $PlaybackQueueItemTableTable(this);
   late final $AppNavigationStateTableTable appNavigationStateTable =
       $AppNavigationStateTableTable(this);
+  late final $TrackEmbeddingTableTable trackEmbeddingTable =
+      $TrackEmbeddingTableTable(this);
+  late final $ListeningEventTableTable listeningEventTable =
+      $ListeningEventTableTable(this);
+  late final $TrackTemporalEmbeddingTableTable trackTemporalEmbeddingTable =
+      $TrackTemporalEmbeddingTableTable(this);
+  late final $TrackTemporalEmbeddingSegmentTableTable
+  trackTemporalEmbeddingSegmentTable = $TrackTemporalEmbeddingSegmentTableTable(
+    this,
+  );
+  late final $MusicAnalysisTaskTableTable musicAnalysisTaskTable =
+      $MusicAnalysisTaskTableTable(this);
+  late final $MusicAnalysisSettingsTableTable musicAnalysisSettingsTable =
+      $MusicAnalysisSettingsTableTable(this);
+  late final $SimilarityEvaluationTableTable similarityEvaluationTable =
+      $SimilarityEvaluationTableTable(this);
+  late final $TrackLyricsTableTable trackLyricsTable = $TrackLyricsTableTable(
+    this,
+  );
+  late final $LyricsResolutionStateTableTable lyricsResolutionStateTable =
+      $LyricsResolutionStateTableTable(this);
+  late final $LyricsResolutionTaskTableTable lyricsResolutionTaskTable =
+      $LyricsResolutionTaskTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
-    playRecordTable,
+    listeningSummaryTable,
     playlistTable,
     trackTable,
-    embeddingTaskTable,
     downloadTaskTable,
     artistTable,
     trackArtistTable,
@@ -5446,6 +11907,16 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     playbackSessionTable,
     playbackQueueItemTable,
     appNavigationStateTable,
+    trackEmbeddingTable,
+    listeningEventTable,
+    trackTemporalEmbeddingTable,
+    trackTemporalEmbeddingSegmentTable,
+    musicAnalysisTaskTable,
+    musicAnalysisSettingsTable,
+    similarityEvaluationTable,
+    trackLyricsTable,
+    lyricsResolutionStateTable,
+    lyricsResolutionTaskTable,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -5502,11 +11973,91 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         TableUpdate('playback_queue_item_table', kind: UpdateKind.delete),
       ],
     ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'track_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('track_embedding_table', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'track_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('track_temporal_embedding_table', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'track_temporal_embedding_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate(
+          'track_temporal_embedding_segment_table',
+          kind: UpdateKind.delete,
+        ),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'track_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('music_analysis_task_table', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'track_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('similarity_evaluation_table', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'track_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('similarity_evaluation_table', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'track_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('track_lyrics_table', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'track_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('lyrics_resolution_state_table', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'track_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('lyrics_resolution_task_table', kind: UpdateKind.delete),
+      ],
+    ),
   ]);
 }
 
-typedef $$PlayRecordTableTableCreateCompanionBuilder =
-    PlayRecordTableCompanion Function({
+typedef $$ListeningSummaryTableTableCreateCompanionBuilder =
+    ListeningSummaryTableCompanion Function({
       required String id,
       required String trackId,
       required String trackTitle,
@@ -5516,8 +12067,8 @@ typedef $$PlayRecordTableTableCreateCompanionBuilder =
       required DateTime playedAt,
       Value<int> rowid,
     });
-typedef $$PlayRecordTableTableUpdateCompanionBuilder =
-    PlayRecordTableCompanion Function({
+typedef $$ListeningSummaryTableTableUpdateCompanionBuilder =
+    ListeningSummaryTableCompanion Function({
       Value<String> id,
       Value<String> trackId,
       Value<String> trackTitle,
@@ -5528,9 +12079,9 @@ typedef $$PlayRecordTableTableUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
-class $$PlayRecordTableTableFilterComposer
-    extends Composer<_$AppDatabase, $PlayRecordTableTable> {
-  $$PlayRecordTableTableFilterComposer({
+class $$ListeningSummaryTableTableFilterComposer
+    extends Composer<_$AppDatabase, $ListeningSummaryTableTable> {
+  $$ListeningSummaryTableTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -5573,9 +12124,9 @@ class $$PlayRecordTableTableFilterComposer
   );
 }
 
-class $$PlayRecordTableTableOrderingComposer
-    extends Composer<_$AppDatabase, $PlayRecordTableTable> {
-  $$PlayRecordTableTableOrderingComposer({
+class $$ListeningSummaryTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $ListeningSummaryTableTable> {
+  $$ListeningSummaryTableTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -5618,9 +12169,9 @@ class $$PlayRecordTableTableOrderingComposer
   );
 }
 
-class $$PlayRecordTableTableAnnotationComposer
-    extends Composer<_$AppDatabase, $PlayRecordTableTable> {
-  $$PlayRecordTableTableAnnotationComposer({
+class $$ListeningSummaryTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ListeningSummaryTableTable> {
+  $$ListeningSummaryTableTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -5657,41 +12208,50 @@ class $$PlayRecordTableTableAnnotationComposer
       $composableBuilder(column: $table.playedAt, builder: (column) => column);
 }
 
-class $$PlayRecordTableTableTableManager
+class $$ListeningSummaryTableTableTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          $PlayRecordTableTable,
-          PlayRecordTableData,
-          $$PlayRecordTableTableFilterComposer,
-          $$PlayRecordTableTableOrderingComposer,
-          $$PlayRecordTableTableAnnotationComposer,
-          $$PlayRecordTableTableCreateCompanionBuilder,
-          $$PlayRecordTableTableUpdateCompanionBuilder,
+          $ListeningSummaryTableTable,
+          ListeningSummaryTableData,
+          $$ListeningSummaryTableTableFilterComposer,
+          $$ListeningSummaryTableTableOrderingComposer,
+          $$ListeningSummaryTableTableAnnotationComposer,
+          $$ListeningSummaryTableTableCreateCompanionBuilder,
+          $$ListeningSummaryTableTableUpdateCompanionBuilder,
           (
-            PlayRecordTableData,
+            ListeningSummaryTableData,
             BaseReferences<
               _$AppDatabase,
-              $PlayRecordTableTable,
-              PlayRecordTableData
+              $ListeningSummaryTableTable,
+              ListeningSummaryTableData
             >,
           ),
-          PlayRecordTableData,
+          ListeningSummaryTableData,
           PrefetchHooks Function()
         > {
-  $$PlayRecordTableTableTableManager(
+  $$ListeningSummaryTableTableTableManager(
     _$AppDatabase db,
-    $PlayRecordTableTable table,
+    $ListeningSummaryTableTable table,
   ) : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$PlayRecordTableTableFilterComposer($db: db, $table: table),
+              $$ListeningSummaryTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
           createOrderingComposer: () =>
-              $$PlayRecordTableTableOrderingComposer($db: db, $table: table),
+              $$ListeningSummaryTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
           createComputedFieldComposer: () =>
-              $$PlayRecordTableTableAnnotationComposer($db: db, $table: table),
+              $$ListeningSummaryTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
@@ -5702,7 +12262,7 @@ class $$PlayRecordTableTableTableManager
                 Value<int> listenedDurationMilliseconds = const Value.absent(),
                 Value<DateTime> playedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => PlayRecordTableCompanion(
+              }) => ListeningSummaryTableCompanion(
                 id: id,
                 trackId: trackId,
                 trackTitle: trackTitle,
@@ -5722,7 +12282,7 @@ class $$PlayRecordTableTableTableManager
                 required int listenedDurationMilliseconds,
                 required DateTime playedAt,
                 Value<int> rowid = const Value.absent(),
-              }) => PlayRecordTableCompanion.insert(
+              }) => ListeningSummaryTableCompanion.insert(
                 id: id,
                 trackId: trackId,
                 trackTitle: trackTitle,
@@ -5740,25 +12300,25 @@ class $$PlayRecordTableTableTableManager
       );
 }
 
-typedef $$PlayRecordTableTableProcessedTableManager =
+typedef $$ListeningSummaryTableTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      $PlayRecordTableTable,
-      PlayRecordTableData,
-      $$PlayRecordTableTableFilterComposer,
-      $$PlayRecordTableTableOrderingComposer,
-      $$PlayRecordTableTableAnnotationComposer,
-      $$PlayRecordTableTableCreateCompanionBuilder,
-      $$PlayRecordTableTableUpdateCompanionBuilder,
+      $ListeningSummaryTableTable,
+      ListeningSummaryTableData,
+      $$ListeningSummaryTableTableFilterComposer,
+      $$ListeningSummaryTableTableOrderingComposer,
+      $$ListeningSummaryTableTableAnnotationComposer,
+      $$ListeningSummaryTableTableCreateCompanionBuilder,
+      $$ListeningSummaryTableTableUpdateCompanionBuilder,
       (
-        PlayRecordTableData,
+        ListeningSummaryTableData,
         BaseReferences<
           _$AppDatabase,
-          $PlayRecordTableTable,
-          PlayRecordTableData
+          $ListeningSummaryTableTable,
+          ListeningSummaryTableData
         >,
       ),
-      PlayRecordTableData,
+      ListeningSummaryTableData,
       PrefetchHooks Function()
     >;
 typedef $$PlaylistTableTableCreateCompanionBuilder =
@@ -6103,6 +12663,7 @@ typedef $$PlaylistTableTableProcessedTableManager =
 typedef $$TrackTableTableCreateCompanionBuilder =
     TrackTableCompanion Function({
       required String id,
+      Value<String?> contentIdentity,
       required String title,
       Value<String?> pathToFile,
       Value<int?> durationMs,
@@ -6112,7 +12673,6 @@ typedef $$TrackTableTableCreateCompanionBuilder =
       Value<String?> album,
       Value<String?> imageUrl,
       Value<String?> trackDescriptorJson,
-      Value<String?> embedding,
       Value<int> audioRevision,
       Value<int> metadataRevision,
       Value<int> rowid,
@@ -6120,6 +12680,7 @@ typedef $$TrackTableTableCreateCompanionBuilder =
 typedef $$TrackTableTableUpdateCompanionBuilder =
     TrackTableCompanion Function({
       Value<String> id,
+      Value<String?> contentIdentity,
       Value<String> title,
       Value<String?> pathToFile,
       Value<int?> durationMs,
@@ -6129,7 +12690,6 @@ typedef $$TrackTableTableUpdateCompanionBuilder =
       Value<String?> album,
       Value<String?> imageUrl,
       Value<String?> trackDescriptorJson,
-      Value<String?> embedding,
       Value<int> audioRevision,
       Value<int> metadataRevision,
       Value<int> rowid,
@@ -6244,6 +12804,227 @@ final class $$TrackTableTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<
+    $TrackEmbeddingTableTable,
+    List<TrackEmbeddingTableData>
+  >
+  _trackEmbeddingTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.trackEmbeddingTable,
+        aliasName: $_aliasNameGenerator(
+          db.trackTable.id,
+          db.trackEmbeddingTable.trackId,
+        ),
+      );
+
+  $$TrackEmbeddingTableTableProcessedTableManager get trackEmbeddingTableRefs {
+    final manager = $$TrackEmbeddingTableTableTableManager(
+      $_db,
+      $_db.trackEmbeddingTable,
+    ).filter((f) => f.trackId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _trackEmbeddingTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $TrackTemporalEmbeddingTableTable,
+    List<TrackTemporalEmbeddingTableData>
+  >
+  _trackTemporalEmbeddingTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.trackTemporalEmbeddingTable,
+        aliasName: $_aliasNameGenerator(
+          db.trackTable.id,
+          db.trackTemporalEmbeddingTable.trackId,
+        ),
+      );
+
+  $$TrackTemporalEmbeddingTableTableProcessedTableManager
+  get trackTemporalEmbeddingTableRefs {
+    final manager = $$TrackTemporalEmbeddingTableTableTableManager(
+      $_db,
+      $_db.trackTemporalEmbeddingTable,
+    ).filter((f) => f.trackId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _trackTemporalEmbeddingTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $MusicAnalysisTaskTableTable,
+    List<MusicAnalysisTaskTableData>
+  >
+  _musicAnalysisTaskTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.musicAnalysisTaskTable,
+        aliasName: $_aliasNameGenerator(
+          db.trackTable.id,
+          db.musicAnalysisTaskTable.trackId,
+        ),
+      );
+
+  $$MusicAnalysisTaskTableTableProcessedTableManager
+  get musicAnalysisTaskTableRefs {
+    final manager = $$MusicAnalysisTaskTableTableTableManager(
+      $_db,
+      $_db.musicAnalysisTaskTable,
+    ).filter((f) => f.trackId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _musicAnalysisTaskTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $SimilarityEvaluationTableTable,
+    List<SimilarityEvaluationTableData>
+  >
+  _seedSimilarityEvaluationsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.similarityEvaluationTable,
+        aliasName: $_aliasNameGenerator(
+          db.trackTable.id,
+          db.similarityEvaluationTable.seedTrackId,
+        ),
+      );
+
+  $$SimilarityEvaluationTableTableProcessedTableManager
+  get seedSimilarityEvaluations {
+    final manager = $$SimilarityEvaluationTableTableTableManager(
+      $_db,
+      $_db.similarityEvaluationTable,
+    ).filter((f) => f.seedTrackId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _seedSimilarityEvaluationsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $SimilarityEvaluationTableTable,
+    List<SimilarityEvaluationTableData>
+  >
+  _candidateSimilarityEvaluationsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.similarityEvaluationTable,
+        aliasName: $_aliasNameGenerator(
+          db.trackTable.id,
+          db.similarityEvaluationTable.candidateTrackId,
+        ),
+      );
+
+  $$SimilarityEvaluationTableTableProcessedTableManager
+  get candidateSimilarityEvaluations {
+    final manager =
+        $$SimilarityEvaluationTableTableTableManager(
+          $_db,
+          $_db.similarityEvaluationTable,
+        ).filter(
+          (f) => f.candidateTrackId.id.sqlEquals($_itemColumn<String>('id')!),
+        );
+
+    final cache = $_typedResult.readTableOrNull(
+      _candidateSimilarityEvaluationsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$TrackLyricsTableTable, List<TrackLyricsTableData>>
+  _trackLyricsTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.trackLyricsTable,
+    aliasName: $_aliasNameGenerator(
+      db.trackTable.id,
+      db.trackLyricsTable.trackId,
+    ),
+  );
+
+  $$TrackLyricsTableTableProcessedTableManager get trackLyricsTableRefs {
+    final manager = $$TrackLyricsTableTableTableManager(
+      $_db,
+      $_db.trackLyricsTable,
+    ).filter((f) => f.trackId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _trackLyricsTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $LyricsResolutionStateTableTable,
+    List<LyricsResolutionStateTableData>
+  >
+  _lyricsResolutionStateTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.lyricsResolutionStateTable,
+        aliasName: $_aliasNameGenerator(
+          db.trackTable.id,
+          db.lyricsResolutionStateTable.trackId,
+        ),
+      );
+
+  $$LyricsResolutionStateTableTableProcessedTableManager
+  get lyricsResolutionStateTableRefs {
+    final manager = $$LyricsResolutionStateTableTableTableManager(
+      $_db,
+      $_db.lyricsResolutionStateTable,
+    ).filter((f) => f.trackId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _lyricsResolutionStateTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $LyricsResolutionTaskTableTable,
+    List<LyricsResolutionTaskTableData>
+  >
+  _lyricsResolutionTaskTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.lyricsResolutionTaskTable,
+        aliasName: $_aliasNameGenerator(
+          db.trackTable.id,
+          db.lyricsResolutionTaskTable.trackId,
+        ),
+      );
+
+  $$LyricsResolutionTaskTableTableProcessedTableManager
+  get lyricsResolutionTaskTableRefs {
+    final manager = $$LyricsResolutionTaskTableTableTableManager(
+      $_db,
+      $_db.lyricsResolutionTaskTable,
+    ).filter((f) => f.trackId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _lyricsResolutionTaskTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$TrackTableTableFilterComposer
@@ -6257,6 +13038,11 @@ class $$TrackTableTableFilterComposer
   });
   ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get contentIdentity => $composableBuilder(
+    column: $table.contentIdentity,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6302,11 +13088,6 @@ class $$TrackTableTableFilterComposer
 
   ColumnFilters<String> get trackDescriptorJson => $composableBuilder(
     column: $table.trackDescriptorJson,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get embedding => $composableBuilder(
-    column: $table.embedding,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6420,6 +13201,219 @@ class $$TrackTableTableFilterComposer
         );
     return f(composer);
   }
+
+  Expression<bool> trackEmbeddingTableRefs(
+    Expression<bool> Function($$TrackEmbeddingTableTableFilterComposer f) f,
+  ) {
+    final $$TrackEmbeddingTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.trackEmbeddingTable,
+      getReferencedColumn: (t) => t.trackId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackEmbeddingTableTableFilterComposer(
+            $db: $db,
+            $table: $db.trackEmbeddingTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> trackTemporalEmbeddingTableRefs(
+    Expression<bool> Function(
+      $$TrackTemporalEmbeddingTableTableFilterComposer f,
+    )
+    f,
+  ) {
+    final $$TrackTemporalEmbeddingTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.trackTemporalEmbeddingTable,
+          getReferencedColumn: (t) => t.trackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TrackTemporalEmbeddingTableTableFilterComposer(
+                $db: $db,
+                $table: $db.trackTemporalEmbeddingTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> musicAnalysisTaskTableRefs(
+    Expression<bool> Function($$MusicAnalysisTaskTableTableFilterComposer f) f,
+  ) {
+    final $$MusicAnalysisTaskTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.musicAnalysisTaskTable,
+          getReferencedColumn: (t) => t.trackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$MusicAnalysisTaskTableTableFilterComposer(
+                $db: $db,
+                $table: $db.musicAnalysisTaskTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> seedSimilarityEvaluations(
+    Expression<bool> Function($$SimilarityEvaluationTableTableFilterComposer f)
+    f,
+  ) {
+    final $$SimilarityEvaluationTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.similarityEvaluationTable,
+          getReferencedColumn: (t) => t.seedTrackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SimilarityEvaluationTableTableFilterComposer(
+                $db: $db,
+                $table: $db.similarityEvaluationTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> candidateSimilarityEvaluations(
+    Expression<bool> Function($$SimilarityEvaluationTableTableFilterComposer f)
+    f,
+  ) {
+    final $$SimilarityEvaluationTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.similarityEvaluationTable,
+          getReferencedColumn: (t) => t.candidateTrackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SimilarityEvaluationTableTableFilterComposer(
+                $db: $db,
+                $table: $db.similarityEvaluationTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> trackLyricsTableRefs(
+    Expression<bool> Function($$TrackLyricsTableTableFilterComposer f) f,
+  ) {
+    final $$TrackLyricsTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.trackLyricsTable,
+      getReferencedColumn: (t) => t.trackId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackLyricsTableTableFilterComposer(
+            $db: $db,
+            $table: $db.trackLyricsTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> lyricsResolutionStateTableRefs(
+    Expression<bool> Function($$LyricsResolutionStateTableTableFilterComposer f)
+    f,
+  ) {
+    final $$LyricsResolutionStateTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.lyricsResolutionStateTable,
+          getReferencedColumn: (t) => t.trackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$LyricsResolutionStateTableTableFilterComposer(
+                $db: $db,
+                $table: $db.lyricsResolutionStateTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> lyricsResolutionTaskTableRefs(
+    Expression<bool> Function($$LyricsResolutionTaskTableTableFilterComposer f)
+    f,
+  ) {
+    final $$LyricsResolutionTaskTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.lyricsResolutionTaskTable,
+          getReferencedColumn: (t) => t.trackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$LyricsResolutionTaskTableTableFilterComposer(
+                $db: $db,
+                $table: $db.lyricsResolutionTaskTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$TrackTableTableOrderingComposer
@@ -6433,6 +13427,11 @@ class $$TrackTableTableOrderingComposer
   });
   ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get contentIdentity => $composableBuilder(
+    column: $table.contentIdentity,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -6481,11 +13480,6 @@ class $$TrackTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get embedding => $composableBuilder(
-    column: $table.embedding,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<int> get audioRevision => $composableBuilder(
     column: $table.audioRevision,
     builder: (column) => ColumnOrderings(column),
@@ -6508,6 +13502,11 @@ class $$TrackTableTableAnnotationComposer
   });
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get contentIdentity => $composableBuilder(
+    column: $table.contentIdentity,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
@@ -6543,9 +13542,6 @@ class $$TrackTableTableAnnotationComposer
     column: $table.trackDescriptorJson,
     builder: (column) => column,
   );
-
-  GeneratedColumn<String> get embedding =>
-      $composableBuilder(column: $table.embedding, builder: (column) => column);
 
   GeneratedColumn<int> get audioRevision => $composableBuilder(
     column: $table.audioRevision,
@@ -6659,6 +13655,222 @@ class $$TrackTableTableAnnotationComposer
         );
     return f(composer);
   }
+
+  Expression<T> trackEmbeddingTableRefs<T extends Object>(
+    Expression<T> Function($$TrackEmbeddingTableTableAnnotationComposer a) f,
+  ) {
+    final $$TrackEmbeddingTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.trackEmbeddingTable,
+          getReferencedColumn: (t) => t.trackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TrackEmbeddingTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.trackEmbeddingTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> trackTemporalEmbeddingTableRefs<T extends Object>(
+    Expression<T> Function(
+      $$TrackTemporalEmbeddingTableTableAnnotationComposer a,
+    )
+    f,
+  ) {
+    final $$TrackTemporalEmbeddingTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.trackTemporalEmbeddingTable,
+          getReferencedColumn: (t) => t.trackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TrackTemporalEmbeddingTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.trackTemporalEmbeddingTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> musicAnalysisTaskTableRefs<T extends Object>(
+    Expression<T> Function($$MusicAnalysisTaskTableTableAnnotationComposer a) f,
+  ) {
+    final $$MusicAnalysisTaskTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.musicAnalysisTaskTable,
+          getReferencedColumn: (t) => t.trackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$MusicAnalysisTaskTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.musicAnalysisTaskTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> seedSimilarityEvaluations<T extends Object>(
+    Expression<T> Function($$SimilarityEvaluationTableTableAnnotationComposer a)
+    f,
+  ) {
+    final $$SimilarityEvaluationTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.similarityEvaluationTable,
+          getReferencedColumn: (t) => t.seedTrackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SimilarityEvaluationTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.similarityEvaluationTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> candidateSimilarityEvaluations<T extends Object>(
+    Expression<T> Function($$SimilarityEvaluationTableTableAnnotationComposer a)
+    f,
+  ) {
+    final $$SimilarityEvaluationTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.similarityEvaluationTable,
+          getReferencedColumn: (t) => t.candidateTrackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$SimilarityEvaluationTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.similarityEvaluationTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> trackLyricsTableRefs<T extends Object>(
+    Expression<T> Function($$TrackLyricsTableTableAnnotationComposer a) f,
+  ) {
+    final $$TrackLyricsTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.trackLyricsTable,
+      getReferencedColumn: (t) => t.trackId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackLyricsTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.trackLyricsTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> lyricsResolutionStateTableRefs<T extends Object>(
+    Expression<T> Function(
+      $$LyricsResolutionStateTableTableAnnotationComposer a,
+    )
+    f,
+  ) {
+    final $$LyricsResolutionStateTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.lyricsResolutionStateTable,
+          getReferencedColumn: (t) => t.trackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$LyricsResolutionStateTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.lyricsResolutionStateTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> lyricsResolutionTaskTableRefs<T extends Object>(
+    Expression<T> Function($$LyricsResolutionTaskTableTableAnnotationComposer a)
+    f,
+  ) {
+    final $$LyricsResolutionTaskTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.lyricsResolutionTaskTable,
+          getReferencedColumn: (t) => t.trackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$LyricsResolutionTaskTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.lyricsResolutionTaskTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$TrackTableTableTableManager
@@ -6679,6 +13891,14 @@ class $$TrackTableTableTableManager
             bool playlistTrackTableRefs,
             bool playbackSessionTableRefs,
             bool playbackQueueItemTableRefs,
+            bool trackEmbeddingTableRefs,
+            bool trackTemporalEmbeddingTableRefs,
+            bool musicAnalysisTaskTableRefs,
+            bool seedSimilarityEvaluations,
+            bool candidateSimilarityEvaluations,
+            bool trackLyricsTableRefs,
+            bool lyricsResolutionStateTableRefs,
+            bool lyricsResolutionTaskTableRefs,
           })
         > {
   $$TrackTableTableTableManager(_$AppDatabase db, $TrackTableTable table)
@@ -6695,6 +13915,7 @@ class $$TrackTableTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                Value<String?> contentIdentity = const Value.absent(),
                 Value<String> title = const Value.absent(),
                 Value<String?> pathToFile = const Value.absent(),
                 Value<int?> durationMs = const Value.absent(),
@@ -6704,12 +13925,12 @@ class $$TrackTableTableTableManager
                 Value<String?> album = const Value.absent(),
                 Value<String?> imageUrl = const Value.absent(),
                 Value<String?> trackDescriptorJson = const Value.absent(),
-                Value<String?> embedding = const Value.absent(),
                 Value<int> audioRevision = const Value.absent(),
                 Value<int> metadataRevision = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TrackTableCompanion(
                 id: id,
+                contentIdentity: contentIdentity,
                 title: title,
                 pathToFile: pathToFile,
                 durationMs: durationMs,
@@ -6719,7 +13940,6 @@ class $$TrackTableTableTableManager
                 album: album,
                 imageUrl: imageUrl,
                 trackDescriptorJson: trackDescriptorJson,
-                embedding: embedding,
                 audioRevision: audioRevision,
                 metadataRevision: metadataRevision,
                 rowid: rowid,
@@ -6727,6 +13947,7 @@ class $$TrackTableTableTableManager
           createCompanionCallback:
               ({
                 required String id,
+                Value<String?> contentIdentity = const Value.absent(),
                 required String title,
                 Value<String?> pathToFile = const Value.absent(),
                 Value<int?> durationMs = const Value.absent(),
@@ -6736,12 +13957,12 @@ class $$TrackTableTableTableManager
                 Value<String?> album = const Value.absent(),
                 Value<String?> imageUrl = const Value.absent(),
                 Value<String?> trackDescriptorJson = const Value.absent(),
-                Value<String?> embedding = const Value.absent(),
                 Value<int> audioRevision = const Value.absent(),
                 Value<int> metadataRevision = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TrackTableCompanion.insert(
                 id: id,
+                contentIdentity: contentIdentity,
                 title: title,
                 pathToFile: pathToFile,
                 durationMs: durationMs,
@@ -6751,7 +13972,6 @@ class $$TrackTableTableTableManager
                 album: album,
                 imageUrl: imageUrl,
                 trackDescriptorJson: trackDescriptorJson,
-                embedding: embedding,
                 audioRevision: audioRevision,
                 metadataRevision: metadataRevision,
                 rowid: rowid,
@@ -6770,6 +13990,14 @@ class $$TrackTableTableTableManager
                 playlistTrackTableRefs = false,
                 playbackSessionTableRefs = false,
                 playbackQueueItemTableRefs = false,
+                trackEmbeddingTableRefs = false,
+                trackTemporalEmbeddingTableRefs = false,
+                musicAnalysisTaskTableRefs = false,
+                seedSimilarityEvaluations = false,
+                candidateSimilarityEvaluations = false,
+                trackLyricsTableRefs = false,
+                lyricsResolutionStateTableRefs = false,
+                lyricsResolutionTaskTableRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -6778,6 +14006,18 @@ class $$TrackTableTableTableManager
                     if (playlistTrackTableRefs) db.playlistTrackTable,
                     if (playbackSessionTableRefs) db.playbackSessionTable,
                     if (playbackQueueItemTableRefs) db.playbackQueueItemTable,
+                    if (trackEmbeddingTableRefs) db.trackEmbeddingTable,
+                    if (trackTemporalEmbeddingTableRefs)
+                      db.trackTemporalEmbeddingTable,
+                    if (musicAnalysisTaskTableRefs) db.musicAnalysisTaskTable,
+                    if (seedSimilarityEvaluations) db.similarityEvaluationTable,
+                    if (candidateSimilarityEvaluations)
+                      db.similarityEvaluationTable,
+                    if (trackLyricsTableRefs) db.trackLyricsTable,
+                    if (lyricsResolutionStateTableRefs)
+                      db.lyricsResolutionStateTable,
+                    if (lyricsResolutionTaskTableRefs)
+                      db.lyricsResolutionTaskTable,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -6866,6 +14106,174 @@ class $$TrackTableTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (trackEmbeddingTableRefs)
+                        await $_getPrefetchedData<
+                          TrackTableData,
+                          $TrackTableTable,
+                          TrackEmbeddingTableData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TrackTableTableReferences
+                              ._trackEmbeddingTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TrackTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).trackEmbeddingTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.trackId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (trackTemporalEmbeddingTableRefs)
+                        await $_getPrefetchedData<
+                          TrackTableData,
+                          $TrackTableTable,
+                          TrackTemporalEmbeddingTableData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TrackTableTableReferences
+                              ._trackTemporalEmbeddingTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TrackTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).trackTemporalEmbeddingTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.trackId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (musicAnalysisTaskTableRefs)
+                        await $_getPrefetchedData<
+                          TrackTableData,
+                          $TrackTableTable,
+                          MusicAnalysisTaskTableData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TrackTableTableReferences
+                              ._musicAnalysisTaskTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TrackTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).musicAnalysisTaskTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.trackId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (seedSimilarityEvaluations)
+                        await $_getPrefetchedData<
+                          TrackTableData,
+                          $TrackTableTable,
+                          SimilarityEvaluationTableData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TrackTableTableReferences
+                              ._seedSimilarityEvaluationsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TrackTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).seedSimilarityEvaluations,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.seedTrackId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (candidateSimilarityEvaluations)
+                        await $_getPrefetchedData<
+                          TrackTableData,
+                          $TrackTableTable,
+                          SimilarityEvaluationTableData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TrackTableTableReferences
+                              ._candidateSimilarityEvaluationsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TrackTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).candidateSimilarityEvaluations,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.candidateTrackId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (trackLyricsTableRefs)
+                        await $_getPrefetchedData<
+                          TrackTableData,
+                          $TrackTableTable,
+                          TrackLyricsTableData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TrackTableTableReferences
+                              ._trackLyricsTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TrackTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).trackLyricsTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.trackId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (lyricsResolutionStateTableRefs)
+                        await $_getPrefetchedData<
+                          TrackTableData,
+                          $TrackTableTable,
+                          LyricsResolutionStateTableData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TrackTableTableReferences
+                              ._lyricsResolutionStateTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TrackTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).lyricsResolutionStateTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.trackId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (lyricsResolutionTaskTableRefs)
+                        await $_getPrefetchedData<
+                          TrackTableData,
+                          $TrackTableTable,
+                          LyricsResolutionTaskTableData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TrackTableTableReferences
+                              ._lyricsResolutionTaskTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TrackTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).lyricsResolutionTaskTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.trackId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -6891,283 +14299,15 @@ typedef $$TrackTableTableProcessedTableManager =
         bool playlistTrackTableRefs,
         bool playbackSessionTableRefs,
         bool playbackQueueItemTableRefs,
+        bool trackEmbeddingTableRefs,
+        bool trackTemporalEmbeddingTableRefs,
+        bool musicAnalysisTaskTableRefs,
+        bool seedSimilarityEvaluations,
+        bool candidateSimilarityEvaluations,
+        bool trackLyricsTableRefs,
+        bool lyricsResolutionStateTableRefs,
+        bool lyricsResolutionTaskTableRefs,
       })
-    >;
-typedef $$EmbeddingTaskTableTableCreateCompanionBuilder =
-    EmbeddingTaskTableCompanion Function({
-      required String id,
-      required String trackId,
-      required String status,
-      required String filePath,
-      required DateTime createdAt,
-      Value<int> audioRevision,
-      Value<String?> leaseOwner,
-      Value<DateTime?> leaseUntil,
-      Value<int> rowid,
-    });
-typedef $$EmbeddingTaskTableTableUpdateCompanionBuilder =
-    EmbeddingTaskTableCompanion Function({
-      Value<String> id,
-      Value<String> trackId,
-      Value<String> status,
-      Value<String> filePath,
-      Value<DateTime> createdAt,
-      Value<int> audioRevision,
-      Value<String?> leaseOwner,
-      Value<DateTime?> leaseUntil,
-      Value<int> rowid,
-    });
-
-class $$EmbeddingTaskTableTableFilterComposer
-    extends Composer<_$AppDatabase, $EmbeddingTaskTableTable> {
-  $$EmbeddingTaskTableTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get trackId => $composableBuilder(
-    column: $table.trackId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get status => $composableBuilder(
-    column: $table.status,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get filePath => $composableBuilder(
-    column: $table.filePath,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get audioRevision => $composableBuilder(
-    column: $table.audioRevision,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get leaseOwner => $composableBuilder(
-    column: $table.leaseOwner,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get leaseUntil => $composableBuilder(
-    column: $table.leaseUntil,
-    builder: (column) => ColumnFilters(column),
-  );
-}
-
-class $$EmbeddingTaskTableTableOrderingComposer
-    extends Composer<_$AppDatabase, $EmbeddingTaskTableTable> {
-  $$EmbeddingTaskTableTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get trackId => $composableBuilder(
-    column: $table.trackId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get status => $composableBuilder(
-    column: $table.status,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get filePath => $composableBuilder(
-    column: $table.filePath,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get audioRevision => $composableBuilder(
-    column: $table.audioRevision,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get leaseOwner => $composableBuilder(
-    column: $table.leaseOwner,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get leaseUntil => $composableBuilder(
-    column: $table.leaseUntil,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$EmbeddingTaskTableTableAnnotationComposer
-    extends Composer<_$AppDatabase, $EmbeddingTaskTableTable> {
-  $$EmbeddingTaskTableTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get trackId =>
-      $composableBuilder(column: $table.trackId, builder: (column) => column);
-
-  GeneratedColumn<String> get status =>
-      $composableBuilder(column: $table.status, builder: (column) => column);
-
-  GeneratedColumn<String> get filePath =>
-      $composableBuilder(column: $table.filePath, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  GeneratedColumn<int> get audioRevision => $composableBuilder(
-    column: $table.audioRevision,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get leaseOwner => $composableBuilder(
-    column: $table.leaseOwner,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<DateTime> get leaseUntil => $composableBuilder(
-    column: $table.leaseUntil,
-    builder: (column) => column,
-  );
-}
-
-class $$EmbeddingTaskTableTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $EmbeddingTaskTableTable,
-          EmbeddingTaskTableData,
-          $$EmbeddingTaskTableTableFilterComposer,
-          $$EmbeddingTaskTableTableOrderingComposer,
-          $$EmbeddingTaskTableTableAnnotationComposer,
-          $$EmbeddingTaskTableTableCreateCompanionBuilder,
-          $$EmbeddingTaskTableTableUpdateCompanionBuilder,
-          (
-            EmbeddingTaskTableData,
-            BaseReferences<
-              _$AppDatabase,
-              $EmbeddingTaskTableTable,
-              EmbeddingTaskTableData
-            >,
-          ),
-          EmbeddingTaskTableData,
-          PrefetchHooks Function()
-        > {
-  $$EmbeddingTaskTableTableTableManager(
-    _$AppDatabase db,
-    $EmbeddingTaskTableTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$EmbeddingTaskTableTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$EmbeddingTaskTableTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$EmbeddingTaskTableTableAnnotationComposer(
-                $db: db,
-                $table: table,
-              ),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> trackId = const Value.absent(),
-                Value<String> status = const Value.absent(),
-                Value<String> filePath = const Value.absent(),
-                Value<DateTime> createdAt = const Value.absent(),
-                Value<int> audioRevision = const Value.absent(),
-                Value<String?> leaseOwner = const Value.absent(),
-                Value<DateTime?> leaseUntil = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => EmbeddingTaskTableCompanion(
-                id: id,
-                trackId: trackId,
-                status: status,
-                filePath: filePath,
-                createdAt: createdAt,
-                audioRevision: audioRevision,
-                leaseOwner: leaseOwner,
-                leaseUntil: leaseUntil,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required String id,
-                required String trackId,
-                required String status,
-                required String filePath,
-                required DateTime createdAt,
-                Value<int> audioRevision = const Value.absent(),
-                Value<String?> leaseOwner = const Value.absent(),
-                Value<DateTime?> leaseUntil = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => EmbeddingTaskTableCompanion.insert(
-                id: id,
-                trackId: trackId,
-                status: status,
-                filePath: filePath,
-                createdAt: createdAt,
-                audioRevision: audioRevision,
-                leaseOwner: leaseOwner,
-                leaseUntil: leaseUntil,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
-}
-
-typedef $$EmbeddingTaskTableTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $EmbeddingTaskTableTable,
-      EmbeddingTaskTableData,
-      $$EmbeddingTaskTableTableFilterComposer,
-      $$EmbeddingTaskTableTableOrderingComposer,
-      $$EmbeddingTaskTableTableAnnotationComposer,
-      $$EmbeddingTaskTableTableCreateCompanionBuilder,
-      $$EmbeddingTaskTableTableUpdateCompanionBuilder,
-      (
-        EmbeddingTaskTableData,
-        BaseReferences<
-          _$AppDatabase,
-          $EmbeddingTaskTableTable,
-          EmbeddingTaskTableData
-        >,
-      ),
-      EmbeddingTaskTableData,
-      PrefetchHooks Function()
     >;
 typedef $$DownloadTaskTableTableCreateCompanionBuilder =
     DownloadTaskTableCompanion Function({
@@ -10009,18 +17149,4637 @@ typedef $$AppNavigationStateTableTableProcessedTableManager =
       AppNavigationStateTableData,
       PrefetchHooks Function()
     >;
+typedef $$TrackEmbeddingTableTableCreateCompanionBuilder =
+    TrackEmbeddingTableCompanion Function({
+      required String trackId,
+      required String modality,
+      required String modelId,
+      required String modelVersion,
+      Value<String> preprocessingVersion,
+      required String provider,
+      Value<int?> audioRevision,
+      Value<String?> contentRevision,
+      Value<String> dtype,
+      Value<bool?> normalized,
+      required int dimensions,
+      required Uint8List vector,
+      required DateTime createdAt,
+      Value<int> rowid,
+    });
+typedef $$TrackEmbeddingTableTableUpdateCompanionBuilder =
+    TrackEmbeddingTableCompanion Function({
+      Value<String> trackId,
+      Value<String> modality,
+      Value<String> modelId,
+      Value<String> modelVersion,
+      Value<String> preprocessingVersion,
+      Value<String> provider,
+      Value<int?> audioRevision,
+      Value<String?> contentRevision,
+      Value<String> dtype,
+      Value<bool?> normalized,
+      Value<int> dimensions,
+      Value<Uint8List> vector,
+      Value<DateTime> createdAt,
+      Value<int> rowid,
+    });
+
+final class $$TrackEmbeddingTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $TrackEmbeddingTableTable,
+          TrackEmbeddingTableData
+        > {
+  $$TrackEmbeddingTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TrackTableTable _trackIdTable(_$AppDatabase db) =>
+      db.trackTable.createAlias(
+        $_aliasNameGenerator(db.trackEmbeddingTable.trackId, db.trackTable.id),
+      );
+
+  $$TrackTableTableProcessedTableManager get trackId {
+    final $_column = $_itemColumn<String>('track_id')!;
+
+    final manager = $$TrackTableTableTableManager(
+      $_db,
+      $_db.trackTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_trackIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$TrackEmbeddingTableTableFilterComposer
+    extends Composer<_$AppDatabase, $TrackEmbeddingTableTable> {
+  $$TrackEmbeddingTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get modality => $composableBuilder(
+    column: $table.modality,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get modelId => $composableBuilder(
+    column: $table.modelId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get modelVersion => $composableBuilder(
+    column: $table.modelVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get preprocessingVersion => $composableBuilder(
+    column: $table.preprocessingVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get provider => $composableBuilder(
+    column: $table.provider,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get audioRevision => $composableBuilder(
+    column: $table.audioRevision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get contentRevision => $composableBuilder(
+    column: $table.contentRevision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dtype => $composableBuilder(
+    column: $table.dtype,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get normalized => $composableBuilder(
+    column: $table.normalized,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get dimensions => $composableBuilder(
+    column: $table.dimensions,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<Uint8List> get vector => $composableBuilder(
+    column: $table.vector,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TrackTableTableFilterComposer get trackId {
+    final $$TrackTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableFilterComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TrackEmbeddingTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $TrackEmbeddingTableTable> {
+  $$TrackEmbeddingTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get modality => $composableBuilder(
+    column: $table.modality,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get modelId => $composableBuilder(
+    column: $table.modelId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get modelVersion => $composableBuilder(
+    column: $table.modelVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get preprocessingVersion => $composableBuilder(
+    column: $table.preprocessingVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get provider => $composableBuilder(
+    column: $table.provider,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get audioRevision => $composableBuilder(
+    column: $table.audioRevision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get contentRevision => $composableBuilder(
+    column: $table.contentRevision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dtype => $composableBuilder(
+    column: $table.dtype,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get normalized => $composableBuilder(
+    column: $table.normalized,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get dimensions => $composableBuilder(
+    column: $table.dimensions,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<Uint8List> get vector => $composableBuilder(
+    column: $table.vector,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TrackTableTableOrderingComposer get trackId {
+    final $$TrackTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TrackEmbeddingTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TrackEmbeddingTableTable> {
+  $$TrackEmbeddingTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get modality =>
+      $composableBuilder(column: $table.modality, builder: (column) => column);
+
+  GeneratedColumn<String> get modelId =>
+      $composableBuilder(column: $table.modelId, builder: (column) => column);
+
+  GeneratedColumn<String> get modelVersion => $composableBuilder(
+    column: $table.modelVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get preprocessingVersion => $composableBuilder(
+    column: $table.preprocessingVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get provider =>
+      $composableBuilder(column: $table.provider, builder: (column) => column);
+
+  GeneratedColumn<int> get audioRevision => $composableBuilder(
+    column: $table.audioRevision,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get contentRevision => $composableBuilder(
+    column: $table.contentRevision,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get dtype =>
+      $composableBuilder(column: $table.dtype, builder: (column) => column);
+
+  GeneratedColumn<bool> get normalized => $composableBuilder(
+    column: $table.normalized,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get dimensions => $composableBuilder(
+    column: $table.dimensions,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<Uint8List> get vector =>
+      $composableBuilder(column: $table.vector, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$TrackTableTableAnnotationComposer get trackId {
+    final $$TrackTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TrackEmbeddingTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TrackEmbeddingTableTable,
+          TrackEmbeddingTableData,
+          $$TrackEmbeddingTableTableFilterComposer,
+          $$TrackEmbeddingTableTableOrderingComposer,
+          $$TrackEmbeddingTableTableAnnotationComposer,
+          $$TrackEmbeddingTableTableCreateCompanionBuilder,
+          $$TrackEmbeddingTableTableUpdateCompanionBuilder,
+          (TrackEmbeddingTableData, $$TrackEmbeddingTableTableReferences),
+          TrackEmbeddingTableData,
+          PrefetchHooks Function({bool trackId})
+        > {
+  $$TrackEmbeddingTableTableTableManager(
+    _$AppDatabase db,
+    $TrackEmbeddingTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TrackEmbeddingTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TrackEmbeddingTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$TrackEmbeddingTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> trackId = const Value.absent(),
+                Value<String> modality = const Value.absent(),
+                Value<String> modelId = const Value.absent(),
+                Value<String> modelVersion = const Value.absent(),
+                Value<String> preprocessingVersion = const Value.absent(),
+                Value<String> provider = const Value.absent(),
+                Value<int?> audioRevision = const Value.absent(),
+                Value<String?> contentRevision = const Value.absent(),
+                Value<String> dtype = const Value.absent(),
+                Value<bool?> normalized = const Value.absent(),
+                Value<int> dimensions = const Value.absent(),
+                Value<Uint8List> vector = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TrackEmbeddingTableCompanion(
+                trackId: trackId,
+                modality: modality,
+                modelId: modelId,
+                modelVersion: modelVersion,
+                preprocessingVersion: preprocessingVersion,
+                provider: provider,
+                audioRevision: audioRevision,
+                contentRevision: contentRevision,
+                dtype: dtype,
+                normalized: normalized,
+                dimensions: dimensions,
+                vector: vector,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String trackId,
+                required String modality,
+                required String modelId,
+                required String modelVersion,
+                Value<String> preprocessingVersion = const Value.absent(),
+                required String provider,
+                Value<int?> audioRevision = const Value.absent(),
+                Value<String?> contentRevision = const Value.absent(),
+                Value<String> dtype = const Value.absent(),
+                Value<bool?> normalized = const Value.absent(),
+                required int dimensions,
+                required Uint8List vector,
+                required DateTime createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => TrackEmbeddingTableCompanion.insert(
+                trackId: trackId,
+                modality: modality,
+                modelId: modelId,
+                modelVersion: modelVersion,
+                preprocessingVersion: preprocessingVersion,
+                provider: provider,
+                audioRevision: audioRevision,
+                contentRevision: contentRevision,
+                dtype: dtype,
+                normalized: normalized,
+                dimensions: dimensions,
+                vector: vector,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TrackEmbeddingTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({trackId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (trackId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.trackId,
+                                referencedTable:
+                                    $$TrackEmbeddingTableTableReferences
+                                        ._trackIdTable(db),
+                                referencedColumn:
+                                    $$TrackEmbeddingTableTableReferences
+                                        ._trackIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$TrackEmbeddingTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TrackEmbeddingTableTable,
+      TrackEmbeddingTableData,
+      $$TrackEmbeddingTableTableFilterComposer,
+      $$TrackEmbeddingTableTableOrderingComposer,
+      $$TrackEmbeddingTableTableAnnotationComposer,
+      $$TrackEmbeddingTableTableCreateCompanionBuilder,
+      $$TrackEmbeddingTableTableUpdateCompanionBuilder,
+      (TrackEmbeddingTableData, $$TrackEmbeddingTableTableReferences),
+      TrackEmbeddingTableData,
+      PrefetchHooks Function({bool trackId})
+    >;
+typedef $$ListeningEventTableTableCreateCompanionBuilder =
+    ListeningEventTableCompanion Function({
+      required String id,
+      Value<String?> sessionId,
+      required String trackId,
+      required String type,
+      required DateTime occurredAt,
+      Value<int?> positionMs,
+      Value<int?> listenedMs,
+      Value<int?> durationMs,
+      Value<String?> previousTrackId,
+      Value<String?> transitionReason,
+      Value<int> rowid,
+    });
+typedef $$ListeningEventTableTableUpdateCompanionBuilder =
+    ListeningEventTableCompanion Function({
+      Value<String> id,
+      Value<String?> sessionId,
+      Value<String> trackId,
+      Value<String> type,
+      Value<DateTime> occurredAt,
+      Value<int?> positionMs,
+      Value<int?> listenedMs,
+      Value<int?> durationMs,
+      Value<String?> previousTrackId,
+      Value<String?> transitionReason,
+      Value<int> rowid,
+    });
+
+class $$ListeningEventTableTableFilterComposer
+    extends Composer<_$AppDatabase, $ListeningEventTableTable> {
+  $$ListeningEventTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sessionId => $composableBuilder(
+    column: $table.sessionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get trackId => $composableBuilder(
+    column: $table.trackId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get positionMs => $composableBuilder(
+    column: $table.positionMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get listenedMs => $composableBuilder(
+    column: $table.listenedMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get previousTrackId => $composableBuilder(
+    column: $table.previousTrackId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get transitionReason => $composableBuilder(
+    column: $table.transitionReason,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ListeningEventTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $ListeningEventTableTable> {
+  $$ListeningEventTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sessionId => $composableBuilder(
+    column: $table.sessionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get trackId => $composableBuilder(
+    column: $table.trackId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get positionMs => $composableBuilder(
+    column: $table.positionMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get listenedMs => $composableBuilder(
+    column: $table.listenedMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get previousTrackId => $composableBuilder(
+    column: $table.previousTrackId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get transitionReason => $composableBuilder(
+    column: $table.transitionReason,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ListeningEventTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ListeningEventTableTable> {
+  $$ListeningEventTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get sessionId =>
+      $composableBuilder(column: $table.sessionId, builder: (column) => column);
+
+  GeneratedColumn<String> get trackId =>
+      $composableBuilder(column: $table.trackId, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get occurredAt => $composableBuilder(
+    column: $table.occurredAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get positionMs => $composableBuilder(
+    column: $table.positionMs,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get listenedMs => $composableBuilder(
+    column: $table.listenedMs,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get previousTrackId => $composableBuilder(
+    column: $table.previousTrackId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get transitionReason => $composableBuilder(
+    column: $table.transitionReason,
+    builder: (column) => column,
+  );
+}
+
+class $$ListeningEventTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ListeningEventTableTable,
+          ListeningEventTableData,
+          $$ListeningEventTableTableFilterComposer,
+          $$ListeningEventTableTableOrderingComposer,
+          $$ListeningEventTableTableAnnotationComposer,
+          $$ListeningEventTableTableCreateCompanionBuilder,
+          $$ListeningEventTableTableUpdateCompanionBuilder,
+          (
+            ListeningEventTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $ListeningEventTableTable,
+              ListeningEventTableData
+            >,
+          ),
+          ListeningEventTableData,
+          PrefetchHooks Function()
+        > {
+  $$ListeningEventTableTableTableManager(
+    _$AppDatabase db,
+    $ListeningEventTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ListeningEventTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ListeningEventTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$ListeningEventTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String?> sessionId = const Value.absent(),
+                Value<String> trackId = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<DateTime> occurredAt = const Value.absent(),
+                Value<int?> positionMs = const Value.absent(),
+                Value<int?> listenedMs = const Value.absent(),
+                Value<int?> durationMs = const Value.absent(),
+                Value<String?> previousTrackId = const Value.absent(),
+                Value<String?> transitionReason = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ListeningEventTableCompanion(
+                id: id,
+                sessionId: sessionId,
+                trackId: trackId,
+                type: type,
+                occurredAt: occurredAt,
+                positionMs: positionMs,
+                listenedMs: listenedMs,
+                durationMs: durationMs,
+                previousTrackId: previousTrackId,
+                transitionReason: transitionReason,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                Value<String?> sessionId = const Value.absent(),
+                required String trackId,
+                required String type,
+                required DateTime occurredAt,
+                Value<int?> positionMs = const Value.absent(),
+                Value<int?> listenedMs = const Value.absent(),
+                Value<int?> durationMs = const Value.absent(),
+                Value<String?> previousTrackId = const Value.absent(),
+                Value<String?> transitionReason = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ListeningEventTableCompanion.insert(
+                id: id,
+                sessionId: sessionId,
+                trackId: trackId,
+                type: type,
+                occurredAt: occurredAt,
+                positionMs: positionMs,
+                listenedMs: listenedMs,
+                durationMs: durationMs,
+                previousTrackId: previousTrackId,
+                transitionReason: transitionReason,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ListeningEventTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ListeningEventTableTable,
+      ListeningEventTableData,
+      $$ListeningEventTableTableFilterComposer,
+      $$ListeningEventTableTableOrderingComposer,
+      $$ListeningEventTableTableAnnotationComposer,
+      $$ListeningEventTableTableCreateCompanionBuilder,
+      $$ListeningEventTableTableUpdateCompanionBuilder,
+      (
+        ListeningEventTableData,
+        BaseReferences<
+          _$AppDatabase,
+          $ListeningEventTableTable,
+          ListeningEventTableData
+        >,
+      ),
+      ListeningEventTableData,
+      PrefetchHooks Function()
+    >;
+typedef $$TrackTemporalEmbeddingTableTableCreateCompanionBuilder =
+    TrackTemporalEmbeddingTableCompanion Function({
+      required String id,
+      required String trackId,
+      required String representation,
+      required String modelId,
+      required String modelVersion,
+      required String preprocessingVersion,
+      required String provider,
+      required int audioRevision,
+      required int dimension,
+      required String dtype,
+      required bool normalized,
+      required DateTime createdAt,
+      required int numberOfSegments,
+      required double meanAdjacentDistance,
+      required double maxAdjacentDistance,
+      required double trajectoryVariance,
+      Value<int?> largestTransitionIndex,
+      Value<int> rowid,
+    });
+typedef $$TrackTemporalEmbeddingTableTableUpdateCompanionBuilder =
+    TrackTemporalEmbeddingTableCompanion Function({
+      Value<String> id,
+      Value<String> trackId,
+      Value<String> representation,
+      Value<String> modelId,
+      Value<String> modelVersion,
+      Value<String> preprocessingVersion,
+      Value<String> provider,
+      Value<int> audioRevision,
+      Value<int> dimension,
+      Value<String> dtype,
+      Value<bool> normalized,
+      Value<DateTime> createdAt,
+      Value<int> numberOfSegments,
+      Value<double> meanAdjacentDistance,
+      Value<double> maxAdjacentDistance,
+      Value<double> trajectoryVariance,
+      Value<int?> largestTransitionIndex,
+      Value<int> rowid,
+    });
+
+final class $$TrackTemporalEmbeddingTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $TrackTemporalEmbeddingTableTable,
+          TrackTemporalEmbeddingTableData
+        > {
+  $$TrackTemporalEmbeddingTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TrackTableTable _trackIdTable(_$AppDatabase db) =>
+      db.trackTable.createAlias(
+        $_aliasNameGenerator(
+          db.trackTemporalEmbeddingTable.trackId,
+          db.trackTable.id,
+        ),
+      );
+
+  $$TrackTableTableProcessedTableManager get trackId {
+    final $_column = $_itemColumn<String>('track_id')!;
+
+    final manager = $$TrackTableTableTableManager(
+      $_db,
+      $_db.trackTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_trackIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $TrackTemporalEmbeddingSegmentTableTable,
+    List<TrackTemporalEmbeddingSegmentTableData>
+  >
+  _trackTemporalEmbeddingSegmentTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.trackTemporalEmbeddingSegmentTable,
+        aliasName: $_aliasNameGenerator(
+          db.trackTemporalEmbeddingTable.id,
+          db.trackTemporalEmbeddingSegmentTable.temporalEmbeddingId,
+        ),
+      );
+
+  $$TrackTemporalEmbeddingSegmentTableTableProcessedTableManager
+  get trackTemporalEmbeddingSegmentTableRefs {
+    final manager =
+        $$TrackTemporalEmbeddingSegmentTableTableTableManager(
+          $_db,
+          $_db.trackTemporalEmbeddingSegmentTable,
+        ).filter(
+          (f) =>
+              f.temporalEmbeddingId.id.sqlEquals($_itemColumn<String>('id')!),
+        );
+
+    final cache = $_typedResult.readTableOrNull(
+      _trackTemporalEmbeddingSegmentTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$TrackTemporalEmbeddingTableTableFilterComposer
+    extends Composer<_$AppDatabase, $TrackTemporalEmbeddingTableTable> {
+  $$TrackTemporalEmbeddingTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get representation => $composableBuilder(
+    column: $table.representation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get modelId => $composableBuilder(
+    column: $table.modelId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get modelVersion => $composableBuilder(
+    column: $table.modelVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get preprocessingVersion => $composableBuilder(
+    column: $table.preprocessingVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get provider => $composableBuilder(
+    column: $table.provider,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get audioRevision => $composableBuilder(
+    column: $table.audioRevision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get dimension => $composableBuilder(
+    column: $table.dimension,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dtype => $composableBuilder(
+    column: $table.dtype,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get normalized => $composableBuilder(
+    column: $table.normalized,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get numberOfSegments => $composableBuilder(
+    column: $table.numberOfSegments,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get meanAdjacentDistance => $composableBuilder(
+    column: $table.meanAdjacentDistance,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get maxAdjacentDistance => $composableBuilder(
+    column: $table.maxAdjacentDistance,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get trajectoryVariance => $composableBuilder(
+    column: $table.trajectoryVariance,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get largestTransitionIndex => $composableBuilder(
+    column: $table.largestTransitionIndex,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TrackTableTableFilterComposer get trackId {
+    final $$TrackTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableFilterComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> trackTemporalEmbeddingSegmentTableRefs(
+    Expression<bool> Function(
+      $$TrackTemporalEmbeddingSegmentTableTableFilterComposer f,
+    )
+    f,
+  ) {
+    final $$TrackTemporalEmbeddingSegmentTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.trackTemporalEmbeddingSegmentTable,
+          getReferencedColumn: (t) => t.temporalEmbeddingId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TrackTemporalEmbeddingSegmentTableTableFilterComposer(
+                $db: $db,
+                $table: $db.trackTemporalEmbeddingSegmentTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$TrackTemporalEmbeddingTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $TrackTemporalEmbeddingTableTable> {
+  $$TrackTemporalEmbeddingTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get representation => $composableBuilder(
+    column: $table.representation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get modelId => $composableBuilder(
+    column: $table.modelId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get modelVersion => $composableBuilder(
+    column: $table.modelVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get preprocessingVersion => $composableBuilder(
+    column: $table.preprocessingVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get provider => $composableBuilder(
+    column: $table.provider,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get audioRevision => $composableBuilder(
+    column: $table.audioRevision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get dimension => $composableBuilder(
+    column: $table.dimension,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dtype => $composableBuilder(
+    column: $table.dtype,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get normalized => $composableBuilder(
+    column: $table.normalized,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get numberOfSegments => $composableBuilder(
+    column: $table.numberOfSegments,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get meanAdjacentDistance => $composableBuilder(
+    column: $table.meanAdjacentDistance,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get maxAdjacentDistance => $composableBuilder(
+    column: $table.maxAdjacentDistance,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get trajectoryVariance => $composableBuilder(
+    column: $table.trajectoryVariance,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get largestTransitionIndex => $composableBuilder(
+    column: $table.largestTransitionIndex,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TrackTableTableOrderingComposer get trackId {
+    final $$TrackTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TrackTemporalEmbeddingTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TrackTemporalEmbeddingTableTable> {
+  $$TrackTemporalEmbeddingTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get representation => $composableBuilder(
+    column: $table.representation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get modelId =>
+      $composableBuilder(column: $table.modelId, builder: (column) => column);
+
+  GeneratedColumn<String> get modelVersion => $composableBuilder(
+    column: $table.modelVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get preprocessingVersion => $composableBuilder(
+    column: $table.preprocessingVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get provider =>
+      $composableBuilder(column: $table.provider, builder: (column) => column);
+
+  GeneratedColumn<int> get audioRevision => $composableBuilder(
+    column: $table.audioRevision,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get dimension =>
+      $composableBuilder(column: $table.dimension, builder: (column) => column);
+
+  GeneratedColumn<String> get dtype =>
+      $composableBuilder(column: $table.dtype, builder: (column) => column);
+
+  GeneratedColumn<bool> get normalized => $composableBuilder(
+    column: $table.normalized,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<int> get numberOfSegments => $composableBuilder(
+    column: $table.numberOfSegments,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get meanAdjacentDistance => $composableBuilder(
+    column: $table.meanAdjacentDistance,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get maxAdjacentDistance => $composableBuilder(
+    column: $table.maxAdjacentDistance,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get trajectoryVariance => $composableBuilder(
+    column: $table.trajectoryVariance,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get largestTransitionIndex => $composableBuilder(
+    column: $table.largestTransitionIndex,
+    builder: (column) => column,
+  );
+
+  $$TrackTableTableAnnotationComposer get trackId {
+    final $$TrackTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> trackTemporalEmbeddingSegmentTableRefs<T extends Object>(
+    Expression<T> Function(
+      $$TrackTemporalEmbeddingSegmentTableTableAnnotationComposer a,
+    )
+    f,
+  ) {
+    final $$TrackTemporalEmbeddingSegmentTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.trackTemporalEmbeddingSegmentTable,
+          getReferencedColumn: (t) => t.temporalEmbeddingId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TrackTemporalEmbeddingSegmentTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.trackTemporalEmbeddingSegmentTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$TrackTemporalEmbeddingTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TrackTemporalEmbeddingTableTable,
+          TrackTemporalEmbeddingTableData,
+          $$TrackTemporalEmbeddingTableTableFilterComposer,
+          $$TrackTemporalEmbeddingTableTableOrderingComposer,
+          $$TrackTemporalEmbeddingTableTableAnnotationComposer,
+          $$TrackTemporalEmbeddingTableTableCreateCompanionBuilder,
+          $$TrackTemporalEmbeddingTableTableUpdateCompanionBuilder,
+          (
+            TrackTemporalEmbeddingTableData,
+            $$TrackTemporalEmbeddingTableTableReferences,
+          ),
+          TrackTemporalEmbeddingTableData,
+          PrefetchHooks Function({
+            bool trackId,
+            bool trackTemporalEmbeddingSegmentTableRefs,
+          })
+        > {
+  $$TrackTemporalEmbeddingTableTableTableManager(
+    _$AppDatabase db,
+    $TrackTemporalEmbeddingTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TrackTemporalEmbeddingTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$TrackTemporalEmbeddingTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$TrackTemporalEmbeddingTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> trackId = const Value.absent(),
+                Value<String> representation = const Value.absent(),
+                Value<String> modelId = const Value.absent(),
+                Value<String> modelVersion = const Value.absent(),
+                Value<String> preprocessingVersion = const Value.absent(),
+                Value<String> provider = const Value.absent(),
+                Value<int> audioRevision = const Value.absent(),
+                Value<int> dimension = const Value.absent(),
+                Value<String> dtype = const Value.absent(),
+                Value<bool> normalized = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<int> numberOfSegments = const Value.absent(),
+                Value<double> meanAdjacentDistance = const Value.absent(),
+                Value<double> maxAdjacentDistance = const Value.absent(),
+                Value<double> trajectoryVariance = const Value.absent(),
+                Value<int?> largestTransitionIndex = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TrackTemporalEmbeddingTableCompanion(
+                id: id,
+                trackId: trackId,
+                representation: representation,
+                modelId: modelId,
+                modelVersion: modelVersion,
+                preprocessingVersion: preprocessingVersion,
+                provider: provider,
+                audioRevision: audioRevision,
+                dimension: dimension,
+                dtype: dtype,
+                normalized: normalized,
+                createdAt: createdAt,
+                numberOfSegments: numberOfSegments,
+                meanAdjacentDistance: meanAdjacentDistance,
+                maxAdjacentDistance: maxAdjacentDistance,
+                trajectoryVariance: trajectoryVariance,
+                largestTransitionIndex: largestTransitionIndex,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String trackId,
+                required String representation,
+                required String modelId,
+                required String modelVersion,
+                required String preprocessingVersion,
+                required String provider,
+                required int audioRevision,
+                required int dimension,
+                required String dtype,
+                required bool normalized,
+                required DateTime createdAt,
+                required int numberOfSegments,
+                required double meanAdjacentDistance,
+                required double maxAdjacentDistance,
+                required double trajectoryVariance,
+                Value<int?> largestTransitionIndex = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TrackTemporalEmbeddingTableCompanion.insert(
+                id: id,
+                trackId: trackId,
+                representation: representation,
+                modelId: modelId,
+                modelVersion: modelVersion,
+                preprocessingVersion: preprocessingVersion,
+                provider: provider,
+                audioRevision: audioRevision,
+                dimension: dimension,
+                dtype: dtype,
+                normalized: normalized,
+                createdAt: createdAt,
+                numberOfSegments: numberOfSegments,
+                meanAdjacentDistance: meanAdjacentDistance,
+                maxAdjacentDistance: maxAdjacentDistance,
+                trajectoryVariance: trajectoryVariance,
+                largestTransitionIndex: largestTransitionIndex,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TrackTemporalEmbeddingTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                trackId = false,
+                trackTemporalEmbeddingSegmentTableRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (trackTemporalEmbeddingSegmentTableRefs)
+                      db.trackTemporalEmbeddingSegmentTable,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (trackId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.trackId,
+                                    referencedTable:
+                                        $$TrackTemporalEmbeddingTableTableReferences
+                                            ._trackIdTable(db),
+                                    referencedColumn:
+                                        $$TrackTemporalEmbeddingTableTableReferences
+                                            ._trackIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (trackTemporalEmbeddingSegmentTableRefs)
+                        await $_getPrefetchedData<
+                          TrackTemporalEmbeddingTableData,
+                          $TrackTemporalEmbeddingTableTable,
+                          TrackTemporalEmbeddingSegmentTableData
+                        >(
+                          currentTable: table,
+                          referencedTable:
+                              $$TrackTemporalEmbeddingTableTableReferences
+                                  ._trackTemporalEmbeddingSegmentTableRefsTable(
+                                    db,
+                                  ),
+                          managerFromTypedResult: (p0) =>
+                              $$TrackTemporalEmbeddingTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).trackTemporalEmbeddingSegmentTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.temporalEmbeddingId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$TrackTemporalEmbeddingTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TrackTemporalEmbeddingTableTable,
+      TrackTemporalEmbeddingTableData,
+      $$TrackTemporalEmbeddingTableTableFilterComposer,
+      $$TrackTemporalEmbeddingTableTableOrderingComposer,
+      $$TrackTemporalEmbeddingTableTableAnnotationComposer,
+      $$TrackTemporalEmbeddingTableTableCreateCompanionBuilder,
+      $$TrackTemporalEmbeddingTableTableUpdateCompanionBuilder,
+      (
+        TrackTemporalEmbeddingTableData,
+        $$TrackTemporalEmbeddingTableTableReferences,
+      ),
+      TrackTemporalEmbeddingTableData,
+      PrefetchHooks Function({
+        bool trackId,
+        bool trackTemporalEmbeddingSegmentTableRefs,
+      })
+    >;
+typedef $$TrackTemporalEmbeddingSegmentTableTableCreateCompanionBuilder =
+    TrackTemporalEmbeddingSegmentTableCompanion Function({
+      required String temporalEmbeddingId,
+      required int segmentIndex,
+      required int startMs,
+      required int endMs,
+      required int dimensions,
+      required Uint8List vector,
+      Value<int> rowid,
+    });
+typedef $$TrackTemporalEmbeddingSegmentTableTableUpdateCompanionBuilder =
+    TrackTemporalEmbeddingSegmentTableCompanion Function({
+      Value<String> temporalEmbeddingId,
+      Value<int> segmentIndex,
+      Value<int> startMs,
+      Value<int> endMs,
+      Value<int> dimensions,
+      Value<Uint8List> vector,
+      Value<int> rowid,
+    });
+
+final class $$TrackTemporalEmbeddingSegmentTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $TrackTemporalEmbeddingSegmentTableTable,
+          TrackTemporalEmbeddingSegmentTableData
+        > {
+  $$TrackTemporalEmbeddingSegmentTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TrackTemporalEmbeddingTableTable _temporalEmbeddingIdTable(
+    _$AppDatabase db,
+  ) => db.trackTemporalEmbeddingTable.createAlias(
+    $_aliasNameGenerator(
+      db.trackTemporalEmbeddingSegmentTable.temporalEmbeddingId,
+      db.trackTemporalEmbeddingTable.id,
+    ),
+  );
+
+  $$TrackTemporalEmbeddingTableTableProcessedTableManager
+  get temporalEmbeddingId {
+    final $_column = $_itemColumn<String>('temporal_embedding_id')!;
+
+    final manager = $$TrackTemporalEmbeddingTableTableTableManager(
+      $_db,
+      $_db.trackTemporalEmbeddingTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_temporalEmbeddingIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$TrackTemporalEmbeddingSegmentTableTableFilterComposer
+    extends Composer<_$AppDatabase, $TrackTemporalEmbeddingSegmentTableTable> {
+  $$TrackTemporalEmbeddingSegmentTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get segmentIndex => $composableBuilder(
+    column: $table.segmentIndex,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get startMs => $composableBuilder(
+    column: $table.startMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get endMs => $composableBuilder(
+    column: $table.endMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get dimensions => $composableBuilder(
+    column: $table.dimensions,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<Uint8List> get vector => $composableBuilder(
+    column: $table.vector,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TrackTemporalEmbeddingTableTableFilterComposer get temporalEmbeddingId {
+    final $$TrackTemporalEmbeddingTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.temporalEmbeddingId,
+          referencedTable: $db.trackTemporalEmbeddingTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TrackTemporalEmbeddingTableTableFilterComposer(
+                $db: $db,
+                $table: $db.trackTemporalEmbeddingTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$TrackTemporalEmbeddingSegmentTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $TrackTemporalEmbeddingSegmentTableTable> {
+  $$TrackTemporalEmbeddingSegmentTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get segmentIndex => $composableBuilder(
+    column: $table.segmentIndex,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get startMs => $composableBuilder(
+    column: $table.startMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get endMs => $composableBuilder(
+    column: $table.endMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get dimensions => $composableBuilder(
+    column: $table.dimensions,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<Uint8List> get vector => $composableBuilder(
+    column: $table.vector,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TrackTemporalEmbeddingTableTableOrderingComposer get temporalEmbeddingId {
+    final $$TrackTemporalEmbeddingTableTableOrderingComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.temporalEmbeddingId,
+          referencedTable: $db.trackTemporalEmbeddingTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TrackTemporalEmbeddingTableTableOrderingComposer(
+                $db: $db,
+                $table: $db.trackTemporalEmbeddingTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$TrackTemporalEmbeddingSegmentTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TrackTemporalEmbeddingSegmentTableTable> {
+  $$TrackTemporalEmbeddingSegmentTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get segmentIndex => $composableBuilder(
+    column: $table.segmentIndex,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get startMs =>
+      $composableBuilder(column: $table.startMs, builder: (column) => column);
+
+  GeneratedColumn<int> get endMs =>
+      $composableBuilder(column: $table.endMs, builder: (column) => column);
+
+  GeneratedColumn<int> get dimensions => $composableBuilder(
+    column: $table.dimensions,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<Uint8List> get vector =>
+      $composableBuilder(column: $table.vector, builder: (column) => column);
+
+  $$TrackTemporalEmbeddingTableTableAnnotationComposer get temporalEmbeddingId {
+    final $$TrackTemporalEmbeddingTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.temporalEmbeddingId,
+          referencedTable: $db.trackTemporalEmbeddingTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TrackTemporalEmbeddingTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.trackTemporalEmbeddingTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$TrackTemporalEmbeddingSegmentTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TrackTemporalEmbeddingSegmentTableTable,
+          TrackTemporalEmbeddingSegmentTableData,
+          $$TrackTemporalEmbeddingSegmentTableTableFilterComposer,
+          $$TrackTemporalEmbeddingSegmentTableTableOrderingComposer,
+          $$TrackTemporalEmbeddingSegmentTableTableAnnotationComposer,
+          $$TrackTemporalEmbeddingSegmentTableTableCreateCompanionBuilder,
+          $$TrackTemporalEmbeddingSegmentTableTableUpdateCompanionBuilder,
+          (
+            TrackTemporalEmbeddingSegmentTableData,
+            $$TrackTemporalEmbeddingSegmentTableTableReferences,
+          ),
+          TrackTemporalEmbeddingSegmentTableData,
+          PrefetchHooks Function({bool temporalEmbeddingId})
+        > {
+  $$TrackTemporalEmbeddingSegmentTableTableTableManager(
+    _$AppDatabase db,
+    $TrackTemporalEmbeddingSegmentTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TrackTemporalEmbeddingSegmentTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$TrackTemporalEmbeddingSegmentTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$TrackTemporalEmbeddingSegmentTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> temporalEmbeddingId = const Value.absent(),
+                Value<int> segmentIndex = const Value.absent(),
+                Value<int> startMs = const Value.absent(),
+                Value<int> endMs = const Value.absent(),
+                Value<int> dimensions = const Value.absent(),
+                Value<Uint8List> vector = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TrackTemporalEmbeddingSegmentTableCompanion(
+                temporalEmbeddingId: temporalEmbeddingId,
+                segmentIndex: segmentIndex,
+                startMs: startMs,
+                endMs: endMs,
+                dimensions: dimensions,
+                vector: vector,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String temporalEmbeddingId,
+                required int segmentIndex,
+                required int startMs,
+                required int endMs,
+                required int dimensions,
+                required Uint8List vector,
+                Value<int> rowid = const Value.absent(),
+              }) => TrackTemporalEmbeddingSegmentTableCompanion.insert(
+                temporalEmbeddingId: temporalEmbeddingId,
+                segmentIndex: segmentIndex,
+                startMs: startMs,
+                endMs: endMs,
+                dimensions: dimensions,
+                vector: vector,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TrackTemporalEmbeddingSegmentTableTableReferences(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({temporalEmbeddingId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (temporalEmbeddingId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.temporalEmbeddingId,
+                                referencedTable:
+                                    $$TrackTemporalEmbeddingSegmentTableTableReferences
+                                        ._temporalEmbeddingIdTable(db),
+                                referencedColumn:
+                                    $$TrackTemporalEmbeddingSegmentTableTableReferences
+                                        ._temporalEmbeddingIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$TrackTemporalEmbeddingSegmentTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TrackTemporalEmbeddingSegmentTableTable,
+      TrackTemporalEmbeddingSegmentTableData,
+      $$TrackTemporalEmbeddingSegmentTableTableFilterComposer,
+      $$TrackTemporalEmbeddingSegmentTableTableOrderingComposer,
+      $$TrackTemporalEmbeddingSegmentTableTableAnnotationComposer,
+      $$TrackTemporalEmbeddingSegmentTableTableCreateCompanionBuilder,
+      $$TrackTemporalEmbeddingSegmentTableTableUpdateCompanionBuilder,
+      (
+        TrackTemporalEmbeddingSegmentTableData,
+        $$TrackTemporalEmbeddingSegmentTableTableReferences,
+      ),
+      TrackTemporalEmbeddingSegmentTableData,
+      PrefetchHooks Function({bool temporalEmbeddingId})
+    >;
+typedef $$MusicAnalysisTaskTableTableCreateCompanionBuilder =
+    MusicAnalysisTaskTableCompanion Function({
+      required String id,
+      required String trackId,
+      required String requestedRepresentations,
+      required int audioRevision,
+      required String status,
+      Value<int> attemptCount,
+      Value<String?> lastErrorCode,
+      Value<String?> lastError,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$MusicAnalysisTaskTableTableUpdateCompanionBuilder =
+    MusicAnalysisTaskTableCompanion Function({
+      Value<String> id,
+      Value<String> trackId,
+      Value<String> requestedRepresentations,
+      Value<int> audioRevision,
+      Value<String> status,
+      Value<int> attemptCount,
+      Value<String?> lastErrorCode,
+      Value<String?> lastError,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$MusicAnalysisTaskTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $MusicAnalysisTaskTableTable,
+          MusicAnalysisTaskTableData
+        > {
+  $$MusicAnalysisTaskTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TrackTableTable _trackIdTable(_$AppDatabase db) =>
+      db.trackTable.createAlias(
+        $_aliasNameGenerator(
+          db.musicAnalysisTaskTable.trackId,
+          db.trackTable.id,
+        ),
+      );
+
+  $$TrackTableTableProcessedTableManager get trackId {
+    final $_column = $_itemColumn<String>('track_id')!;
+
+    final manager = $$TrackTableTableTableManager(
+      $_db,
+      $_db.trackTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_trackIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$MusicAnalysisTaskTableTableFilterComposer
+    extends Composer<_$AppDatabase, $MusicAnalysisTaskTableTable> {
+  $$MusicAnalysisTaskTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get requestedRepresentations => $composableBuilder(
+    column: $table.requestedRepresentations,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get audioRevision => $composableBuilder(
+    column: $table.audioRevision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get attemptCount => $composableBuilder(
+    column: $table.attemptCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastError => $composableBuilder(
+    column: $table.lastError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TrackTableTableFilterComposer get trackId {
+    final $$TrackTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableFilterComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MusicAnalysisTaskTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $MusicAnalysisTaskTableTable> {
+  $$MusicAnalysisTaskTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get requestedRepresentations => $composableBuilder(
+    column: $table.requestedRepresentations,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get audioRevision => $composableBuilder(
+    column: $table.audioRevision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get attemptCount => $composableBuilder(
+    column: $table.attemptCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastError => $composableBuilder(
+    column: $table.lastError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TrackTableTableOrderingComposer get trackId {
+    final $$TrackTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MusicAnalysisTaskTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MusicAnalysisTaskTableTable> {
+  $$MusicAnalysisTaskTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get requestedRepresentations => $composableBuilder(
+    column: $table.requestedRepresentations,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get audioRevision => $composableBuilder(
+    column: $table.audioRevision,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<int> get attemptCount => $composableBuilder(
+    column: $table.attemptCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastError =>
+      $composableBuilder(column: $table.lastError, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$TrackTableTableAnnotationComposer get trackId {
+    final $$TrackTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MusicAnalysisTaskTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MusicAnalysisTaskTableTable,
+          MusicAnalysisTaskTableData,
+          $$MusicAnalysisTaskTableTableFilterComposer,
+          $$MusicAnalysisTaskTableTableOrderingComposer,
+          $$MusicAnalysisTaskTableTableAnnotationComposer,
+          $$MusicAnalysisTaskTableTableCreateCompanionBuilder,
+          $$MusicAnalysisTaskTableTableUpdateCompanionBuilder,
+          (MusicAnalysisTaskTableData, $$MusicAnalysisTaskTableTableReferences),
+          MusicAnalysisTaskTableData,
+          PrefetchHooks Function({bool trackId})
+        > {
+  $$MusicAnalysisTaskTableTableTableManager(
+    _$AppDatabase db,
+    $MusicAnalysisTaskTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MusicAnalysisTaskTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$MusicAnalysisTaskTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$MusicAnalysisTaskTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> trackId = const Value.absent(),
+                Value<String> requestedRepresentations = const Value.absent(),
+                Value<int> audioRevision = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<int> attemptCount = const Value.absent(),
+                Value<String?> lastErrorCode = const Value.absent(),
+                Value<String?> lastError = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => MusicAnalysisTaskTableCompanion(
+                id: id,
+                trackId: trackId,
+                requestedRepresentations: requestedRepresentations,
+                audioRevision: audioRevision,
+                status: status,
+                attemptCount: attemptCount,
+                lastErrorCode: lastErrorCode,
+                lastError: lastError,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String trackId,
+                required String requestedRepresentations,
+                required int audioRevision,
+                required String status,
+                Value<int> attemptCount = const Value.absent(),
+                Value<String?> lastErrorCode = const Value.absent(),
+                Value<String?> lastError = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => MusicAnalysisTaskTableCompanion.insert(
+                id: id,
+                trackId: trackId,
+                requestedRepresentations: requestedRepresentations,
+                audioRevision: audioRevision,
+                status: status,
+                attemptCount: attemptCount,
+                lastErrorCode: lastErrorCode,
+                lastError: lastError,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$MusicAnalysisTaskTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({trackId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (trackId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.trackId,
+                                referencedTable:
+                                    $$MusicAnalysisTaskTableTableReferences
+                                        ._trackIdTable(db),
+                                referencedColumn:
+                                    $$MusicAnalysisTaskTableTableReferences
+                                        ._trackIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$MusicAnalysisTaskTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MusicAnalysisTaskTableTable,
+      MusicAnalysisTaskTableData,
+      $$MusicAnalysisTaskTableTableFilterComposer,
+      $$MusicAnalysisTaskTableTableOrderingComposer,
+      $$MusicAnalysisTaskTableTableAnnotationComposer,
+      $$MusicAnalysisTaskTableTableCreateCompanionBuilder,
+      $$MusicAnalysisTaskTableTableUpdateCompanionBuilder,
+      (MusicAnalysisTaskTableData, $$MusicAnalysisTaskTableTableReferences),
+      MusicAnalysisTaskTableData,
+      PrefetchHooks Function({bool trackId})
+    >;
+typedef $$MusicAnalysisSettingsTableTableCreateCompanionBuilder =
+    MusicAnalysisSettingsTableCompanion Function({
+      Value<int> id,
+      Value<bool> serverEnabled,
+      required DateTime updatedAt,
+    });
+typedef $$MusicAnalysisSettingsTableTableUpdateCompanionBuilder =
+    MusicAnalysisSettingsTableCompanion Function({
+      Value<int> id,
+      Value<bool> serverEnabled,
+      Value<DateTime> updatedAt,
+    });
+
+class $$MusicAnalysisSettingsTableTableFilterComposer
+    extends Composer<_$AppDatabase, $MusicAnalysisSettingsTableTable> {
+  $$MusicAnalysisSettingsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get serverEnabled => $composableBuilder(
+    column: $table.serverEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MusicAnalysisSettingsTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $MusicAnalysisSettingsTableTable> {
+  $$MusicAnalysisSettingsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get serverEnabled => $composableBuilder(
+    column: $table.serverEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MusicAnalysisSettingsTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MusicAnalysisSettingsTableTable> {
+  $$MusicAnalysisSettingsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<bool> get serverEnabled => $composableBuilder(
+    column: $table.serverEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$MusicAnalysisSettingsTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MusicAnalysisSettingsTableTable,
+          MusicAnalysisSettingsTableData,
+          $$MusicAnalysisSettingsTableTableFilterComposer,
+          $$MusicAnalysisSettingsTableTableOrderingComposer,
+          $$MusicAnalysisSettingsTableTableAnnotationComposer,
+          $$MusicAnalysisSettingsTableTableCreateCompanionBuilder,
+          $$MusicAnalysisSettingsTableTableUpdateCompanionBuilder,
+          (
+            MusicAnalysisSettingsTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $MusicAnalysisSettingsTableTable,
+              MusicAnalysisSettingsTableData
+            >,
+          ),
+          MusicAnalysisSettingsTableData,
+          PrefetchHooks Function()
+        > {
+  $$MusicAnalysisSettingsTableTableTableManager(
+    _$AppDatabase db,
+    $MusicAnalysisSettingsTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MusicAnalysisSettingsTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$MusicAnalysisSettingsTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$MusicAnalysisSettingsTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<bool> serverEnabled = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => MusicAnalysisSettingsTableCompanion(
+                id: id,
+                serverEnabled: serverEnabled,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<bool> serverEnabled = const Value.absent(),
+                required DateTime updatedAt,
+              }) => MusicAnalysisSettingsTableCompanion.insert(
+                id: id,
+                serverEnabled: serverEnabled,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MusicAnalysisSettingsTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MusicAnalysisSettingsTableTable,
+      MusicAnalysisSettingsTableData,
+      $$MusicAnalysisSettingsTableTableFilterComposer,
+      $$MusicAnalysisSettingsTableTableOrderingComposer,
+      $$MusicAnalysisSettingsTableTableAnnotationComposer,
+      $$MusicAnalysisSettingsTableTableCreateCompanionBuilder,
+      $$MusicAnalysisSettingsTableTableUpdateCompanionBuilder,
+      (
+        MusicAnalysisSettingsTableData,
+        BaseReferences<
+          _$AppDatabase,
+          $MusicAnalysisSettingsTableTable,
+          MusicAnalysisSettingsTableData
+        >,
+      ),
+      MusicAnalysisSettingsTableData,
+      PrefetchHooks Function()
+    >;
+typedef $$SimilarityEvaluationTableTableCreateCompanionBuilder =
+    SimilarityEvaluationTableCompanion Function({
+      required String id,
+      required String seedTrackId,
+      required String candidateTrackId,
+      required String methodVersion,
+      required String sourceRepresentationModelId,
+      required String sourceRepresentationModelVersion,
+      required String sourcePreprocessingVersion,
+      required double scoreShown,
+      Value<double?> rawDistance,
+      Value<int?> soundRating,
+      Value<int?> atmosphereRating,
+      Value<int?> trajectoryRating,
+      Value<bool?> wouldListenNext,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$SimilarityEvaluationTableTableUpdateCompanionBuilder =
+    SimilarityEvaluationTableCompanion Function({
+      Value<String> id,
+      Value<String> seedTrackId,
+      Value<String> candidateTrackId,
+      Value<String> methodVersion,
+      Value<String> sourceRepresentationModelId,
+      Value<String> sourceRepresentationModelVersion,
+      Value<String> sourcePreprocessingVersion,
+      Value<double> scoreShown,
+      Value<double?> rawDistance,
+      Value<int?> soundRating,
+      Value<int?> atmosphereRating,
+      Value<int?> trajectoryRating,
+      Value<bool?> wouldListenNext,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$SimilarityEvaluationTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $SimilarityEvaluationTableTable,
+          SimilarityEvaluationTableData
+        > {
+  $$SimilarityEvaluationTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TrackTableTable _seedTrackIdTable(_$AppDatabase db) =>
+      db.trackTable.createAlias(
+        $_aliasNameGenerator(
+          db.similarityEvaluationTable.seedTrackId,
+          db.trackTable.id,
+        ),
+      );
+
+  $$TrackTableTableProcessedTableManager get seedTrackId {
+    final $_column = $_itemColumn<String>('seed_track_id')!;
+
+    final manager = $$TrackTableTableTableManager(
+      $_db,
+      $_db.trackTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_seedTrackIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $TrackTableTable _candidateTrackIdTable(_$AppDatabase db) =>
+      db.trackTable.createAlias(
+        $_aliasNameGenerator(
+          db.similarityEvaluationTable.candidateTrackId,
+          db.trackTable.id,
+        ),
+      );
+
+  $$TrackTableTableProcessedTableManager get candidateTrackId {
+    final $_column = $_itemColumn<String>('candidate_track_id')!;
+
+    final manager = $$TrackTableTableTableManager(
+      $_db,
+      $_db.trackTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_candidateTrackIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$SimilarityEvaluationTableTableFilterComposer
+    extends Composer<_$AppDatabase, $SimilarityEvaluationTableTable> {
+  $$SimilarityEvaluationTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get methodVersion => $composableBuilder(
+    column: $table.methodVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceRepresentationModelId => $composableBuilder(
+    column: $table.sourceRepresentationModelId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceRepresentationModelVersion =>
+      $composableBuilder(
+        column: $table.sourceRepresentationModelVersion,
+        builder: (column) => ColumnFilters(column),
+      );
+
+  ColumnFilters<String> get sourcePreprocessingVersion => $composableBuilder(
+    column: $table.sourcePreprocessingVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get scoreShown => $composableBuilder(
+    column: $table.scoreShown,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get rawDistance => $composableBuilder(
+    column: $table.rawDistance,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get soundRating => $composableBuilder(
+    column: $table.soundRating,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get atmosphereRating => $composableBuilder(
+    column: $table.atmosphereRating,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get trajectoryRating => $composableBuilder(
+    column: $table.trajectoryRating,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get wouldListenNext => $composableBuilder(
+    column: $table.wouldListenNext,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TrackTableTableFilterComposer get seedTrackId {
+    final $$TrackTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.seedTrackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableFilterComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TrackTableTableFilterComposer get candidateTrackId {
+    final $$TrackTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.candidateTrackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableFilterComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SimilarityEvaluationTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $SimilarityEvaluationTableTable> {
+  $$SimilarityEvaluationTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get methodVersion => $composableBuilder(
+    column: $table.methodVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceRepresentationModelId => $composableBuilder(
+    column: $table.sourceRepresentationModelId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceRepresentationModelVersion =>
+      $composableBuilder(
+        column: $table.sourceRepresentationModelVersion,
+        builder: (column) => ColumnOrderings(column),
+      );
+
+  ColumnOrderings<String> get sourcePreprocessingVersion => $composableBuilder(
+    column: $table.sourcePreprocessingVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get scoreShown => $composableBuilder(
+    column: $table.scoreShown,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get rawDistance => $composableBuilder(
+    column: $table.rawDistance,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get soundRating => $composableBuilder(
+    column: $table.soundRating,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get atmosphereRating => $composableBuilder(
+    column: $table.atmosphereRating,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get trajectoryRating => $composableBuilder(
+    column: $table.trajectoryRating,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get wouldListenNext => $composableBuilder(
+    column: $table.wouldListenNext,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TrackTableTableOrderingComposer get seedTrackId {
+    final $$TrackTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.seedTrackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TrackTableTableOrderingComposer get candidateTrackId {
+    final $$TrackTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.candidateTrackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SimilarityEvaluationTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SimilarityEvaluationTableTable> {
+  $$SimilarityEvaluationTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get methodVersion => $composableBuilder(
+    column: $table.methodVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceRepresentationModelId => $composableBuilder(
+    column: $table.sourceRepresentationModelId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceRepresentationModelVersion =>
+      $composableBuilder(
+        column: $table.sourceRepresentationModelVersion,
+        builder: (column) => column,
+      );
+
+  GeneratedColumn<String> get sourcePreprocessingVersion => $composableBuilder(
+    column: $table.sourcePreprocessingVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get scoreShown => $composableBuilder(
+    column: $table.scoreShown,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get rawDistance => $composableBuilder(
+    column: $table.rawDistance,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get soundRating => $composableBuilder(
+    column: $table.soundRating,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get atmosphereRating => $composableBuilder(
+    column: $table.atmosphereRating,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get trajectoryRating => $composableBuilder(
+    column: $table.trajectoryRating,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get wouldListenNext => $composableBuilder(
+    column: $table.wouldListenNext,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$TrackTableTableAnnotationComposer get seedTrackId {
+    final $$TrackTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.seedTrackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$TrackTableTableAnnotationComposer get candidateTrackId {
+    final $$TrackTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.candidateTrackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$SimilarityEvaluationTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SimilarityEvaluationTableTable,
+          SimilarityEvaluationTableData,
+          $$SimilarityEvaluationTableTableFilterComposer,
+          $$SimilarityEvaluationTableTableOrderingComposer,
+          $$SimilarityEvaluationTableTableAnnotationComposer,
+          $$SimilarityEvaluationTableTableCreateCompanionBuilder,
+          $$SimilarityEvaluationTableTableUpdateCompanionBuilder,
+          (
+            SimilarityEvaluationTableData,
+            $$SimilarityEvaluationTableTableReferences,
+          ),
+          SimilarityEvaluationTableData,
+          PrefetchHooks Function({bool seedTrackId, bool candidateTrackId})
+        > {
+  $$SimilarityEvaluationTableTableTableManager(
+    _$AppDatabase db,
+    $SimilarityEvaluationTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SimilarityEvaluationTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$SimilarityEvaluationTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$SimilarityEvaluationTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> seedTrackId = const Value.absent(),
+                Value<String> candidateTrackId = const Value.absent(),
+                Value<String> methodVersion = const Value.absent(),
+                Value<String> sourceRepresentationModelId =
+                    const Value.absent(),
+                Value<String> sourceRepresentationModelVersion =
+                    const Value.absent(),
+                Value<String> sourcePreprocessingVersion = const Value.absent(),
+                Value<double> scoreShown = const Value.absent(),
+                Value<double?> rawDistance = const Value.absent(),
+                Value<int?> soundRating = const Value.absent(),
+                Value<int?> atmosphereRating = const Value.absent(),
+                Value<int?> trajectoryRating = const Value.absent(),
+                Value<bool?> wouldListenNext = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SimilarityEvaluationTableCompanion(
+                id: id,
+                seedTrackId: seedTrackId,
+                candidateTrackId: candidateTrackId,
+                methodVersion: methodVersion,
+                sourceRepresentationModelId: sourceRepresentationModelId,
+                sourceRepresentationModelVersion:
+                    sourceRepresentationModelVersion,
+                sourcePreprocessingVersion: sourcePreprocessingVersion,
+                scoreShown: scoreShown,
+                rawDistance: rawDistance,
+                soundRating: soundRating,
+                atmosphereRating: atmosphereRating,
+                trajectoryRating: trajectoryRating,
+                wouldListenNext: wouldListenNext,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String seedTrackId,
+                required String candidateTrackId,
+                required String methodVersion,
+                required String sourceRepresentationModelId,
+                required String sourceRepresentationModelVersion,
+                required String sourcePreprocessingVersion,
+                required double scoreShown,
+                Value<double?> rawDistance = const Value.absent(),
+                Value<int?> soundRating = const Value.absent(),
+                Value<int?> atmosphereRating = const Value.absent(),
+                Value<int?> trajectoryRating = const Value.absent(),
+                Value<bool?> wouldListenNext = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => SimilarityEvaluationTableCompanion.insert(
+                id: id,
+                seedTrackId: seedTrackId,
+                candidateTrackId: candidateTrackId,
+                methodVersion: methodVersion,
+                sourceRepresentationModelId: sourceRepresentationModelId,
+                sourceRepresentationModelVersion:
+                    sourceRepresentationModelVersion,
+                sourcePreprocessingVersion: sourcePreprocessingVersion,
+                scoreShown: scoreShown,
+                rawDistance: rawDistance,
+                soundRating: soundRating,
+                atmosphereRating: atmosphereRating,
+                trajectoryRating: trajectoryRating,
+                wouldListenNext: wouldListenNext,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$SimilarityEvaluationTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({seedTrackId = false, candidateTrackId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (seedTrackId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.seedTrackId,
+                                referencedTable:
+                                    $$SimilarityEvaluationTableTableReferences
+                                        ._seedTrackIdTable(db),
+                                referencedColumn:
+                                    $$SimilarityEvaluationTableTableReferences
+                                        ._seedTrackIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+                    if (candidateTrackId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.candidateTrackId,
+                                referencedTable:
+                                    $$SimilarityEvaluationTableTableReferences
+                                        ._candidateTrackIdTable(db),
+                                referencedColumn:
+                                    $$SimilarityEvaluationTableTableReferences
+                                        ._candidateTrackIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$SimilarityEvaluationTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SimilarityEvaluationTableTable,
+      SimilarityEvaluationTableData,
+      $$SimilarityEvaluationTableTableFilterComposer,
+      $$SimilarityEvaluationTableTableOrderingComposer,
+      $$SimilarityEvaluationTableTableAnnotationComposer,
+      $$SimilarityEvaluationTableTableCreateCompanionBuilder,
+      $$SimilarityEvaluationTableTableUpdateCompanionBuilder,
+      (
+        SimilarityEvaluationTableData,
+        $$SimilarityEvaluationTableTableReferences,
+      ),
+      SimilarityEvaluationTableData,
+      PrefetchHooks Function({bool seedTrackId, bool candidateTrackId})
+    >;
+typedef $$TrackLyricsTableTableCreateCompanionBuilder =
+    TrackLyricsTableCompanion Function({
+      required String trackId,
+      required String source,
+      Value<String?> sourceId,
+      required String plainText,
+      Value<String?> syncedText,
+      Value<String?> language,
+      required String contentHash,
+      Value<bool> isInstrumental,
+      Value<double?> matchConfidence,
+      Value<String?> matchedTitle,
+      Value<String?> matchedArtist,
+      Value<int?> matchedDurationMs,
+      required DateTime fetchedAt,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$TrackLyricsTableTableUpdateCompanionBuilder =
+    TrackLyricsTableCompanion Function({
+      Value<String> trackId,
+      Value<String> source,
+      Value<String?> sourceId,
+      Value<String> plainText,
+      Value<String?> syncedText,
+      Value<String?> language,
+      Value<String> contentHash,
+      Value<bool> isInstrumental,
+      Value<double?> matchConfidence,
+      Value<String?> matchedTitle,
+      Value<String?> matchedArtist,
+      Value<int?> matchedDurationMs,
+      Value<DateTime> fetchedAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$TrackLyricsTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $TrackLyricsTableTable,
+          TrackLyricsTableData
+        > {
+  $$TrackLyricsTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TrackTableTable _trackIdTable(_$AppDatabase db) =>
+      db.trackTable.createAlias(
+        $_aliasNameGenerator(db.trackLyricsTable.trackId, db.trackTable.id),
+      );
+
+  $$TrackTableTableProcessedTableManager get trackId {
+    final $_column = $_itemColumn<String>('track_id')!;
+
+    final manager = $$TrackTableTableTableManager(
+      $_db,
+      $_db.trackTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_trackIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$TrackLyricsTableTableFilterComposer
+    extends Composer<_$AppDatabase, $TrackLyricsTableTable> {
+  $$TrackLyricsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceId => $composableBuilder(
+    column: $table.sourceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get plainText => $composableBuilder(
+    column: $table.plainText,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncedText => $composableBuilder(
+    column: $table.syncedText,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get language => $composableBuilder(
+    column: $table.language,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get contentHash => $composableBuilder(
+    column: $table.contentHash,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isInstrumental => $composableBuilder(
+    column: $table.isInstrumental,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get matchConfidence => $composableBuilder(
+    column: $table.matchConfidence,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get matchedTitle => $composableBuilder(
+    column: $table.matchedTitle,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get matchedArtist => $composableBuilder(
+    column: $table.matchedArtist,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get matchedDurationMs => $composableBuilder(
+    column: $table.matchedDurationMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TrackTableTableFilterComposer get trackId {
+    final $$TrackTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableFilterComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TrackLyricsTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $TrackLyricsTableTable> {
+  $$TrackLyricsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get source => $composableBuilder(
+    column: $table.source,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceId => $composableBuilder(
+    column: $table.sourceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get plainText => $composableBuilder(
+    column: $table.plainText,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncedText => $composableBuilder(
+    column: $table.syncedText,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get language => $composableBuilder(
+    column: $table.language,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get contentHash => $composableBuilder(
+    column: $table.contentHash,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isInstrumental => $composableBuilder(
+    column: $table.isInstrumental,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get matchConfidence => $composableBuilder(
+    column: $table.matchConfidence,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get matchedTitle => $composableBuilder(
+    column: $table.matchedTitle,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get matchedArtist => $composableBuilder(
+    column: $table.matchedArtist,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get matchedDurationMs => $composableBuilder(
+    column: $table.matchedDurationMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TrackTableTableOrderingComposer get trackId {
+    final $$TrackTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TrackLyricsTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TrackLyricsTableTable> {
+  $$TrackLyricsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get source =>
+      $composableBuilder(column: $table.source, builder: (column) => column);
+
+  GeneratedColumn<String> get sourceId =>
+      $composableBuilder(column: $table.sourceId, builder: (column) => column);
+
+  GeneratedColumn<String> get plainText =>
+      $composableBuilder(column: $table.plainText, builder: (column) => column);
+
+  GeneratedColumn<String> get syncedText => $composableBuilder(
+    column: $table.syncedText,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get language =>
+      $composableBuilder(column: $table.language, builder: (column) => column);
+
+  GeneratedColumn<String> get contentHash => $composableBuilder(
+    column: $table.contentHash,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isInstrumental => $composableBuilder(
+    column: $table.isInstrumental,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get matchConfidence => $composableBuilder(
+    column: $table.matchConfidence,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get matchedTitle => $composableBuilder(
+    column: $table.matchedTitle,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get matchedArtist => $composableBuilder(
+    column: $table.matchedArtist,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get matchedDurationMs => $composableBuilder(
+    column: $table.matchedDurationMs,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get fetchedAt =>
+      $composableBuilder(column: $table.fetchedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$TrackTableTableAnnotationComposer get trackId {
+    final $$TrackTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TrackLyricsTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TrackLyricsTableTable,
+          TrackLyricsTableData,
+          $$TrackLyricsTableTableFilterComposer,
+          $$TrackLyricsTableTableOrderingComposer,
+          $$TrackLyricsTableTableAnnotationComposer,
+          $$TrackLyricsTableTableCreateCompanionBuilder,
+          $$TrackLyricsTableTableUpdateCompanionBuilder,
+          (TrackLyricsTableData, $$TrackLyricsTableTableReferences),
+          TrackLyricsTableData,
+          PrefetchHooks Function({bool trackId})
+        > {
+  $$TrackLyricsTableTableTableManager(
+    _$AppDatabase db,
+    $TrackLyricsTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TrackLyricsTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TrackLyricsTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TrackLyricsTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> trackId = const Value.absent(),
+                Value<String> source = const Value.absent(),
+                Value<String?> sourceId = const Value.absent(),
+                Value<String> plainText = const Value.absent(),
+                Value<String?> syncedText = const Value.absent(),
+                Value<String?> language = const Value.absent(),
+                Value<String> contentHash = const Value.absent(),
+                Value<bool> isInstrumental = const Value.absent(),
+                Value<double?> matchConfidence = const Value.absent(),
+                Value<String?> matchedTitle = const Value.absent(),
+                Value<String?> matchedArtist = const Value.absent(),
+                Value<int?> matchedDurationMs = const Value.absent(),
+                Value<DateTime> fetchedAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TrackLyricsTableCompanion(
+                trackId: trackId,
+                source: source,
+                sourceId: sourceId,
+                plainText: plainText,
+                syncedText: syncedText,
+                language: language,
+                contentHash: contentHash,
+                isInstrumental: isInstrumental,
+                matchConfidence: matchConfidence,
+                matchedTitle: matchedTitle,
+                matchedArtist: matchedArtist,
+                matchedDurationMs: matchedDurationMs,
+                fetchedAt: fetchedAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String trackId,
+                required String source,
+                Value<String?> sourceId = const Value.absent(),
+                required String plainText,
+                Value<String?> syncedText = const Value.absent(),
+                Value<String?> language = const Value.absent(),
+                required String contentHash,
+                Value<bool> isInstrumental = const Value.absent(),
+                Value<double?> matchConfidence = const Value.absent(),
+                Value<String?> matchedTitle = const Value.absent(),
+                Value<String?> matchedArtist = const Value.absent(),
+                Value<int?> matchedDurationMs = const Value.absent(),
+                required DateTime fetchedAt,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => TrackLyricsTableCompanion.insert(
+                trackId: trackId,
+                source: source,
+                sourceId: sourceId,
+                plainText: plainText,
+                syncedText: syncedText,
+                language: language,
+                contentHash: contentHash,
+                isInstrumental: isInstrumental,
+                matchConfidence: matchConfidence,
+                matchedTitle: matchedTitle,
+                matchedArtist: matchedArtist,
+                matchedDurationMs: matchedDurationMs,
+                fetchedAt: fetchedAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TrackLyricsTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({trackId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (trackId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.trackId,
+                                referencedTable:
+                                    $$TrackLyricsTableTableReferences
+                                        ._trackIdTable(db),
+                                referencedColumn:
+                                    $$TrackLyricsTableTableReferences
+                                        ._trackIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$TrackLyricsTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TrackLyricsTableTable,
+      TrackLyricsTableData,
+      $$TrackLyricsTableTableFilterComposer,
+      $$TrackLyricsTableTableOrderingComposer,
+      $$TrackLyricsTableTableAnnotationComposer,
+      $$TrackLyricsTableTableCreateCompanionBuilder,
+      $$TrackLyricsTableTableUpdateCompanionBuilder,
+      (TrackLyricsTableData, $$TrackLyricsTableTableReferences),
+      TrackLyricsTableData,
+      PrefetchHooks Function({bool trackId})
+    >;
+typedef $$LyricsResolutionStateTableTableCreateCompanionBuilder =
+    LyricsResolutionStateTableCompanion Function({
+      required String trackId,
+      required String status,
+      Value<String?> provider,
+      Value<int> metadataRevision,
+      Value<int> attemptCount,
+      Value<String?> lastErrorCode,
+      Value<String?> lastError,
+      Value<DateTime?> nextRetryAt,
+      Value<DateTime?> lastAttemptAt,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$LyricsResolutionStateTableTableUpdateCompanionBuilder =
+    LyricsResolutionStateTableCompanion Function({
+      Value<String> trackId,
+      Value<String> status,
+      Value<String?> provider,
+      Value<int> metadataRevision,
+      Value<int> attemptCount,
+      Value<String?> lastErrorCode,
+      Value<String?> lastError,
+      Value<DateTime?> nextRetryAt,
+      Value<DateTime?> lastAttemptAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$LyricsResolutionStateTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $LyricsResolutionStateTableTable,
+          LyricsResolutionStateTableData
+        > {
+  $$LyricsResolutionStateTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TrackTableTable _trackIdTable(_$AppDatabase db) =>
+      db.trackTable.createAlias(
+        $_aliasNameGenerator(
+          db.lyricsResolutionStateTable.trackId,
+          db.trackTable.id,
+        ),
+      );
+
+  $$TrackTableTableProcessedTableManager get trackId {
+    final $_column = $_itemColumn<String>('track_id')!;
+
+    final manager = $$TrackTableTableTableManager(
+      $_db,
+      $_db.trackTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_trackIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$LyricsResolutionStateTableTableFilterComposer
+    extends Composer<_$AppDatabase, $LyricsResolutionStateTableTable> {
+  $$LyricsResolutionStateTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get provider => $composableBuilder(
+    column: $table.provider,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get metadataRevision => $composableBuilder(
+    column: $table.metadataRevision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get attemptCount => $composableBuilder(
+    column: $table.attemptCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastError => $composableBuilder(
+    column: $table.lastError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get nextRetryAt => $composableBuilder(
+    column: $table.nextRetryAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastAttemptAt => $composableBuilder(
+    column: $table.lastAttemptAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TrackTableTableFilterComposer get trackId {
+    final $$TrackTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableFilterComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LyricsResolutionStateTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $LyricsResolutionStateTableTable> {
+  $$LyricsResolutionStateTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get provider => $composableBuilder(
+    column: $table.provider,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get metadataRevision => $composableBuilder(
+    column: $table.metadataRevision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get attemptCount => $composableBuilder(
+    column: $table.attemptCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastError => $composableBuilder(
+    column: $table.lastError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get nextRetryAt => $composableBuilder(
+    column: $table.nextRetryAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastAttemptAt => $composableBuilder(
+    column: $table.lastAttemptAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TrackTableTableOrderingComposer get trackId {
+    final $$TrackTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LyricsResolutionStateTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LyricsResolutionStateTableTable> {
+  $$LyricsResolutionStateTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get provider =>
+      $composableBuilder(column: $table.provider, builder: (column) => column);
+
+  GeneratedColumn<int> get metadataRevision => $composableBuilder(
+    column: $table.metadataRevision,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get attemptCount => $composableBuilder(
+    column: $table.attemptCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastError =>
+      $composableBuilder(column: $table.lastError, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get nextRetryAt => $composableBuilder(
+    column: $table.nextRetryAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastAttemptAt => $composableBuilder(
+    column: $table.lastAttemptAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$TrackTableTableAnnotationComposer get trackId {
+    final $$TrackTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LyricsResolutionStateTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LyricsResolutionStateTableTable,
+          LyricsResolutionStateTableData,
+          $$LyricsResolutionStateTableTableFilterComposer,
+          $$LyricsResolutionStateTableTableOrderingComposer,
+          $$LyricsResolutionStateTableTableAnnotationComposer,
+          $$LyricsResolutionStateTableTableCreateCompanionBuilder,
+          $$LyricsResolutionStateTableTableUpdateCompanionBuilder,
+          (
+            LyricsResolutionStateTableData,
+            $$LyricsResolutionStateTableTableReferences,
+          ),
+          LyricsResolutionStateTableData,
+          PrefetchHooks Function({bool trackId})
+        > {
+  $$LyricsResolutionStateTableTableTableManager(
+    _$AppDatabase db,
+    $LyricsResolutionStateTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LyricsResolutionStateTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$LyricsResolutionStateTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$LyricsResolutionStateTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> trackId = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> provider = const Value.absent(),
+                Value<int> metadataRevision = const Value.absent(),
+                Value<int> attemptCount = const Value.absent(),
+                Value<String?> lastErrorCode = const Value.absent(),
+                Value<String?> lastError = const Value.absent(),
+                Value<DateTime?> nextRetryAt = const Value.absent(),
+                Value<DateTime?> lastAttemptAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LyricsResolutionStateTableCompanion(
+                trackId: trackId,
+                status: status,
+                provider: provider,
+                metadataRevision: metadataRevision,
+                attemptCount: attemptCount,
+                lastErrorCode: lastErrorCode,
+                lastError: lastError,
+                nextRetryAt: nextRetryAt,
+                lastAttemptAt: lastAttemptAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String trackId,
+                required String status,
+                Value<String?> provider = const Value.absent(),
+                Value<int> metadataRevision = const Value.absent(),
+                Value<int> attemptCount = const Value.absent(),
+                Value<String?> lastErrorCode = const Value.absent(),
+                Value<String?> lastError = const Value.absent(),
+                Value<DateTime?> nextRetryAt = const Value.absent(),
+                Value<DateTime?> lastAttemptAt = const Value.absent(),
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => LyricsResolutionStateTableCompanion.insert(
+                trackId: trackId,
+                status: status,
+                provider: provider,
+                metadataRevision: metadataRevision,
+                attemptCount: attemptCount,
+                lastErrorCode: lastErrorCode,
+                lastError: lastError,
+                nextRetryAt: nextRetryAt,
+                lastAttemptAt: lastAttemptAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$LyricsResolutionStateTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({trackId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (trackId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.trackId,
+                                referencedTable:
+                                    $$LyricsResolutionStateTableTableReferences
+                                        ._trackIdTable(db),
+                                referencedColumn:
+                                    $$LyricsResolutionStateTableTableReferences
+                                        ._trackIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$LyricsResolutionStateTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LyricsResolutionStateTableTable,
+      LyricsResolutionStateTableData,
+      $$LyricsResolutionStateTableTableFilterComposer,
+      $$LyricsResolutionStateTableTableOrderingComposer,
+      $$LyricsResolutionStateTableTableAnnotationComposer,
+      $$LyricsResolutionStateTableTableCreateCompanionBuilder,
+      $$LyricsResolutionStateTableTableUpdateCompanionBuilder,
+      (
+        LyricsResolutionStateTableData,
+        $$LyricsResolutionStateTableTableReferences,
+      ),
+      LyricsResolutionStateTableData,
+      PrefetchHooks Function({bool trackId})
+    >;
+typedef $$LyricsResolutionTaskTableTableCreateCompanionBuilder =
+    LyricsResolutionTaskTableCompanion Function({
+      required String id,
+      required String trackId,
+      required String status,
+      Value<int> attemptCount,
+      Value<DateTime?> nextAttemptAt,
+      Value<String?> lastErrorCode,
+      Value<String?> lastError,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$LyricsResolutionTaskTableTableUpdateCompanionBuilder =
+    LyricsResolutionTaskTableCompanion Function({
+      Value<String> id,
+      Value<String> trackId,
+      Value<String> status,
+      Value<int> attemptCount,
+      Value<DateTime?> nextAttemptAt,
+      Value<String?> lastErrorCode,
+      Value<String?> lastError,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$LyricsResolutionTaskTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $LyricsResolutionTaskTableTable,
+          LyricsResolutionTaskTableData
+        > {
+  $$LyricsResolutionTaskTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TrackTableTable _trackIdTable(_$AppDatabase db) =>
+      db.trackTable.createAlias(
+        $_aliasNameGenerator(
+          db.lyricsResolutionTaskTable.trackId,
+          db.trackTable.id,
+        ),
+      );
+
+  $$TrackTableTableProcessedTableManager get trackId {
+    final $_column = $_itemColumn<String>('track_id')!;
+
+    final manager = $$TrackTableTableTableManager(
+      $_db,
+      $_db.trackTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_trackIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$LyricsResolutionTaskTableTableFilterComposer
+    extends Composer<_$AppDatabase, $LyricsResolutionTaskTableTable> {
+  $$LyricsResolutionTaskTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get attemptCount => $composableBuilder(
+    column: $table.attemptCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get nextAttemptAt => $composableBuilder(
+    column: $table.nextAttemptAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastError => $composableBuilder(
+    column: $table.lastError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TrackTableTableFilterComposer get trackId {
+    final $$TrackTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableFilterComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LyricsResolutionTaskTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $LyricsResolutionTaskTableTable> {
+  $$LyricsResolutionTaskTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get attemptCount => $composableBuilder(
+    column: $table.attemptCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get nextAttemptAt => $composableBuilder(
+    column: $table.nextAttemptAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastError => $composableBuilder(
+    column: $table.lastError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TrackTableTableOrderingComposer get trackId {
+    final $$TrackTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LyricsResolutionTaskTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $LyricsResolutionTaskTableTable> {
+  $$LyricsResolutionTaskTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<int> get attemptCount => $composableBuilder(
+    column: $table.attemptCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get nextAttemptAt => $composableBuilder(
+    column: $table.nextAttemptAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastErrorCode => $composableBuilder(
+    column: $table.lastErrorCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastError =>
+      $composableBuilder(column: $table.lastError, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$TrackTableTableAnnotationComposer get trackId {
+    final $$TrackTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$LyricsResolutionTaskTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $LyricsResolutionTaskTableTable,
+          LyricsResolutionTaskTableData,
+          $$LyricsResolutionTaskTableTableFilterComposer,
+          $$LyricsResolutionTaskTableTableOrderingComposer,
+          $$LyricsResolutionTaskTableTableAnnotationComposer,
+          $$LyricsResolutionTaskTableTableCreateCompanionBuilder,
+          $$LyricsResolutionTaskTableTableUpdateCompanionBuilder,
+          (
+            LyricsResolutionTaskTableData,
+            $$LyricsResolutionTaskTableTableReferences,
+          ),
+          LyricsResolutionTaskTableData,
+          PrefetchHooks Function({bool trackId})
+        > {
+  $$LyricsResolutionTaskTableTableTableManager(
+    _$AppDatabase db,
+    $LyricsResolutionTaskTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$LyricsResolutionTaskTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$LyricsResolutionTaskTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$LyricsResolutionTaskTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> trackId = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<int> attemptCount = const Value.absent(),
+                Value<DateTime?> nextAttemptAt = const Value.absent(),
+                Value<String?> lastErrorCode = const Value.absent(),
+                Value<String?> lastError = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => LyricsResolutionTaskTableCompanion(
+                id: id,
+                trackId: trackId,
+                status: status,
+                attemptCount: attemptCount,
+                nextAttemptAt: nextAttemptAt,
+                lastErrorCode: lastErrorCode,
+                lastError: lastError,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String trackId,
+                required String status,
+                Value<int> attemptCount = const Value.absent(),
+                Value<DateTime?> nextAttemptAt = const Value.absent(),
+                Value<String?> lastErrorCode = const Value.absent(),
+                Value<String?> lastError = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => LyricsResolutionTaskTableCompanion.insert(
+                id: id,
+                trackId: trackId,
+                status: status,
+                attemptCount: attemptCount,
+                nextAttemptAt: nextAttemptAt,
+                lastErrorCode: lastErrorCode,
+                lastError: lastError,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$LyricsResolutionTaskTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({trackId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (trackId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.trackId,
+                                referencedTable:
+                                    $$LyricsResolutionTaskTableTableReferences
+                                        ._trackIdTable(db),
+                                referencedColumn:
+                                    $$LyricsResolutionTaskTableTableReferences
+                                        ._trackIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$LyricsResolutionTaskTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $LyricsResolutionTaskTableTable,
+      LyricsResolutionTaskTableData,
+      $$LyricsResolutionTaskTableTableFilterComposer,
+      $$LyricsResolutionTaskTableTableOrderingComposer,
+      $$LyricsResolutionTaskTableTableAnnotationComposer,
+      $$LyricsResolutionTaskTableTableCreateCompanionBuilder,
+      $$LyricsResolutionTaskTableTableUpdateCompanionBuilder,
+      (
+        LyricsResolutionTaskTableData,
+        $$LyricsResolutionTaskTableTableReferences,
+      ),
+      LyricsResolutionTaskTableData,
+      PrefetchHooks Function({bool trackId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
-  $$PlayRecordTableTableTableManager get playRecordTable =>
-      $$PlayRecordTableTableTableManager(_db, _db.playRecordTable);
+  $$ListeningSummaryTableTableTableManager get listeningSummaryTable =>
+      $$ListeningSummaryTableTableTableManager(_db, _db.listeningSummaryTable);
   $$PlaylistTableTableTableManager get playlistTable =>
       $$PlaylistTableTableTableManager(_db, _db.playlistTable);
   $$TrackTableTableTableManager get trackTable =>
       $$TrackTableTableTableManager(_db, _db.trackTable);
-  $$EmbeddingTaskTableTableTableManager get embeddingTaskTable =>
-      $$EmbeddingTaskTableTableTableManager(_db, _db.embeddingTaskTable);
   $$DownloadTaskTableTableTableManager get downloadTaskTable =>
       $$DownloadTaskTableTableTableManager(_db, _db.downloadTaskTable);
   $$ArtistTableTableTableManager get artistTable =>
@@ -10047,5 +21806,50 @@ class $AppDatabaseManager {
       $$AppNavigationStateTableTableTableManager(
         _db,
         _db.appNavigationStateTable,
+      );
+  $$TrackEmbeddingTableTableTableManager get trackEmbeddingTable =>
+      $$TrackEmbeddingTableTableTableManager(_db, _db.trackEmbeddingTable);
+  $$ListeningEventTableTableTableManager get listeningEventTable =>
+      $$ListeningEventTableTableTableManager(_db, _db.listeningEventTable);
+  $$TrackTemporalEmbeddingTableTableTableManager
+  get trackTemporalEmbeddingTable =>
+      $$TrackTemporalEmbeddingTableTableTableManager(
+        _db,
+        _db.trackTemporalEmbeddingTable,
+      );
+  $$TrackTemporalEmbeddingSegmentTableTableTableManager
+  get trackTemporalEmbeddingSegmentTable =>
+      $$TrackTemporalEmbeddingSegmentTableTableTableManager(
+        _db,
+        _db.trackTemporalEmbeddingSegmentTable,
+      );
+  $$MusicAnalysisTaskTableTableTableManager get musicAnalysisTaskTable =>
+      $$MusicAnalysisTaskTableTableTableManager(
+        _db,
+        _db.musicAnalysisTaskTable,
+      );
+  $$MusicAnalysisSettingsTableTableTableManager
+  get musicAnalysisSettingsTable =>
+      $$MusicAnalysisSettingsTableTableTableManager(
+        _db,
+        _db.musicAnalysisSettingsTable,
+      );
+  $$SimilarityEvaluationTableTableTableManager get similarityEvaluationTable =>
+      $$SimilarityEvaluationTableTableTableManager(
+        _db,
+        _db.similarityEvaluationTable,
+      );
+  $$TrackLyricsTableTableTableManager get trackLyricsTable =>
+      $$TrackLyricsTableTableTableManager(_db, _db.trackLyricsTable);
+  $$LyricsResolutionStateTableTableTableManager
+  get lyricsResolutionStateTable =>
+      $$LyricsResolutionStateTableTableTableManager(
+        _db,
+        _db.lyricsResolutionStateTable,
+      );
+  $$LyricsResolutionTaskTableTableTableManager get lyricsResolutionTaskTable =>
+      $$LyricsResolutionTaskTableTableTableManager(
+        _db,
+        _db.lyricsResolutionTaskTable,
       );
 }

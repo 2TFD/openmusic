@@ -8,7 +8,7 @@ import 'source.dart';
 
 class Track extends Equatable {
   final String id;
-  final List<double>? embedding;
+  final String? contentIdentity;
   final TrackDescriptor? trackDescriptor;
   final String title;
   final List<Artist> artists;
@@ -18,11 +18,12 @@ class Track extends Equatable {
   final String? album;
   final String? imageUrl;
   final String? filePath;
+  final int audioRevision;
   final int metadataRevision;
 
   const Track({
     required this.id,
-    this.embedding,
+    this.contentIdentity,
     this.trackDescriptor,
     required this.title,
     required this.artists,
@@ -32,12 +33,14 @@ class Track extends Equatable {
     this.filePath,
     this.album,
     this.imageUrl,
+    this.audioRevision = 0,
     this.metadataRevision = 0,
   });
 
   @override
   List<Object?> get props => [
     id,
+    contentIdentity,
     title,
     artists,
     duration,
@@ -46,7 +49,7 @@ class Track extends Equatable {
     album,
     imageUrl,
     filePath,
-    embedding,
+    audioRevision,
     trackDescriptor,
     metadataRevision,
   ];
@@ -54,16 +57,17 @@ class Track extends Equatable {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'contentIdentity': contentIdentity,
       'title': title,
       'artists': artists.map((artist) => artist.toJson()).toList(),
       'trackDescriptor': trackDescriptor?.toJson(),
-      'embedding': embedding,
       'durationMs': duration.inMilliseconds,
       'source': source.toJson(),
       'addedAt': addedAt.toIso8601String(),
       'album': album,
       'imageUrl': imageUrl,
       'filePath': filePath,
+      'audioRevision': audioRevision,
       'metadataRevision': metadataRevision,
     };
   }
@@ -73,10 +77,8 @@ class Track extends Equatable {
       trackDescriptor: json['trackDescriptor'] != null
           ? TrackDescriptor.fromMap(json['trackDescriptor'])
           : null,
-      embedding: (json['embedding'] as List?)
-          ?.map((e) => (e as num).toDouble())
-          .toList(),
       id: json['id'],
+      contentIdentity: json['contentIdentity'] as String?,
       title: json['title'],
       artists: (json['artists'] as List)
           .map((artistJson) => Artist.fromJson(artistJson))
@@ -91,6 +93,7 @@ class Track extends Equatable {
           : DateTime.now(),
       album: json['album'],
       imageUrl: json['imageUrl'],
+      audioRevision: json['audioRevision'] as int? ?? 0,
       metadataRevision: json['metadataRevision'] as int? ?? 0,
     );
   }
@@ -101,22 +104,23 @@ class Track extends Equatable {
 
   Track copyWith({
     String? id,
+    String? contentIdentity,
     String? title,
     List<Artist>? artists,
     Duration? duration,
     Source? source,
     DateTime? addedAt,
     TrackDescriptor? trackDescriptor,
-    List<double>? embedding,
     String? album,
     String? imageUrl,
     String? filePath,
+    int? audioRevision,
     int? metadataRevision,
   }) {
     return Track(
       trackDescriptor: trackDescriptor ?? this.trackDescriptor,
-      embedding: embedding ?? this.embedding,
       id: id ?? this.id,
+      contentIdentity: contentIdentity ?? this.contentIdentity,
       title: title ?? this.title,
       filePath: filePath ?? this.filePath,
       artists: artists ?? this.artists,
@@ -125,11 +129,11 @@ class Track extends Equatable {
       addedAt: addedAt ?? this.addedAt,
       album: album ?? this.album,
       imageUrl: imageUrl ?? this.imageUrl,
+      audioRevision: audioRevision ?? this.audioRevision,
       metadataRevision: metadataRevision ?? this.metadataRevision,
     );
   }
 
-  bool get isReady => embedding != null && filePath != null;
   bool get isReadyToPlay => filePath != null;
 }
 

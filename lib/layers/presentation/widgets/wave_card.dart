@@ -251,7 +251,7 @@ class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
   Widget build(BuildContext context) {
     final allTracks = switch (context.watch<TrackBloc>().state) {
       TrackLoaded(:final tracks) =>
-        tracks.where((track) => track.isReady).toList(),
+        tracks.where((track) => track.isReadyToPlay).toList(),
       _ => <Track>[],
     };
     final allArtists = _uniqueArtists(allTracks);

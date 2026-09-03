@@ -48,12 +48,9 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     RefreshHistoryEvent event,
     Emitter<HistoryState> emit,
   ) async {
-    final limit = state is HistoryLoaded
-        ? (state as HistoryLoaded).count
-        : 20;
+    final limit = state is HistoryLoaded ? (state as HistoryLoaded).count : 20;
     emit(const HistoryLoading());
     try {
-
       final historyTracks = await _getHistoryUseCase.execute(limit: limit);
 
       emit(

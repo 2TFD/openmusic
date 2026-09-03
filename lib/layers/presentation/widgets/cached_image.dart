@@ -43,6 +43,10 @@ class CachedImage extends StatelessWidget {
       );
     }
 
-    return const Center(child: Icon(Icons.image));
+    return SizedBox(
+      width: resolvedWidth,
+      height: resolvedHeight,
+      child: const Center(child: Icon(Icons.image)),
+    );
   }
 }

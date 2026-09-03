@@ -5,6 +5,7 @@ import 'package:openmusic/layers/domain/entities/artist.dart';
 import 'package:openmusic/layers/domain/entities/download_track_task.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
+import 'package:openmusic/layers/presentation/widgets/cached_image.dart';
 import 'package:openmusic/layers/presentation/widgets/track_item.dart';
 
 void main() {
@@ -70,6 +71,16 @@ void main() {
 
     expect(openedFailure, isTrue);
     expect(selected, isFalse);
+  });
+
+  testWidgets('artwork fallback honors the requested dimensions', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: Scaffold(body: CachedImage(size: 36))),
+    );
+
+    expect(tester.getSize(find.byType(CachedImage)), const Size.square(36));
   });
 }
 

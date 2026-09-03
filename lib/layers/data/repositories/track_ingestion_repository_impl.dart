@@ -1,12 +1,9 @@
-import 'dart:convert';
-
 import 'package:drift/drift.dart';
 import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
 import 'package:openmusic/layers/data/datasources/local/track/track_local_data_source.dart';
 import 'package:openmusic/layers/data/mappers/track_mapper.dart';
 import 'package:openmusic/layers/domain/entities/download_track_task.dart';
-import 'package:openmusic/layers/domain/entities/embedding_task.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/repositories/track_ingestion_repository.dart';
 
@@ -23,11 +20,16 @@ class TrackIngestionRepositoryImpl implements TrackIngestionRepository {
   Future<Track> ingestRemote(Track track) async {
     await database.transaction(() async {
       final existing = await _findTrack(track.id);
-      if (existing?.pathToFile != null) return;
+      if (existing?.pathToFile != null) {
+        await _backfillContentIdentity(existing!, track.contentIdentity);
+        return;
+      }
 
       if (existing == null) {
         await _insertTrack(track);
         await _insertArtists(track);
+      } else {
+        await _backfillContentIdentity(existing, track.contentIdentity);
       }
 
       await database.customUpdate(
@@ -66,7 +68,10 @@ WHERE download_task_table.status IN (?, ?)
   Future<Track> ingestLocal(Track track, {required String filePath}) async {
     await database.transaction(() async {
       var existing = await _findTrack(track.id);
-      if (existing?.pathToFile != null) return;
+      if (existing?.pathToFile != null) {
+        await _backfillContentIdentity(existing!, track.contentIdentity);
+        return;
+      }
 
       if (existing == null) {
         await _insertTrack(track);
@@ -74,6 +79,7 @@ WHERE download_task_table.status IN (?, ?)
         existing = await _findTrack(track.id);
       }
       if (existing == null) throw NotFoundFailure('track', track.id);
+      await _backfillContentIdentity(existing, track.contentIdentity);
 
       final revision = existing.audioRevision + 1;
       final updated =
@@ -85,38 +91,12 @@ WHERE download_task_table.status IN (?, ?)
               .write(
                 TrackTableCompanion(
                   pathToFile: Value(filePath),
-                  embedding: const Value(null),
                   audioRevision: Value(revision),
                 ),
               );
       if (updated != 1) {
         throw StateError('Concurrent audio update for track ${track.id}');
       }
-
-      await database.customUpdate(
-        '''
-INSERT INTO embedding_task_table (
-  id, track_id, status, file_path, created_at, audio_revision,
-  lease_owner, lease_until
-) VALUES (?, ?, ?, ?, ?, ?, NULL, NULL)
-ON CONFLICT(track_id) DO UPDATE SET
-  status = excluded.status,
-  file_path = excluded.file_path,
-  created_at = excluded.created_at,
-  audio_revision = excluded.audio_revision,
-  lease_owner = NULL,
-  lease_until = NULL
-''',
-        variables: [
-          Variable<String>(track.id),
-          Variable<String>(track.id),
-          Variable<String>(EmbeddingStatus.queued.name),
-          Variable<String>(filePath),
-          Variable<DateTime>(DateTime.now()),
-          Variable<int>(revision),
-        ],
-        updates: {database.embeddingTaskTable},
-      );
     });
     return _loadTrack(track.id);
   }
@@ -125,12 +105,24 @@ ON CONFLICT(track_id) DO UPDATE SET
     database.trackTable,
   )..where((row) => row.id.equals(id))).getSingleOrNull();
 
+  Future<void> _backfillContentIdentity(
+    TrackTableData existing,
+    String? contentIdentity,
+  ) async {
+    if (existing.contentIdentity != null || contentIdentity == null) return;
+    await (database.update(database.trackTable)..where(
+          (row) => row.id.equals(existing.id) & row.contentIdentity.isNull(),
+        ))
+        .write(TrackTableCompanion(contentIdentity: Value(contentIdentity)));
+  }
+
   Future<void> _insertTrack(Track track) async {
     await database
         .into(database.trackTable)
         .insert(
           TrackTableCompanion.insert(
             id: track.id,
+            contentIdentity: Value(track.contentIdentity),
             title: track.title,
             pathToFile: Value(track.filePath),
             durationMs: Value(track.duration.inMilliseconds),
@@ -140,9 +132,6 @@ ON CONFLICT(track_id) DO UPDATE SET
             album: Value(track.album),
             imageUrl: Value(track.imageUrl),
             trackDescriptorJson: Value(track.trackDescriptor?.toJson()),
-            embedding: Value(
-              track.embedding == null ? null : jsonEncode(track.embedding),
-            ),
           ),
           mode: InsertMode.insertOrIgnore,
         );

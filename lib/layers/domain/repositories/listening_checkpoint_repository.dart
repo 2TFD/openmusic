@@ -1,4 +1,4 @@
-import 'package:openmusic/layers/domain/entities/play_record.dart';
+import 'package:openmusic/layers/domain/entities/listening_summary.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 
 abstract class ListeningCheckpointRepository {

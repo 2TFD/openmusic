@@ -47,7 +47,8 @@ void main() {
     expect(
       requests.where((uri) => uri.path.contains('/stream')),
       isEmpty,
-      reason: 'стрим-ссылка живёт минуты и всё равно берётся заново при скачивании',
+      reason:
+          'стрим-ссылка живёт минуты и всё равно берётся заново при скачивании',
     );
   });
 
@@ -55,9 +56,7 @@ void main() {
     final requests = <Uri>[];
     final source = _source(requests, likesPages: 3, likesPerPage: 200);
 
-    final resolved = await source.resolve(
-      'https://soundcloud.com/user/likes',
-    );
+    final resolved = await source.resolve('https://soundcloud.com/user/likes');
 
     expect(resolved.tracks.length, 600);
     expect(requests.where((uri) => uri.path.endsWith('/likes')).length, 3);
@@ -72,9 +71,7 @@ void main() {
       hlsOnlyEvery: 2,
     );
 
-    final resolved = await source.resolve(
-      'https://soundcloud.com/user/likes',
-    );
+    final resolved = await source.resolve('https://soundcloud.com/user/likes');
 
     expect(resolved.tracks.length, 2);
   });
@@ -160,7 +157,9 @@ SoundcloudTrackSource _source(
             handler.resolve(ok(resolvePlaylist));
             return;
           }
-          handler.resolve(ok({'id': 42, 'permalink': 'user', 'username': 'User'}));
+          handler.resolve(
+            ok({'id': 42, 'permalink': 'user', 'username': 'User'}),
+          );
           return;
         }
         if (uri.path.endsWith('/likes')) {
@@ -174,7 +173,8 @@ SoundcloudTrackSource _source(
                     'track': _track(
                       offset + i + 1,
                       hlsOnly:
-                          hlsOnlyEvery != null && (offset + i) % hlsOnlyEvery == 1,
+                          hlsOnlyEvery != null &&
+                          (offset + i) % hlsOnlyEvery == 1,
                     ),
                   },
               ],

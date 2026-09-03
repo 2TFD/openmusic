@@ -6,10 +6,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/entities/statistic.dart';
-import 'package:openmusic/layers/presentation/blocs/embedding_status/embedding_status_cubit.dart';
+import 'package:openmusic/layers/presentation/blocs/music_analysis_status/music_analysis_status_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/history/history_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/statistic/statistic_bloc.dart';
-import 'package:openmusic/layers/presentation/blocs/track/track_bloc.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -85,10 +84,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.screenH,
                 ),
-                child: BlocBuilder<EmbeddingStatusCubit, int>(
-                  builder: (context, pendingCount) =>
-                      _LibrarySection(pendingCount: pendingCount),
-                ),
+                child:
+                    BlocBuilder<
+                      MusicAnalysisStatusCubit,
+                      MusicAnalysisStatusState
+                    >(
+                      builder: (context, analysis) =>
+                          _LibrarySection(analysis: analysis),
+                    ),
               ),
             ),
 
@@ -490,132 +493,77 @@ class _SourceBar extends StatelessWidget {
 }
 
 class _LibrarySection extends StatelessWidget {
-  final int pendingCount;
+  final MusicAnalysisStatusState analysis;
 
-  const _LibrarySection({required this.pendingCount});
+  const _LibrarySection({required this.analysis});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TrackBloc, TrackState>(
-      builder: (context, trackState) {
-        final tracks = trackState is TrackLoaded ? trackState.tracks : const [];
-        final total = tracks.length;
-        final embedded = tracks.where((t) => t.embedding != null).length;
-        final fraction = total == 0 ? 0.0 : embedded / total;
-
-        return Column(
-          children: [
-            _Card(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        context.tr('settings.waveReady').toUpperCase(),
-                        style: AppText.label,
-                      ),
-                      const Spacer(),
-                      Text(
-                        total == 0 ? '—' : '$embedded / $total',
-                        style: AppText.bodyXS,
-                      ),
-                    ],
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.l,
+        vertical: AppSpacing.m,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: AppRadius.cardBR,
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: const Icon(
+              Icons.memory_rounded,
+              color: AppColors.muted,
+              size: 16,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  context.tr('settings.processingQueue'),
+                  style: GoogleFonts.outfit(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.2,
+                    color: AppColors.text,
                   ),
-                  const SizedBox(height: 10),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(2),
-                    child: LinearProgressIndicator(
-                      value: fraction,
-                      minHeight: 2,
-                      backgroundColor: AppColors.surface3,
-                      valueColor: const AlwaysStoppedAnimation<Color>(
-                        AppColors.muted,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    context.tr('settings.embeddingsDescription'),
-                    style: AppText.bodyXS,
-                  ),
-                ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  context.tr('settings.embeddingsPending'),
+                  style: AppText.bodyXS,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: AppColors.surface3,
+              borderRadius: BorderRadius.circular(AppRadius.pill),
+            ),
+            child: Text(
+              '${analysis.pendingCount}',
+              style: GoogleFonts.figtree(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textSub,
               ),
             ),
-            const SizedBox(height: 8),
-
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.l,
-                vertical: AppSpacing.m,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: AppRadius.cardBR,
-                border: Border.all(color: AppColors.border),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: const Icon(
-                      Icons.memory_rounded,
-                      color: AppColors.muted,
-                      size: 16,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          context.tr('settings.processingQueue'),
-                          style: GoogleFonts.outfit(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: -0.2,
-                            color: AppColors.text,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          context.tr('settings.embeddingsPending'),
-                          style: AppText.bodyXS,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface3,
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                    ),
-                    child: Text(
-                      '$pendingCount',
-                      style: GoogleFonts.figtree(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textSub,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        );
-      },
+          ),
+        ],
+      ),
     );
   }
 }

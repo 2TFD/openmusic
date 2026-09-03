@@ -1,14 +1,14 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/datasources/local/play_record/drift/play_record_drift_local_source.dart';
+import 'package:openmusic/layers/data/datasources/local/listening_summary/drift/listening_summary_drift_local_source.dart';
 import 'package:openmusic/layers/data/repositories/listening_checkpoint_repository_impl.dart';
-import 'package:openmusic/layers/data/repositories/play_record_repository_impl.dart';
+import 'package:openmusic/layers/data/repositories/listening_summary_repository_impl.dart';
 import 'package:openmusic/layers/domain/entities/artist.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/usecases/recover_listening_checkpoint_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/save_statistic_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/save_listening_summary_use_case.dart';
 
 void main() {
   test('checkpoint keeps maximum duration and recovery is durable', () async {
@@ -23,17 +23,17 @@ void main() {
     expect(second.id, first.id);
     expect(second.listenedDuration, const Duration(seconds: 35));
 
-    final records = PlayRecordRepositoryImpl(
-      localDataSource: PlayRecordDriftLocalSource(database),
+    final records = ListeningSummaryRepositoryImpl(
+      localDataSource: ListeningSummaryDriftLocalSource(database),
     );
     final recover = RecoverListeningCheckpointUseCase(
       checkpoints: checkpoints,
-      saveRecord: SaveRecordPlayUseCase(repo: records),
+      saveListeningSummary: SaveListeningSummaryUseCase(repo: records),
     );
     await recover();
     await recover();
 
-    final stored = await database.select(database.playRecordTable).get();
+    final stored = await database.select(database.listeningSummaryTable).get();
     expect(stored, hasLength(1));
     expect(stored.single.id, first.id);
     expect(stored.single.listenedDurationMilliseconds, 35000);

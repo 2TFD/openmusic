@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/core/utils/app_logger.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
+import 'package:openmusic/layers/domain/entities/listening_event.dart';
 import 'package:openmusic/layers/domain/entities/playback_session.dart';
 import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
 import 'package:openmusic/layers/domain/repositories/listening_checkpoint_repository.dart';
@@ -12,21 +13,23 @@ import 'package:openmusic/layers/domain/repositories/playback_command_bus.dart';
 import 'package:openmusic/layers/domain/repositories/playback_session_repository.dart';
 import 'package:openmusic/layers/domain/usecases/build_playback_queue_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/restore_playback_session_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/save_statistic_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/save_listening_summary_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/skip_track_use_case.dart';
+import 'package:openmusic/layers/domain/services/listening_tracker.dart';
 
 part 'player_event.dart';
 part 'player_state.dart';
 
 class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   final AudioPlayerPort _service;
-  final SaveRecordPlayUseCase _recordPlay;
+  final SaveListeningSummaryUseCase _saveListeningSummary;
   final ListeningCheckpointRepository _checkpoints;
   final BuildPlaybackQueueUseCase _buildQueue;
   final RestorePlaybackSessionUseCase _restorePlayback;
   final PlaybackSessionRepository _sessions;
   final SkipTrackUseCase _skipTrack;
   final PlaybackCommandBus _commands;
+  final ListeningTracker _listeningTracker;
 
   StreamSubscription? _commandSub;
   StreamSubscription? _positionSub;
@@ -38,27 +41,30 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   Duration? _lastObservedPosition;
   String? _listeningTrackId;
   Duration _lastCheckpointedDuration = Duration.zero;
+  Duration _lastTransitionPosition = Duration.zero;
   Future<void> _checkpointWrites = Future.value();
   Future<void> _sessionWrites = Future.value();
   Duration _lastSessionPosition = Duration.zero;
 
   PlayerBloc({
     required AudioPlayerPort service,
-    required SaveRecordPlayUseCase recordPlay,
+    required SaveListeningSummaryUseCase saveListeningSummary,
     required ListeningCheckpointRepository checkpoints,
     required BuildPlaybackQueueUseCase buildQueue,
     required RestorePlaybackSessionUseCase restorePlayback,
     required PlaybackSessionRepository sessions,
     required SkipTrackUseCase skipTrack,
     required PlaybackCommandBus commands,
+    required ListeningTracker listeningTracker,
   }) : _service = service,
-       _recordPlay = recordPlay,
+       _saveListeningSummary = saveListeningSummary,
        _checkpoints = checkpoints,
        _buildQueue = buildQueue,
        _restorePlayback = restorePlayback,
        _sessions = sessions,
        _skipTrack = skipTrack,
        _commands = commands,
+       _listeningTracker = listeningTracker,
        super(const PlayerState(isRestoring: true)) {
     on<PlayerEvent>(_onEvent, transformer: _sequential());
 
@@ -97,7 +103,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       case _PlayerDurationUpdated():
         _onDuration(event, emit);
       case _PlayerPlayingUpdated():
-        _onPlaying(event, emit);
+        await _onPlaying(event, emit);
       case _PlayerIndexUpdated():
         await _onIndex(event, emit);
       case _PlayerProcessingUpdated():
@@ -162,6 +168,14 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
           await _service.pause();
           _lastSessionPosition = position;
           _resetListening(tracks[startIndex]);
+          _lastTransitionPosition = position;
+          _listeningTracker.synchronize(
+            trackId: tracks[startIndex].id,
+            position: position,
+            listened: Duration.zero,
+            duration: tracks[startIndex].duration,
+            isPlaying: false,
+          );
           emit(
             PlayerState(
               currentTrack: tracks[startIndex],
@@ -253,23 +267,66 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
 
   Future<void> _onQueueSet(PlayerQueueSet e, Emitter<PlayerState> emit) async {
     try {
+      final previousTrack = state.currentTrack;
+      final previousPosition = _lastTransitionPosition;
+      final previousListened = _listenedDuration;
+      final previousDuration = _effectiveDuration(previousTrack);
       await _recordCurrentPlay();
       final queue = _buildQueue(e.tracks, startTrack: e.startTrack);
       if (queue.isEmpty) {
         _resetListening(null);
+        _listeningTracker.synchronize(
+          trackId: null,
+          position: Duration.zero,
+          listened: Duration.zero,
+          duration: Duration.zero,
+          isPlaying: false,
+        );
         emit(state.copyWith(queue: const [], currentTrack: null));
         _scheduleSessionWrite(replaceQueue: true);
         return;
       }
       await _service.setQueue(queue.tracks, index: queue.startIndex);
+      final nextTrack = queue.tracks[queue.startIndex];
+      if (previousTrack != null && previousTrack.id != nextTrack.id) {
+        await _recordListening(
+          _listeningTracker.trackChanged(
+            previousTrackId: previousTrack.id,
+            trackId: nextTrack.id,
+            previousPosition: previousPosition,
+            previousListened: previousListened,
+            previousDuration: previousDuration,
+            duration: nextTrack.duration,
+            isPlaying: state.isPlaying,
+            forcedReason: ListeningTransitionReason.queueSelection,
+          ),
+        );
+      } else if (previousTrack != null) {
+        await _recordListening(
+          _listeningTracker.replayConfirmed(
+            trackId: nextTrack.id,
+            listened: previousListened,
+            duration: nextTrack.duration,
+            reason: ListeningTransitionReason.queueSelection,
+          ),
+        );
+      } else {
+        _listeningTracker.synchronize(
+          trackId: nextTrack.id,
+          position: Duration.zero,
+          listened: Duration.zero,
+          duration: nextTrack.duration,
+          isPlaying: state.isPlaying,
+        );
+      }
       emit(
         state.copyWith(
           queue: queue.tracks,
           currentIndex: queue.startIndex,
-          currentTrack: queue.tracks[queue.startIndex],
+          currentTrack: nextTrack,
         ),
       );
-      _resetListening(queue.tracks[queue.startIndex]);
+      _resetListening(nextTrack);
       _lastSessionPosition = Duration.zero;
       _scheduleSessionWrite(replaceQueue: true);
       if (e.autoPlay) _startPlayback();
@@ -304,6 +361,10 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
 
     final wasPlaying = state.isPlaying;
     final removedCurrent = state.currentTrack?.id == trackId;
+    final removedTrack = removedCurrent ? state.currentTrack : null;
+    final removedPosition = _lastTransitionPosition;
+    final removedListened = _listenedDuration;
+    final removedDuration = _effectiveDuration(removedTrack);
     final nextQueue = state.queue
         .where((track) => track.id != trackId)
         .toList();
@@ -313,6 +374,13 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     if (nextQueue.isEmpty) {
       await _service.clearQueue();
       _resetListening(null);
+      _listeningTracker.synchronize(
+        trackId: null,
+        position: Duration.zero,
+        listened: Duration.zero,
+        duration: Duration.zero,
+        isPlaying: false,
+      );
       _lastSessionPosition = Duration.zero;
       emit(
         state.copyWith(
@@ -349,6 +417,18 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     await _service.setShuffleModeEnabled(state.isShuffleEnabled);
 
     if (removedCurrent) {
+      await _recordListening(
+        _listeningTracker.trackChanged(
+          previousTrackId: removedTrack!.id,
+          trackId: nextTrack.id,
+          previousPosition: removedPosition,
+          previousListened: removedListened,
+          previousDuration: removedDuration,
+          duration: nextTrack.duration,
+          isPlaying: wasPlaying,
+          forcedReason: ListeningTransitionReason.unknown,
+        ),
+      );
       _resetListening(nextTrack);
     } else {
       _lastObservedPosition = null;
@@ -411,9 +491,28 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
 
   /// Сброс [_lastObservedPosition] обязателен: иначе следующий тик позиции
   /// посчитает перемотку вперёд прослушанным временем и раздует статистику.
-  Future<void> _seekTo(Duration position, Emitter<PlayerState> emit) async {
+  Future<void> _seekTo(
+    Duration position,
+    Emitter<PlayerState> emit, {
+    bool recordListeningEvent = true,
+  }) async {
+    final track = state.currentTrack;
+    final from = state.position;
+    final listened = _listenedDuration;
     _lastObservedPosition = null;
     await _service.seek(position);
+    _lastTransitionPosition = position;
+    if (recordListeningEvent && track != null) {
+      await _recordListening(
+        _listeningTracker.seekConfirmed(
+          trackId: track.id,
+          from: from,
+          to: position,
+          listened: listened,
+          duration: _effectiveDuration(track),
+        ),
+      );
+    }
     _lastSessionPosition = position;
     emit(state.copyWith(position: position));
     _scheduleSessionWrite(position: position);
@@ -424,9 +523,34 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     Emitter<PlayerState> emit,
   ) async {
     try {
+      if (e.index < 0 || e.index >= state.queue.length) return;
+      final currentTrack = state.currentTrack;
+      final selectedTrack = state.queue[e.index];
+      if (currentTrack?.id == selectedTrack.id) {
+        final listened = _listenedDuration;
+        await _service.seekToIndex(e.index);
+        await _recordListening(
+          _listeningTracker.replayConfirmed(
+            trackId: selectedTrack.id,
+            listened: listened,
+            duration: _effectiveDuration(selectedTrack),
+            reason: ListeningTransitionReason.queueSelection,
+          ),
+        );
+        _lastObservedPosition = null;
+        _lastTransitionPosition = Duration.zero;
+        emit(state.copyWith(position: Duration.zero));
+        _scheduleSessionWrite(position: Duration.zero);
+        _startPlayback();
+        return;
+      }
+      _listeningTracker.navigationRequested(
+        ListeningNavigationIntent.queueSelection,
+      );
       await _service.seekToIndex(e.index);
       _startPlayback();
     } catch (e, st) {
+      _listeningTracker.cancelNavigationRequest();
       AppLogger.log('[PlayerBloc._onTrackSelected] Error: $e, stackTrace: $st');
       emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
     }
@@ -446,15 +570,32 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       );
       switch (action) {
         case RestartCurrentTrack():
-          await _seekTo(Duration.zero, emit);
+          final track = state.currentTrack!;
+          final listened = _listenedDuration;
+          await _seekTo(Duration.zero, emit, recordListeningEvent: false);
+          await _recordListening(
+            _listeningTracker.replayConfirmed(
+              trackId: track.id,
+              listened: listened,
+              duration: _effectiveDuration(track),
+              reason: ListeningTransitionReason.userPrevious,
+            ),
+          );
         case AdvanceToNextTrack():
+          _listeningTracker.navigationRequested(
+            ListeningNavigationIntent.userNext,
+          );
           await _service.skipToNext();
         case AdvanceToPreviousTrack():
+          _listeningTracker.navigationRequested(
+            ListeningNavigationIntent.userPrevious,
+          );
           await _service.skipToPrevious();
         case SkipRejected():
           break;
       }
     } catch (e, st) {
+      _listeningTracker.cancelNavigationRequest();
       AppLogger.log('[PlayerBloc._onSkip] Error: $e, stackTrace: $st');
       emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
     }
@@ -518,6 +659,17 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
         }
       }
       _lastObservedPosition = e.position;
+      if (previous == null || e.position >= previous) {
+        _lastTransitionPosition = e.position;
+      }
+    }
+    if (track != null) {
+      _listeningTracker.positionUpdated(
+        trackId: track.id,
+        position: e.position,
+        listened: _listenedDuration,
+        duration: _effectiveDuration(track),
+      );
     }
     emit(state.copyWith(position: e.position));
     if (!state.isRestoring &&
@@ -528,11 +680,33 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     }
   }
 
-  void _onDuration(_PlayerDurationUpdated e, Emitter<PlayerState> emit) =>
-      emit(state.copyWith(duration: e.duration));
+  void _onDuration(_PlayerDurationUpdated e, Emitter<PlayerState> emit) {
+    final track = state.currentTrack;
+    if (track != null) {
+      _listeningTracker.positionUpdated(
+        trackId: track.id,
+        position: state.position,
+        listened: _listenedDuration,
+        duration: e.duration,
+      );
+    }
+    emit(state.copyWith(duration: e.duration));
+  }
 
-  void _onPlaying(_PlayerPlayingUpdated e, Emitter<PlayerState> emit) {
+  Future<void> _onPlaying(
+    _PlayerPlayingUpdated e,
+    Emitter<PlayerState> emit,
+  ) async {
     if (e.playing != state.isPlaying) _lastObservedPosition = null;
+    await _recordListening(
+      _listeningTracker.playingChanged(
+        trackId: state.currentTrack?.id,
+        isPlaying: e.playing,
+        position: state.position,
+        listened: _listenedDuration,
+        duration: _effectiveDuration(state.currentTrack),
+      ),
+    );
     emit(state.copyWith(isPlaying: e.playing));
     if (!e.playing && state.currentTrack != null) {
       _scheduleSessionWrite();
@@ -546,6 +720,20 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     if (e.index < state.queue.length) {
       final nextTrack = state.queue[e.index];
       if (state.currentTrack?.id != nextTrack.id) {
+        final previousTrack = state.currentTrack;
+        if (previousTrack != null) {
+          await _recordListening(
+            _listeningTracker.trackChanged(
+              previousTrackId: previousTrack.id,
+              trackId: nextTrack.id,
+              previousPosition: _lastTransitionPosition,
+              previousListened: _listenedDuration,
+              previousDuration: _effectiveDuration(previousTrack),
+              duration: nextTrack.duration,
+              isPlaying: state.isPlaying,
+            ),
+          );
+        }
         await _recordCurrentPlay();
         _resetListening(nextTrack);
       }
@@ -570,6 +758,17 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
         e.state == PlaybackProcessingState.buffering;
     emit(state.copyWith(isLoading: loading));
     if (e.state == PlaybackProcessingState.completed) {
+      final track = state.currentTrack;
+      if (track != null) {
+        await _recordListening(
+          _listeningTracker.processingCompleted(
+            trackId: track.id,
+            position: _lastTransitionPosition,
+            listened: _listenedDuration,
+            duration: _effectiveDuration(track),
+          ),
+        );
+      }
       await _recordCurrentPlay();
       _lastSessionPosition = Duration.zero;
       _scheduleSessionWrite(position: Duration.zero);
@@ -595,6 +794,26 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     _listenedDuration = Duration.zero;
     _lastObservedPosition = null;
     _lastCheckpointedDuration = Duration.zero;
+    _lastTransitionPosition = Duration.zero;
+  }
+
+  Duration _effectiveDuration(Track? track) {
+    if (track == null) return Duration.zero;
+    if (state.currentTrack?.id == track.id && state.duration > Duration.zero) {
+      return state.duration;
+    }
+    return track.duration;
+  }
+
+  Future<void> _recordListening(Future<void> write) async {
+    try {
+      await write;
+    } catch (error, stackTrace) {
+      await AppLogger.log(
+        '[PlayerBloc] Error saving listening event: '
+        '$error, stackTrace: $stackTrace',
+      );
+    }
   }
 
   void _scheduleCheckpoint(Track track, Duration listened) {
@@ -619,7 +838,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     try {
       await _checkpointWrites;
       final checkpoint = await _checkpoints.save(track, listened);
-      await _recordPlay(track, listened, recordId: checkpoint.id);
+      await _saveListeningSummary(track, listened, summaryId: checkpoint.id);
       await _checkpoints.clear(checkpoint.id);
     } catch (error, stackTrace) {
       await AppLogger.log(

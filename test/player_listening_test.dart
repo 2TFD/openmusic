@@ -2,19 +2,23 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/play_record.dart';
+import 'package:openmusic/layers/domain/entities/listening_summary.dart';
+import 'package:openmusic/layers/domain/entities/listening_event.dart';
 import 'package:openmusic/layers/domain/entities/playback_session.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
 import 'package:openmusic/layers/domain/repositories/listening_checkpoint_repository.dart';
-import 'package:openmusic/layers/domain/repositories/play_record_repository.dart';
+import 'package:openmusic/layers/domain/repositories/listening_event_repository.dart';
+import 'package:openmusic/layers/domain/repositories/listening_summary_repository.dart';
 import 'package:openmusic/layers/domain/repositories/playback_session_repository.dart';
 import 'package:openmusic/layers/domain/repositories/track_repository.dart';
 import 'package:openmusic/layers/domain/usecases/build_playback_queue_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/save_statistic_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/save_listening_summary_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/restore_playback_session_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/skip_track_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/save_listening_event_use_case.dart';
+import 'package:openmusic/layers/domain/services/listening_tracker.dart';
 import 'package:openmusic/core/services/audio_player/playback_command_bus_impl.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 
@@ -23,12 +27,12 @@ void main() {
     'records played deltas, ignores seek jump, and flushes on close',
     () async {
       final player = _FakeAudioPlayer();
-      final records = _FakePlayRecordRepository();
+      final records = _FakeListeningSummaryRepository();
       final checkpoints = _FakeCheckpointRepository();
       final sessions = _FakePlaybackSessionRepository();
       final bloc = PlayerBloc(
         service: player,
-        recordPlay: SaveRecordPlayUseCase(repo: records),
+        saveListeningSummary: SaveListeningSummaryUseCase(repo: records),
         checkpoints: checkpoints,
         buildQueue: BuildPlaybackQueueUseCase(),
         restorePlayback: RestorePlaybackSessionUseCase(
@@ -38,6 +42,7 @@ void main() {
         sessions: sessions,
         skipTrack: const SkipTrackUseCase(),
         commands: PlaybackCommandBusImpl(),
+        listeningTracker: ListeningTracker.disabled(),
       );
       bloc.add(PlayerQueueSet([_track()], autoPlay: false));
       await _pump();
@@ -65,6 +70,114 @@ void main() {
         records.saved.single.listenedDuration,
         const Duration(seconds: 32),
       );
+    },
+  );
+
+  test(
+    'PlayerBloc persists a confirmed early skip independently of ListeningSummary',
+    () async {
+      final player = _FakeAudioPlayer();
+      final records = _FakeListeningSummaryRepository();
+      final events = _FakeListeningEventRepository();
+      final checkpoints = _FakeCheckpointRepository();
+      final sessions = _FakePlaybackSessionRepository();
+      final bloc = PlayerBloc(
+        service: player,
+        saveListeningSummary: SaveListeningSummaryUseCase(repo: records),
+        checkpoints: checkpoints,
+        buildQueue: BuildPlaybackQueueUseCase(),
+        restorePlayback: RestorePlaybackSessionUseCase(
+          sessions: sessions,
+          tracks: _FakeTrackRepository(),
+        ),
+        sessions: sessions,
+        skipTrack: const SkipTrackUseCase(),
+        commands: PlaybackCommandBusImpl(),
+        listeningTracker: ListeningTracker(
+          saveEvent: SaveListeningEventUseCase(events),
+          sessionId: 'runtime-session',
+        ),
+      );
+      bloc.add(
+        PlayerQueueSet([_track('track-1'), _track('track-2')], autoPlay: false),
+      );
+      await _pump();
+      player.playing.add(true);
+      player.position.add(Duration.zero);
+      player.position.add(const Duration(seconds: 5));
+      await _pump();
+
+      bloc.add(PlayerSkippedNext());
+      await _pump();
+
+      final skip = events.saved.singleWhere(
+        (event) => event.type == ListeningEventType.skipNext,
+      );
+      expect(skip.trackId, 'track-1');
+      expect(skip.listenedMs, 5000);
+      expect(skip.transitionReason, ListeningTransitionReason.userNext);
+      expect(
+        events.saved
+            .singleWhere(
+              (event) => event.type == ListeningEventType.trackChanged,
+            )
+            .trackId,
+        'track-2',
+      );
+      expect(records.saved, isEmpty, reason: 'legacy threshold remains 30 sec');
+
+      await bloc.close();
+      await player.close();
+    },
+  );
+
+  test(
+    'PlayerBloc keeps pre-reset position for natural autoplay completion',
+    () async {
+      final player = _FakeAudioPlayer();
+      final events = _FakeListeningEventRepository();
+      final checkpoints = _FakeCheckpointRepository();
+      final sessions = _FakePlaybackSessionRepository();
+      final bloc = PlayerBloc(
+        service: player,
+        saveListeningSummary: SaveListeningSummaryUseCase(
+          repo: _FakeListeningSummaryRepository(),
+        ),
+        checkpoints: checkpoints,
+        buildQueue: BuildPlaybackQueueUseCase(),
+        restorePlayback: RestorePlaybackSessionUseCase(
+          sessions: sessions,
+          tracks: _FakeTrackRepository(),
+        ),
+        sessions: sessions,
+        skipTrack: const SkipTrackUseCase(),
+        commands: PlaybackCommandBusImpl(),
+        listeningTracker: ListeningTracker(
+          saveEvent: SaveListeningEventUseCase(events),
+          sessionId: 'runtime-session',
+        ),
+      );
+      bloc.add(
+        PlayerQueueSet([_track('track-1'), _track('track-2')], autoPlay: false),
+      );
+      await _pump();
+      player.playing.add(true);
+      player.position.add(Duration.zero);
+      player.position.add(const Duration(minutes: 2, seconds: 59));
+      await _pump();
+
+      player.position.add(Duration.zero);
+      player.index.add(1);
+      await _pump();
+
+      final completed = events.saved.singleWhere(
+        (event) => event.type == ListeningEventType.trackCompleted,
+      );
+      expect(completed.trackId, 'track-1');
+      expect(completed.transitionReason, ListeningTransitionReason.natural);
+
+      await bloc.close();
+      await player.close();
     },
   );
 }
@@ -97,9 +210,9 @@ class _FakeCheckpointRepository implements ListeningCheckpointRepository {
 
 Future<void> _pump() => Future<void>.delayed(const Duration(milliseconds: 10));
 
-Track _track() => Track(
-  id: 'track-1',
-  title: 'Track',
+Track _track([String id = 'track-1']) => Track(
+  id: id,
+  title: 'Track $id',
   artists: const [Artist(id: 'artist-1', name: 'Artist')],
   duration: const Duration(minutes: 3),
   source: const Source(
@@ -107,7 +220,7 @@ Track _track() => Track(
     originalUrl: '/music/track.mp3',
   ),
   addedAt: DateTime.utc(2026),
-  filePath: 'track.mp3',
+  filePath: '$id.mp3',
 );
 
 class _FakeAudioPlayer implements AudioPlayerPort {
@@ -139,7 +252,7 @@ class _FakeAudioPlayer implements AudioPlayerPort {
   @override
   Future<void> seekToIndex(int index) async => this.index.add(index);
   @override
-  Future<void> skipToNext() async {}
+  Future<void> skipToNext() async => index.add(1);
   @override
   Future<void> skipToPrevious() async {}
   @override
@@ -206,14 +319,14 @@ class _FakeTrackRepository implements TrackRepository {
   Stream<void> watchChanges() => const Stream.empty();
 }
 
-class _FakePlayRecordRepository implements PlayRecordRepository {
-  final saved = <PlayRecord>[];
+class _FakeListeningSummaryRepository implements ListeningSummaryRepository {
+  final saved = <ListeningSummary>[];
 
   @override
-  Future<void> save(PlayRecord record) async => saved.add(record);
+  Future<void> save(ListeningSummary record) async => saved.add(record);
   @override
-  Future<PlayRecordSummary> aggregate({required DateTime from}) async =>
-      const PlayRecordSummary(
+  Future<ListeningStatsSummary> aggregate({required DateTime from}) async =>
+      const ListeningStatsSummary(
         totalTracks: 0,
         totalTime: Duration.zero,
         uniqueArtists: 0,
@@ -225,4 +338,18 @@ class _FakePlayRecordRepository implements PlayRecordRepository {
   Future<List<String>> getRecentTrackIds({int limit = 20}) async => const [];
   @override
   Stream<void> watchChanges() => const Stream.empty();
+}
+
+class _FakeListeningEventRepository implements ListeningEventRepository {
+  final saved = <ListeningEvent>[];
+
+  @override
+  Future<void> save(ListeningEvent event) async => saved.add(event);
+
+  @override
+  Future<List<ListeningEvent>> getAll() async => List.of(saved);
+
+  @override
+  Future<List<ListeningEvent>> getForTrack(String trackId) async =>
+      saved.where((event) => event.trackId == trackId).toList();
 }

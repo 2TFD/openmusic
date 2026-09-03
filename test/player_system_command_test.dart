@@ -3,20 +3,21 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:openmusic/core/services/audio_player/playback_command_bus_impl.dart';
 import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/play_record.dart';
+import 'package:openmusic/layers/domain/entities/listening_summary.dart';
 import 'package:openmusic/layers/domain/entities/playback_session.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
 import 'package:openmusic/layers/domain/repositories/listening_checkpoint_repository.dart';
-import 'package:openmusic/layers/domain/repositories/play_record_repository.dart';
+import 'package:openmusic/layers/domain/repositories/listening_summary_repository.dart';
 import 'package:openmusic/layers/domain/repositories/playback_command_bus.dart';
 import 'package:openmusic/layers/domain/repositories/playback_session_repository.dart';
 import 'package:openmusic/layers/domain/repositories/track_repository.dart';
 import 'package:openmusic/layers/domain/usecases/build_playback_queue_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/restore_playback_session_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/save_statistic_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/save_listening_summary_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/skip_track_use_case.dart';
+import 'package:openmusic/layers/domain/services/listening_tracker.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 
 /// Экран блокировки, наушники и Bluetooth обязаны вести себя ровно так же, как
@@ -110,7 +111,7 @@ class _Harness {
     final tracks = [_track('a'), _track('b')];
     final bloc = PlayerBloc(
       service: player,
-      recordPlay: SaveRecordPlayUseCase(repo: records),
+      saveListeningSummary: SaveListeningSummaryUseCase(repo: records),
       checkpoints: _NoopCheckpoints(),
       buildQueue: BuildPlaybackQueueUseCase(),
       restorePlayback: RestorePlaybackSessionUseCase(
@@ -120,6 +121,7 @@ class _Harness {
       sessions: sessions,
       skipTrack: const SkipTrackUseCase(),
       commands: commands,
+      listeningTracker: ListeningTracker.disabled(),
     );
     await _pump();
     bloc.add(PlayerQueueSet(tracks, startTrack: tracks[1], autoPlay: false));
@@ -223,15 +225,15 @@ class _FakeAudioPlayer implements AudioPlayerPort {
   }
 }
 
-class _RecordingRecords implements PlayRecordRepository {
-  final List<PlayRecord> saved = [];
+class _RecordingRecords implements ListeningSummaryRepository {
+  final List<ListeningSummary> saved = [];
 
   @override
-  Future<void> save(PlayRecord record) async => saved.add(record);
+  Future<void> save(ListeningSummary record) async => saved.add(record);
 
   @override
-  Future<PlayRecordSummary> aggregate({required DateTime from}) async =>
-      const PlayRecordSummary(
+  Future<ListeningStatsSummary> aggregate({required DateTime from}) async =>
+      const ListeningStatsSummary(
         totalTracks: 0,
         totalTime: Duration.zero,
         uniqueArtists: 0,

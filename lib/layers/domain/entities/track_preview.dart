@@ -33,11 +33,11 @@ class TrackPreview {
 
   Track toTrack(
     String? filePath, {
+    String? contentIdentity,
     TrackDescriptor? trackDescriptor,
-    List<double>? embedding,
   }) => Track(
     trackDescriptor: trackDescriptor,
-    embedding: embedding,
+    contentIdentity: contentIdentity,
     duration: duration ?? Duration.zero,
     addedAt: DateTime.now(),
     id: id,

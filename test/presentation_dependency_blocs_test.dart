@@ -1,12 +1,9 @@
-import 'dart:async';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/entities/track_preview.dart';
 import 'package:openmusic/layers/domain/repositories/local_track_picker.dart';
 import 'package:openmusic/layers/domain/usecases/import_local_tracks_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/pick_local_tracks_use_case.dart';
-import 'package:openmusic/layers/presentation/blocs/embedding_status/embedding_status_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/import_music/import_music_cubit.dart';
 
 void main() {
@@ -56,27 +53,6 @@ void main() {
       await cubit.close();
     });
   });
-
-  test(
-    'EmbeddingStatusCubit owns and cancels the pending-count subscription',
-    () async {
-      final controller = StreamController<int>();
-      final cubit = EmbeddingStatusCubit(pendingCounts: controller.stream);
-      final states = <int>[];
-      final subscription = cubit.stream.listen(states.add);
-
-      controller.add(3);
-      controller.add(1);
-      await Future<void>.delayed(Duration.zero);
-
-      expect(states, [3, 1]);
-      expect(cubit.state, 1);
-
-      await subscription.cancel();
-      await cubit.close();
-      await controller.close();
-    },
-  );
 }
 
 ImportMusicCubit _buildImportCubit(LocalTrackPicker picker) {

@@ -2,19 +2,20 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/play_record.dart';
+import 'package:openmusic/layers/domain/entities/listening_summary.dart';
 import 'package:openmusic/layers/domain/entities/playback_session.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
 import 'package:openmusic/layers/domain/repositories/listening_checkpoint_repository.dart';
-import 'package:openmusic/layers/domain/repositories/play_record_repository.dart';
+import 'package:openmusic/layers/domain/repositories/listening_summary_repository.dart';
 import 'package:openmusic/layers/domain/repositories/playback_session_repository.dart';
 import 'package:openmusic/layers/domain/repositories/track_repository.dart';
 import 'package:openmusic/layers/domain/usecases/build_playback_queue_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/restore_playback_session_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/save_statistic_use_case.dart';
+import 'package:openmusic/layers/domain/usecases/save_listening_summary_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/skip_track_use_case.dart';
+import 'package:openmusic/layers/domain/services/listening_tracker.dart';
 import 'package:openmusic/core/services/audio_player/playback_command_bus_impl.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 
@@ -256,7 +257,7 @@ PlayerBloc _bloc({
   required List<Track> tracks,
 }) => PlayerBloc(
   service: player,
-  recordPlay: SaveRecordPlayUseCase(repo: _NoopRecords()),
+  saveListeningSummary: SaveListeningSummaryUseCase(repo: _NoopRecords()),
   checkpoints: _NoopCheckpoints(),
   buildQueue: BuildPlaybackQueueUseCase(),
   restorePlayback: RestorePlaybackSessionUseCase(
@@ -266,6 +267,7 @@ PlayerBloc _bloc({
   sessions: sessions,
   skipTrack: const SkipTrackUseCase(),
   commands: PlaybackCommandBusImpl(),
+  listeningTracker: ListeningTracker.disabled(),
 );
 
 Track _track(String id) => Track(
@@ -449,12 +451,12 @@ class _NoopCheckpoints implements ListeningCheckpointRepository {
   );
 }
 
-class _NoopRecords implements PlayRecordRepository {
+class _NoopRecords implements ListeningSummaryRepository {
   @override
-  Future<void> save(PlayRecord record) async {}
+  Future<void> save(ListeningSummary record) async {}
   @override
-  Future<PlayRecordSummary> aggregate({required DateTime from}) async =>
-      const PlayRecordSummary(
+  Future<ListeningStatsSummary> aggregate({required DateTime from}) async =>
+      const ListeningStatsSummary(
         totalTracks: 0,
         totalTime: Duration.zero,
         uniqueArtists: 0,

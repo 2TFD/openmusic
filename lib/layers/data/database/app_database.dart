@@ -1,8 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:openmusic/layers/data/datasources/local/download_task/drift/download_task_table.dart';
-import 'package:openmusic/layers/data/datasources/local/embedding_task/drift/embedding_task_table.dart';
-import 'package:openmusic/layers/data/datasources/local/play_record/drift/play_record_table.dart';
+import 'package:openmusic/layers/data/datasources/local/listening_summary/drift/listening_summary_table.dart';
 import 'package:openmusic/layers/data/datasources/local/playlist/drift/playlist_table.dart';
 import 'package:openmusic/layers/data/datasources/local/playlist/drift/playlist_track_table.dart';
 import 'package:openmusic/layers/data/datasources/local/track/drift/artist_table.dart';
@@ -13,16 +12,25 @@ import 'package:openmusic/layers/data/database/listening_checkpoint_table.dart';
 import 'package:openmusic/layers/data/database/playback_session_table.dart';
 import 'package:openmusic/layers/data/database/playback_queue_item_table.dart';
 import 'package:openmusic/layers/data/database/app_navigation_state_table.dart';
+import 'package:openmusic/layers/data/datasources/local/listening_event/drift/listening_event_table.dart';
+import 'package:openmusic/layers/data/datasources/local/lyrics/lyrics_resolution_state_table.dart';
+import 'package:openmusic/layers/data/datasources/local/lyrics/lyrics_resolution_task_table.dart';
+import 'package:openmusic/layers/data/datasources/local/lyrics/track_lyrics_table.dart';
+import 'package:openmusic/layers/data/datasources/local/music_analysis/music_analysis_task_table.dart';
+import 'package:openmusic/layers/data/datasources/local/music_analysis/music_analysis_settings_table.dart';
+import 'package:openmusic/layers/data/datasources/local/similarity_evaluation/similarity_evaluation_table.dart';
+import 'package:openmusic/layers/data/datasources/local/track_embedding/drift/track_embedding_table.dart';
+import 'package:openmusic/layers/data/datasources/local/track_temporal_embedding/track_temporal_embedding_segment_table.dart';
+import 'package:openmusic/layers/data/datasources/local/track_temporal_embedding/track_temporal_embedding_table.dart';
 import 'package:path_provider/path_provider.dart';
 
 part 'app_database.g.dart';
 
 @DriftDatabase(
   tables: [
-    PlayRecordTable,
+    ListeningSummaryTable,
     PlaylistTable,
     TrackTable,
-    EmbeddingTaskTable,
     DownloadTaskTable,
     ArtistTable,
     TrackArtistTable,
@@ -32,46 +40,44 @@ part 'app_database.g.dart';
     PlaybackSessionTable,
     PlaybackQueueItemTable,
     AppNavigationStateTable,
+    TrackEmbeddingTable,
+    ListeningEventTable,
+    TrackTemporalEmbeddingTable,
+    TrackTemporalEmbeddingSegmentTable,
+    MusicAnalysisTaskTable,
+    MusicAnalysisSettingsTable,
+    SimilarityEvaluationTable,
+    TrackLyricsTable,
+    LyricsResolutionStateTable,
+    LyricsResolutionTaskTable,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 17;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) async {
       await m.createAll();
-      await m.database.customStatement(
-        'CREATE UNIQUE INDEX IF NOT EXISTS'
-        ' idx_embedding_task_id ON embedding_task_table(id)',
-      );
-      await m.database.customStatement(
-        'CREATE INDEX IF NOT EXISTS'
-        ' idx_play_record_played_at ON play_record_table(played_at)',
-      );
-      await m.database.customStatement(
-        'CREATE INDEX IF NOT EXISTS idx_play_record_track_played'
-        ' ON play_record_table(track_id, played_at)',
-      );
+      await _createV16Indexes(m.database);
       await m.database.customStatement(
         'CREATE INDEX IF NOT EXISTS idx_track_added_at'
         ' ON track_table(added_at DESC)',
       );
       await _createV6Indexes(m.database);
       await _createV7Indexes(m.database);
+      await _createV12Indexes(m.database);
+      await _createV14Indexes(m.database);
+      await _createV17Indexes(m.database);
     },
     onUpgrade: (m, from, to) async {
       if (from < 2) {
         await m.createTable(downloadTaskTable);
       }
       if (from < 3) {
-        await m.database.customStatement(
-          'CREATE UNIQUE INDEX IF NOT EXISTS'
-          ' idx_embedding_task_id ON embedding_task_table(id)',
-        );
         await m.database.customStatement(
           'CREATE INDEX IF NOT EXISTS'
           ' idx_play_record_played_at ON play_record_table(played_at)',
@@ -85,8 +91,27 @@ class AppDatabase extends _$AppDatabase {
       if (from < 4) {
         await m.addColumn(downloadTaskTable, downloadTaskTable.leaseOwner);
         await m.addColumn(downloadTaskTable, downloadTaskTable.leaseUntil);
-        await m.addColumn(embeddingTaskTable, embeddingTaskTable.leaseOwner);
-        await m.addColumn(embeddingTaskTable, embeddingTaskTable.leaseUntil);
+        if (await _hasTable(m.database, 'embedding_task_table')) {
+          if (!await _hasColumn(
+            m.database,
+            'embedding_task_table',
+            'lease_owner',
+          )) {
+            await m.database.customStatement(
+              'ALTER TABLE embedding_task_table ADD COLUMN lease_owner TEXT',
+            );
+          }
+          if (!await _hasColumn(
+            m.database,
+            'embedding_task_table',
+            'lease_until',
+          )) {
+            await m.database.customStatement(
+              'ALTER TABLE embedding_task_table ADD COLUMN lease_until '
+              'INTEGER',
+            );
+          }
+        }
       }
       if (from < 5) {
         await m.database.customStatement('''
@@ -136,7 +161,17 @@ FROM track_table
       }
       if (from < 7) {
         await m.addColumn(trackTable, trackTable.audioRevision);
-        await m.addColumn(embeddingTaskTable, embeddingTaskTable.audioRevision);
+        if (await _hasTable(m.database, 'embedding_task_table') &&
+            !await _hasColumn(
+              m.database,
+              'embedding_task_table',
+              'audio_revision',
+            )) {
+          await m.database.customStatement(
+            'ALTER TABLE embedding_task_table ADD COLUMN audio_revision '
+            'INTEGER NOT NULL DEFAULT 0',
+          );
+        }
         await _createV7Indexes(m.database);
       }
       if (from < 8) {
@@ -158,11 +193,181 @@ FROM track_table
         await m.addColumn(downloadTaskTable, downloadTaskTable.failureDetails);
         await m.addColumn(downloadTaskTable, downloadTaskTable.failedAt);
       }
+      if (from < 12) {
+        if (!await _hasColumn(
+          m.database,
+          trackTable.actualTableName,
+          trackTable.contentIdentity.$name,
+        )) {
+          await m.addColumn(trackTable, trackTable.contentIdentity);
+        }
+        if (!await _hasTable(m.database, trackEmbeddingTable.actualTableName)) {
+          await m.createTable(trackEmbeddingTable);
+        }
+        if (!await _hasTable(m.database, listeningEventTable.actualTableName)) {
+          await m.createTable(listeningEventTable);
+        }
+        await _createV12Indexes(m.database);
+      }
+      if (from < 13 &&
+          await _hasTable(m.database, trackEmbeddingTable.actualTableName) &&
+          !await _hasColumn(
+            m.database,
+            trackEmbeddingTable.actualTableName,
+            trackEmbeddingTable.audioRevision.$name,
+          )) {
+        await m.addColumn(
+          trackEmbeddingTable,
+          trackEmbeddingTable.audioRevision,
+        );
+      }
+      if (from < 14 &&
+          await _hasTable(m.database, trackEmbeddingTable.actualTableName) &&
+          !await _hasColumn(
+            m.database,
+            trackEmbeddingTable.actualTableName,
+            trackEmbeddingTable.preprocessingVersion.$name,
+          )) {
+        await _rebuildTrackEmbeddingForV14(m.database);
+      }
+      if (from < 14) {
+        if (!await _hasTable(
+          m.database,
+          trackTemporalEmbeddingTable.actualTableName,
+        )) {
+          await m.createTable(trackTemporalEmbeddingTable);
+        }
+        if (!await _hasTable(
+          m.database,
+          trackTemporalEmbeddingSegmentTable.actualTableName,
+        )) {
+          await m.createTable(trackTemporalEmbeddingSegmentTable);
+        }
+        if (!await _hasTable(
+          m.database,
+          musicAnalysisTaskTable.actualTableName,
+        )) {
+          await m.createTable(musicAnalysisTaskTable);
+        }
+        if (!await _hasTable(
+          m.database,
+          similarityEvaluationTable.actualTableName,
+        )) {
+          await m.createTable(similarityEvaluationTable);
+        }
+        await _createV14Indexes(m.database);
+      }
+      if (from < 15) {
+        if (!await _hasTable(
+          m.database,
+          musicAnalysisSettingsTable.actualTableName,
+        )) {
+          await m.createTable(musicAnalysisSettingsTable);
+        }
+        if (await _hasTable(m.database, 'embedding_task_table')) {
+          await m.database.customStatement('DROP TABLE embedding_task_table');
+        }
+        if (await _hasColumn(
+          m.database,
+          trackTable.actualTableName,
+          'embedding',
+        )) {
+          await m.alterTable(TableMigration(trackTable));
+        }
+      }
+      if (from < 16) {
+        await m.database.customStatement(
+          'DROP INDEX IF EXISTS idx_play_record_played_at',
+        );
+        await m.database.customStatement(
+          'DROP INDEX IF EXISTS idx_play_record_track_played',
+        );
+        if (await _hasTable(m.database, 'play_record_table') &&
+            !await _hasTable(
+              m.database,
+              listeningSummaryTable.actualTableName,
+            )) {
+          await m.database.customStatement(
+            'ALTER TABLE play_record_table RENAME TO '
+            '${listeningSummaryTable.actualTableName}',
+          );
+        }
+        await _createV16Indexes(m.database);
+      }
+      if (from < 17) {
+        if (await _hasTable(m.database, trackEmbeddingTable.actualTableName) &&
+            !await _hasColumn(
+              m.database,
+              trackEmbeddingTable.actualTableName,
+              trackEmbeddingTable.contentRevision.$name,
+            )) {
+          await m.addColumn(
+            trackEmbeddingTable,
+            trackEmbeddingTable.contentRevision,
+          );
+          await m.database.customStatement('''
+UPDATE track_embedding_table
+SET content_revision = 'audio:' || audio_revision
+WHERE modality = 'audio' AND audio_revision IS NOT NULL
+''');
+        }
+        if (!await _hasTable(
+          m.database,
+          trackLyricsTable.actualTableName,
+        )) {
+          await m.createTable(trackLyricsTable);
+        }
+        if (!await _hasTable(
+          m.database,
+          lyricsResolutionStateTable.actualTableName,
+        )) {
+          await m.createTable(lyricsResolutionStateTable);
+        }
+        if (!await _hasTable(
+          m.database,
+          lyricsResolutionTaskTable.actualTableName,
+        )) {
+          await m.createTable(lyricsResolutionTaskTable);
+        }
+        if (await _hasTable(
+          m.database,
+          musicAnalysisTaskTable.actualTableName,
+        )) {
+          await _rebuildMusicAnalysisTaskForV17(m.database);
+        }
+        await _createV17Indexes(m.database);
+      }
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
     },
   );
+
+  static Future<bool> _hasTable(
+    GeneratedDatabase database,
+    String tableName,
+  ) async {
+    final row = await database
+        .customSelect(
+          "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ? "
+          'LIMIT 1',
+          variables: [Variable<String>(tableName)],
+        )
+        .getSingleOrNull();
+    return row != null;
+  }
+
+  static Future<bool> _hasColumn(
+    GeneratedDatabase database,
+    String tableName,
+    String columnName,
+  ) async {
+    final escapedTableName = tableName.replaceAll('"', '""');
+    final columns = await database
+        .customSelect('PRAGMA table_info("$escapedTableName")')
+        .get();
+    return columns.any((row) => row.read<String>('name') == columnName);
+  }
 
   static Future<void> _createV6Indexes(GeneratedDatabase database) async {
     await database.customStatement(
@@ -194,9 +399,158 @@ FROM track_table
       'CREATE INDEX IF NOT EXISTS idx_download_task_claim'
       ' ON download_task_table(status, lease_until, created_at)',
     );
+  }
+
+  static Future<void> _createV12Indexes(GeneratedDatabase database) async {
     await database.customStatement(
-      'CREATE INDEX IF NOT EXISTS idx_embedding_task_claim'
-      ' ON embedding_task_table(status, lease_until, created_at)',
+      'CREATE INDEX IF NOT EXISTS idx_track_content_identity'
+      ' ON track_table(content_identity)',
+    );
+    await database.customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_track_embedding_track_id'
+      ' ON track_embedding_table(track_id)',
+    );
+    await database.customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_listening_event_track_id'
+      ' ON listening_event_table(track_id)',
+    );
+    await database.customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_listening_event_occurred_at'
+      ' ON listening_event_table(occurred_at)',
+    );
+    await database.customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_listening_event_session_id'
+      ' ON listening_event_table(session_id)',
+    );
+  }
+
+  static Future<void> _createV14Indexes(GeneratedDatabase database) async {
+    await database.customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_temporal_embedding_track'
+      ' ON track_temporal_embedding_table(track_id)',
+    );
+    await database.customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_analysis_task_status_created'
+      ' ON music_analysis_task_table(status, created_at)',
+    );
+    await database.customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_similarity_evaluation_seed'
+      ' ON similarity_evaluation_table(seed_track_id, updated_at)',
+    );
+  }
+
+  static Future<void> _createV16Indexes(GeneratedDatabase database) async {
+    await database.customStatement(
+      'CREATE INDEX IF NOT EXISTS'
+      ' idx_listening_summary_played_at'
+      ' ON listening_summary_table(played_at)',
+    );
+    await database.customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_listening_summary_track_played'
+      ' ON listening_summary_table(track_id, played_at)',
+    );
+  }
+
+  static Future<void> _createV17Indexes(GeneratedDatabase database) async {
+    await database.customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_track_lyrics_content_hash'
+      ' ON track_lyrics_table(content_hash)',
+    );
+    await database.customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_lyrics_resolution_status_updated'
+      ' ON lyrics_resolution_state_table(status, updated_at)',
+    );
+    await database.customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_lyrics_task_claim'
+      ' ON lyrics_resolution_task_table(status, next_attempt_at, created_at)',
+    );
+    await database.customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_analysis_task_status_created'
+      ' ON music_analysis_task_table(status, created_at)',
+    );
+    await database.customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_analysis_task_track_status'
+      ' ON music_analysis_task_table(track_id, status)',
+    );
+  }
+
+  static Future<void> _rebuildMusicAnalysisTaskForV17(
+    GeneratedDatabase database,
+  ) async {
+    await database.customStatement(
+      'DROP TABLE IF EXISTS music_analysis_task_table_v17',
+    );
+    await database.customStatement('''
+CREATE TABLE music_analysis_task_table_v17 (
+  id TEXT NOT NULL PRIMARY KEY,
+  track_id TEXT NOT NULL REFERENCES track_table(id) ON DELETE CASCADE,
+  requested_representations TEXT NOT NULL,
+  audio_revision INTEGER NOT NULL,
+  status TEXT NOT NULL,
+  attempt_count INTEGER NOT NULL DEFAULT 0,
+  last_error_code TEXT NULL,
+  last_error TEXT NULL,
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+)
+''');
+    await database.customStatement('''
+INSERT INTO music_analysis_task_table_v17 (
+  id, track_id, requested_representations, audio_revision, status,
+  attempt_count, last_error_code, last_error, created_at, updated_at
+)
+SELECT
+  id, track_id, requested_representations, audio_revision, status,
+  attempt_count, last_error_code, last_error, created_at, updated_at
+FROM music_analysis_task_table
+''');
+    await database.customStatement('DROP TABLE music_analysis_task_table');
+    await database.customStatement(
+      'ALTER TABLE music_analysis_task_table_v17'
+      ' RENAME TO music_analysis_task_table',
+    );
+  }
+
+  static Future<void> _rebuildTrackEmbeddingForV14(
+    GeneratedDatabase database,
+  ) async {
+    await database.customStatement('''
+CREATE TABLE track_embedding_table_v14 (
+  track_id TEXT NOT NULL REFERENCES track_table(id) ON DELETE CASCADE,
+  modality TEXT NOT NULL,
+  model_id TEXT NOT NULL,
+  model_version TEXT NOT NULL,
+  preprocessing_version TEXT NOT NULL DEFAULT 'legacy-unknown',
+  provider TEXT NOT NULL,
+  audio_revision INTEGER NULL,
+  dtype TEXT NOT NULL DEFAULT 'float32',
+  normalized INTEGER NULL CHECK (normalized IN (0, 1)),
+  dimensions INTEGER NOT NULL,
+  vector BLOB NOT NULL,
+  created_at INTEGER NOT NULL,
+  PRIMARY KEY (
+    track_id, modality, model_id, model_version,
+    preprocessing_version, provider
+  )
+)
+''');
+    await database.customStatement('''
+INSERT INTO track_embedding_table_v14 (
+  track_id, modality, model_id, model_version, preprocessing_version,
+  provider, audio_revision, dtype, normalized, dimensions, vector, created_at
+)
+SELECT
+  track_id, modality, model_id, model_version, 'legacy-unknown',
+  provider, audio_revision, 'float32', NULL, dimensions, vector, created_at
+FROM track_embedding_table
+''');
+    await database.customStatement('DROP TABLE track_embedding_table');
+    await database.customStatement(
+      'ALTER TABLE track_embedding_table_v14 RENAME TO track_embedding_table',
+    );
+    await database.customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_track_embedding_track_id'
+      ' ON track_embedding_table(track_id)',
     );
   }
 

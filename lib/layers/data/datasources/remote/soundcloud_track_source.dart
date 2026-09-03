@@ -292,7 +292,9 @@ class SoundcloudTrackSource implements TrackSource {
       for (final item in await _fetchAllLikes(userId, clientId)) {
         final trackData = item['track'];
         if (trackData is! Map) continue;
-        final preview = _previewFromTrackData(trackData.cast<String, dynamic>());
+        final preview = _previewFromTrackData(
+          trackData.cast<String, dynamic>(),
+        );
         if (preview != null) previews.add(preview);
       }
 

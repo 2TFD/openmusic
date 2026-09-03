@@ -75,7 +75,7 @@ void main() {
   });
 }
 
-class _FakeGenerateWave implements GenerateWaveUseCase {
+class _FakeGenerateWave implements GenerateWave {
   _FakeGenerateWave(this._handler);
 
   final Future<List<Track>> Function(WaveConfig config) _handler;
@@ -97,5 +97,4 @@ Track _track(String id) => Track(
   addedAt: DateTime.utc(2026),
   filePath: '/music/$id.mp3',
   imageUrl: 'https://img/$id.jpg',
-  embedding: const [1, 0],
 );

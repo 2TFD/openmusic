@@ -1,6 +1,7 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:openmusic/core/services/track_source_resolver.dart';
+import 'package:openmusic/core/services/track_identity/sha256_track_content_identity_service.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
 import 'package:openmusic/layers/data/datasources/local/playlist/drift/playlist_drift_local_source.dart';
 import 'package:openmusic/layers/data/datasources/local/track/drift/track_drift_local_source.dart';
@@ -45,6 +46,7 @@ void main() {
         trackResolver: TrackSourceResolver([source]),
         trackRepository: trackRepository,
         playlistRepository: playlistRepository,
+        contentIdentityService: const Sha256TrackContentIdentityService(),
       );
 
       final result = await useCase.execute('https://example.com/set');

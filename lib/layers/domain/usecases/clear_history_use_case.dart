@@ -1,12 +1,13 @@
-import 'package:openmusic/layers/domain/repositories/play_record_repository.dart';
+import 'package:openmusic/layers/domain/repositories/listening_summary_repository.dart';
 
 class ClearHistoryUseCase {
-  final PlayRecordRepository _playRecordRepository;
+  final ListeningSummaryRepository _listeningSummaryRepository;
 
-  ClearHistoryUseCase({required PlayRecordRepository playRecordRepository})
-    : _playRecordRepository = playRecordRepository;
+  ClearHistoryUseCase({
+    required ListeningSummaryRepository listeningSummaryRepository,
+  }) : _listeningSummaryRepository = listeningSummaryRepository;
 
   Future<void> call() async {
-    await _playRecordRepository.clear();
+    await _listeningSummaryRepository.clear();
   }
 }

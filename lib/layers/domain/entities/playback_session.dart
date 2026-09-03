@@ -45,8 +45,7 @@ class PlaybackSession extends Equatable {
       currentTrackId: identical(currentTrackId, _unset)
           ? this.currentTrackId
           : currentTrackId as String?,
-      currentQueuePosition:
-          currentQueuePosition ?? this.currentQueuePosition,
+      currentQueuePosition: currentQueuePosition ?? this.currentQueuePosition,
       position: position ?? this.position,
       shuffleEnabled: shuffleEnabled ?? this.shuffleEnabled,
       loopMode: loopMode ?? this.loopMode,

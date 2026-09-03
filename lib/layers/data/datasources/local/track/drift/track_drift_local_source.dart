@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:drift/drift.dart';
 import 'package:openmusic/layers/data/models/track_dto.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
@@ -196,6 +194,7 @@ class TrackDriftLocalSource implements TrackLocalDataSource {
   }) {
     return TrackTableCompanion(
       id: includeId ? Value(track.id) : const Value.absent(),
+      contentIdentity: Value(track.contentIdentity),
       title: Value(track.title),
       pathToFile: Value(track.filePath),
       durationMs: Value(track.durationMs),
@@ -205,9 +204,7 @@ class TrackDriftLocalSource implements TrackLocalDataSource {
       album: Value(track.album),
       imageUrl: Value(track.imageUrl),
       trackDescriptorJson: Value(track.trackDescriptorJson),
-      embedding: track.embedding != null
-          ? Value(jsonEncode(track.embedding))
-          : const Value(null),
+      audioRevision: Value(track.audioRevision),
     );
   }
 
@@ -217,6 +214,7 @@ class TrackDriftLocalSource implements TrackLocalDataSource {
   ) {
     return TrackDto(
       id: data.id,
+      contentIdentity: data.contentIdentity,
       title: data.title,
       filePath: data.pathToFile,
       artists: artists
@@ -229,11 +227,7 @@ class TrackDriftLocalSource implements TrackLocalDataSource {
       album: data.album,
       imageUrl: data.imageUrl,
       trackDescriptorJson: data.trackDescriptorJson,
-      embedding: data.embedding != null
-          ? (jsonDecode(data.embedding!) as List)
-                .map((value) => (value as num).toDouble())
-                .toList()
-          : null,
+      audioRevision: data.audioRevision,
       metadataRevision: data.metadataRevision,
     );
   }

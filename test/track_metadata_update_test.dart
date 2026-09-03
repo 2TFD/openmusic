@@ -6,49 +6,44 @@ import 'package:openmusic/layers/data/datasources/local/track/drift/track_drift_
 import 'package:openmusic/layers/data/models/track_dto.dart';
 
 void main() {
-  test(
-    'metadata update preserves audio state and embedding revision',
-    () async {
-      final database = AppDatabase(NativeDatabase.memory());
-      addTearDown(database.close);
-      final source = TrackDriftLocalSource(database);
-      await source.saveTrack(_dto(title: 'Old', filePath: 'old.mp3'));
-      await (database.update(
-        database.trackTable,
-      )..where((track) => track.id.equals('track-1'))).write(
-        const TrackTableCompanion(
-          pathToFile: Value('fresh.mp3'),
-          embedding: Value('[1.0,2.0]'),
-          audioRevision: Value(4),
-        ),
-      );
+  test('metadata update preserves audio state and revision', () async {
+    final database = AppDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    final source = TrackDriftLocalSource(database);
+    await source.saveTrack(_dto(title: 'Old', filePath: 'old.mp3'));
+    await (database.update(
+      database.trackTable,
+    )..where((track) => track.id.equals('track-1'))).write(
+      const TrackTableCompanion(
+        pathToFile: Value('fresh.mp3'),
+        audioRevision: Value(4),
+      ),
+    );
 
-      expect(
-        await source.updateTrackMetadata(
-          _dto(title: 'Renamed', filePath: 'stale.mp3'),
-        ),
-        isTrue,
-      );
+    expect(
+      await source.updateTrackMetadata(
+        _dto(title: 'Renamed', filePath: 'stale.mp3'),
+      ),
+      isTrue,
+    );
 
-      final row = await database.select(database.trackTable).getSingle();
-      expect(row.title, 'Renamed');
-      expect(row.pathToFile, 'fresh.mp3');
-      expect(row.embedding, '[1.0,2.0]');
-      expect(row.audioRevision, 4);
-      expect(row.metadataRevision, 1);
+    final row = await database.select(database.trackTable).getSingle();
+    expect(row.title, 'Renamed');
+    expect(row.pathToFile, 'fresh.mp3');
+    expect(row.audioRevision, 4);
+    expect(row.metadataRevision, 1);
 
-      expect(
-        await source.updateTrackMetadata(
-          _dto(title: 'Stale overwrite', filePath: 'stale.mp3'),
-        ),
-        isFalse,
-      );
-      expect(
-        (await database.select(database.trackTable).getSingle()).title,
-        'Renamed',
-      );
-    },
-  );
+    expect(
+      await source.updateTrackMetadata(
+        _dto(title: 'Stale overwrite', filePath: 'stale.mp3'),
+      ),
+      isFalse,
+    );
+    expect(
+      (await database.select(database.trackTable).getSingle()).title,
+      'Renamed',
+    );
+  });
 }
 
 TrackDto _dto({required String title, required String filePath}) => TrackDto(
@@ -60,5 +55,4 @@ TrackDto _dto({required String title, required String filePath}) => TrackDto(
   sourceType: 'soundcloud',
   originalUrl: 'https://example.com/track',
   addedAt: DateTime.utc(2026),
-  embedding: const [9],
 );

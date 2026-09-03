@@ -107,7 +107,8 @@ class OpenmusicAudioHandler extends BaseAudioHandler with SeekHandler {
 
   void _onDuration(Duration? duration) {
     final current = mediaItem.value;
-    if (current == null || duration == null || duration <= Duration.zero) return;
+    if (current == null || duration == null || duration <= Duration.zero)
+      return;
     if (current.duration == duration) return;
     mediaItem.add(current.copyWith(duration: duration));
   }

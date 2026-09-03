@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
 import 'package:openmusic/layers/data/repositories/track_removal_repository_impl.dart';
 import 'package:openmusic/layers/domain/entities/download_track_task.dart';
-import 'package:openmusic/layers/domain/entities/embedding_task.dart';
 
 void main() {
   test(
@@ -76,14 +75,16 @@ void main() {
             ),
           );
       await database
-          .into(database.embeddingTaskTable)
+          .into(database.musicAnalysisTaskTable)
           .insert(
-            EmbeddingTaskTableCompanion.insert(
-              id: 'track-1',
+            MusicAnalysisTaskTableCompanion.insert(
+              id: 'analysis-1',
               trackId: 'track-1',
-              status: EmbeddingStatus.queued.name,
-              filePath: 'track.mp3',
+              requestedRepresentations: 'audio.global,audio.temporal',
+              audioRevision: 1,
+              status: 'queued',
               createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
             ),
           );
 
@@ -94,7 +95,10 @@ void main() {
 
       expect(await database.select(database.trackTable).get(), isEmpty);
       expect(await database.select(database.downloadTaskTable).get(), isEmpty);
-      expect(await database.select(database.embeddingTaskTable).get(), isEmpty);
+      expect(
+        await database.select(database.musicAnalysisTaskTable).get(),
+        isEmpty,
+      );
       expect(await database.select(database.playlistTrackTable).get(), isEmpty);
       expect(await database.select(database.artistTable).get(), isEmpty);
       expect(

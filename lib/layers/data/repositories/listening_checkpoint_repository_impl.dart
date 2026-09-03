@@ -1,5 +1,5 @@
 import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/domain/entities/play_record.dart';
+import 'package:openmusic/layers/domain/entities/listening_summary.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/repositories/listening_checkpoint_repository.dart';

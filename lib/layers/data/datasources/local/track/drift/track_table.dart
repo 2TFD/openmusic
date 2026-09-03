@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 class TrackTable extends Table {
   TextColumn get id => text()();
+  TextColumn get contentIdentity => text().nullable()();
   TextColumn get title => text()();
   TextColumn get pathToFile => text().nullable()();
   IntColumn get durationMs => integer().nullable()();
@@ -11,7 +12,6 @@ class TrackTable extends Table {
   TextColumn get album => text().nullable()();
   TextColumn get imageUrl => text().nullable()();
   TextColumn get trackDescriptorJson => text().nullable()();
-  TextColumn get embedding => text().nullable()();
   IntColumn get audioRevision => integer().withDefault(const Constant(0))();
   IntColumn get metadataRevision => integer().withDefault(const Constant(0))();
 

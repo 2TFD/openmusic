@@ -11,9 +11,9 @@ part 'wave_event.dart';
 part 'wave_state.dart';
 
 class WaveBloc extends Bloc<WaveEvent, WaveState> {
-  final GenerateWaveUseCase _generate;
+  final GenerateWave _generate;
 
-  WaveBloc({required GenerateWaveUseCase generate})
+  WaveBloc({required GenerateWave generate})
     : _generate = generate,
       super(WaveInitial()) {
     on<WaveInitialized>(_onInitialized);
