@@ -160,6 +160,24 @@ class _ArtistContent extends StatelessWidget {
         if (tracks.isNotEmpty)
           SliverToBoxAdapter(
             child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: ArtistWaveStartButton(
+                artist: artist,
+                onPressed: () => context.read<PlayerBloc>().add(
+                  PlayerArtistWaveStarted(
+                    artistId: artist.id,
+                    artistName: artist.name,
+                    imageUrl: artist.coverImageUrls.isEmpty
+                        ? null
+                        : artist.coverImageUrls.first,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        if (tracks.isNotEmpty)
+          SliverToBoxAdapter(
+            child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
               child: Text(
                 context.tr('artist.tracks').toUpperCase(),
@@ -230,4 +248,30 @@ class _ArtistContent extends StatelessWidget {
       },
     );
   }
+}
+
+class ArtistWaveStartButton extends StatelessWidget {
+  const ArtistWaveStartButton({
+    super.key,
+    required this.artist,
+    required this.onPressed,
+  });
+
+  final ArtistSummary artist;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    label: artist.name,
+    button: true,
+    child: SizedBox(
+      height: 48,
+      child: FilledButton.icon(
+        key: const ValueKey('start-artist-wave'),
+        onPressed: onPressed,
+        icon: const Icon(Icons.waves_rounded, size: 20),
+        label: Text(context.tr('waveSession.startWave')),
+      ),
+    ),
+  );
 }

@@ -82,6 +82,18 @@ void main() {
 
     expect(tester.getSize(find.byType(CachedImage)), const Size.square(36));
   });
+
+  testWidgets('artwork accepts a custom fallback', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: CachedImage(size: 36, fallback: Icon(Icons.music_note_rounded)),
+        ),
+      ),
+    );
+
+    expect(find.byIcon(Icons.music_note_rounded), findsOneWidget);
+  });
 }
 
 Track _track({String? filePath = 'track.mp3'}) => Track(

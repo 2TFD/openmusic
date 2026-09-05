@@ -10,9 +10,16 @@ import 'package:openmusic/core/services/lyrics/lyrics_config.dart';
 import 'package:openmusic/core/services/lyrics/lyrics_resolution_worker.dart';
 import 'package:openmusic/core/services/lyrics/lyrics_resolver.dart';
 import 'package:openmusic/core/services/research/lyrics_semantic_research_service.dart';
-import 'package:openmusic/core/services/recommendation/recommendation_config.dart';
-import 'package:openmusic/core/services/recommendation/recommendation_engine.dart';
+import 'package:openmusic/core/services/recommendation/mood_wave_config.dart';
+import 'package:openmusic/core/services/recommendation/mood_wave_engine.dart';
+import 'package:openmusic/core/services/recommendation/track_wave_config.dart';
+import 'package:openmusic/core/services/recommendation/track_wave_engine.dart';
+import 'package:openmusic/core/services/recommendation/artist_wave_config.dart';
+import 'package:openmusic/core/services/recommendation/artist_wave_engine.dart';
+import 'package:openmusic/core/services/recommendation/wave_recommendation_config.dart';
+import 'package:openmusic/core/services/recommendation/wave_recommendation_engine.dart';
 import 'package:openmusic/core/services/track_identity/sha256_track_content_identity_service.dart';
+import 'package:openmusic/core/services/track_external_actions_service.dart';
 import 'package:openmusic/layers/data/database/app_database.dart';
 import 'package:openmusic/layers/data/datasources/local/artist/artist_local_data_source.dart';
 import 'package:openmusic/layers/data/datasources/local/artist/drift/artist_drift_local_source.dart';
@@ -53,6 +60,8 @@ import 'package:openmusic/layers/data/repositories/playback_session_repository_i
 import 'package:openmusic/layers/data/repositories/track_ingestion_repository_impl.dart';
 import 'package:openmusic/layers/data/repositories/track_temporal_embedding_repository_impl.dart';
 import 'package:openmusic/layers/data/repositories/track_download_completion_repository_impl.dart';
+import 'package:openmusic/layers/data/repositories/track_emotion_repository_impl.dart';
+import 'package:openmusic/layers/data/repositories/mood_map_repository_impl.dart';
 import 'package:openmusic/layers/domain/repositories/download_task_repository.dart';
 import 'package:openmusic/layers/domain/repositories/artist_repository.dart';
 import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
@@ -76,6 +85,9 @@ import 'package:openmusic/layers/domain/repositories/listening_checkpoint_reposi
 import 'package:openmusic/layers/domain/repositories/playback_session_repository.dart';
 import 'package:openmusic/layers/domain/repositories/track_ingestion_repository.dart';
 import 'package:openmusic/layers/domain/repositories/track_download_completion_repository.dart';
+import 'package:openmusic/layers/domain/repositories/track_emotion_repository.dart';
+import 'package:openmusic/layers/domain/repositories/mood_map_repository.dart';
+import 'package:openmusic/layers/domain/repositories/track_external_actions.dart';
 import 'package:openmusic/core/services/track_source_resolver.dart';
 import 'package:openmusic/layers/domain/usecases/add_track_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/add_track_to_playlist_use_case.dart';
@@ -93,7 +105,6 @@ import 'package:openmusic/layers/domain/usecases/restore_playback_session_use_ca
 import 'package:openmusic/layers/domain/usecases/save_listening_summary_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/save_listening_event_use_case.dart';
 import 'package:openmusic/layers/domain/services/listening_tracker.dart';
-import 'package:openmusic/layers/domain/usecases/generate_wave_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/queue_music_analysis_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/queue_lyrics_analysis_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/queue_lyrics_resolution_use_case.dart';
@@ -101,6 +112,7 @@ import 'package:openmusic/layers/presentation/blocs/music_analysis_status/music_
 import 'package:openmusic/layers/presentation/blocs/artist_detail/artist_detail_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/import_music/import_music_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist_detail/playlist_detail_bloc.dart';
+import 'package:openmusic/layers/presentation/blocs/mood_map/mood_map_cubit.dart';
 
 final getIt = GetIt.instance;
 
@@ -148,6 +160,9 @@ Future<void> configureDependencies({required String appDir}) async {
   );
   getIt.registerLazySingleton<TrackTemporalEmbeddingRepository>(
     () => TrackTemporalEmbeddingRepositoryImpl(getIt<AppDatabase>()),
+  );
+  getIt.registerLazySingleton<TrackEmotionRepository>(
+    () => TrackEmotionRepositoryImpl(getIt<AppDatabase>()),
   );
   getIt.registerLazySingleton<MusicAnalysisTaskRepository>(
     () => MusicAnalysisTaskRepositoryImpl(getIt<AppDatabase>()),
@@ -233,11 +248,20 @@ Future<void> configureDependencies({required String appDir}) async {
   getIt.registerLazySingleton(
     () => MusicAnalysisModelRegistry(getIt<MusicAnalysisClient>()),
   );
+  getIt.registerLazySingleton<MoodMapRepository>(
+    () => MoodMapRepositoryImpl(
+      database: getIt(),
+      tracks: getIt(),
+      emotions: getIt(),
+      registry: getIt(),
+    ),
+  );
   getIt.registerLazySingleton<MusicAnalysisRepository>(
     () => MusicAnalysisRepositoryImpl(
       tracks: getIt(),
       globalEmbeddings: getIt(),
       temporalEmbeddings: getIt(),
+      emotions: getIt(),
       lyrics: getIt(),
       client: getIt(),
       registry: getIt(),
@@ -320,6 +344,7 @@ Future<void> configureDependencies({required String appDir}) async {
       queueAnalysis: getIt(),
       registry: getIt(),
       config: getIt(),
+      tasks: getIt(),
     ),
   );
   getIt.registerLazySingleton(
@@ -347,16 +372,49 @@ Future<void> configureDependencies({required String appDir}) async {
   getIt.registerLazySingleton<PlaybackCommandBus>(
     () => PlaybackCommandBusImpl(),
   );
+  getIt.registerLazySingleton<TrackExternalActions>(
+    () => TrackExternalActionsService(appDirectory: getIt<String>()),
+  );
 
-  getIt.registerLazySingleton(() => const RecommendationConfig());
-  getIt.registerLazySingleton(
-    () => RecommendationEngine(
-      tracks: getIt(),
-      globalEmbeddings: getIt(),
-      temporalEmbeddings: getIt(),
-      lyrics: getIt(),
-      registry: getIt(),
-      config: getIt(),
+  getIt.registerLazySingleton<MoodWaveConfig>(() => const MoodWaveConfig());
+  getIt.registerLazySingleton<MoodWaveEngine>(
+    () => MoodWaveEngine(
+      moods: getIt<MoodMapRepository>(),
+      globalEmbeddings: getIt<TrackEmbeddingRepository>(),
+      temporalEmbeddings: getIt<TrackTemporalEmbeddingRepository>(),
+      registry: getIt<MusicAnalysisModelRegistry>(),
+      config: getIt<MoodWaveConfig>(),
+    ),
+  );
+  getIt.registerLazySingleton<TrackWaveConfig>(() => const TrackWaveConfig());
+  getIt.registerLazySingleton<TrackWaveEngine>(
+    () => TrackWaveEngine(
+      tracks: getIt<TrackRepository>(),
+      globalEmbeddings: getIt<TrackEmbeddingRepository>(),
+      temporalEmbeddings: getIt<TrackTemporalEmbeddingRepository>(),
+      registry: getIt<MusicAnalysisModelRegistry>(),
+      config: getIt<TrackWaveConfig>(),
+    ),
+  );
+  getIt.registerLazySingleton<ArtistWaveConfig>(() => const ArtistWaveConfig());
+  getIt.registerLazySingleton<ArtistWaveEngine>(
+    () => ArtistWaveEngine(
+      tracks: getIt<TrackRepository>(),
+      globalEmbeddings: getIt<TrackEmbeddingRepository>(),
+      temporalEmbeddings: getIt<TrackTemporalEmbeddingRepository>(),
+      registry: getIt<MusicAnalysisModelRegistry>(),
+      config: getIt<ArtistWaveConfig>(),
+    ),
+  );
+  getIt.registerLazySingleton<WaveContinuationConfig>(
+    () => const WaveContinuationConfig(),
+  );
+  getIt.registerLazySingleton<WaveRecommendationEngine>(
+    () => WaveRecommendationEngine(
+      mood: getIt<MoodWaveEngine>(),
+      track: getIt<TrackWaveEngine>(),
+      artist: getIt<ArtistWaveEngine>(),
+      continuationConfig: getIt<WaveContinuationConfig>(),
     ),
   );
 
@@ -390,14 +448,6 @@ Future<void> configureDependencies({required String appDir}) async {
     ),
   );
   getIt.registerFactory(
-    () => GenerateWaveUseCase(
-      engine: getIt(),
-      tracks: getIt(),
-      queueAnalysis: getIt(),
-    ),
-  );
-
-  getIt.registerFactory(
     () => RecoverListeningCheckpointUseCase(
       checkpoints: getIt(),
       saveListeningSummary: SaveListeningSummaryUseCase(repo: getIt()),
@@ -425,6 +475,7 @@ Future<void> configureDependencies({required String appDir}) async {
         ImportMusicCubit(pickLocalTracks: getIt(), importLocalTracks: getIt()),
   );
   getIt.registerFactory(() => MusicAnalysisStatusCubit(tasks: getIt()));
+  getIt.registerFactory(() => MoodMapCubit(repository: getIt()));
   getIt.registerFactory(
     () => PlaylistDetailBloc(
       getPlaylistWithTracks: GetPlaylistWithTracksUseCase(

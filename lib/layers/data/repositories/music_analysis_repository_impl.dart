@@ -4,10 +4,12 @@ import '../../../core/services/music_analysis/music_analysis_model_registry.dart
 import '../../domain/entities/music_analysis.dart';
 import '../../domain/entities/music_analysis_failure.dart';
 import '../../domain/entities/track_embedding.dart';
+import '../../domain/entities/track_emotion_analysis.dart';
 import '../../domain/entities/track_temporal_embedding.dart';
 import '../../domain/repositories/music_analysis_client.dart';
 import '../../domain/repositories/music_analysis_repository.dart';
 import '../../domain/repositories/track_embedding_repository.dart';
+import '../../domain/repositories/track_emotion_repository.dart';
 import '../../domain/repositories/track_lyrics_repository.dart';
 import '../../domain/repositories/track_repository.dart';
 import '../../domain/repositories/track_temporal_embedding_repository.dart';
@@ -17,12 +19,14 @@ class MusicAnalysisRepositoryImpl implements MusicAnalysisRepository {
     required TrackRepository tracks,
     required TrackEmbeddingRepository globalEmbeddings,
     required TrackTemporalEmbeddingRepository temporalEmbeddings,
+    TrackEmotionRepository? emotions,
     TrackLyricsRepository? lyrics,
     required MusicAnalysisClient client,
     required MusicAnalysisModelRegistry registry,
   }) : _tracks = tracks,
        _globalEmbeddings = globalEmbeddings,
        _temporalEmbeddings = temporalEmbeddings,
+       _emotions = emotions,
        _lyrics = lyrics,
        _client = client,
        _registry = registry;
@@ -30,6 +34,7 @@ class MusicAnalysisRepositoryImpl implements MusicAnalysisRepository {
   final TrackRepository _tracks;
   final TrackEmbeddingRepository _globalEmbeddings;
   final TrackTemporalEmbeddingRepository _temporalEmbeddings;
+  final TrackEmotionRepository? _emotions;
   final TrackLyricsRepository? _lyrics;
   final MusicAnalysisClient _client;
   final MusicAnalysisModelRegistry _registry;
@@ -71,11 +76,15 @@ class MusicAnalysisRepositoryImpl implements MusicAnalysisRepository {
         }
         contentRevision = lyrics.contentHash;
       }
-      final model = registry.require(representation);
+      final model = registry.find(representation);
+      // A schema-v1 backend has no Music2Emo models. Its existing analysis
+      // remains usable and the optional emotion capability is simply skipped.
+      if (model == null) continue;
       if (!await _hasCached(
         trackId,
         audioRevision,
         model,
+        audioContentRevision: emotionContentRevisionFor(track),
         contentRevision: contentRevision,
       )) {
         missing.add(representation);
@@ -125,50 +134,57 @@ class MusicAnalysisRepositoryImpl implements MusicAnalysisRepository {
     }
     final registry = await _registry.getModels();
 
-    final response = await _client.analyze(
-      trackId: track.id,
-      filePath: track.filePath!,
-      contentIdentity: track.contentIdentity,
-      lyrics: capturedLyrics?.plainText,
-      requestedRepresentations: missing,
-    );
-    if (response.trackId != null && response.trackId != track.id) {
-      throw const MusicAnalysisFailure(
-        MusicAnalysisFailureKind.invalidRepresentation,
-        details: 'Response track_id mismatch',
+    final core = missing.where((entry) => !entry.isEmotion).toSet();
+    final emotion = missing.where((entry) => entry.isEmotion).toSet();
+    // Persist the lightweight/established representations first. A later
+    // Music2Emo outage then leaves them cached and a task retry requests only
+    // the missing emotion subset.
+    for (final batch in [core, emotion]) {
+      if (batch.isEmpty) continue;
+      final response = await _client.analyze(
+        trackId: track.id,
+        filePath: track.filePath!,
+        contentIdentity: track.contentIdentity,
+        lyrics: capturedLyrics?.plainText,
+        requestedRepresentations: batch,
+      );
+      await _validateSnapshot(
+        response: response,
+        trackId: trackId,
+        expectedContentIdentity: track.contentIdentity,
+        audioRevision: audioRevision,
+        requested: batch,
+        lyricsContentHash: capturedLyrics?.contentHash,
+      );
+      await _persistResponse(
+        response: response,
+        requested: batch,
+        trackId: track.id,
+        contentRevision: emotionContentRevisionFor(track),
+        audioRevision: audioRevision,
+        lyricsContentRevision: capturedLyrics?.contentHash,
+        registry: registry,
       );
     }
-    final currentTrack = await _tracks.getTrackById(trackId);
-    if (currentTrack == null) {
-      throw const MusicAnalysisFailure(
-        MusicAnalysisFailureKind.fileNotFound,
-        details: 'Track was deleted during analysis',
-      );
-    }
-    if (_containsAudio(missing) &&
-        currentTrack.audioRevision != audioRevision) {
-      throw const MusicAnalysisFailure(
-        MusicAnalysisFailureKind.staleContent,
-        details: 'Audio changed during analysis',
-      );
-    }
-    if (capturedLyrics != null) {
-      final currentLyrics = await _lyrics?.getForTrack(trackId);
-      if (currentLyrics?.contentHash != capturedLyrics.contentHash) {
-        throw const MusicAnalysisFailure(
-          MusicAnalysisFailureKind.staleContent,
-          details: 'Lyrics changed during analysis',
-        );
-      }
-    }
+    return MusicAnalysisDisposition.analyzed;
+  }
 
-    if (missing.contains(MusicAnalysisRepresentation.audioGlobal)) {
+  Future<void> _persistResponse({
+    required MusicAnalysisResponse response,
+    required Set<MusicAnalysisRepresentation> requested,
+    required String trackId,
+    required String contentRevision,
+    required int audioRevision,
+    required String? lyricsContentRevision,
+    required MusicAnalysisModels registry,
+  }) async {
+    if (requested.contains(MusicAnalysisRepresentation.audioGlobal)) {
       final global = response.audioGlobal;
       if (global == null) _missing(MusicAnalysisRepresentation.audioGlobal);
       _validateAgainstRegistry(global.metadata, registry);
       await _globalEmbeddings.save(
         TrackEmbedding(
-          trackId: track.id,
+          trackId: trackId,
           modality: TrackEmbeddingModality.audio,
           modelId: global.metadata.modelId,
           modelVersion: global.metadata.modelVersion,
@@ -183,7 +199,7 @@ class MusicAnalysisRepositoryImpl implements MusicAnalysisRepository {
         ),
       );
     }
-    if (missing.contains(MusicAnalysisRepresentation.audioTemporal)) {
+    if (requested.contains(MusicAnalysisRepresentation.audioTemporal)) {
       final temporal = response.audioTemporal;
       if (temporal == null) {
         _missing(MusicAnalysisRepresentation.audioTemporal);
@@ -192,7 +208,7 @@ class MusicAnalysisRepositoryImpl implements MusicAnalysisRepository {
       await _temporalEmbeddings.save(
         TrackTemporalEmbedding(
           id: const Uuid().v4(),
-          trackId: track.id,
+          trackId: trackId,
           representation: temporal.metadata.representation.apiName,
           modelId: temporal.metadata.modelId,
           modelVersion: temporal.metadata.modelVersion,
@@ -208,7 +224,75 @@ class MusicAnalysisRepositoryImpl implements MusicAnalysisRepository {
         ),
       );
     }
-    if (missing.contains(MusicAnalysisRepresentation.lyricsGlobal)) {
+    if (requested.contains(MusicAnalysisRepresentation.audioEmotionGlobal)) {
+      final emotion = response.audioEmotionGlobal;
+      if (emotion == null) {
+        _missing(MusicAnalysisRepresentation.audioEmotionGlobal);
+      }
+      _validateAgainstRegistry(emotion.metadata, registry);
+      final repository = _emotions;
+      if (repository == null) {
+        _missing(MusicAnalysisRepresentation.audioEmotionGlobal);
+      }
+      await repository.saveGlobal(
+        TrackEmotionAnalysis(
+          id: const Uuid().v4(),
+          trackId: trackId,
+          representation: emotion.metadata.representation.apiName,
+          modelId: emotion.metadata.modelId,
+          modelVersion: emotion.metadata.modelVersion,
+          preprocessingVersion: emotion.metadata.preprocessingVersion,
+          contentRevision: contentRevision,
+          audioRevision: audioRevision,
+          valence: emotion.valence,
+          arousal: emotion.arousal,
+          rawValence: emotion.rawValence,
+          rawArousal: emotion.rawArousal,
+          moodDistribution: emotion.moodDistribution,
+          analyzedAt: DateTime.now(),
+        ),
+      );
+    }
+    if (requested.contains(MusicAnalysisRepresentation.audioEmotionTemporal)) {
+      final emotion = response.audioEmotionTemporal;
+      if (emotion == null) {
+        _missing(MusicAnalysisRepresentation.audioEmotionTemporal);
+      }
+      _validateAgainstRegistry(emotion.metadata, registry);
+      final repository = _emotions;
+      if (repository == null) {
+        _missing(MusicAnalysisRepresentation.audioEmotionTemporal);
+      }
+      final analysisId = const Uuid().v4();
+      await repository.saveTemporal(
+        TrackEmotionTemporalAnalysis(
+          id: analysisId,
+          trackId: trackId,
+          representation: emotion.metadata.representation.apiName,
+          modelId: emotion.metadata.modelId,
+          modelVersion: emotion.metadata.modelVersion,
+          preprocessingVersion: emotion.metadata.preprocessingVersion,
+          contentRevision: contentRevision,
+          audioRevision: audioRevision,
+          summary: emotion.summary,
+          segments: emotion.segments
+              .map(
+                (segment) => TrackEmotionSegment(
+                  analysisId: analysisId,
+                  index: segment.index,
+                  startMs: segment.startMs,
+                  endMs: segment.endMs,
+                  valence: segment.valence,
+                  arousal: segment.arousal,
+                  moodDistribution: segment.moodDistribution,
+                ),
+              )
+              .toList(growable: false),
+          analyzedAt: DateTime.now(),
+        ),
+      );
+    }
+    if (requested.contains(MusicAnalysisRepresentation.lyricsGlobal)) {
       final lyrics = response.lyricsGlobal;
       if (lyrics == null) {
         _missing(MusicAnalysisRepresentation.lyricsGlobal);
@@ -216,13 +300,13 @@ class MusicAnalysisRepositoryImpl implements MusicAnalysisRepository {
       _validateAgainstRegistry(lyrics.metadata, registry);
       await _globalEmbeddings.save(
         TrackEmbedding(
-          trackId: track.id,
+          trackId: trackId,
           modality: TrackEmbeddingModality.lyrics,
           modelId: lyrics.metadata.modelId,
           modelVersion: lyrics.metadata.modelVersion,
           preprocessingVersion: lyrics.metadata.preprocessingVersion,
           provider: TrackEmbeddingProvider.server,
-          contentRevision: capturedLyrics!.contentHash,
+          contentRevision: lyricsContentRevision!,
           dtype: lyrics.metadata.dtype,
           normalized: lyrics.metadata.normalized,
           dimensions: lyrics.metadata.dimension,
@@ -231,13 +315,60 @@ class MusicAnalysisRepositoryImpl implements MusicAnalysisRepository {
         ),
       );
     }
-    return MusicAnalysisDisposition.analyzed;
+  }
+
+  Future<void> _validateSnapshot({
+    required MusicAnalysisResponse response,
+    required String trackId,
+    required String? expectedContentIdentity,
+    required int audioRevision,
+    required Set<MusicAnalysisRepresentation> requested,
+    required String? lyricsContentHash,
+  }) async {
+    if (response.trackId != null && response.trackId != trackId) {
+      throw const MusicAnalysisFailure(
+        MusicAnalysisFailureKind.invalidRepresentation,
+        details: 'Response track_id mismatch',
+      );
+    }
+    if (response.contentIdentity != null &&
+        response.contentIdentity != expectedContentIdentity) {
+      throw const MusicAnalysisFailure(
+        MusicAnalysisFailureKind.staleContent,
+        details: 'Response content_identity mismatch',
+      );
+    }
+    final currentTrack = await _tracks.getTrackById(trackId);
+    if (currentTrack == null) {
+      throw const MusicAnalysisFailure(
+        MusicAnalysisFailureKind.fileNotFound,
+        details: 'Track was deleted during analysis',
+      );
+    }
+    if (_containsAudio(requested) &&
+        currentTrack.audioRevision != audioRevision) {
+      throw const MusicAnalysisFailure(
+        MusicAnalysisFailureKind.staleContent,
+        details: 'Audio changed during analysis',
+      );
+    }
+    if (lyricsContentHash != null &&
+        requested.contains(MusicAnalysisRepresentation.lyricsGlobal)) {
+      final currentLyrics = await _lyrics?.getForTrack(trackId);
+      if (currentLyrics?.contentHash != lyricsContentHash) {
+        throw const MusicAnalysisFailure(
+          MusicAnalysisFailureKind.staleContent,
+          details: 'Lyrics changed during analysis',
+        );
+      }
+    }
   }
 
   Future<bool> _hasCached(
     String trackId,
     int audioRevision,
     MusicAnalysisModel model, {
+    required String audioContentRevision,
     String? contentRevision,
   }) async {
     return switch (model.representation) {
@@ -262,6 +393,26 @@ class MusicAnalysisRepositoryImpl implements MusicAnalysisRepository {
               audioRevision: audioRevision,
             ) !=
             null,
+      MusicAnalysisRepresentation.audioEmotionGlobal =>
+        await _emotions?.getGlobal(
+              trackId: trackId,
+              modelId: model.modelId,
+              modelVersion: model.modelVersion,
+              preprocessingVersion: model.preprocessingVersion,
+              contentRevision: audioContentRevision,
+              audioRevision: audioRevision,
+            ) !=
+            null,
+      MusicAnalysisRepresentation.audioEmotionTemporal =>
+        await _emotions?.getTemporal(
+              trackId: trackId,
+              modelId: model.modelId,
+              modelVersion: model.modelVersion,
+              preprocessingVersion: model.preprocessingVersion,
+              contentRevision: audioContentRevision,
+              audioRevision: audioRevision,
+            ) !=
+            null,
       MusicAnalysisRepresentation.lyricsGlobal =>
         contentRevision != null &&
             await _globalEmbeddings.get(
@@ -279,11 +430,7 @@ class MusicAnalysisRepositoryImpl implements MusicAnalysisRepository {
 
   static bool _containsAudio(
     Set<MusicAnalysisRepresentation> representations,
-  ) => representations.any(
-    (representation) =>
-        representation == MusicAnalysisRepresentation.audioGlobal ||
-        representation == MusicAnalysisRepresentation.audioTemporal,
-  );
+  ) => representations.any((representation) => representation.isAudio);
 
   static void _validateAgainstRegistry(
     MusicAnalysisModel actual,

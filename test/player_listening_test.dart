@@ -264,6 +264,10 @@ class _FakeAudioPlayer implements AudioPlayerPort {
     Duration initialPosition = Duration.zero,
   }) async {}
   @override
+  Future<void> appendQueue(List<Track> tracks) async {}
+  @override
+  Future<void> removeQueueItemsAt(List<int> indices) async {}
+  @override
   Future<void> clearQueue() async => playing.add(false);
   @override
   Future<void> setShuffleModeEnabled(bool enabled) async {}

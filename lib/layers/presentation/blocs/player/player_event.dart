@@ -16,6 +16,62 @@ class PlayerQueueSet extends PlayerEvent {
   PlayerQueueSet(this.tracks, {this.startTrack, this.autoPlay = true});
 }
 
+class PlayerMoodWaveStarted extends PlayerEvent {
+  final double targetValence;
+  final double targetArousal;
+  final double radius;
+  final MoodWaveMode mode;
+  final bool autoPlay;
+
+  PlayerMoodWaveStarted({
+    required this.targetValence,
+    required this.targetArousal,
+    required this.radius,
+    required this.mode,
+    this.autoPlay = true,
+  });
+}
+
+class PlayerTrackWaveStarted extends PlayerEvent {
+  final Track track;
+  final bool autoPlay;
+
+  PlayerTrackWaveStarted({required this.track, this.autoPlay = true});
+}
+
+class PlayerArtistWaveStarted extends PlayerEvent {
+  final String artistId;
+  final String artistName;
+  final String? imageUrl;
+  final bool autoPlay;
+
+  PlayerArtistWaveStarted({
+    required this.artistId,
+    required this.artistName,
+    this.imageUrl,
+    this.autoPlay = true,
+  });
+}
+
+class PlayerWaveMoodSettingsUpdated extends PlayerEvent {
+  final MoodWaveMode? mode;
+  final double? radius;
+  final double? targetValence;
+  final double? targetArousal;
+
+  PlayerWaveMoodSettingsUpdated({
+    this.mode,
+    this.radius,
+    this.targetValence,
+    this.targetArousal,
+  });
+}
+
+class PlayerWaveStopped extends PlayerEvent {}
+
+@Deprecated('Use PlayerWaveStopped')
+class PlayerMoodWaveStopped extends PlayerEvent {}
+
 class PlayerTrackRemoved extends PlayerEvent {
   final String trackId;
   final Completer<void>? completer;

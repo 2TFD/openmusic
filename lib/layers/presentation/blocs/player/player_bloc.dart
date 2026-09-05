@@ -3,8 +3,13 @@ import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:openmusic/core/errors/failures/failure.dart';
+import 'package:openmusic/core/services/recommendation/mood_wave_engine.dart';
+import 'package:openmusic/core/services/recommendation/wave_recommendation_engine.dart';
 import 'package:openmusic/core/utils/app_logger.dart';
+import 'package:openmusic/layers/domain/entities/mood_wave.dart';
+import 'package:openmusic/layers/domain/entities/queue_entry_provenance.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
+import 'package:openmusic/layers/domain/entities/wave_session.dart';
 import 'package:openmusic/layers/domain/entities/listening_event.dart';
 import 'package:openmusic/layers/domain/entities/playback_session.dart';
 import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
@@ -30,6 +35,8 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   final SkipTrackUseCase _skipTrack;
   final PlaybackCommandBus _commands;
   final ListeningTracker _listeningTracker;
+  final WaveRecommendationEngine? _waveRecommendationEngine;
+  final MoodWaveEngine? _moodWaveEngine;
 
   StreamSubscription? _commandSub;
   StreamSubscription? _positionSub;
@@ -45,6 +52,9 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   Future<void> _checkpointWrites = Future.value();
   Future<void> _sessionWrites = Future.value();
   Duration _lastSessionPosition = Duration.zero;
+  bool _waveGenerationInFlight = false;
+  bool _waveNextTransitionSkipped = false;
+  bool _installingWaveQueue = false;
 
   PlayerBloc({
     required AudioPlayerPort service,
@@ -56,6 +66,8 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     required SkipTrackUseCase skipTrack,
     required PlaybackCommandBus commands,
     required ListeningTracker listeningTracker,
+    WaveRecommendationEngine? waveRecommendationEngine,
+    MoodWaveEngine? moodWaveEngine,
   }) : _service = service,
        _saveListeningSummary = saveListeningSummary,
        _checkpoints = checkpoints,
@@ -65,7 +77,9 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
        _skipTrack = skipTrack,
        _commands = commands,
        _listeningTracker = listeningTracker,
-       super(const PlayerState(isRestoring: true)) {
+       _waveRecommendationEngine = waveRecommendationEngine,
+       _moodWaveEngine = moodWaveEngine,
+       super(PlayerState(isRestoring: true)) {
     on<PlayerEvent>(_onEvent, transformer: _sequential());
 
     _subscribe();
@@ -80,6 +94,18 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
         await _flushSession();
       case PlayerQueueSet():
         await _onQueueSet(event, emit);
+      case PlayerMoodWaveStarted():
+        await _onMoodWaveStarted(event, emit);
+      case PlayerTrackWaveStarted():
+        await _onTrackWaveStarted(event, emit);
+      case PlayerArtistWaveStarted():
+        await _onArtistWaveStarted(event, emit);
+      case PlayerWaveMoodSettingsUpdated():
+        _onWaveMoodSettingsUpdated(event, emit);
+      case PlayerWaveStopped():
+        await _onWaveStopped(emit);
+      case PlayerMoodWaveStopped():
+        await _onWaveStopped(emit);
       case PlayerTrackRemoved():
         await _onTrackRemoved(event, emit);
       case PlayerPlayPauseToggled():
@@ -150,7 +176,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     try {
       final restored = await _restorePlayback();
       if (restored == null) {
-        emit(const PlayerState(isRestoring: false));
+        emit(PlayerState(isRestoring: false));
         return;
       }
       var tracks = List<Track>.from(restored.tracks);
@@ -220,7 +246,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
         '$error, stackTrace: $stackTrace',
       );
     }
-    emit(const PlayerState(isRestoring: false));
+    emit(PlayerState(isRestoring: false));
   }
 
   void _subscribe() {
@@ -266,6 +292,9 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   }
 
   Future<void> _onQueueSet(PlayerQueueSet e, Emitter<PlayerState> emit) async {
+    if (state.waveSession != null && !_installingWaveQueue) {
+      emit(state.copyWith(waveSession: null, isWaveGenerating: false));
+    }
     try {
       final previousTrack = state.currentTrack;
       final previousPosition = _lastTransitionPosition;
@@ -336,6 +365,301 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     }
   }
 
+  Future<void> _onMoodWaveStarted(
+    PlayerMoodWaveStarted event,
+    Emitter<PlayerState> emit,
+  ) async {
+    await _startWave(
+      WaveSession.startMood(
+        targetValence: event.targetValence,
+        targetArousal: event.targetArousal,
+        radius: event.radius,
+        mode: event.mode,
+        seedTrackId: state.currentTrack?.id,
+        seedAudioRevision: state.currentTrack?.audioRevision,
+      ),
+      autoPlay: event.autoPlay,
+      emit: emit,
+    );
+  }
+
+  Future<void> _onTrackWaveStarted(
+    PlayerTrackWaveStarted event,
+    Emitter<PlayerState> emit,
+  ) async {
+    await _startWave(
+      WaveSession.startTrack(
+        trackId: event.track.id,
+        trackTitle: event.track.title,
+        imageUrl: event.track.imageUrl,
+        seedAudioRevision: event.track.audioRevision,
+      ),
+      autoPlay: event.autoPlay,
+      emit: emit,
+    );
+  }
+
+  Future<void> _onArtistWaveStarted(
+    PlayerArtistWaveStarted event,
+    Emitter<PlayerState> emit,
+  ) async {
+    await _startWave(
+      WaveSession.startArtist(
+        artistId: event.artistId,
+        artistName: event.artistName,
+        imageUrl: event.imageUrl,
+      ),
+      autoPlay: event.autoPlay,
+      emit: emit,
+    );
+  }
+
+  void _onWaveMoodSettingsUpdated(
+    PlayerWaveMoodSettingsUpdated event,
+    Emitter<PlayerState> emit,
+  ) {
+    final session = state.waveSession;
+    if (session == null || session.source is! MoodWaveSource) return;
+    final source = session.source as MoodWaveSource;
+    final targetChanged =
+        event.targetValence != null || event.targetArousal != null;
+    final userTarget = targetChanged
+        ? MoodPoint(
+            valence: event.targetValence ?? source.userTarget.valence,
+            arousal: event.targetArousal ?? source.userTarget.arousal,
+          )
+        : null;
+    emit(
+      state.copyWith(
+        waveSession: session.updateMoodSettings(
+          userTarget: userTarget,
+          radius: event.radius,
+          mode: event.mode,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onWaveStopped(Emitter<PlayerState> emit) async {
+    final sessionId = state.waveSession?.id;
+    if (sessionId != null) {
+      await _removeFutureWaveEntries(sessionId, emit);
+    }
+    emit(state.copyWith(waveSession: null, isWaveGenerating: false));
+  }
+
+  Future<void> _startWave(
+    WaveSession initialSession, {
+    required bool autoPlay,
+    required Emitter<PlayerState> emit,
+  }) async {
+    if (!_canGenerate(initialSession) || _waveGenerationInFlight) return;
+    _waveGenerationInFlight = true;
+    try {
+      final oldSessionId = state.waveSession?.id;
+      if (oldSessionId != null) {
+        await _removeFutureWaveEntries(oldSessionId, emit);
+      }
+      emit(state.copyWith(waveSession: initialSession, isWaveGenerating: true));
+      final batch = await _generateWave(
+        initialSession,
+        currentTrackId: state.currentTrack?.id,
+        queuedTrackIds: state.queue.map((track) => track.id).toSet(),
+      );
+      if (batch == null || batch.isEmpty) {
+        emit(state.copyWith(waveSession: null, isWaveGenerating: false));
+        return;
+      }
+      final queuedIds = state.queue.map((track) => track.id).toSet();
+      final generated = <Track>[];
+      for (final track in batch.tracks) {
+        if (queuedIds.add(track.id)) generated.add(track);
+      }
+      if (generated.isEmpty) {
+        emit(state.copyWith(waveSession: null, isWaveGenerating: false));
+        return;
+      }
+      if (state.queue.isEmpty || state.currentTrack == null) {
+        _installingWaveQueue = true;
+        try {
+          await _onQueueSet(
+            PlayerQueueSet(generated, autoPlay: autoPlay),
+            emit,
+          );
+        } finally {
+          _installingWaveQueue = false;
+        }
+        if (state.queue.isEmpty) {
+          emit(state.copyWith(waveSession: null, isWaveGenerating: false));
+          return;
+        }
+        emit(
+          state.copyWith(
+            queueProvenance: List.filled(
+              state.queue.length,
+              QueueEntryProvenance.wave(batch.session.id),
+            ),
+            waveSession: batch.session,
+            isWaveGenerating: false,
+          ),
+        );
+      } else {
+        await _appendWaveBatch(generated, batch.session, emit);
+        if (autoPlay && !state.isPlaying) _startPlayback();
+      }
+    } catch (error, stackTrace) {
+      await AppLogger.log(
+        '[PlayerBloc] Error starting Wave: '
+        '$error, stackTrace: $stackTrace',
+      );
+      emit(
+        state.copyWith(
+          waveSession: null,
+          isWaveGenerating: false,
+          error: failureFromException(error).toLocaleKey(),
+        ),
+      );
+    } finally {
+      _waveGenerationInFlight = false;
+    }
+  }
+
+  Future<void> _continueWaveIfNeeded(Emitter<PlayerState> emit) async {
+    final session = state.waveSession;
+    if (session == null ||
+        !_canGenerate(session) ||
+        state.remainingQueueCount > _remainingQueueThreshold ||
+        _waveGenerationInFlight) {
+      return;
+    }
+    _waveGenerationInFlight = true;
+    emit(state.copyWith(isWaveGenerating: true));
+    try {
+      final batch = await _generateWave(
+        session,
+        currentTrackId: state.currentTrack?.id,
+        queuedTrackIds: state.queue.map((track) => track.id).toSet(),
+      );
+      if (batch == null || batch.isEmpty) {
+        emit(state.copyWith(waveSession: null, isWaveGenerating: false));
+        return;
+      }
+      final queuedIds = state.queue.map((track) => track.id).toSet();
+      final appended = <Track>[];
+      for (final track in batch.tracks) {
+        if (queuedIds.add(track.id)) appended.add(track);
+      }
+      if (appended.isEmpty) {
+        emit(state.copyWith(waveSession: null, isWaveGenerating: false));
+        return;
+      }
+      await _appendWaveBatch(appended, batch.session, emit);
+    } catch (error, stackTrace) {
+      await AppLogger.log(
+        '[PlayerBloc] Error continuing Wave: '
+        '$error, stackTrace: $stackTrace',
+      );
+      emit(
+        state.copyWith(
+          isWaveGenerating: false,
+          error: failureFromException(error).toLocaleKey(),
+        ),
+      );
+    } finally {
+      _waveGenerationInFlight = false;
+    }
+  }
+
+  Future<void> _appendWaveBatch(
+    List<Track> tracks,
+    WaveSession session,
+    Emitter<PlayerState> emit,
+  ) async {
+    await _service.appendQueue(tracks);
+    emit(
+      state.copyWith(
+        queue: [...state.queue, ...tracks],
+        queueProvenance: [
+          ...state.queueProvenance,
+          ...List.filled(tracks.length, QueueEntryProvenance.wave(session.id)),
+        ],
+        shuffleIndices: state.isShuffleEnabled ? _service.shuffleIndices : null,
+        waveSession: session,
+        isWaveGenerating: false,
+      ),
+    );
+    _scheduleSessionWrite(replaceQueue: true);
+  }
+
+  Future<void> _removeFutureWaveEntries(
+    String sessionId,
+    Emitter<PlayerState> emit,
+  ) async {
+    final indices = <int>[];
+    for (
+      var index = state.currentIndex + 1;
+      index < state.queueProvenance.length;
+      index++
+    ) {
+      if (state.queueProvenance[index].belongsToWave(sessionId)) {
+        indices.add(index);
+      }
+    }
+    if (indices.isEmpty) return;
+    await _service.removeQueueItemsAt(indices);
+    final queue = List<Track>.of(state.queue);
+    final provenance = List<QueueEntryProvenance>.of(state.queueProvenance);
+    for (final index in indices.reversed) {
+      queue.removeAt(index);
+      provenance.removeAt(index);
+    }
+    emit(
+      state.copyWith(
+        queue: queue,
+        queueProvenance: provenance,
+        shuffleIndices: state.isShuffleEnabled ? _service.shuffleIndices : null,
+      ),
+    );
+    _scheduleSessionWrite(replaceQueue: true);
+  }
+
+  bool _canGenerate(WaveSession session) =>
+      _waveRecommendationEngine != null ||
+      (_moodWaveEngine != null && session.source is MoodWaveSource);
+
+  int get _remainingQueueThreshold =>
+      _waveRecommendationEngine?.continuationConfig.remainingQueueThreshold ??
+      _moodWaveEngine?.config.remainingQueueThreshold ??
+      3;
+
+  int get _recentContextSize =>
+      _waveRecommendationEngine?.continuationConfig.recentContextSize ??
+      _moodWaveEngine?.config.recentContextSize ??
+      3;
+
+  Future<WaveRecommendationBatch?> _generateWave(
+    WaveSession session, {
+    required String? currentTrackId,
+    Set<String> queuedTrackIds = const {},
+  }) async {
+    final engine = _waveRecommendationEngine;
+    if (engine != null) {
+      return engine.generate(
+        session: session,
+        currentTrackId: currentTrackId,
+        queuedTrackIds: queuedTrackIds,
+      );
+    }
+    if (session.source is MoodWaveSource) {
+      return _moodWaveEngine?.generate(
+        session: session,
+        currentTrackId: currentTrackId,
+        queuedTrackIds: queuedTrackIds,
+      );
+    }
+    return null;
+  }
+
   Future<void> _onTrackRemoved(
     PlayerTrackRemoved e,
     Emitter<PlayerState> emit,
@@ -365,9 +689,14 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     final removedPosition = _lastTransitionPosition;
     final removedListened = _listenedDuration;
     final removedDuration = _effectiveDuration(removedTrack);
-    final nextQueue = state.queue
-        .where((track) => track.id != trackId)
-        .toList();
+    final keptIndices = <int>[
+      for (var index = 0; index < state.queue.length; index++)
+        if (state.queue[index].id != trackId) index,
+    ];
+    final nextQueue = [for (final index in keptIndices) state.queue[index]];
+    final nextProvenance = [
+      for (final index in keptIndices) state.queueProvenance[index],
+    ];
 
     if (removedCurrent) await _recordCurrentPlay();
 
@@ -385,6 +714,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       emit(
         state.copyWith(
           queue: const [],
+          queueProvenance: const [],
           currentIndex: 0,
           currentTrack: null,
           isPlaying: false,
@@ -438,6 +768,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
     emit(
       state.copyWith(
         queue: nextQueue,
+        queueProvenance: nextProvenance,
         currentIndex: normalizedIndex,
         currentTrack: nextTrack,
         isLoading: false,
@@ -547,9 +878,11 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       _listeningTracker.navigationRequested(
         ListeningNavigationIntent.queueSelection,
       );
+      _waveNextTransitionSkipped = true;
       await _service.seekToIndex(e.index);
       _startPlayback();
     } catch (e, st) {
+      _waveNextTransitionSkipped = false;
       _listeningTracker.cancelNavigationRequest();
       AppLogger.log('[PlayerBloc._onTrackSelected] Error: $e, stackTrace: $st');
       emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
@@ -585,16 +918,19 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
           _listeningTracker.navigationRequested(
             ListeningNavigationIntent.userNext,
           );
+          _waveNextTransitionSkipped = true;
           await _service.skipToNext();
         case AdvanceToPreviousTrack():
           _listeningTracker.navigationRequested(
             ListeningNavigationIntent.userPrevious,
           );
+          _waveNextTransitionSkipped = true;
           await _service.skipToPrevious();
         case SkipRejected():
           break;
       }
     } catch (e, st) {
+      _waveNextTransitionSkipped = false;
       _listeningTracker.cancelNavigationRequest();
       AppLogger.log('[PlayerBloc._onSkip] Error: $e, stackTrace: $st');
       emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
@@ -719,7 +1055,8 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
   ) async {
     if (e.index < state.queue.length) {
       final nextTrack = state.queue[e.index];
-      if (state.currentTrack?.id != nextTrack.id) {
+      final isTrackTransition = state.currentTrack?.id != nextTrack.id;
+      if (isTrackTransition) {
         final previousTrack = state.currentTrack;
         if (previousTrack != null) {
           await _recordListening(
@@ -737,15 +1074,29 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
         await _recordCurrentPlay();
         _resetListening(nextTrack);
       }
+      var waveSession = state.waveSession;
+      if (isTrackTransition && waveSession != null) {
+        final previousTrackId = state.currentTrack?.id;
+        if (previousTrackId != null) {
+          waveSession = waveSession.recordPlayed(
+            previousTrackId,
+            skipped: _waveNextTransitionSkipped,
+            contextSize: _recentContextSize,
+          );
+        }
+      }
+      if (isTrackTransition) _waveNextTransitionSkipped = false;
       emit(
         state.copyWith(
           currentIndex: e.index,
           currentTrack: nextTrack,
           position: Duration.zero,
+          waveSession: waveSession,
         ),
       );
       _lastSessionPosition = Duration.zero;
       _scheduleSessionWrite(position: Duration.zero);
+      if (isTrackTransition) await _continueWaveIfNeeded(emit);
     }
   }
 

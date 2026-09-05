@@ -189,7 +189,7 @@ class AddTrackUseCase {
     final queue = queueAnalysis;
     if (queue != null) {
       try {
-        await queue(track);
+        await queue.schedule(track);
       } catch (error, stackTrace) {
         // Background backfill recovers queue failures independently.
         await AppLogger.log(

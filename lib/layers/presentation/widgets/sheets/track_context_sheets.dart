@@ -5,26 +5,145 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
+import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/entities/download_track_task.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
+import 'package:openmusic/layers/domain/repositories/track_external_actions.dart';
 import 'package:openmusic/layers/presentation/blocs/download_status/download_status_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/track/track_bloc.dart';
 import 'package:openmusic/layers/presentation/widgets/cached_image.dart';
 import 'package:openmusic/layers/presentation/widgets/snackbars/custom_snack_bar.dart';
 
+Future<void> showPlayerTrackActions(
+  BuildContext context,
+  Track track, {
+  ValueChanged<Track>? onStartWave,
+}) async {
+  final externalActions = context.read<TrackExternalActions>();
+  final sharePositionOrigin = _sharePositionOriginOf(context);
+
+  final action = await showModalBottomSheet<_PlayerTrackAction>(
+    context: context,
+    backgroundColor: Colors.transparent,
+    useRootNavigator: true,
+    builder: (sheetContext) => _PlayerTrackActionsSheet(
+      track: track,
+      onStartWave: () =>
+          Navigator.of(sheetContext).pop(_PlayerTrackAction.startWave),
+      onOpenSource: () =>
+          Navigator.of(sheetContext).pop(_PlayerTrackAction.openSource),
+    ),
+  );
+  if (action == null || !context.mounted) return;
+
+  switch (action) {
+    case _PlayerTrackAction.startWave:
+      if (onStartWave != null) {
+        onStartWave(track);
+      } else {
+        context.read<PlayerBloc>().add(PlayerTrackWaveStarted(track: track));
+      }
+    case _PlayerTrackAction.openSource:
+      try {
+        await externalActions.openSource(
+          track,
+          sharePositionOrigin: sharePositionOrigin,
+        );
+      } on FileNotFoundFailure catch (_) {
+        if (!context.mounted) return;
+        CustomSnackBar.error(
+          context,
+          context.tr('player.localFileUnavailable'),
+        );
+      } on TrackNotReadyFailure catch (_) {
+        if (!context.mounted) return;
+        CustomSnackBar.error(
+          context,
+          context.tr('player.localFileUnavailable'),
+        );
+      } catch (_) {
+        if (!context.mounted) return;
+        CustomSnackBar.error(context, context.tr('player.sourceOpenFailed'));
+      }
+  }
+}
+
+Rect _sharePositionOriginOf(BuildContext context) {
+  final renderObject = context.findRenderObject();
+  if (renderObject is RenderBox && renderObject.hasSize) {
+    return renderObject.localToGlobal(Offset.zero) & renderObject.size;
+  }
+  return Offset.zero & MediaQuery.sizeOf(context);
+}
+
+enum _PlayerTrackAction { startWave, openSource }
+
+class _PlayerTrackActionsSheet extends StatelessWidget {
+  const _PlayerTrackActionsSheet({
+    required this.track,
+    required this.onStartWave,
+    required this.onOpenSource,
+  });
+
+  final Track track;
+  final VoidCallback onStartWave;
+  final VoidCallback onOpenSource;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SheetFrame(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SheetHandle(),
+          _TrackHeader(track: track),
+          const Divider(height: 1, color: AppColors.border),
+          const SizedBox(height: 8),
+          _SheetAction(
+            icon: Icons.waves_rounded,
+            label: context.tr('waveSession.startWave'),
+            onTap: onStartWave,
+          ),
+          if (track.source.type == SourceType.soundcloud)
+            _SheetAction(
+              icon: Icons.open_in_new_rounded,
+              label: context.tr('player.openInSoundCloud'),
+              onTap: onOpenSource,
+            ),
+          if (track.source.type == SourceType.localFile)
+            _SheetAction(
+              icon: Icons.ios_share_rounded,
+              label: context.tr('player.shareFile'),
+              onTap: onOpenSource,
+            ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+}
+
 Future<void> showTrackLibraryActions(BuildContext context, Track track) async {
-  final shouldDelete = await showModalBottomSheet<bool>(
+  final playerBloc = context.read<PlayerBloc>();
+  final action = await showModalBottomSheet<_LibraryTrackAction>(
     context: context,
     backgroundColor: Colors.transparent,
     useRootNavigator: true,
     builder: (sheetContext) => _TrackActionsSheet(
       track: track,
-      onDelete: () => sheetContext.pop(true),
+      onStartWave: () => sheetContext.pop(_LibraryTrackAction.startWave),
+      onDelete: () => sheetContext.pop(_LibraryTrackAction.delete),
     ),
   );
-  if (shouldDelete != true || !context.mounted) return;
+  if (action == null || !context.mounted) return;
+  if (action == _LibraryTrackAction.startWave) {
+    playerBloc.add(PlayerTrackWaveStarted(track: track));
+    return;
+  }
 
   final confirmed = await showDialog<bool>(
     context: context,
@@ -191,10 +310,17 @@ class _DownloadFailureSheet extends StatelessWidget {
   }
 }
 
+enum _LibraryTrackAction { startWave, delete }
+
 class _TrackActionsSheet extends StatelessWidget {
-  const _TrackActionsSheet({required this.track, required this.onDelete});
+  const _TrackActionsSheet({
+    required this.track,
+    required this.onStartWave,
+    required this.onDelete,
+  });
 
   final Track track;
+  final VoidCallback onStartWave;
   final VoidCallback onDelete;
 
   @override
@@ -208,6 +334,11 @@ class _TrackActionsSheet extends StatelessWidget {
           _TrackHeader(track: track),
           const Divider(height: 1, color: AppColors.border),
           const SizedBox(height: 8),
+          _SheetAction(
+            icon: Icons.waves_rounded,
+            label: context.tr('waveSession.startWave'),
+            onTap: onStartWave,
+          ),
           _SheetAction(
             icon: Icons.delete_outline,
             label: context.tr('track.deleteFromLibrary'),

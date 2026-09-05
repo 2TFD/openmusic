@@ -327,6 +327,20 @@ class _FakeAudioPlayer implements AudioPlayerPort {
   }
 
   @override
+  Future<void> appendQueue(List<Track> tracks) async {
+    queue = [...queue, ...tracks];
+  }
+
+  @override
+  Future<void> removeQueueItemsAt(List<int> indices) async {
+    final descending = indices.toSet().toList()
+      ..sort((left, right) => right.compareTo(left));
+    for (final index in descending) {
+      if (index >= 0 && index < queue.length) queue.removeAt(index);
+    }
+  }
+
+  @override
   Future<void> clearQueue() async {
     clearQueueCalls++;
     queue = const [];

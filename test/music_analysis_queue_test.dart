@@ -13,6 +13,8 @@ import 'package:openmusic/layers/data/repositories/track_ingestion_repository_im
 import 'package:openmusic/layers/data/repositories/track_repository_impl.dart';
 import 'package:openmusic/layers/domain/entities/download_track_task.dart';
 import 'package:openmusic/layers/domain/entities/music_analysis.dart';
+import 'package:openmusic/layers/domain/entities/music_analysis_failure.dart';
+import 'package:openmusic/layers/domain/entities/music_analysis_task.dart';
 import 'package:openmusic/layers/domain/entities/playlist.dart';
 import 'package:openmusic/layers/domain/entities/resolved_track_input.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
@@ -60,7 +62,7 @@ void main() {
     expect((await tasks.getAll()).single.trackId, 'always-on');
   });
 
-  test('local import queues global and temporal analysis', () async {
+  test('local import queues embeddings and emotion analysis', () async {
     final source = _LocalSource();
     final useCase = AddTrackUseCase(
       trackResolver: TrackSourceResolver([source]),
@@ -83,9 +85,16 @@ void main() {
     expect(result.firstTrack?.filePath, '/downloaded/local-import.mp3');
     expect(task.trackId, 'local-import');
     expect(task.audioRevision, 1);
+    expect(
+      analysis.missingCalls,
+      0,
+      reason: 'import scheduling must not wait for model/cache network work',
+    );
     expect(task.requestedRepresentations, {
       MusicAnalysisRepresentation.audioGlobal,
       MusicAnalysisRepresentation.audioTemporal,
+      MusicAnalysisRepresentation.audioEmotionGlobal,
+      MusicAnalysisRepresentation.audioEmotionTemporal,
     });
   });
 
@@ -168,12 +177,74 @@ void main() {
     expect(await tasks.getAll(), hasLength(2));
     expect(client.modelRequests, 1);
   });
+
+  test('backfill skips unplayable tracks and cools down failures', () async {
+    await _insertTrack(database, 'unplayable');
+    final playable = await _insertTrack(
+      database,
+      'failed-playable',
+      filePath: '/failed.mp3',
+    );
+    await tasks.enqueue(
+      trackId: playable.id,
+      audioRevision: playable.audioRevision,
+      representations: QueueMusicAnalysisUseCase.requiredRepresentations,
+    );
+    final claimed = (await tasks.claimNext())!;
+    await tasks.fail(
+      claimed.id,
+      const MusicAnalysisFailure(MusicAnalysisFailureKind.server),
+      requeue: false,
+    );
+    final backfill = MusicAnalysisBackfillService(
+      tracks: tracks,
+      queueAnalysis: queue,
+      registry: MusicAnalysisModelRegistry(_ModelsClient()),
+      config: const MusicAnalysisQueueConfig(
+        analysisBackfillBatchSize: 2,
+        analysisFailureBackfillCooldown: Duration(hours: 1),
+      ),
+      tasks: tasks,
+    );
+
+    expect(await backfill.enqueueNextBatch(), 0);
+    expect(
+      (await tasks.getAll()).single.status,
+      MusicAnalysisTaskStatus.failed,
+    );
+  });
+
+  test('v2 backfill selects only playable tracks missing emotion', () async {
+    await _insertTrack(database, 'unplayable');
+    await _insertTrack(database, 'emotion-current', filePath: '/current.mp3');
+    await _insertTrack(database, 'emotion-missing', filePath: '/missing.mp3');
+    analysis.missingByTrack = {
+      'emotion-current': const {MusicAnalysisRepresentation.audioGlobal},
+      'emotion-missing': QueueMusicAnalysisUseCase.emotionRepresentations,
+    };
+    final backfill = MusicAnalysisBackfillService(
+      tracks: tracks,
+      queueAnalysis: queue,
+      registry: MusicAnalysisModelRegistry(_ModelsClient(includeEmotion: true)),
+      config: const MusicAnalysisQueueConfig(analysisBackfillBatchSize: 4),
+      tasks: tasks,
+    );
+
+    expect(await backfill.enqueueNextBatch(), 1);
+    final task = (await tasks.getAll()).single;
+    expect(task.trackId, 'emotion-missing');
+    expect(
+      task.requestedRepresentations,
+      QueueMusicAnalysisUseCase.emotionRepresentations,
+    );
+  });
 }
 
 class _Analysis implements MusicAnalysisRepository {
   Set<MusicAnalysisRepresentation> missing =
       QueueMusicAnalysisUseCase.requiredRepresentations;
   int missingCalls = 0;
+  Map<String, Set<MusicAnalysisRepresentation>>? missingByTrack;
 
   @override
   Future<Set<MusicAnalysisRepresentation>> missingRepresentations({
@@ -182,7 +253,7 @@ class _Analysis implements MusicAnalysisRepository {
     required Set<MusicAnalysisRepresentation> representations,
   }) async {
     missingCalls++;
-    return missing.intersection(representations);
+    return (missingByTrack?[trackId] ?? missing).intersection(representations);
   }
 
   @override
@@ -194,6 +265,8 @@ class _Analysis implements MusicAnalysisRepository {
 }
 
 class _ModelsClient implements MusicAnalysisClient {
+  _ModelsClient({this.includeEmotion = false});
+  final bool includeEmotion;
   int modelRequests = 0;
   @override
   String get baseUrl => 'https://analysis.example';
@@ -221,6 +294,20 @@ class _ModelsClient implements MusicAnalysisClient {
           dtype: 'float32',
           normalized: true,
         ),
+        if (includeEmotion)
+          MusicAnalysisModel(
+            representation: MusicAnalysisRepresentation.audioEmotionGlobal,
+            modelId: 'music2emo',
+            modelVersion: '1',
+            preprocessingVersion: 'emotion-pre',
+          ),
+        if (includeEmotion)
+          MusicAnalysisModel(
+            representation: MusicAnalysisRepresentation.audioEmotionTemporal,
+            modelId: 'music2emo',
+            modelVersion: '1',
+            preprocessingVersion: 'emotion-pre',
+          ),
       ],
     );
   }

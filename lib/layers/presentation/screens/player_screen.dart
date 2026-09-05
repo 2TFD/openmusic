@@ -2,14 +2,16 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
+import 'package:openmusic/core/app_router/app_router_names.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
+import 'package:openmusic/layers/domain/entities/artist.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
-import 'package:openmusic/layers/presentation/blocs/wave/wave_bloc.dart';
-import 'package:openmusic/layers/domain/entities/wave_config.dart';
 import 'package:openmusic/layers/presentation/widgets/cached_image.dart';
 import 'package:openmusic/layers/presentation/widgets/progress_line.dart';
+import 'package:openmusic/layers/presentation/widgets/sheets/track_context_sheets.dart';
 
 class PlayerScreen extends StatelessWidget {
   const PlayerScreen({super.key});
@@ -28,7 +30,9 @@ class PlayerScreen extends StatelessWidget {
       builder: (context, state) {
         final track = state.currentTrack;
         if (track == null) return const _EmptyState();
-        return _PlayerBody(state: state, track: track);
+        return SingleChildScrollView(
+          child: _PlayerBody(state: state, track: track),
+        );
       },
     );
   }
@@ -76,7 +80,7 @@ class _PlayerBody extends StatelessWidget {
             children: [
               Expanded(child: _TrackMeta(track: track)),
               const SizedBox(width: 8),
-              _WaveBtn(track: track),
+              _MoreBtn(track: track),
             ],
           ),
         ),
@@ -202,7 +206,6 @@ class _TrackMeta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final artistStr = track.artists.map((a) => a.name).join(', ');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -217,18 +220,58 @@ class _TrackMeta extends StatelessWidget {
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
-        if (artistStr.isNotEmpty) ...[
+        if (track.artists.isNotEmpty) ...[
           const SizedBox(height: 4),
-          Text(
-            artistStr,
-            style: AppText.bodyM,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          PlayerArtistLinks(
+            artists: track.artists,
+            onArtistTap: (artist) => _openArtist(context, artist.id),
           ),
         ],
       ],
     );
   }
+
+  void _openArtist(BuildContext context, String artistId) {
+    final router = GoRouter.of(context);
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) navigator.pop();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      router.pushNamed(AppRouterNames.artist, pathParameters: {'id': artistId});
+    });
+  }
+}
+
+class PlayerArtistLinks extends StatelessWidget {
+  const PlayerArtistLinks({
+    super.key,
+    required this.artists,
+    required this.onArtistTap,
+  });
+
+  final List<Artist> artists;
+  final ValueChanged<Artist> onArtistTap;
+
+  @override
+  Widget build(BuildContext context) => Wrap(
+    crossAxisAlignment: WrapCrossAlignment.center,
+    children: [
+      for (var index = 0; index < artists.length; index++) ...[
+        Semantics(
+          button: true,
+          child: InkWell(
+            key: ValueKey('player-artist-${artists[index].id}'),
+            borderRadius: BorderRadius.circular(4),
+            onTap: () => onArtistTap(artists[index]),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              child: Text(artists[index].name, style: AppText.bodyM),
+            ),
+          ),
+        ),
+        if (index != artists.length - 1) Text(', ', style: AppText.bodyM),
+      ],
+    ],
+  );
 }
 
 class _SeekBar extends StatelessWidget {
@@ -414,49 +457,23 @@ class _PlayBtn extends StatelessWidget {
   }
 }
 
-class _WaveBtn extends StatelessWidget {
+class _MoreBtn extends StatelessWidget {
   final Track track;
 
-  const _WaveBtn({required this.track});
-
-  WaveConfig? _configOf(WaveState state) => switch (state) {
-    WaveReady(:final config) => config,
-    WaveEmpty(:final config) => config,
-    WaveGenerating(:final config) => config,
-    WaveError(:final config) => config,
-    WaveInitial() => null,
-  };
+  const _MoreBtn({required this.track});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<WaveBloc, WaveState>(
-      builder: (context, state) {
-        final config = _configOf(state);
-        final inWave = config?.tracks.any((t) => t.id == track.id) ?? false;
-
-        return GestureDetector(
-          onTap: () {
-            final bloc = context.read<WaveBloc>();
-            if (inWave) {
-              bloc.add(WaveTrackDeselected(track));
-            } else {
-              bloc.add(WaveTrackSelected(track));
-            }
-          },
-          behavior: HitTestBehavior.opaque,
-          child: SizedBox(
-            width: 44,
-            height: 44,
-            child: Center(
-              child: Icon(
-                Icons.waves_rounded,
-                color: inWave ? AppColors.text : AppColors.muted,
-                size: 20,
-              ),
-            ),
-          ),
-        );
-      },
+    return IconButton(
+      onPressed: () => showPlayerTrackActions(context, track),
+      tooltip: context.tr('player.moreActions'),
+      constraints: const BoxConstraints.tightFor(width: 44, height: 44),
+      padding: EdgeInsets.zero,
+      icon: const Icon(
+        Icons.more_horiz_rounded,
+        color: AppColors.muted,
+        size: 24,
+      ),
     );
   }
 }

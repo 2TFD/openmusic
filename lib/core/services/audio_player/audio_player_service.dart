@@ -149,6 +149,41 @@ class AudioPlayerService implements AudioPlayerPort {
   }
 
   @override
+  Future<void> appendQueue(List<Track> tracks) async {
+    if (tracks.isEmpty) return;
+    try {
+      await _player.addAudioSources(
+        tracks.map((track) => track.toAudioSource(appDir)).toList(),
+      );
+    } catch (e, st) {
+      log(
+        '[AudioPlayerService.appendQueue] Error appending queue: '
+        '$e, stackTrace: $st',
+      );
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> removeQueueItemsAt(List<int> indices) async {
+    if (indices.isEmpty) return;
+    final descending = indices.toSet().toList()
+      ..sort((left, right) => right.compareTo(left));
+    try {
+      for (final index in descending) {
+        if (index < 0 || index >= _player.audioSources.length) continue;
+        await _player.removeAudioSourceAt(index);
+      }
+    } catch (e, st) {
+      log(
+        '[AudioPlayerService.removeQueueItemsAt] Error removing queue items: '
+        '$e, stackTrace: $st',
+      );
+      rethrow;
+    }
+  }
+
+  @override
   Future<void> clearQueue() async {
     try {
       await _player.pause();

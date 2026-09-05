@@ -17,6 +17,8 @@ import 'package:openmusic/layers/presentation/screens/library_screen.dart';
 import 'package:openmusic/layers/presentation/screens/playlist_screen.dart';
 import 'package:openmusic/layers/presentation/screens/search_screen.dart';
 import 'package:openmusic/layers/presentation/screens/settings_screen.dart';
+import 'package:openmusic/layers/presentation/screens/mood_map_page.dart';
+import 'package:openmusic/layers/presentation/blocs/mood_map/mood_map_cubit.dart';
 import 'package:openmusic/core/app_router/app_shell.dart';
 
 class AppRouter {
@@ -88,6 +90,14 @@ class AppRouter {
             builder: (context, state) => BlocProvider(
               create: (_) => getIt<MusicAnalysisStatusCubit>()..initialize(),
               child: const SettingsScreen(),
+            ),
+          ),
+          GoRoute(
+            path: '/${AppRouterNames.moodMap}',
+            name: AppRouterNames.moodMap,
+            builder: (context, state) => BlocProvider(
+              create: (_) => getIt<MoodMapCubit>()..initialize(),
+              child: const MoodMapPage(),
             ),
           ),
         ],

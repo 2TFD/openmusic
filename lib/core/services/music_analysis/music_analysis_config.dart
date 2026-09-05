@@ -19,10 +19,12 @@ class MusicAnalysisConfig {
 
 class MusicAnalysisQueueConfig {
   const MusicAnalysisQueueConfig({
-    this.analysisBackfillBatchSize = 25,
+    this.analysisBackfillBatchSize = 4,
     this.modelRegistryRefreshInterval = const Duration(minutes: 15),
+    this.analysisFailureBackfillCooldown = const Duration(hours: 6),
   }) : assert(analysisBackfillBatchSize > 0);
 
   final int analysisBackfillBatchSize;
   final Duration modelRegistryRefreshInterval;
+  final Duration analysisFailureBackfillCooldown;
 }

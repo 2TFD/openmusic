@@ -11842,6 +11842,1893 @@ class LyricsResolutionTaskTableCompanion
   }
 }
 
+class $TrackEmotionAnalysisTableTable extends TrackEmotionAnalysisTable
+    with
+        TableInfo<
+          $TrackEmotionAnalysisTableTable,
+          TrackEmotionAnalysisTableData
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TrackEmotionAnalysisTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _trackIdMeta = const VerificationMeta(
+    'trackId',
+  );
+  @override
+  late final GeneratedColumn<String> trackId = GeneratedColumn<String>(
+    'track_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES track_table (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _representationMeta = const VerificationMeta(
+    'representation',
+  );
+  @override
+  late final GeneratedColumn<String> representation = GeneratedColumn<String>(
+    'representation',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _modelIdMeta = const VerificationMeta(
+    'modelId',
+  );
+  @override
+  late final GeneratedColumn<String> modelId = GeneratedColumn<String>(
+    'model_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _modelVersionMeta = const VerificationMeta(
+    'modelVersion',
+  );
+  @override
+  late final GeneratedColumn<String> modelVersion = GeneratedColumn<String>(
+    'model_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _preprocessingVersionMeta =
+      const VerificationMeta('preprocessingVersion');
+  @override
+  late final GeneratedColumn<String> preprocessingVersion =
+      GeneratedColumn<String>(
+        'preprocessing_version',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _contentRevisionMeta = const VerificationMeta(
+    'contentRevision',
+  );
+  @override
+  late final GeneratedColumn<String> contentRevision = GeneratedColumn<String>(
+    'content_revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _audioRevisionMeta = const VerificationMeta(
+    'audioRevision',
+  );
+  @override
+  late final GeneratedColumn<int> audioRevision = GeneratedColumn<int>(
+    'audio_revision',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valenceMeta = const VerificationMeta(
+    'valence',
+  );
+  @override
+  late final GeneratedColumn<double> valence = GeneratedColumn<double>(
+    'valence',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _arousalMeta = const VerificationMeta(
+    'arousal',
+  );
+  @override
+  late final GeneratedColumn<double> arousal = GeneratedColumn<double>(
+    'arousal',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _rawValenceMeta = const VerificationMeta(
+    'rawValence',
+  );
+  @override
+  late final GeneratedColumn<double> rawValence = GeneratedColumn<double>(
+    'raw_valence',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _rawArousalMeta = const VerificationMeta(
+    'rawArousal',
+  );
+  @override
+  late final GeneratedColumn<double> rawArousal = GeneratedColumn<double>(
+    'raw_arousal',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _moodDistributionVersionMeta =
+      const VerificationMeta('moodDistributionVersion');
+  @override
+  late final GeneratedColumn<int> moodDistributionVersion =
+      GeneratedColumn<int>(
+        'mood_distribution_version',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(1),
+      );
+  static const VerificationMeta _moodDistributionJsonMeta =
+      const VerificationMeta('moodDistributionJson');
+  @override
+  late final GeneratedColumn<String> moodDistributionJson =
+      GeneratedColumn<String>(
+        'mood_distribution_json',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _temporalSummaryJsonMeta =
+      const VerificationMeta('temporalSummaryJson');
+  @override
+  late final GeneratedColumn<String> temporalSummaryJson =
+      GeneratedColumn<String>(
+        'temporal_summary_json',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _analyzedAtMeta = const VerificationMeta(
+    'analyzedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> analyzedAt = GeneratedColumn<DateTime>(
+    'analyzed_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    trackId,
+    representation,
+    modelId,
+    modelVersion,
+    preprocessingVersion,
+    contentRevision,
+    audioRevision,
+    valence,
+    arousal,
+    rawValence,
+    rawArousal,
+    moodDistributionVersion,
+    moodDistributionJson,
+    temporalSummaryJson,
+    analyzedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'track_emotion_analysis_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TrackEmotionAnalysisTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('track_id')) {
+      context.handle(
+        _trackIdMeta,
+        trackId.isAcceptableOrUnknown(data['track_id']!, _trackIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_trackIdMeta);
+    }
+    if (data.containsKey('representation')) {
+      context.handle(
+        _representationMeta,
+        representation.isAcceptableOrUnknown(
+          data['representation']!,
+          _representationMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_representationMeta);
+    }
+    if (data.containsKey('model_id')) {
+      context.handle(
+        _modelIdMeta,
+        modelId.isAcceptableOrUnknown(data['model_id']!, _modelIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_modelIdMeta);
+    }
+    if (data.containsKey('model_version')) {
+      context.handle(
+        _modelVersionMeta,
+        modelVersion.isAcceptableOrUnknown(
+          data['model_version']!,
+          _modelVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_modelVersionMeta);
+    }
+    if (data.containsKey('preprocessing_version')) {
+      context.handle(
+        _preprocessingVersionMeta,
+        preprocessingVersion.isAcceptableOrUnknown(
+          data['preprocessing_version']!,
+          _preprocessingVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_preprocessingVersionMeta);
+    }
+    if (data.containsKey('content_revision')) {
+      context.handle(
+        _contentRevisionMeta,
+        contentRevision.isAcceptableOrUnknown(
+          data['content_revision']!,
+          _contentRevisionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_contentRevisionMeta);
+    }
+    if (data.containsKey('audio_revision')) {
+      context.handle(
+        _audioRevisionMeta,
+        audioRevision.isAcceptableOrUnknown(
+          data['audio_revision']!,
+          _audioRevisionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_audioRevisionMeta);
+    }
+    if (data.containsKey('valence')) {
+      context.handle(
+        _valenceMeta,
+        valence.isAcceptableOrUnknown(data['valence']!, _valenceMeta),
+      );
+    }
+    if (data.containsKey('arousal')) {
+      context.handle(
+        _arousalMeta,
+        arousal.isAcceptableOrUnknown(data['arousal']!, _arousalMeta),
+      );
+    }
+    if (data.containsKey('raw_valence')) {
+      context.handle(
+        _rawValenceMeta,
+        rawValence.isAcceptableOrUnknown(data['raw_valence']!, _rawValenceMeta),
+      );
+    }
+    if (data.containsKey('raw_arousal')) {
+      context.handle(
+        _rawArousalMeta,
+        rawArousal.isAcceptableOrUnknown(data['raw_arousal']!, _rawArousalMeta),
+      );
+    }
+    if (data.containsKey('mood_distribution_version')) {
+      context.handle(
+        _moodDistributionVersionMeta,
+        moodDistributionVersion.isAcceptableOrUnknown(
+          data['mood_distribution_version']!,
+          _moodDistributionVersionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('mood_distribution_json')) {
+      context.handle(
+        _moodDistributionJsonMeta,
+        moodDistributionJson.isAcceptableOrUnknown(
+          data['mood_distribution_json']!,
+          _moodDistributionJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('temporal_summary_json')) {
+      context.handle(
+        _temporalSummaryJsonMeta,
+        temporalSummaryJson.isAcceptableOrUnknown(
+          data['temporal_summary_json']!,
+          _temporalSummaryJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('analyzed_at')) {
+      context.handle(
+        _analyzedAtMeta,
+        analyzedAt.isAcceptableOrUnknown(data['analyzed_at']!, _analyzedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_analyzedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {
+      trackId,
+      representation,
+      modelId,
+      modelVersion,
+      preprocessingVersion,
+      contentRevision,
+      audioRevision,
+    },
+  ];
+  @override
+  TrackEmotionAnalysisTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TrackEmotionAnalysisTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      trackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}track_id'],
+      )!,
+      representation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}representation'],
+      )!,
+      modelId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}model_id'],
+      )!,
+      modelVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}model_version'],
+      )!,
+      preprocessingVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}preprocessing_version'],
+      )!,
+      contentRevision: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}content_revision'],
+      )!,
+      audioRevision: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}audio_revision'],
+      )!,
+      valence: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}valence'],
+      ),
+      arousal: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}arousal'],
+      ),
+      rawValence: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}raw_valence'],
+      ),
+      rawArousal: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}raw_arousal'],
+      ),
+      moodDistributionVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}mood_distribution_version'],
+      )!,
+      moodDistributionJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mood_distribution_json'],
+      ),
+      temporalSummaryJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}temporal_summary_json'],
+      ),
+      analyzedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}analyzed_at'],
+      )!,
+    );
+  }
+
+  @override
+  $TrackEmotionAnalysisTableTable createAlias(String alias) {
+    return $TrackEmotionAnalysisTableTable(attachedDatabase, alias);
+  }
+}
+
+class TrackEmotionAnalysisTableData extends DataClass
+    implements Insertable<TrackEmotionAnalysisTableData> {
+  final String id;
+  final String trackId;
+  final String representation;
+  final String modelId;
+  final String modelVersion;
+  final String preprocessingVersion;
+  final String contentRevision;
+  final int audioRevision;
+  final double? valence;
+  final double? arousal;
+  final double? rawValence;
+  final double? rawArousal;
+  final int moodDistributionVersion;
+  final String? moodDistributionJson;
+  final String? temporalSummaryJson;
+  final DateTime analyzedAt;
+  const TrackEmotionAnalysisTableData({
+    required this.id,
+    required this.trackId,
+    required this.representation,
+    required this.modelId,
+    required this.modelVersion,
+    required this.preprocessingVersion,
+    required this.contentRevision,
+    required this.audioRevision,
+    this.valence,
+    this.arousal,
+    this.rawValence,
+    this.rawArousal,
+    required this.moodDistributionVersion,
+    this.moodDistributionJson,
+    this.temporalSummaryJson,
+    required this.analyzedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['track_id'] = Variable<String>(trackId);
+    map['representation'] = Variable<String>(representation);
+    map['model_id'] = Variable<String>(modelId);
+    map['model_version'] = Variable<String>(modelVersion);
+    map['preprocessing_version'] = Variable<String>(preprocessingVersion);
+    map['content_revision'] = Variable<String>(contentRevision);
+    map['audio_revision'] = Variable<int>(audioRevision);
+    if (!nullToAbsent || valence != null) {
+      map['valence'] = Variable<double>(valence);
+    }
+    if (!nullToAbsent || arousal != null) {
+      map['arousal'] = Variable<double>(arousal);
+    }
+    if (!nullToAbsent || rawValence != null) {
+      map['raw_valence'] = Variable<double>(rawValence);
+    }
+    if (!nullToAbsent || rawArousal != null) {
+      map['raw_arousal'] = Variable<double>(rawArousal);
+    }
+    map['mood_distribution_version'] = Variable<int>(moodDistributionVersion);
+    if (!nullToAbsent || moodDistributionJson != null) {
+      map['mood_distribution_json'] = Variable<String>(moodDistributionJson);
+    }
+    if (!nullToAbsent || temporalSummaryJson != null) {
+      map['temporal_summary_json'] = Variable<String>(temporalSummaryJson);
+    }
+    map['analyzed_at'] = Variable<DateTime>(analyzedAt);
+    return map;
+  }
+
+  TrackEmotionAnalysisTableCompanion toCompanion(bool nullToAbsent) {
+    return TrackEmotionAnalysisTableCompanion(
+      id: Value(id),
+      trackId: Value(trackId),
+      representation: Value(representation),
+      modelId: Value(modelId),
+      modelVersion: Value(modelVersion),
+      preprocessingVersion: Value(preprocessingVersion),
+      contentRevision: Value(contentRevision),
+      audioRevision: Value(audioRevision),
+      valence: valence == null && nullToAbsent
+          ? const Value.absent()
+          : Value(valence),
+      arousal: arousal == null && nullToAbsent
+          ? const Value.absent()
+          : Value(arousal),
+      rawValence: rawValence == null && nullToAbsent
+          ? const Value.absent()
+          : Value(rawValence),
+      rawArousal: rawArousal == null && nullToAbsent
+          ? const Value.absent()
+          : Value(rawArousal),
+      moodDistributionVersion: Value(moodDistributionVersion),
+      moodDistributionJson: moodDistributionJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(moodDistributionJson),
+      temporalSummaryJson: temporalSummaryJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(temporalSummaryJson),
+      analyzedAt: Value(analyzedAt),
+    );
+  }
+
+  factory TrackEmotionAnalysisTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TrackEmotionAnalysisTableData(
+      id: serializer.fromJson<String>(json['id']),
+      trackId: serializer.fromJson<String>(json['trackId']),
+      representation: serializer.fromJson<String>(json['representation']),
+      modelId: serializer.fromJson<String>(json['modelId']),
+      modelVersion: serializer.fromJson<String>(json['modelVersion']),
+      preprocessingVersion: serializer.fromJson<String>(
+        json['preprocessingVersion'],
+      ),
+      contentRevision: serializer.fromJson<String>(json['contentRevision']),
+      audioRevision: serializer.fromJson<int>(json['audioRevision']),
+      valence: serializer.fromJson<double?>(json['valence']),
+      arousal: serializer.fromJson<double?>(json['arousal']),
+      rawValence: serializer.fromJson<double?>(json['rawValence']),
+      rawArousal: serializer.fromJson<double?>(json['rawArousal']),
+      moodDistributionVersion: serializer.fromJson<int>(
+        json['moodDistributionVersion'],
+      ),
+      moodDistributionJson: serializer.fromJson<String?>(
+        json['moodDistributionJson'],
+      ),
+      temporalSummaryJson: serializer.fromJson<String?>(
+        json['temporalSummaryJson'],
+      ),
+      analyzedAt: serializer.fromJson<DateTime>(json['analyzedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'trackId': serializer.toJson<String>(trackId),
+      'representation': serializer.toJson<String>(representation),
+      'modelId': serializer.toJson<String>(modelId),
+      'modelVersion': serializer.toJson<String>(modelVersion),
+      'preprocessingVersion': serializer.toJson<String>(preprocessingVersion),
+      'contentRevision': serializer.toJson<String>(contentRevision),
+      'audioRevision': serializer.toJson<int>(audioRevision),
+      'valence': serializer.toJson<double?>(valence),
+      'arousal': serializer.toJson<double?>(arousal),
+      'rawValence': serializer.toJson<double?>(rawValence),
+      'rawArousal': serializer.toJson<double?>(rawArousal),
+      'moodDistributionVersion': serializer.toJson<int>(
+        moodDistributionVersion,
+      ),
+      'moodDistributionJson': serializer.toJson<String?>(moodDistributionJson),
+      'temporalSummaryJson': serializer.toJson<String?>(temporalSummaryJson),
+      'analyzedAt': serializer.toJson<DateTime>(analyzedAt),
+    };
+  }
+
+  TrackEmotionAnalysisTableData copyWith({
+    String? id,
+    String? trackId,
+    String? representation,
+    String? modelId,
+    String? modelVersion,
+    String? preprocessingVersion,
+    String? contentRevision,
+    int? audioRevision,
+    Value<double?> valence = const Value.absent(),
+    Value<double?> arousal = const Value.absent(),
+    Value<double?> rawValence = const Value.absent(),
+    Value<double?> rawArousal = const Value.absent(),
+    int? moodDistributionVersion,
+    Value<String?> moodDistributionJson = const Value.absent(),
+    Value<String?> temporalSummaryJson = const Value.absent(),
+    DateTime? analyzedAt,
+  }) => TrackEmotionAnalysisTableData(
+    id: id ?? this.id,
+    trackId: trackId ?? this.trackId,
+    representation: representation ?? this.representation,
+    modelId: modelId ?? this.modelId,
+    modelVersion: modelVersion ?? this.modelVersion,
+    preprocessingVersion: preprocessingVersion ?? this.preprocessingVersion,
+    contentRevision: contentRevision ?? this.contentRevision,
+    audioRevision: audioRevision ?? this.audioRevision,
+    valence: valence.present ? valence.value : this.valence,
+    arousal: arousal.present ? arousal.value : this.arousal,
+    rawValence: rawValence.present ? rawValence.value : this.rawValence,
+    rawArousal: rawArousal.present ? rawArousal.value : this.rawArousal,
+    moodDistributionVersion:
+        moodDistributionVersion ?? this.moodDistributionVersion,
+    moodDistributionJson: moodDistributionJson.present
+        ? moodDistributionJson.value
+        : this.moodDistributionJson,
+    temporalSummaryJson: temporalSummaryJson.present
+        ? temporalSummaryJson.value
+        : this.temporalSummaryJson,
+    analyzedAt: analyzedAt ?? this.analyzedAt,
+  );
+  TrackEmotionAnalysisTableData copyWithCompanion(
+    TrackEmotionAnalysisTableCompanion data,
+  ) {
+    return TrackEmotionAnalysisTableData(
+      id: data.id.present ? data.id.value : this.id,
+      trackId: data.trackId.present ? data.trackId.value : this.trackId,
+      representation: data.representation.present
+          ? data.representation.value
+          : this.representation,
+      modelId: data.modelId.present ? data.modelId.value : this.modelId,
+      modelVersion: data.modelVersion.present
+          ? data.modelVersion.value
+          : this.modelVersion,
+      preprocessingVersion: data.preprocessingVersion.present
+          ? data.preprocessingVersion.value
+          : this.preprocessingVersion,
+      contentRevision: data.contentRevision.present
+          ? data.contentRevision.value
+          : this.contentRevision,
+      audioRevision: data.audioRevision.present
+          ? data.audioRevision.value
+          : this.audioRevision,
+      valence: data.valence.present ? data.valence.value : this.valence,
+      arousal: data.arousal.present ? data.arousal.value : this.arousal,
+      rawValence: data.rawValence.present
+          ? data.rawValence.value
+          : this.rawValence,
+      rawArousal: data.rawArousal.present
+          ? data.rawArousal.value
+          : this.rawArousal,
+      moodDistributionVersion: data.moodDistributionVersion.present
+          ? data.moodDistributionVersion.value
+          : this.moodDistributionVersion,
+      moodDistributionJson: data.moodDistributionJson.present
+          ? data.moodDistributionJson.value
+          : this.moodDistributionJson,
+      temporalSummaryJson: data.temporalSummaryJson.present
+          ? data.temporalSummaryJson.value
+          : this.temporalSummaryJson,
+      analyzedAt: data.analyzedAt.present
+          ? data.analyzedAt.value
+          : this.analyzedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TrackEmotionAnalysisTableData(')
+          ..write('id: $id, ')
+          ..write('trackId: $trackId, ')
+          ..write('representation: $representation, ')
+          ..write('modelId: $modelId, ')
+          ..write('modelVersion: $modelVersion, ')
+          ..write('preprocessingVersion: $preprocessingVersion, ')
+          ..write('contentRevision: $contentRevision, ')
+          ..write('audioRevision: $audioRevision, ')
+          ..write('valence: $valence, ')
+          ..write('arousal: $arousal, ')
+          ..write('rawValence: $rawValence, ')
+          ..write('rawArousal: $rawArousal, ')
+          ..write('moodDistributionVersion: $moodDistributionVersion, ')
+          ..write('moodDistributionJson: $moodDistributionJson, ')
+          ..write('temporalSummaryJson: $temporalSummaryJson, ')
+          ..write('analyzedAt: $analyzedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    trackId,
+    representation,
+    modelId,
+    modelVersion,
+    preprocessingVersion,
+    contentRevision,
+    audioRevision,
+    valence,
+    arousal,
+    rawValence,
+    rawArousal,
+    moodDistributionVersion,
+    moodDistributionJson,
+    temporalSummaryJson,
+    analyzedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TrackEmotionAnalysisTableData &&
+          other.id == this.id &&
+          other.trackId == this.trackId &&
+          other.representation == this.representation &&
+          other.modelId == this.modelId &&
+          other.modelVersion == this.modelVersion &&
+          other.preprocessingVersion == this.preprocessingVersion &&
+          other.contentRevision == this.contentRevision &&
+          other.audioRevision == this.audioRevision &&
+          other.valence == this.valence &&
+          other.arousal == this.arousal &&
+          other.rawValence == this.rawValence &&
+          other.rawArousal == this.rawArousal &&
+          other.moodDistributionVersion == this.moodDistributionVersion &&
+          other.moodDistributionJson == this.moodDistributionJson &&
+          other.temporalSummaryJson == this.temporalSummaryJson &&
+          other.analyzedAt == this.analyzedAt);
+}
+
+class TrackEmotionAnalysisTableCompanion
+    extends UpdateCompanion<TrackEmotionAnalysisTableData> {
+  final Value<String> id;
+  final Value<String> trackId;
+  final Value<String> representation;
+  final Value<String> modelId;
+  final Value<String> modelVersion;
+  final Value<String> preprocessingVersion;
+  final Value<String> contentRevision;
+  final Value<int> audioRevision;
+  final Value<double?> valence;
+  final Value<double?> arousal;
+  final Value<double?> rawValence;
+  final Value<double?> rawArousal;
+  final Value<int> moodDistributionVersion;
+  final Value<String?> moodDistributionJson;
+  final Value<String?> temporalSummaryJson;
+  final Value<DateTime> analyzedAt;
+  final Value<int> rowid;
+  const TrackEmotionAnalysisTableCompanion({
+    this.id = const Value.absent(),
+    this.trackId = const Value.absent(),
+    this.representation = const Value.absent(),
+    this.modelId = const Value.absent(),
+    this.modelVersion = const Value.absent(),
+    this.preprocessingVersion = const Value.absent(),
+    this.contentRevision = const Value.absent(),
+    this.audioRevision = const Value.absent(),
+    this.valence = const Value.absent(),
+    this.arousal = const Value.absent(),
+    this.rawValence = const Value.absent(),
+    this.rawArousal = const Value.absent(),
+    this.moodDistributionVersion = const Value.absent(),
+    this.moodDistributionJson = const Value.absent(),
+    this.temporalSummaryJson = const Value.absent(),
+    this.analyzedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TrackEmotionAnalysisTableCompanion.insert({
+    required String id,
+    required String trackId,
+    required String representation,
+    required String modelId,
+    required String modelVersion,
+    required String preprocessingVersion,
+    required String contentRevision,
+    required int audioRevision,
+    this.valence = const Value.absent(),
+    this.arousal = const Value.absent(),
+    this.rawValence = const Value.absent(),
+    this.rawArousal = const Value.absent(),
+    this.moodDistributionVersion = const Value.absent(),
+    this.moodDistributionJson = const Value.absent(),
+    this.temporalSummaryJson = const Value.absent(),
+    required DateTime analyzedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       trackId = Value(trackId),
+       representation = Value(representation),
+       modelId = Value(modelId),
+       modelVersion = Value(modelVersion),
+       preprocessingVersion = Value(preprocessingVersion),
+       contentRevision = Value(contentRevision),
+       audioRevision = Value(audioRevision),
+       analyzedAt = Value(analyzedAt);
+  static Insertable<TrackEmotionAnalysisTableData> custom({
+    Expression<String>? id,
+    Expression<String>? trackId,
+    Expression<String>? representation,
+    Expression<String>? modelId,
+    Expression<String>? modelVersion,
+    Expression<String>? preprocessingVersion,
+    Expression<String>? contentRevision,
+    Expression<int>? audioRevision,
+    Expression<double>? valence,
+    Expression<double>? arousal,
+    Expression<double>? rawValence,
+    Expression<double>? rawArousal,
+    Expression<int>? moodDistributionVersion,
+    Expression<String>? moodDistributionJson,
+    Expression<String>? temporalSummaryJson,
+    Expression<DateTime>? analyzedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (trackId != null) 'track_id': trackId,
+      if (representation != null) 'representation': representation,
+      if (modelId != null) 'model_id': modelId,
+      if (modelVersion != null) 'model_version': modelVersion,
+      if (preprocessingVersion != null)
+        'preprocessing_version': preprocessingVersion,
+      if (contentRevision != null) 'content_revision': contentRevision,
+      if (audioRevision != null) 'audio_revision': audioRevision,
+      if (valence != null) 'valence': valence,
+      if (arousal != null) 'arousal': arousal,
+      if (rawValence != null) 'raw_valence': rawValence,
+      if (rawArousal != null) 'raw_arousal': rawArousal,
+      if (moodDistributionVersion != null)
+        'mood_distribution_version': moodDistributionVersion,
+      if (moodDistributionJson != null)
+        'mood_distribution_json': moodDistributionJson,
+      if (temporalSummaryJson != null)
+        'temporal_summary_json': temporalSummaryJson,
+      if (analyzedAt != null) 'analyzed_at': analyzedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TrackEmotionAnalysisTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? trackId,
+    Value<String>? representation,
+    Value<String>? modelId,
+    Value<String>? modelVersion,
+    Value<String>? preprocessingVersion,
+    Value<String>? contentRevision,
+    Value<int>? audioRevision,
+    Value<double?>? valence,
+    Value<double?>? arousal,
+    Value<double?>? rawValence,
+    Value<double?>? rawArousal,
+    Value<int>? moodDistributionVersion,
+    Value<String?>? moodDistributionJson,
+    Value<String?>? temporalSummaryJson,
+    Value<DateTime>? analyzedAt,
+    Value<int>? rowid,
+  }) {
+    return TrackEmotionAnalysisTableCompanion(
+      id: id ?? this.id,
+      trackId: trackId ?? this.trackId,
+      representation: representation ?? this.representation,
+      modelId: modelId ?? this.modelId,
+      modelVersion: modelVersion ?? this.modelVersion,
+      preprocessingVersion: preprocessingVersion ?? this.preprocessingVersion,
+      contentRevision: contentRevision ?? this.contentRevision,
+      audioRevision: audioRevision ?? this.audioRevision,
+      valence: valence ?? this.valence,
+      arousal: arousal ?? this.arousal,
+      rawValence: rawValence ?? this.rawValence,
+      rawArousal: rawArousal ?? this.rawArousal,
+      moodDistributionVersion:
+          moodDistributionVersion ?? this.moodDistributionVersion,
+      moodDistributionJson: moodDistributionJson ?? this.moodDistributionJson,
+      temporalSummaryJson: temporalSummaryJson ?? this.temporalSummaryJson,
+      analyzedAt: analyzedAt ?? this.analyzedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (trackId.present) {
+      map['track_id'] = Variable<String>(trackId.value);
+    }
+    if (representation.present) {
+      map['representation'] = Variable<String>(representation.value);
+    }
+    if (modelId.present) {
+      map['model_id'] = Variable<String>(modelId.value);
+    }
+    if (modelVersion.present) {
+      map['model_version'] = Variable<String>(modelVersion.value);
+    }
+    if (preprocessingVersion.present) {
+      map['preprocessing_version'] = Variable<String>(
+        preprocessingVersion.value,
+      );
+    }
+    if (contentRevision.present) {
+      map['content_revision'] = Variable<String>(contentRevision.value);
+    }
+    if (audioRevision.present) {
+      map['audio_revision'] = Variable<int>(audioRevision.value);
+    }
+    if (valence.present) {
+      map['valence'] = Variable<double>(valence.value);
+    }
+    if (arousal.present) {
+      map['arousal'] = Variable<double>(arousal.value);
+    }
+    if (rawValence.present) {
+      map['raw_valence'] = Variable<double>(rawValence.value);
+    }
+    if (rawArousal.present) {
+      map['raw_arousal'] = Variable<double>(rawArousal.value);
+    }
+    if (moodDistributionVersion.present) {
+      map['mood_distribution_version'] = Variable<int>(
+        moodDistributionVersion.value,
+      );
+    }
+    if (moodDistributionJson.present) {
+      map['mood_distribution_json'] = Variable<String>(
+        moodDistributionJson.value,
+      );
+    }
+    if (temporalSummaryJson.present) {
+      map['temporal_summary_json'] = Variable<String>(
+        temporalSummaryJson.value,
+      );
+    }
+    if (analyzedAt.present) {
+      map['analyzed_at'] = Variable<DateTime>(analyzedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TrackEmotionAnalysisTableCompanion(')
+          ..write('id: $id, ')
+          ..write('trackId: $trackId, ')
+          ..write('representation: $representation, ')
+          ..write('modelId: $modelId, ')
+          ..write('modelVersion: $modelVersion, ')
+          ..write('preprocessingVersion: $preprocessingVersion, ')
+          ..write('contentRevision: $contentRevision, ')
+          ..write('audioRevision: $audioRevision, ')
+          ..write('valence: $valence, ')
+          ..write('arousal: $arousal, ')
+          ..write('rawValence: $rawValence, ')
+          ..write('rawArousal: $rawArousal, ')
+          ..write('moodDistributionVersion: $moodDistributionVersion, ')
+          ..write('moodDistributionJson: $moodDistributionJson, ')
+          ..write('temporalSummaryJson: $temporalSummaryJson, ')
+          ..write('analyzedAt: $analyzedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TrackEmotionSegmentTableTable extends TrackEmotionSegmentTable
+    with
+        TableInfo<
+          $TrackEmotionSegmentTableTable,
+          TrackEmotionSegmentTableData
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TrackEmotionSegmentTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _analysisIdMeta = const VerificationMeta(
+    'analysisId',
+  );
+  @override
+  late final GeneratedColumn<String> analysisId = GeneratedColumn<String>(
+    'analysis_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES track_emotion_analysis_table (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _segmentIndexMeta = const VerificationMeta(
+    'segmentIndex',
+  );
+  @override
+  late final GeneratedColumn<int> segmentIndex = GeneratedColumn<int>(
+    'segment_index',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startMsMeta = const VerificationMeta(
+    'startMs',
+  );
+  @override
+  late final GeneratedColumn<int> startMs = GeneratedColumn<int>(
+    'start_ms',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endMsMeta = const VerificationMeta('endMs');
+  @override
+  late final GeneratedColumn<int> endMs = GeneratedColumn<int>(
+    'end_ms',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valenceMeta = const VerificationMeta(
+    'valence',
+  );
+  @override
+  late final GeneratedColumn<double> valence = GeneratedColumn<double>(
+    'valence',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _arousalMeta = const VerificationMeta(
+    'arousal',
+  );
+  @override
+  late final GeneratedColumn<double> arousal = GeneratedColumn<double>(
+    'arousal',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _moodDistributionVersionMeta =
+      const VerificationMeta('moodDistributionVersion');
+  @override
+  late final GeneratedColumn<int> moodDistributionVersion =
+      GeneratedColumn<int>(
+        'mood_distribution_version',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(1),
+      );
+  static const VerificationMeta _moodDistributionJsonMeta =
+      const VerificationMeta('moodDistributionJson');
+  @override
+  late final GeneratedColumn<String> moodDistributionJson =
+      GeneratedColumn<String>(
+        'mood_distribution_json',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    analysisId,
+    segmentIndex,
+    startMs,
+    endMs,
+    valence,
+    arousal,
+    moodDistributionVersion,
+    moodDistributionJson,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'track_emotion_segment_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TrackEmotionSegmentTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('analysis_id')) {
+      context.handle(
+        _analysisIdMeta,
+        analysisId.isAcceptableOrUnknown(data['analysis_id']!, _analysisIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_analysisIdMeta);
+    }
+    if (data.containsKey('segment_index')) {
+      context.handle(
+        _segmentIndexMeta,
+        segmentIndex.isAcceptableOrUnknown(
+          data['segment_index']!,
+          _segmentIndexMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_segmentIndexMeta);
+    }
+    if (data.containsKey('start_ms')) {
+      context.handle(
+        _startMsMeta,
+        startMs.isAcceptableOrUnknown(data['start_ms']!, _startMsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startMsMeta);
+    }
+    if (data.containsKey('end_ms')) {
+      context.handle(
+        _endMsMeta,
+        endMs.isAcceptableOrUnknown(data['end_ms']!, _endMsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_endMsMeta);
+    }
+    if (data.containsKey('valence')) {
+      context.handle(
+        _valenceMeta,
+        valence.isAcceptableOrUnknown(data['valence']!, _valenceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valenceMeta);
+    }
+    if (data.containsKey('arousal')) {
+      context.handle(
+        _arousalMeta,
+        arousal.isAcceptableOrUnknown(data['arousal']!, _arousalMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_arousalMeta);
+    }
+    if (data.containsKey('mood_distribution_version')) {
+      context.handle(
+        _moodDistributionVersionMeta,
+        moodDistributionVersion.isAcceptableOrUnknown(
+          data['mood_distribution_version']!,
+          _moodDistributionVersionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('mood_distribution_json')) {
+      context.handle(
+        _moodDistributionJsonMeta,
+        moodDistributionJson.isAcceptableOrUnknown(
+          data['mood_distribution_json']!,
+          _moodDistributionJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_moodDistributionJsonMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {analysisId, segmentIndex};
+  @override
+  TrackEmotionSegmentTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TrackEmotionSegmentTableData(
+      analysisId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}analysis_id'],
+      )!,
+      segmentIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}segment_index'],
+      )!,
+      startMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}start_ms'],
+      )!,
+      endMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}end_ms'],
+      )!,
+      valence: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}valence'],
+      )!,
+      arousal: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}arousal'],
+      )!,
+      moodDistributionVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}mood_distribution_version'],
+      )!,
+      moodDistributionJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mood_distribution_json'],
+      )!,
+    );
+  }
+
+  @override
+  $TrackEmotionSegmentTableTable createAlias(String alias) {
+    return $TrackEmotionSegmentTableTable(attachedDatabase, alias);
+  }
+}
+
+class TrackEmotionSegmentTableData extends DataClass
+    implements Insertable<TrackEmotionSegmentTableData> {
+  final String analysisId;
+  final int segmentIndex;
+  final int startMs;
+  final int endMs;
+  final double valence;
+  final double arousal;
+  final int moodDistributionVersion;
+  final String moodDistributionJson;
+  const TrackEmotionSegmentTableData({
+    required this.analysisId,
+    required this.segmentIndex,
+    required this.startMs,
+    required this.endMs,
+    required this.valence,
+    required this.arousal,
+    required this.moodDistributionVersion,
+    required this.moodDistributionJson,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['analysis_id'] = Variable<String>(analysisId);
+    map['segment_index'] = Variable<int>(segmentIndex);
+    map['start_ms'] = Variable<int>(startMs);
+    map['end_ms'] = Variable<int>(endMs);
+    map['valence'] = Variable<double>(valence);
+    map['arousal'] = Variable<double>(arousal);
+    map['mood_distribution_version'] = Variable<int>(moodDistributionVersion);
+    map['mood_distribution_json'] = Variable<String>(moodDistributionJson);
+    return map;
+  }
+
+  TrackEmotionSegmentTableCompanion toCompanion(bool nullToAbsent) {
+    return TrackEmotionSegmentTableCompanion(
+      analysisId: Value(analysisId),
+      segmentIndex: Value(segmentIndex),
+      startMs: Value(startMs),
+      endMs: Value(endMs),
+      valence: Value(valence),
+      arousal: Value(arousal),
+      moodDistributionVersion: Value(moodDistributionVersion),
+      moodDistributionJson: Value(moodDistributionJson),
+    );
+  }
+
+  factory TrackEmotionSegmentTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TrackEmotionSegmentTableData(
+      analysisId: serializer.fromJson<String>(json['analysisId']),
+      segmentIndex: serializer.fromJson<int>(json['segmentIndex']),
+      startMs: serializer.fromJson<int>(json['startMs']),
+      endMs: serializer.fromJson<int>(json['endMs']),
+      valence: serializer.fromJson<double>(json['valence']),
+      arousal: serializer.fromJson<double>(json['arousal']),
+      moodDistributionVersion: serializer.fromJson<int>(
+        json['moodDistributionVersion'],
+      ),
+      moodDistributionJson: serializer.fromJson<String>(
+        json['moodDistributionJson'],
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'analysisId': serializer.toJson<String>(analysisId),
+      'segmentIndex': serializer.toJson<int>(segmentIndex),
+      'startMs': serializer.toJson<int>(startMs),
+      'endMs': serializer.toJson<int>(endMs),
+      'valence': serializer.toJson<double>(valence),
+      'arousal': serializer.toJson<double>(arousal),
+      'moodDistributionVersion': serializer.toJson<int>(
+        moodDistributionVersion,
+      ),
+      'moodDistributionJson': serializer.toJson<String>(moodDistributionJson),
+    };
+  }
+
+  TrackEmotionSegmentTableData copyWith({
+    String? analysisId,
+    int? segmentIndex,
+    int? startMs,
+    int? endMs,
+    double? valence,
+    double? arousal,
+    int? moodDistributionVersion,
+    String? moodDistributionJson,
+  }) => TrackEmotionSegmentTableData(
+    analysisId: analysisId ?? this.analysisId,
+    segmentIndex: segmentIndex ?? this.segmentIndex,
+    startMs: startMs ?? this.startMs,
+    endMs: endMs ?? this.endMs,
+    valence: valence ?? this.valence,
+    arousal: arousal ?? this.arousal,
+    moodDistributionVersion:
+        moodDistributionVersion ?? this.moodDistributionVersion,
+    moodDistributionJson: moodDistributionJson ?? this.moodDistributionJson,
+  );
+  TrackEmotionSegmentTableData copyWithCompanion(
+    TrackEmotionSegmentTableCompanion data,
+  ) {
+    return TrackEmotionSegmentTableData(
+      analysisId: data.analysisId.present
+          ? data.analysisId.value
+          : this.analysisId,
+      segmentIndex: data.segmentIndex.present
+          ? data.segmentIndex.value
+          : this.segmentIndex,
+      startMs: data.startMs.present ? data.startMs.value : this.startMs,
+      endMs: data.endMs.present ? data.endMs.value : this.endMs,
+      valence: data.valence.present ? data.valence.value : this.valence,
+      arousal: data.arousal.present ? data.arousal.value : this.arousal,
+      moodDistributionVersion: data.moodDistributionVersion.present
+          ? data.moodDistributionVersion.value
+          : this.moodDistributionVersion,
+      moodDistributionJson: data.moodDistributionJson.present
+          ? data.moodDistributionJson.value
+          : this.moodDistributionJson,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TrackEmotionSegmentTableData(')
+          ..write('analysisId: $analysisId, ')
+          ..write('segmentIndex: $segmentIndex, ')
+          ..write('startMs: $startMs, ')
+          ..write('endMs: $endMs, ')
+          ..write('valence: $valence, ')
+          ..write('arousal: $arousal, ')
+          ..write('moodDistributionVersion: $moodDistributionVersion, ')
+          ..write('moodDistributionJson: $moodDistributionJson')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    analysisId,
+    segmentIndex,
+    startMs,
+    endMs,
+    valence,
+    arousal,
+    moodDistributionVersion,
+    moodDistributionJson,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TrackEmotionSegmentTableData &&
+          other.analysisId == this.analysisId &&
+          other.segmentIndex == this.segmentIndex &&
+          other.startMs == this.startMs &&
+          other.endMs == this.endMs &&
+          other.valence == this.valence &&
+          other.arousal == this.arousal &&
+          other.moodDistributionVersion == this.moodDistributionVersion &&
+          other.moodDistributionJson == this.moodDistributionJson);
+}
+
+class TrackEmotionSegmentTableCompanion
+    extends UpdateCompanion<TrackEmotionSegmentTableData> {
+  final Value<String> analysisId;
+  final Value<int> segmentIndex;
+  final Value<int> startMs;
+  final Value<int> endMs;
+  final Value<double> valence;
+  final Value<double> arousal;
+  final Value<int> moodDistributionVersion;
+  final Value<String> moodDistributionJson;
+  final Value<int> rowid;
+  const TrackEmotionSegmentTableCompanion({
+    this.analysisId = const Value.absent(),
+    this.segmentIndex = const Value.absent(),
+    this.startMs = const Value.absent(),
+    this.endMs = const Value.absent(),
+    this.valence = const Value.absent(),
+    this.arousal = const Value.absent(),
+    this.moodDistributionVersion = const Value.absent(),
+    this.moodDistributionJson = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TrackEmotionSegmentTableCompanion.insert({
+    required String analysisId,
+    required int segmentIndex,
+    required int startMs,
+    required int endMs,
+    required double valence,
+    required double arousal,
+    this.moodDistributionVersion = const Value.absent(),
+    required String moodDistributionJson,
+    this.rowid = const Value.absent(),
+  }) : analysisId = Value(analysisId),
+       segmentIndex = Value(segmentIndex),
+       startMs = Value(startMs),
+       endMs = Value(endMs),
+       valence = Value(valence),
+       arousal = Value(arousal),
+       moodDistributionJson = Value(moodDistributionJson);
+  static Insertable<TrackEmotionSegmentTableData> custom({
+    Expression<String>? analysisId,
+    Expression<int>? segmentIndex,
+    Expression<int>? startMs,
+    Expression<int>? endMs,
+    Expression<double>? valence,
+    Expression<double>? arousal,
+    Expression<int>? moodDistributionVersion,
+    Expression<String>? moodDistributionJson,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (analysisId != null) 'analysis_id': analysisId,
+      if (segmentIndex != null) 'segment_index': segmentIndex,
+      if (startMs != null) 'start_ms': startMs,
+      if (endMs != null) 'end_ms': endMs,
+      if (valence != null) 'valence': valence,
+      if (arousal != null) 'arousal': arousal,
+      if (moodDistributionVersion != null)
+        'mood_distribution_version': moodDistributionVersion,
+      if (moodDistributionJson != null)
+        'mood_distribution_json': moodDistributionJson,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TrackEmotionSegmentTableCompanion copyWith({
+    Value<String>? analysisId,
+    Value<int>? segmentIndex,
+    Value<int>? startMs,
+    Value<int>? endMs,
+    Value<double>? valence,
+    Value<double>? arousal,
+    Value<int>? moodDistributionVersion,
+    Value<String>? moodDistributionJson,
+    Value<int>? rowid,
+  }) {
+    return TrackEmotionSegmentTableCompanion(
+      analysisId: analysisId ?? this.analysisId,
+      segmentIndex: segmentIndex ?? this.segmentIndex,
+      startMs: startMs ?? this.startMs,
+      endMs: endMs ?? this.endMs,
+      valence: valence ?? this.valence,
+      arousal: arousal ?? this.arousal,
+      moodDistributionVersion:
+          moodDistributionVersion ?? this.moodDistributionVersion,
+      moodDistributionJson: moodDistributionJson ?? this.moodDistributionJson,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (analysisId.present) {
+      map['analysis_id'] = Variable<String>(analysisId.value);
+    }
+    if (segmentIndex.present) {
+      map['segment_index'] = Variable<int>(segmentIndex.value);
+    }
+    if (startMs.present) {
+      map['start_ms'] = Variable<int>(startMs.value);
+    }
+    if (endMs.present) {
+      map['end_ms'] = Variable<int>(endMs.value);
+    }
+    if (valence.present) {
+      map['valence'] = Variable<double>(valence.value);
+    }
+    if (arousal.present) {
+      map['arousal'] = Variable<double>(arousal.value);
+    }
+    if (moodDistributionVersion.present) {
+      map['mood_distribution_version'] = Variable<int>(
+        moodDistributionVersion.value,
+      );
+    }
+    if (moodDistributionJson.present) {
+      map['mood_distribution_json'] = Variable<String>(
+        moodDistributionJson.value,
+      );
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TrackEmotionSegmentTableCompanion(')
+          ..write('analysisId: $analysisId, ')
+          ..write('segmentIndex: $segmentIndex, ')
+          ..write('startMs: $startMs, ')
+          ..write('endMs: $endMs, ')
+          ..write('valence: $valence, ')
+          ..write('arousal: $arousal, ')
+          ..write('moodDistributionVersion: $moodDistributionVersion, ')
+          ..write('moodDistributionJson: $moodDistributionJson, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PersonalMoodAdjustmentTableTable extends PersonalMoodAdjustmentTable
+    with
+        TableInfo<
+          $PersonalMoodAdjustmentTableTable,
+          PersonalMoodAdjustmentTableData
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PersonalMoodAdjustmentTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _trackIdMeta = const VerificationMeta(
+    'trackId',
+  );
+  @override
+  late final GeneratedColumn<String> trackId = GeneratedColumn<String>(
+    'track_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES track_table (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _valenceMeta = const VerificationMeta(
+    'valence',
+  );
+  @override
+  late final GeneratedColumn<double> valence = GeneratedColumn<double>(
+    'valence',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _arousalMeta = const VerificationMeta(
+    'arousal',
+  );
+  @override
+  late final GeneratedColumn<double> arousal = GeneratedColumn<double>(
+    'arousal',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [trackId, valence, arousal, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'personal_mood_adjustment_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PersonalMoodAdjustmentTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('track_id')) {
+      context.handle(
+        _trackIdMeta,
+        trackId.isAcceptableOrUnknown(data['track_id']!, _trackIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_trackIdMeta);
+    }
+    if (data.containsKey('valence')) {
+      context.handle(
+        _valenceMeta,
+        valence.isAcceptableOrUnknown(data['valence']!, _valenceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valenceMeta);
+    }
+    if (data.containsKey('arousal')) {
+      context.handle(
+        _arousalMeta,
+        arousal.isAcceptableOrUnknown(data['arousal']!, _arousalMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_arousalMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {trackId};
+  @override
+  PersonalMoodAdjustmentTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PersonalMoodAdjustmentTableData(
+      trackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}track_id'],
+      )!,
+      valence: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}valence'],
+      )!,
+      arousal: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}arousal'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PersonalMoodAdjustmentTableTable createAlias(String alias) {
+    return $PersonalMoodAdjustmentTableTable(attachedDatabase, alias);
+  }
+}
+
+class PersonalMoodAdjustmentTableData extends DataClass
+    implements Insertable<PersonalMoodAdjustmentTableData> {
+  final String trackId;
+  final double valence;
+  final double arousal;
+  final DateTime updatedAt;
+  const PersonalMoodAdjustmentTableData({
+    required this.trackId,
+    required this.valence,
+    required this.arousal,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['track_id'] = Variable<String>(trackId);
+    map['valence'] = Variable<double>(valence);
+    map['arousal'] = Variable<double>(arousal);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  PersonalMoodAdjustmentTableCompanion toCompanion(bool nullToAbsent) {
+    return PersonalMoodAdjustmentTableCompanion(
+      trackId: Value(trackId),
+      valence: Value(valence),
+      arousal: Value(arousal),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory PersonalMoodAdjustmentTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PersonalMoodAdjustmentTableData(
+      trackId: serializer.fromJson<String>(json['trackId']),
+      valence: serializer.fromJson<double>(json['valence']),
+      arousal: serializer.fromJson<double>(json['arousal']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'trackId': serializer.toJson<String>(trackId),
+      'valence': serializer.toJson<double>(valence),
+      'arousal': serializer.toJson<double>(arousal),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  PersonalMoodAdjustmentTableData copyWith({
+    String? trackId,
+    double? valence,
+    double? arousal,
+    DateTime? updatedAt,
+  }) => PersonalMoodAdjustmentTableData(
+    trackId: trackId ?? this.trackId,
+    valence: valence ?? this.valence,
+    arousal: arousal ?? this.arousal,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  PersonalMoodAdjustmentTableData copyWithCompanion(
+    PersonalMoodAdjustmentTableCompanion data,
+  ) {
+    return PersonalMoodAdjustmentTableData(
+      trackId: data.trackId.present ? data.trackId.value : this.trackId,
+      valence: data.valence.present ? data.valence.value : this.valence,
+      arousal: data.arousal.present ? data.arousal.value : this.arousal,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PersonalMoodAdjustmentTableData(')
+          ..write('trackId: $trackId, ')
+          ..write('valence: $valence, ')
+          ..write('arousal: $arousal, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(trackId, valence, arousal, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PersonalMoodAdjustmentTableData &&
+          other.trackId == this.trackId &&
+          other.valence == this.valence &&
+          other.arousal == this.arousal &&
+          other.updatedAt == this.updatedAt);
+}
+
+class PersonalMoodAdjustmentTableCompanion
+    extends UpdateCompanion<PersonalMoodAdjustmentTableData> {
+  final Value<String> trackId;
+  final Value<double> valence;
+  final Value<double> arousal;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const PersonalMoodAdjustmentTableCompanion({
+    this.trackId = const Value.absent(),
+    this.valence = const Value.absent(),
+    this.arousal = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PersonalMoodAdjustmentTableCompanion.insert({
+    required String trackId,
+    required double valence,
+    required double arousal,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : trackId = Value(trackId),
+       valence = Value(valence),
+       arousal = Value(arousal),
+       updatedAt = Value(updatedAt);
+  static Insertable<PersonalMoodAdjustmentTableData> custom({
+    Expression<String>? trackId,
+    Expression<double>? valence,
+    Expression<double>? arousal,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (trackId != null) 'track_id': trackId,
+      if (valence != null) 'valence': valence,
+      if (arousal != null) 'arousal': arousal,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PersonalMoodAdjustmentTableCompanion copyWith({
+    Value<String>? trackId,
+    Value<double>? valence,
+    Value<double>? arousal,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return PersonalMoodAdjustmentTableCompanion(
+      trackId: trackId ?? this.trackId,
+      valence: valence ?? this.valence,
+      arousal: arousal ?? this.arousal,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (trackId.present) {
+      map['track_id'] = Variable<String>(trackId.value);
+    }
+    if (valence.present) {
+      map['valence'] = Variable<double>(valence.value);
+    }
+    if (arousal.present) {
+      map['arousal'] = Variable<double>(arousal.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PersonalMoodAdjustmentTableCompanion(')
+          ..write('trackId: $trackId, ')
+          ..write('valence: $valence, ')
+          ..write('arousal: $arousal, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -11890,6 +13777,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $LyricsResolutionStateTableTable(this);
   late final $LyricsResolutionTaskTableTable lyricsResolutionTaskTable =
       $LyricsResolutionTaskTableTable(this);
+  late final $TrackEmotionAnalysisTableTable trackEmotionAnalysisTable =
+      $TrackEmotionAnalysisTableTable(this);
+  late final $TrackEmotionSegmentTableTable trackEmotionSegmentTable =
+      $TrackEmotionSegmentTableTable(this);
+  late final $PersonalMoodAdjustmentTableTable personalMoodAdjustmentTable =
+      $PersonalMoodAdjustmentTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -11917,6 +13810,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     trackLyricsTable,
     lyricsResolutionStateTable,
     lyricsResolutionTaskTable,
+    trackEmotionAnalysisTable,
+    trackEmotionSegmentTable,
+    personalMoodAdjustmentTable,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -12051,6 +13947,33 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       ),
       result: [
         TableUpdate('lyrics_resolution_task_table', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'track_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('track_emotion_analysis_table', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'track_emotion_analysis_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('track_emotion_segment_table', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'track_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('personal_mood_adjustment_table', kind: UpdateKind.delete),
       ],
     ),
   ]);
@@ -13025,6 +14948,62 @@ final class $$TrackTableTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<
+    $TrackEmotionAnalysisTableTable,
+    List<TrackEmotionAnalysisTableData>
+  >
+  _trackEmotionAnalysisTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.trackEmotionAnalysisTable,
+        aliasName: $_aliasNameGenerator(
+          db.trackTable.id,
+          db.trackEmotionAnalysisTable.trackId,
+        ),
+      );
+
+  $$TrackEmotionAnalysisTableTableProcessedTableManager
+  get trackEmotionAnalysisTableRefs {
+    final manager = $$TrackEmotionAnalysisTableTableTableManager(
+      $_db,
+      $_db.trackEmotionAnalysisTable,
+    ).filter((f) => f.trackId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _trackEmotionAnalysisTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $PersonalMoodAdjustmentTableTable,
+    List<PersonalMoodAdjustmentTableData>
+  >
+  _personalMoodAdjustmentTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.personalMoodAdjustmentTable,
+        aliasName: $_aliasNameGenerator(
+          db.trackTable.id,
+          db.personalMoodAdjustmentTable.trackId,
+        ),
+      );
+
+  $$PersonalMoodAdjustmentTableTableProcessedTableManager
+  get personalMoodAdjustmentTableRefs {
+    final manager = $$PersonalMoodAdjustmentTableTableTableManager(
+      $_db,
+      $_db.personalMoodAdjustmentTable,
+    ).filter((f) => f.trackId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _personalMoodAdjustmentTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$TrackTableTableFilterComposer
@@ -13406,6 +15385,62 @@ class $$TrackTableTableFilterComposer
               }) => $$LyricsResolutionTaskTableTableFilterComposer(
                 $db: $db,
                 $table: $db.lyricsResolutionTaskTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> trackEmotionAnalysisTableRefs(
+    Expression<bool> Function($$TrackEmotionAnalysisTableTableFilterComposer f)
+    f,
+  ) {
+    final $$TrackEmotionAnalysisTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.trackEmotionAnalysisTable,
+          getReferencedColumn: (t) => t.trackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TrackEmotionAnalysisTableTableFilterComposer(
+                $db: $db,
+                $table: $db.trackEmotionAnalysisTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> personalMoodAdjustmentTableRefs(
+    Expression<bool> Function(
+      $$PersonalMoodAdjustmentTableTableFilterComposer f,
+    )
+    f,
+  ) {
+    final $$PersonalMoodAdjustmentTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.personalMoodAdjustmentTable,
+          getReferencedColumn: (t) => t.trackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$PersonalMoodAdjustmentTableTableFilterComposer(
+                $db: $db,
+                $table: $db.personalMoodAdjustmentTable,
                 $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
                 joinBuilder: joinBuilder,
                 $removeJoinBuilderFromRootComposer:
@@ -13871,6 +15906,62 @@ class $$TrackTableTableAnnotationComposer
         );
     return f(composer);
   }
+
+  Expression<T> trackEmotionAnalysisTableRefs<T extends Object>(
+    Expression<T> Function($$TrackEmotionAnalysisTableTableAnnotationComposer a)
+    f,
+  ) {
+    final $$TrackEmotionAnalysisTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.trackEmotionAnalysisTable,
+          getReferencedColumn: (t) => t.trackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TrackEmotionAnalysisTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.trackEmotionAnalysisTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> personalMoodAdjustmentTableRefs<T extends Object>(
+    Expression<T> Function(
+      $$PersonalMoodAdjustmentTableTableAnnotationComposer a,
+    )
+    f,
+  ) {
+    final $$PersonalMoodAdjustmentTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.personalMoodAdjustmentTable,
+          getReferencedColumn: (t) => t.trackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$PersonalMoodAdjustmentTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.personalMoodAdjustmentTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$TrackTableTableTableManager
@@ -13899,6 +15990,8 @@ class $$TrackTableTableTableManager
             bool trackLyricsTableRefs,
             bool lyricsResolutionStateTableRefs,
             bool lyricsResolutionTaskTableRefs,
+            bool trackEmotionAnalysisTableRefs,
+            bool personalMoodAdjustmentTableRefs,
           })
         > {
   $$TrackTableTableTableManager(_$AppDatabase db, $TrackTableTable table)
@@ -13998,6 +16091,8 @@ class $$TrackTableTableTableManager
                 trackLyricsTableRefs = false,
                 lyricsResolutionStateTableRefs = false,
                 lyricsResolutionTaskTableRefs = false,
+                trackEmotionAnalysisTableRefs = false,
+                personalMoodAdjustmentTableRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -14018,6 +16113,10 @@ class $$TrackTableTableTableManager
                       db.lyricsResolutionStateTable,
                     if (lyricsResolutionTaskTableRefs)
                       db.lyricsResolutionTaskTable,
+                    if (trackEmotionAnalysisTableRefs)
+                      db.trackEmotionAnalysisTable,
+                    if (personalMoodAdjustmentTableRefs)
+                      db.personalMoodAdjustmentTable,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -14274,6 +16373,48 @@ class $$TrackTableTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (trackEmotionAnalysisTableRefs)
+                        await $_getPrefetchedData<
+                          TrackTableData,
+                          $TrackTableTable,
+                          TrackEmotionAnalysisTableData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TrackTableTableReferences
+                              ._trackEmotionAnalysisTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TrackTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).trackEmotionAnalysisTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.trackId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (personalMoodAdjustmentTableRefs)
+                        await $_getPrefetchedData<
+                          TrackTableData,
+                          $TrackTableTable,
+                          PersonalMoodAdjustmentTableData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TrackTableTableReferences
+                              ._personalMoodAdjustmentTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TrackTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).personalMoodAdjustmentTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.trackId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -14307,6 +16448,8 @@ typedef $$TrackTableTableProcessedTableManager =
         bool trackLyricsTableRefs,
         bool lyricsResolutionStateTableRefs,
         bool lyricsResolutionTaskTableRefs,
+        bool trackEmotionAnalysisTableRefs,
+        bool personalMoodAdjustmentTableRefs,
       })
     >;
 typedef $$DownloadTaskTableTableCreateCompanionBuilder =
@@ -21770,6 +23913,1443 @@ typedef $$LyricsResolutionTaskTableTableProcessedTableManager =
       LyricsResolutionTaskTableData,
       PrefetchHooks Function({bool trackId})
     >;
+typedef $$TrackEmotionAnalysisTableTableCreateCompanionBuilder =
+    TrackEmotionAnalysisTableCompanion Function({
+      required String id,
+      required String trackId,
+      required String representation,
+      required String modelId,
+      required String modelVersion,
+      required String preprocessingVersion,
+      required String contentRevision,
+      required int audioRevision,
+      Value<double?> valence,
+      Value<double?> arousal,
+      Value<double?> rawValence,
+      Value<double?> rawArousal,
+      Value<int> moodDistributionVersion,
+      Value<String?> moodDistributionJson,
+      Value<String?> temporalSummaryJson,
+      required DateTime analyzedAt,
+      Value<int> rowid,
+    });
+typedef $$TrackEmotionAnalysisTableTableUpdateCompanionBuilder =
+    TrackEmotionAnalysisTableCompanion Function({
+      Value<String> id,
+      Value<String> trackId,
+      Value<String> representation,
+      Value<String> modelId,
+      Value<String> modelVersion,
+      Value<String> preprocessingVersion,
+      Value<String> contentRevision,
+      Value<int> audioRevision,
+      Value<double?> valence,
+      Value<double?> arousal,
+      Value<double?> rawValence,
+      Value<double?> rawArousal,
+      Value<int> moodDistributionVersion,
+      Value<String?> moodDistributionJson,
+      Value<String?> temporalSummaryJson,
+      Value<DateTime> analyzedAt,
+      Value<int> rowid,
+    });
+
+final class $$TrackEmotionAnalysisTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $TrackEmotionAnalysisTableTable,
+          TrackEmotionAnalysisTableData
+        > {
+  $$TrackEmotionAnalysisTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TrackTableTable _trackIdTable(_$AppDatabase db) =>
+      db.trackTable.createAlias(
+        $_aliasNameGenerator(
+          db.trackEmotionAnalysisTable.trackId,
+          db.trackTable.id,
+        ),
+      );
+
+  $$TrackTableTableProcessedTableManager get trackId {
+    final $_column = $_itemColumn<String>('track_id')!;
+
+    final manager = $$TrackTableTableTableManager(
+      $_db,
+      $_db.trackTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_trackIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $TrackEmotionSegmentTableTable,
+    List<TrackEmotionSegmentTableData>
+  >
+  _trackEmotionSegmentTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.trackEmotionSegmentTable,
+        aliasName: $_aliasNameGenerator(
+          db.trackEmotionAnalysisTable.id,
+          db.trackEmotionSegmentTable.analysisId,
+        ),
+      );
+
+  $$TrackEmotionSegmentTableTableProcessedTableManager
+  get trackEmotionSegmentTableRefs {
+    final manager = $$TrackEmotionSegmentTableTableTableManager(
+      $_db,
+      $_db.trackEmotionSegmentTable,
+    ).filter((f) => f.analysisId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _trackEmotionSegmentTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$TrackEmotionAnalysisTableTableFilterComposer
+    extends Composer<_$AppDatabase, $TrackEmotionAnalysisTableTable> {
+  $$TrackEmotionAnalysisTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get representation => $composableBuilder(
+    column: $table.representation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get modelId => $composableBuilder(
+    column: $table.modelId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get modelVersion => $composableBuilder(
+    column: $table.modelVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get preprocessingVersion => $composableBuilder(
+    column: $table.preprocessingVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get contentRevision => $composableBuilder(
+    column: $table.contentRevision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get audioRevision => $composableBuilder(
+    column: $table.audioRevision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get valence => $composableBuilder(
+    column: $table.valence,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get arousal => $composableBuilder(
+    column: $table.arousal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get rawValence => $composableBuilder(
+    column: $table.rawValence,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get rawArousal => $composableBuilder(
+    column: $table.rawArousal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get moodDistributionVersion => $composableBuilder(
+    column: $table.moodDistributionVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get moodDistributionJson => $composableBuilder(
+    column: $table.moodDistributionJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get temporalSummaryJson => $composableBuilder(
+    column: $table.temporalSummaryJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get analyzedAt => $composableBuilder(
+    column: $table.analyzedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TrackTableTableFilterComposer get trackId {
+    final $$TrackTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableFilterComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> trackEmotionSegmentTableRefs(
+    Expression<bool> Function($$TrackEmotionSegmentTableTableFilterComposer f)
+    f,
+  ) {
+    final $$TrackEmotionSegmentTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.trackEmotionSegmentTable,
+          getReferencedColumn: (t) => t.analysisId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TrackEmotionSegmentTableTableFilterComposer(
+                $db: $db,
+                $table: $db.trackEmotionSegmentTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$TrackEmotionAnalysisTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $TrackEmotionAnalysisTableTable> {
+  $$TrackEmotionAnalysisTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get representation => $composableBuilder(
+    column: $table.representation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get modelId => $composableBuilder(
+    column: $table.modelId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get modelVersion => $composableBuilder(
+    column: $table.modelVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get preprocessingVersion => $composableBuilder(
+    column: $table.preprocessingVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get contentRevision => $composableBuilder(
+    column: $table.contentRevision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get audioRevision => $composableBuilder(
+    column: $table.audioRevision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get valence => $composableBuilder(
+    column: $table.valence,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get arousal => $composableBuilder(
+    column: $table.arousal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get rawValence => $composableBuilder(
+    column: $table.rawValence,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get rawArousal => $composableBuilder(
+    column: $table.rawArousal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get moodDistributionVersion => $composableBuilder(
+    column: $table.moodDistributionVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get moodDistributionJson => $composableBuilder(
+    column: $table.moodDistributionJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get temporalSummaryJson => $composableBuilder(
+    column: $table.temporalSummaryJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get analyzedAt => $composableBuilder(
+    column: $table.analyzedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TrackTableTableOrderingComposer get trackId {
+    final $$TrackTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TrackEmotionAnalysisTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TrackEmotionAnalysisTableTable> {
+  $$TrackEmotionAnalysisTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get representation => $composableBuilder(
+    column: $table.representation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get modelId =>
+      $composableBuilder(column: $table.modelId, builder: (column) => column);
+
+  GeneratedColumn<String> get modelVersion => $composableBuilder(
+    column: $table.modelVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get preprocessingVersion => $composableBuilder(
+    column: $table.preprocessingVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get contentRevision => $composableBuilder(
+    column: $table.contentRevision,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get audioRevision => $composableBuilder(
+    column: $table.audioRevision,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get valence =>
+      $composableBuilder(column: $table.valence, builder: (column) => column);
+
+  GeneratedColumn<double> get arousal =>
+      $composableBuilder(column: $table.arousal, builder: (column) => column);
+
+  GeneratedColumn<double> get rawValence => $composableBuilder(
+    column: $table.rawValence,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get rawArousal => $composableBuilder(
+    column: $table.rawArousal,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get moodDistributionVersion => $composableBuilder(
+    column: $table.moodDistributionVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get moodDistributionJson => $composableBuilder(
+    column: $table.moodDistributionJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get temporalSummaryJson => $composableBuilder(
+    column: $table.temporalSummaryJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get analyzedAt => $composableBuilder(
+    column: $table.analyzedAt,
+    builder: (column) => column,
+  );
+
+  $$TrackTableTableAnnotationComposer get trackId {
+    final $$TrackTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> trackEmotionSegmentTableRefs<T extends Object>(
+    Expression<T> Function($$TrackEmotionSegmentTableTableAnnotationComposer a)
+    f,
+  ) {
+    final $$TrackEmotionSegmentTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.trackEmotionSegmentTable,
+          getReferencedColumn: (t) => t.analysisId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TrackEmotionSegmentTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.trackEmotionSegmentTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+}
+
+class $$TrackEmotionAnalysisTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TrackEmotionAnalysisTableTable,
+          TrackEmotionAnalysisTableData,
+          $$TrackEmotionAnalysisTableTableFilterComposer,
+          $$TrackEmotionAnalysisTableTableOrderingComposer,
+          $$TrackEmotionAnalysisTableTableAnnotationComposer,
+          $$TrackEmotionAnalysisTableTableCreateCompanionBuilder,
+          $$TrackEmotionAnalysisTableTableUpdateCompanionBuilder,
+          (
+            TrackEmotionAnalysisTableData,
+            $$TrackEmotionAnalysisTableTableReferences,
+          ),
+          TrackEmotionAnalysisTableData,
+          PrefetchHooks Function({
+            bool trackId,
+            bool trackEmotionSegmentTableRefs,
+          })
+        > {
+  $$TrackEmotionAnalysisTableTableTableManager(
+    _$AppDatabase db,
+    $TrackEmotionAnalysisTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TrackEmotionAnalysisTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$TrackEmotionAnalysisTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$TrackEmotionAnalysisTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> trackId = const Value.absent(),
+                Value<String> representation = const Value.absent(),
+                Value<String> modelId = const Value.absent(),
+                Value<String> modelVersion = const Value.absent(),
+                Value<String> preprocessingVersion = const Value.absent(),
+                Value<String> contentRevision = const Value.absent(),
+                Value<int> audioRevision = const Value.absent(),
+                Value<double?> valence = const Value.absent(),
+                Value<double?> arousal = const Value.absent(),
+                Value<double?> rawValence = const Value.absent(),
+                Value<double?> rawArousal = const Value.absent(),
+                Value<int> moodDistributionVersion = const Value.absent(),
+                Value<String?> moodDistributionJson = const Value.absent(),
+                Value<String?> temporalSummaryJson = const Value.absent(),
+                Value<DateTime> analyzedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TrackEmotionAnalysisTableCompanion(
+                id: id,
+                trackId: trackId,
+                representation: representation,
+                modelId: modelId,
+                modelVersion: modelVersion,
+                preprocessingVersion: preprocessingVersion,
+                contentRevision: contentRevision,
+                audioRevision: audioRevision,
+                valence: valence,
+                arousal: arousal,
+                rawValence: rawValence,
+                rawArousal: rawArousal,
+                moodDistributionVersion: moodDistributionVersion,
+                moodDistributionJson: moodDistributionJson,
+                temporalSummaryJson: temporalSummaryJson,
+                analyzedAt: analyzedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String trackId,
+                required String representation,
+                required String modelId,
+                required String modelVersion,
+                required String preprocessingVersion,
+                required String contentRevision,
+                required int audioRevision,
+                Value<double?> valence = const Value.absent(),
+                Value<double?> arousal = const Value.absent(),
+                Value<double?> rawValence = const Value.absent(),
+                Value<double?> rawArousal = const Value.absent(),
+                Value<int> moodDistributionVersion = const Value.absent(),
+                Value<String?> moodDistributionJson = const Value.absent(),
+                Value<String?> temporalSummaryJson = const Value.absent(),
+                required DateTime analyzedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => TrackEmotionAnalysisTableCompanion.insert(
+                id: id,
+                trackId: trackId,
+                representation: representation,
+                modelId: modelId,
+                modelVersion: modelVersion,
+                preprocessingVersion: preprocessingVersion,
+                contentRevision: contentRevision,
+                audioRevision: audioRevision,
+                valence: valence,
+                arousal: arousal,
+                rawValence: rawValence,
+                rawArousal: rawArousal,
+                moodDistributionVersion: moodDistributionVersion,
+                moodDistributionJson: moodDistributionJson,
+                temporalSummaryJson: temporalSummaryJson,
+                analyzedAt: analyzedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TrackEmotionAnalysisTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({trackId = false, trackEmotionSegmentTableRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (trackEmotionSegmentTableRefs)
+                      db.trackEmotionSegmentTable,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (trackId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.trackId,
+                                    referencedTable:
+                                        $$TrackEmotionAnalysisTableTableReferences
+                                            ._trackIdTable(db),
+                                    referencedColumn:
+                                        $$TrackEmotionAnalysisTableTableReferences
+                                            ._trackIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (trackEmotionSegmentTableRefs)
+                        await $_getPrefetchedData<
+                          TrackEmotionAnalysisTableData,
+                          $TrackEmotionAnalysisTableTable,
+                          TrackEmotionSegmentTableData
+                        >(
+                          currentTable: table,
+                          referencedTable:
+                              $$TrackEmotionAnalysisTableTableReferences
+                                  ._trackEmotionSegmentTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TrackEmotionAnalysisTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).trackEmotionSegmentTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.analysisId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$TrackEmotionAnalysisTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TrackEmotionAnalysisTableTable,
+      TrackEmotionAnalysisTableData,
+      $$TrackEmotionAnalysisTableTableFilterComposer,
+      $$TrackEmotionAnalysisTableTableOrderingComposer,
+      $$TrackEmotionAnalysisTableTableAnnotationComposer,
+      $$TrackEmotionAnalysisTableTableCreateCompanionBuilder,
+      $$TrackEmotionAnalysisTableTableUpdateCompanionBuilder,
+      (
+        TrackEmotionAnalysisTableData,
+        $$TrackEmotionAnalysisTableTableReferences,
+      ),
+      TrackEmotionAnalysisTableData,
+      PrefetchHooks Function({bool trackId, bool trackEmotionSegmentTableRefs})
+    >;
+typedef $$TrackEmotionSegmentTableTableCreateCompanionBuilder =
+    TrackEmotionSegmentTableCompanion Function({
+      required String analysisId,
+      required int segmentIndex,
+      required int startMs,
+      required int endMs,
+      required double valence,
+      required double arousal,
+      Value<int> moodDistributionVersion,
+      required String moodDistributionJson,
+      Value<int> rowid,
+    });
+typedef $$TrackEmotionSegmentTableTableUpdateCompanionBuilder =
+    TrackEmotionSegmentTableCompanion Function({
+      Value<String> analysisId,
+      Value<int> segmentIndex,
+      Value<int> startMs,
+      Value<int> endMs,
+      Value<double> valence,
+      Value<double> arousal,
+      Value<int> moodDistributionVersion,
+      Value<String> moodDistributionJson,
+      Value<int> rowid,
+    });
+
+final class $$TrackEmotionSegmentTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $TrackEmotionSegmentTableTable,
+          TrackEmotionSegmentTableData
+        > {
+  $$TrackEmotionSegmentTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TrackEmotionAnalysisTableTable _analysisIdTable(_$AppDatabase db) =>
+      db.trackEmotionAnalysisTable.createAlias(
+        $_aliasNameGenerator(
+          db.trackEmotionSegmentTable.analysisId,
+          db.trackEmotionAnalysisTable.id,
+        ),
+      );
+
+  $$TrackEmotionAnalysisTableTableProcessedTableManager get analysisId {
+    final $_column = $_itemColumn<String>('analysis_id')!;
+
+    final manager = $$TrackEmotionAnalysisTableTableTableManager(
+      $_db,
+      $_db.trackEmotionAnalysisTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_analysisIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$TrackEmotionSegmentTableTableFilterComposer
+    extends Composer<_$AppDatabase, $TrackEmotionSegmentTableTable> {
+  $$TrackEmotionSegmentTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get segmentIndex => $composableBuilder(
+    column: $table.segmentIndex,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get startMs => $composableBuilder(
+    column: $table.startMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get endMs => $composableBuilder(
+    column: $table.endMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get valence => $composableBuilder(
+    column: $table.valence,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get arousal => $composableBuilder(
+    column: $table.arousal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get moodDistributionVersion => $composableBuilder(
+    column: $table.moodDistributionVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get moodDistributionJson => $composableBuilder(
+    column: $table.moodDistributionJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TrackEmotionAnalysisTableTableFilterComposer get analysisId {
+    final $$TrackEmotionAnalysisTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.analysisId,
+          referencedTable: $db.trackEmotionAnalysisTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TrackEmotionAnalysisTableTableFilterComposer(
+                $db: $db,
+                $table: $db.trackEmotionAnalysisTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$TrackEmotionSegmentTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $TrackEmotionSegmentTableTable> {
+  $$TrackEmotionSegmentTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get segmentIndex => $composableBuilder(
+    column: $table.segmentIndex,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get startMs => $composableBuilder(
+    column: $table.startMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get endMs => $composableBuilder(
+    column: $table.endMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get valence => $composableBuilder(
+    column: $table.valence,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get arousal => $composableBuilder(
+    column: $table.arousal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get moodDistributionVersion => $composableBuilder(
+    column: $table.moodDistributionVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get moodDistributionJson => $composableBuilder(
+    column: $table.moodDistributionJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TrackEmotionAnalysisTableTableOrderingComposer get analysisId {
+    final $$TrackEmotionAnalysisTableTableOrderingComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.analysisId,
+          referencedTable: $db.trackEmotionAnalysisTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TrackEmotionAnalysisTableTableOrderingComposer(
+                $db: $db,
+                $table: $db.trackEmotionAnalysisTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$TrackEmotionSegmentTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TrackEmotionSegmentTableTable> {
+  $$TrackEmotionSegmentTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get segmentIndex => $composableBuilder(
+    column: $table.segmentIndex,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get startMs =>
+      $composableBuilder(column: $table.startMs, builder: (column) => column);
+
+  GeneratedColumn<int> get endMs =>
+      $composableBuilder(column: $table.endMs, builder: (column) => column);
+
+  GeneratedColumn<double> get valence =>
+      $composableBuilder(column: $table.valence, builder: (column) => column);
+
+  GeneratedColumn<double> get arousal =>
+      $composableBuilder(column: $table.arousal, builder: (column) => column);
+
+  GeneratedColumn<int> get moodDistributionVersion => $composableBuilder(
+    column: $table.moodDistributionVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get moodDistributionJson => $composableBuilder(
+    column: $table.moodDistributionJson,
+    builder: (column) => column,
+  );
+
+  $$TrackEmotionAnalysisTableTableAnnotationComposer get analysisId {
+    final $$TrackEmotionAnalysisTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.analysisId,
+          referencedTable: $db.trackEmotionAnalysisTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$TrackEmotionAnalysisTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.trackEmotionAnalysisTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$TrackEmotionSegmentTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TrackEmotionSegmentTableTable,
+          TrackEmotionSegmentTableData,
+          $$TrackEmotionSegmentTableTableFilterComposer,
+          $$TrackEmotionSegmentTableTableOrderingComposer,
+          $$TrackEmotionSegmentTableTableAnnotationComposer,
+          $$TrackEmotionSegmentTableTableCreateCompanionBuilder,
+          $$TrackEmotionSegmentTableTableUpdateCompanionBuilder,
+          (
+            TrackEmotionSegmentTableData,
+            $$TrackEmotionSegmentTableTableReferences,
+          ),
+          TrackEmotionSegmentTableData,
+          PrefetchHooks Function({bool analysisId})
+        > {
+  $$TrackEmotionSegmentTableTableTableManager(
+    _$AppDatabase db,
+    $TrackEmotionSegmentTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TrackEmotionSegmentTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$TrackEmotionSegmentTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$TrackEmotionSegmentTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> analysisId = const Value.absent(),
+                Value<int> segmentIndex = const Value.absent(),
+                Value<int> startMs = const Value.absent(),
+                Value<int> endMs = const Value.absent(),
+                Value<double> valence = const Value.absent(),
+                Value<double> arousal = const Value.absent(),
+                Value<int> moodDistributionVersion = const Value.absent(),
+                Value<String> moodDistributionJson = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => TrackEmotionSegmentTableCompanion(
+                analysisId: analysisId,
+                segmentIndex: segmentIndex,
+                startMs: startMs,
+                endMs: endMs,
+                valence: valence,
+                arousal: arousal,
+                moodDistributionVersion: moodDistributionVersion,
+                moodDistributionJson: moodDistributionJson,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String analysisId,
+                required int segmentIndex,
+                required int startMs,
+                required int endMs,
+                required double valence,
+                required double arousal,
+                Value<int> moodDistributionVersion = const Value.absent(),
+                required String moodDistributionJson,
+                Value<int> rowid = const Value.absent(),
+              }) => TrackEmotionSegmentTableCompanion.insert(
+                analysisId: analysisId,
+                segmentIndex: segmentIndex,
+                startMs: startMs,
+                endMs: endMs,
+                valence: valence,
+                arousal: arousal,
+                moodDistributionVersion: moodDistributionVersion,
+                moodDistributionJson: moodDistributionJson,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$TrackEmotionSegmentTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({analysisId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (analysisId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.analysisId,
+                                referencedTable:
+                                    $$TrackEmotionSegmentTableTableReferences
+                                        ._analysisIdTable(db),
+                                referencedColumn:
+                                    $$TrackEmotionSegmentTableTableReferences
+                                        ._analysisIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$TrackEmotionSegmentTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TrackEmotionSegmentTableTable,
+      TrackEmotionSegmentTableData,
+      $$TrackEmotionSegmentTableTableFilterComposer,
+      $$TrackEmotionSegmentTableTableOrderingComposer,
+      $$TrackEmotionSegmentTableTableAnnotationComposer,
+      $$TrackEmotionSegmentTableTableCreateCompanionBuilder,
+      $$TrackEmotionSegmentTableTableUpdateCompanionBuilder,
+      (TrackEmotionSegmentTableData, $$TrackEmotionSegmentTableTableReferences),
+      TrackEmotionSegmentTableData,
+      PrefetchHooks Function({bool analysisId})
+    >;
+typedef $$PersonalMoodAdjustmentTableTableCreateCompanionBuilder =
+    PersonalMoodAdjustmentTableCompanion Function({
+      required String trackId,
+      required double valence,
+      required double arousal,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$PersonalMoodAdjustmentTableTableUpdateCompanionBuilder =
+    PersonalMoodAdjustmentTableCompanion Function({
+      Value<String> trackId,
+      Value<double> valence,
+      Value<double> arousal,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$PersonalMoodAdjustmentTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $PersonalMoodAdjustmentTableTable,
+          PersonalMoodAdjustmentTableData
+        > {
+  $$PersonalMoodAdjustmentTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TrackTableTable _trackIdTable(_$AppDatabase db) =>
+      db.trackTable.createAlias(
+        $_aliasNameGenerator(
+          db.personalMoodAdjustmentTable.trackId,
+          db.trackTable.id,
+        ),
+      );
+
+  $$TrackTableTableProcessedTableManager get trackId {
+    final $_column = $_itemColumn<String>('track_id')!;
+
+    final manager = $$TrackTableTableTableManager(
+      $_db,
+      $_db.trackTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_trackIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$PersonalMoodAdjustmentTableTableFilterComposer
+    extends Composer<_$AppDatabase, $PersonalMoodAdjustmentTableTable> {
+  $$PersonalMoodAdjustmentTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<double> get valence => $composableBuilder(
+    column: $table.valence,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get arousal => $composableBuilder(
+    column: $table.arousal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TrackTableTableFilterComposer get trackId {
+    final $$TrackTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableFilterComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PersonalMoodAdjustmentTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $PersonalMoodAdjustmentTableTable> {
+  $$PersonalMoodAdjustmentTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<double> get valence => $composableBuilder(
+    column: $table.valence,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get arousal => $composableBuilder(
+    column: $table.arousal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TrackTableTableOrderingComposer get trackId {
+    final $$TrackTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PersonalMoodAdjustmentTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PersonalMoodAdjustmentTableTable> {
+  $$PersonalMoodAdjustmentTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<double> get valence =>
+      $composableBuilder(column: $table.valence, builder: (column) => column);
+
+  GeneratedColumn<double> get arousal =>
+      $composableBuilder(column: $table.arousal, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$TrackTableTableAnnotationComposer get trackId {
+    final $$TrackTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PersonalMoodAdjustmentTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PersonalMoodAdjustmentTableTable,
+          PersonalMoodAdjustmentTableData,
+          $$PersonalMoodAdjustmentTableTableFilterComposer,
+          $$PersonalMoodAdjustmentTableTableOrderingComposer,
+          $$PersonalMoodAdjustmentTableTableAnnotationComposer,
+          $$PersonalMoodAdjustmentTableTableCreateCompanionBuilder,
+          $$PersonalMoodAdjustmentTableTableUpdateCompanionBuilder,
+          (
+            PersonalMoodAdjustmentTableData,
+            $$PersonalMoodAdjustmentTableTableReferences,
+          ),
+          PersonalMoodAdjustmentTableData,
+          PrefetchHooks Function({bool trackId})
+        > {
+  $$PersonalMoodAdjustmentTableTableTableManager(
+    _$AppDatabase db,
+    $PersonalMoodAdjustmentTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PersonalMoodAdjustmentTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$PersonalMoodAdjustmentTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$PersonalMoodAdjustmentTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> trackId = const Value.absent(),
+                Value<double> valence = const Value.absent(),
+                Value<double> arousal = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PersonalMoodAdjustmentTableCompanion(
+                trackId: trackId,
+                valence: valence,
+                arousal: arousal,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String trackId,
+                required double valence,
+                required double arousal,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => PersonalMoodAdjustmentTableCompanion.insert(
+                trackId: trackId,
+                valence: valence,
+                arousal: arousal,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$PersonalMoodAdjustmentTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({trackId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (trackId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.trackId,
+                                referencedTable:
+                                    $$PersonalMoodAdjustmentTableTableReferences
+                                        ._trackIdTable(db),
+                                referencedColumn:
+                                    $$PersonalMoodAdjustmentTableTableReferences
+                                        ._trackIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$PersonalMoodAdjustmentTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PersonalMoodAdjustmentTableTable,
+      PersonalMoodAdjustmentTableData,
+      $$PersonalMoodAdjustmentTableTableFilterComposer,
+      $$PersonalMoodAdjustmentTableTableOrderingComposer,
+      $$PersonalMoodAdjustmentTableTableAnnotationComposer,
+      $$PersonalMoodAdjustmentTableTableCreateCompanionBuilder,
+      $$PersonalMoodAdjustmentTableTableUpdateCompanionBuilder,
+      (
+        PersonalMoodAdjustmentTableData,
+        $$PersonalMoodAdjustmentTableTableReferences,
+      ),
+      PersonalMoodAdjustmentTableData,
+      PrefetchHooks Function({bool trackId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -21851,5 +25431,21 @@ class $AppDatabaseManager {
       $$LyricsResolutionTaskTableTableTableManager(
         _db,
         _db.lyricsResolutionTaskTable,
+      );
+  $$TrackEmotionAnalysisTableTableTableManager get trackEmotionAnalysisTable =>
+      $$TrackEmotionAnalysisTableTableTableManager(
+        _db,
+        _db.trackEmotionAnalysisTable,
+      );
+  $$TrackEmotionSegmentTableTableTableManager get trackEmotionSegmentTable =>
+      $$TrackEmotionSegmentTableTableTableManager(
+        _db,
+        _db.trackEmotionSegmentTable,
+      );
+  $$PersonalMoodAdjustmentTableTableTableManager
+  get personalMoodAdjustmentTable =>
+      $$PersonalMoodAdjustmentTableTableTableManager(
+        _db,
+        _db.personalMoodAdjustmentTable,
       );
 }

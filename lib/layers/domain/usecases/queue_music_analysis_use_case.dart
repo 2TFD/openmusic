@@ -15,19 +15,41 @@ class QueueMusicAnalysisUseCase {
   static const requiredRepresentations = {
     MusicAnalysisRepresentation.audioGlobal,
     MusicAnalysisRepresentation.audioTemporal,
+    MusicAnalysisRepresentation.audioEmotionGlobal,
+    MusicAnalysisRepresentation.audioEmotionTemporal,
+  };
+  static const emotionRepresentations = {
+    MusicAnalysisRepresentation.audioEmotionGlobal,
+    MusicAnalysisRepresentation.audioEmotionTemporal,
   };
 
   final MusicAnalysisRepository _analysis;
   final MusicAnalysisTaskRepository _tasks;
 
-  Future<QueueMusicAnalysisDisposition> call(Track track) async {
+  /// Durable, DB-only scheduling for import/download completion paths. Cache
+  /// and backend capability checks happen in the background worker.
+  Future<QueueMusicAnalysisDisposition> schedule(Track track) async {
     if (track.filePath == null) {
       return QueueMusicAnalysisDisposition.needsDownload;
     }
-    final missing = await _analysis.missingRepresentations(
+    await _tasks.enqueue(
       trackId: track.id,
       audioRevision: track.audioRevision,
       representations: requiredRepresentations,
+    );
+    return QueueMusicAnalysisDisposition.queued;
+  }
+
+  Future<QueueMusicAnalysisDisposition> call(
+    Track track, {
+    Set<MusicAnalysisRepresentation> representations = requiredRepresentations,
+  }) async {
+    if (track.filePath == null) {
+      return QueueMusicAnalysisDisposition.needsDownload;
+    }
+    final missing = await missingRepresentations(
+      track,
+      representations: representations,
     );
     if (missing.isEmpty) return QueueMusicAnalysisDisposition.cached;
     await _tasks.enqueue(
@@ -36,5 +58,17 @@ class QueueMusicAnalysisUseCase {
       representations: missing,
     );
     return QueueMusicAnalysisDisposition.queued;
+  }
+
+  Future<Set<MusicAnalysisRepresentation>> missingRepresentations(
+    Track track, {
+    Set<MusicAnalysisRepresentation> representations = requiredRepresentations,
+  }) {
+    if (track.filePath == null) return Future.value(const {});
+    return _analysis.missingRepresentations(
+      trackId: track.id,
+      audioRevision: track.audioRevision,
+      representations: representations,
+    );
   }
 }

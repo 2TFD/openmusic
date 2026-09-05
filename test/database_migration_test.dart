@@ -457,7 +457,7 @@ INSERT INTO track_table (
       tables.map((row) => row.read<String>('name')),
       isNot(contains('play_record_table')),
     );
-    expect(version.read<int>('user_version'), 17);
+    expect(version.read<int>('user_version'), 18);
   });
 
   test('schema v12 marks existing embedding revision as unknown', () async {
@@ -770,6 +770,18 @@ INSERT INTO music_analysis_task_table (
       expect(
         await migrated.select(migrated.musicAnalysisTaskTable).get(),
         hasLength(1),
+      );
+      expect(
+        await migrated.select(migrated.trackEmotionAnalysisTable).get(),
+        isEmpty,
+      );
+      expect(
+        await migrated.select(migrated.trackEmotionSegmentTable).get(),
+        isEmpty,
+      );
+      expect(
+        await migrated.select(migrated.personalMoodAdjustmentTable).get(),
+        isEmpty,
       );
 
       await migrated

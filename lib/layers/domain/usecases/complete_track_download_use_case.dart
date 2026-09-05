@@ -48,7 +48,7 @@ class CompleteTrackDownloadUseCase {
     final track = await tracks.getTrackById(trackId);
     if (track == null) return;
     try {
-      await _queueAnalysis?.call(track);
+      await _queueAnalysis?.schedule(track);
     } catch (error, stackTrace) {
       await AppLogger.log(
         '[CompleteTrackDownloadUseCase] Analysis queue failed for $trackId: '

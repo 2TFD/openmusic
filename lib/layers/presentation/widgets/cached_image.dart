@@ -11,12 +11,14 @@ class CachedImage extends StatelessWidget {
     required this.size,
     this.width,
     this.height,
+    this.fallback,
   });
   final String? url;
   final String? filePath;
   final double size;
   final double? width;
   final double? height;
+  final Widget? fallback;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,8 @@ class CachedImage extends StatelessWidget {
         width: resolvedWidth,
         height: resolvedHeight,
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => const Icon(Icons.image),
+        errorBuilder: (context, error, stackTrace) =>
+            fallback ?? const Icon(Icons.image),
       );
     }
 
@@ -39,14 +42,15 @@ class CachedImage extends StatelessWidget {
         width: resolvedWidth,
         height: resolvedHeight,
         fit: BoxFit.cover,
-        errorWidget: (context, url, error) => const Icon(Icons.image),
+        errorWidget: (context, url, error) =>
+            fallback ?? const Icon(Icons.image),
       );
     }
 
     return SizedBox(
       width: resolvedWidth,
       height: resolvedHeight,
-      child: const Center(child: Icon(Icons.image)),
+      child: Center(child: fallback ?? const Icon(Icons.image)),
     );
   }
 }

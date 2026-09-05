@@ -1,539 +1,568 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:openmusic/core/di/di.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
+import 'package:openmusic/layers/domain/entities/artist.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/entities/wave_config.dart';
+import 'package:openmusic/layers/domain/entities/wave_session.dart';
+import 'package:openmusic/layers/presentation/blocs/artists/artists_cubit.dart';
+import 'package:openmusic/layers/presentation/blocs/mood_map/mood_map_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/track/track_bloc.dart';
-import 'package:openmusic/layers/presentation/blocs/wave/wave_bloc.dart';
-import 'package:openmusic/layers/presentation/widgets/playlist_cover.dart';
+import 'package:openmusic/layers/presentation/screens/mood_map_page.dart';
+import 'package:openmusic/layers/presentation/widgets/cached_image.dart';
 
 class WaveCard extends StatelessWidget {
   const WaveCard({super.key});
 
-  bool _isWaveQueueActive(List<Track> waveTracks, PlayerState player) {
-    if (waveTracks.length != player.queue.length) return false;
-    for (var index = 0; index < waveTracks.length; index++) {
-      if (waveTracks[index].id != player.queue[index].id) return false;
-    }
-    return true;
-  }
-
-  void _openSettingsSheet(BuildContext context) {
-    showModalBottomSheet(
+  void _openSettings(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
       useRootNavigator: true,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      context: context,
-      builder: (_) => const _WaveSettingsSheet(),
+      builder: (_) => BlocProvider(
+        create: (_) => getIt<MoodMapCubit>()..initialize(),
+        child: const WaveSettingsSheet(),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<WaveBloc, WaveState>(
-      builder: (context, state) {
-        final config = _configOf(state);
-        final visibleTracks = _visibleTracksOf(state);
-        final readyTracks = state is WaveReady ? state.tracks : const <Track>[];
-        final playerState = context.watch<PlayerBloc>().state;
-        final isQueueActive = _isWaveQueueActive(readyTracks, playerState);
-        final isPlayingWave = isQueueActive && playerState.isPlaying;
-        final hasBasis = _hasBasis(config);
+    return BlocBuilder<PlayerBloc, PlayerState>(
+      buildWhen: (previous, current) =>
+          previous.waveSession != current.waveSession ||
+          previous.isWaveGenerating != current.isWaveGenerating ||
+          previous.queue != current.queue ||
+          previous.currentIndex != current.currentIndex,
+      builder: (context, state) =>
+          WaveCardView(state: state, onConfigure: () => _openSettings(context)),
+    );
+  }
+}
 
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 18, 24, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    context.tr('wave.sectionTitle').toUpperCase(),
-                    style: AppText.label,
-                  ),
-                  const Spacer(),
-                  if (hasBasis && state is! WaveGenerating)
-                    _WaveHeaderAction(
-                      tooltip: context.tr('wave.regenerate'),
-                      icon: Icons.refresh,
-                      onPressed: () =>
-                          context.read<WaveBloc>().add(WaveRefreshRequested()),
-                    ),
-                  _WaveHeaderAction(
-                    tooltip: context.tr('wave.configure'),
-                    icon: Icons.tune,
-                    onPressed: () => _openSettingsSheet(context),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => _openSettingsSheet(context),
+class WaveCardView extends StatelessWidget {
+  const WaveCardView({
+    super.key,
+    required this.state,
+    required this.onConfigure,
+  });
+
+  final PlayerState state;
+  final VoidCallback onConfigure;
+
+  @override
+  Widget build(BuildContext context) {
+    final session = state.waveSession;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 18, 24, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.tr('waveSession.title').toUpperCase(),
+            style: AppText.label,
+          ),
+          const SizedBox(height: 8),
+          Material(
+            color: AppColors.surface,
+            borderRadius: AppRadius.cardBR,
+            child: InkWell(
+              key: const ValueKey('wave-card'),
+              borderRadius: AppRadius.cardBR,
+              onTap: onConfigure,
+              child: Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppColors.border),
+                  borderRadius: AppRadius.cardBR,
+                ),
                 child: Row(
                   children: [
-                    PlaylistCover(
-                      generatedImageUrls: visibleTracks
-                          .map((track) => track.imageUrl ?? '')
-                          .toList(growable: false),
-                      size: 88,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.border),
-                      placeholder: const Icon(
-                        Icons.waves_rounded,
-                        color: AppColors.muted,
-                        size: 28,
-                      ),
-                    ),
+                    _WaveArtwork(source: session?.source),
                     const SizedBox(width: 14),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            context.tr('wave.mixTitle'),
+                            session == null
+                                ? context.tr('waveSession.inactiveTitle')
+                                : _sourceLabel(context, session.source),
+                            key: const ValueKey('wave-card-source'),
                             style: AppText.display3,
-                            maxLines: 1,
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 5),
+                          const SizedBox(height: 4),
                           Text(
-                            _statusLabel(context, state, hasBasis),
-                            style: AppText.bodyM.copyWith(
-                              color: state is WaveError
-                                  ? AppColors.error
-                                  : AppColors.textSub,
-                            ),
-                            maxLines: 1,
+                            session == null
+                                ? context.tr('waveSession.inactiveDescription')
+                                : context.tr(
+                                    state.isWaveGenerating
+                                        ? 'waveSession.generating'
+                                        : 'waveSession.readyWithRemaining',
+                                    namedArgs: {
+                                      'count': state.remainingQueueCount
+                                          .toString(),
+                                    },
+                                  ),
+                            style: AppText.bodyM,
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          if (hasBasis) ...[
-                            const SizedBox(height: 3),
-                            Text(
-                              context.tr(
-                                'wave.basedOn',
-                                namedArgs: {'basis': _basisSummary(config)},
-                              ),
-                              style: AppText.bodyXS,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
                         ],
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    if (state is WaveGenerating)
-                      const SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: Padding(
-                          padding: EdgeInsets.all(10),
-                          child: CircularProgressIndicator(
-                            strokeWidth: 1.5,
-                            color: AppColors.textSub,
-                          ),
-                        ),
-                      )
-                    else if (state is WaveReady)
-                      SizedBox(
-                        width: 44,
-                        height: 44,
-                        child: IconButton.filled(
-                          tooltip: context.tr(
-                            isPlayingWave ? 'wave.pause' : 'wave.play',
-                          ),
-                          onPressed: () {
-                            context.read<PlayerBloc>().add(
-                              isQueueActive
-                                  ? PlayerPlayPauseToggled()
-                                  : PlayerQueueSet(state.tracks),
-                            );
-                          },
-                          icon: Icon(
-                            isPlayingWave ? Icons.pause : Icons.play_arrow,
-                            size: 22,
-                          ),
-                          style: IconButton.styleFrom(
-                            foregroundColor: AppColors.text,
-                            backgroundColor: AppColors.surface2,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
+                    const SizedBox(width: 8),
+                    if (state.isWaveGenerating)
+                      const SizedBox.square(
+                        dimension: 22,
+                        child: CircularProgressIndicator(strokeWidth: 1.5),
                       )
                     else
-                      const Icon(
-                        Icons.chevron_right,
-                        color: AppColors.muted2,
-                        size: 22,
+                      IconButton(
+                        key: const ValueKey('configure-wave'),
+                        tooltip: context.tr('waveSession.configure'),
+                        onPressed: onConfigure,
+                        icon: Icon(
+                          session == null ? Icons.add_rounded : Icons.tune,
+                          size: 20,
+                        ),
                       ),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
-        );
-      },
-    );
-  }
-
-  String _statusLabel(BuildContext context, WaveState state, bool hasBasis) {
-    return switch (state) {
-      WaveGenerating() => context.tr('wave.generating'),
-      WaveReady(:final tracks) => context.tr(
-        'common.trackCount',
-        namedArgs: {'count': tracks.length.toString()},
+        ],
       ),
-      WaveError(:final error) => error.tr(),
-      WaveEmpty() when hasBasis => context.tr('wave.noMatches'),
-      _ => context.tr('wave.selectBasis'),
-    };
+    );
   }
 }
 
-class _WaveHeaderAction extends StatelessWidget {
-  const _WaveHeaderAction({
-    required this.tooltip,
-    required this.icon,
-    required this.onPressed,
-  });
+class _WaveArtwork extends StatelessWidget {
+  const _WaveArtwork({required this.source});
 
-  final String tooltip;
-  final IconData icon;
-  final VoidCallback onPressed;
+  final WaveSource? source;
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      tooltip: tooltip,
-      onPressed: onPressed,
-      icon: Icon(icon, size: 18),
-      color: AppColors.muted,
-      visualDensity: VisualDensity.compact,
-      padding: EdgeInsets.zero,
-      constraints: const BoxConstraints.tightFor(width: 36, height: 36),
+    final imageUrl = source?.imageUrl;
+    return Container(
+      width: 68,
+      height: 68,
+      decoration: BoxDecoration(
+        color: AppColors.surface2,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: imageUrl == null
+          ? Icon(
+              source == null
+                  ? Icons.waves_rounded
+                  : source is MoodWaveSource
+                  ? Icons.scatter_plot_rounded
+                  : source is ArtistWaveSource
+                  ? Icons.person_outline_rounded
+                  : Icons.music_note_rounded,
+              size: 28,
+              color: AppColors.muted,
+            )
+          : CachedImage(
+              url: imageUrl,
+              size: 68,
+              fallback: const Icon(Icons.waves_rounded, color: AppColors.muted),
+            ),
     );
   }
 }
 
-enum _WaveTab { artists, tracks }
+enum _WaveSourceChoice { mood, track, artist }
 
-class _WaveSettingsSheet extends StatefulWidget {
-  const _WaveSettingsSheet();
+class WaveSettingsSheet extends StatefulWidget {
+  const WaveSettingsSheet({
+    super.key,
+    this.playerState,
+    this.tracks,
+    this.artists,
+    this.moodMapState,
+    this.onEvent,
+  });
+
+  final PlayerState? playerState;
+  final List<Track>? tracks;
+  final List<ArtistSummary>? artists;
+  final MoodMapState? moodMapState;
+  final ValueChanged<PlayerEvent>? onEvent;
 
   @override
-  State<_WaveSettingsSheet> createState() => _WaveSettingsSheetState();
+  State<WaveSettingsSheet> createState() => _WaveSettingsSheetState();
 }
 
-class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
-  _WaveTab _tab = _WaveTab.artists;
+class _WaveSettingsSheetState extends State<WaveSettingsSheet> {
+  late _WaveSourceChoice _source;
+  MoodWaveMode _moodMode = MoodWaveMode.stay;
+  double _radius = 0.35;
+  MoodPoint _target = MoodPoint(valence: 0, arousal: 0);
+  String? _selectedTrackId;
+  String? _selectedArtistId;
+  String? _selectedArtistName;
+  String? _selectedArtistImageUrl;
   String _search = '';
-  final _searchCtrl = TextEditingController();
-  late WaveConfig _draft;
+  final _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _draft = _configOf(context.read<WaveBloc>().state);
+    final active = _playerState(context).waveSession?.source;
+    _source = switch (active) {
+      TrackWaveSource() => _WaveSourceChoice.track,
+      ArtistWaveSource() => _WaveSourceChoice.artist,
+      _ => _WaveSourceChoice.mood,
+    };
+    switch (active) {
+      case MoodWaveSource source:
+        _moodMode = source.mode;
+        _radius = source.radius;
+        _target = source.userTarget;
+      case TrackWaveSource source:
+        _selectedTrackId = source.trackId;
+      case ArtistWaveSource source:
+        _selectedArtistId = source.artistId;
+        _selectedArtistName = source.artistName;
+        _selectedArtistImageUrl = source.imageUrl;
+      case null:
+        break;
+    }
   }
 
   @override
   void dispose() {
-    _searchCtrl.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final allTracks = switch (context.watch<TrackBloc>().state) {
-      TrackLoaded(:final tracks) =>
-        tracks.where((track) => track.isReadyToPlay).toList(),
-      _ => <Track>[],
-    };
-    final allArtists = _uniqueArtists(allTracks);
-    final normalizedSearch = _search.trim().toLowerCase();
-    final filteredArtists = normalizedSearch.isEmpty
-        ? allArtists
-        : allArtists
-              .where(
-                (artist) => artist.toLowerCase().contains(normalizedSearch),
-              )
-              .toList();
-    final filteredTracks = normalizedSearch.isEmpty
-        ? allTracks
-        : allTracks
-              .where(
-                (track) =>
-                    track.title.toLowerCase().contains(normalizedSearch) ||
-                    track.artists.any(
-                      (artist) =>
-                          artist.name.toLowerCase().contains(normalizedSearch),
-                    ),
-              )
-              .toList();
+    final tracks =
+        widget.tracks ??
+        switch (context.watch<TrackBloc>().state) {
+          TrackLoaded(:final tracks) =>
+            tracks
+                .where(
+                  (track) => track.isReadyToPlay && track.source.isAvailable,
+                )
+                .toList(growable: false),
+          _ => const <Track>[],
+        };
+    final artists =
+        widget.artists ??
+        switch (context.watch<ArtistsCubit>().state) {
+          ArtistsLoaded(:final artists) => artists,
+          _ => const <ArtistSummary>[],
+        };
+    final filteredTracks = _filterTracks(tracks);
+    final filteredArtists = _filterArtists(artists);
 
     return Container(
-      height: MediaQuery.sizeOf(context).height * 0.82,
+      height: MediaQuery.sizeOf(context).height * 0.84,
       decoration: const BoxDecoration(
         color: AppBlur.sheetColor,
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const _SheetHandle(),
-          _buildHeader(context),
-          const Divider(height: 1, color: AppColors.border),
-          _buildTabs(context),
-          _buildSearch(context),
-          const Divider(height: 1, color: AppColors.border),
-          Expanded(
-            child: _tab == _WaveTab.artists
-                ? _buildArtistList(filteredArtists)
-                : _buildTrackList(filteredTracks),
-          ),
-          _buildFooter(context),
-        ],
+      child: SafeArea(
+        top: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const _SheetHandle(),
+            _header(context),
+            const Divider(height: 1, color: AppColors.border),
+            _sourceSelector(context),
+            Expanded(
+              child: switch (_source) {
+                _WaveSourceChoice.mood => _moodSettings(context),
+                _WaveSourceChoice.track => _trackSettings(
+                  context,
+                  filteredTracks,
+                ),
+                _WaveSourceChoice.artist => _artistSettings(
+                  context,
+                  filteredArtists,
+                ),
+              },
+            ),
+            _footer(context, tracks),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    final selectedCount = _draft.seeds.length + _draft.tracks.length;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 4, 8, 12),
-      child: Row(
-        children: [
-          Text(context.tr('wave.dialogTitle'), style: AppText.display3),
-          if (selectedCount > 0) ...[
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: AppColors.surface3,
-                borderRadius: BorderRadius.circular(AppRadius.pill),
+  Widget _header(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(20, 4, 8, 10),
+    child: Row(
+      children: [
+        Expanded(
+          child: Text(
+            context.tr('waveSession.settingsTitle'),
+            style: AppText.display3,
+          ),
+        ),
+        IconButton(
+          tooltip: context.tr('common.close'),
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.close, size: 18),
+        ),
+      ],
+    ),
+  );
+
+  Widget _sourceSelector(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(20, 14, 20, 8),
+    child: SizedBox(
+      width: double.infinity,
+      child: SegmentedButton<_WaveSourceChoice>(
+        key: const ValueKey('wave-source-selector'),
+        segments: [
+          ButtonSegment(
+            value: _WaveSourceChoice.mood,
+            label: Text(context.tr('waveSession.mood')),
+            icon: const Icon(Icons.scatter_plot_rounded, size: 16),
+          ),
+          ButtonSegment(
+            value: _WaveSourceChoice.track,
+            label: Text(context.tr('waveSession.track')),
+            icon: const Icon(Icons.music_note_rounded, size: 16),
+          ),
+          ButtonSegment(
+            value: _WaveSourceChoice.artist,
+            label: Text(context.tr('waveSession.artist')),
+            icon: const Icon(Icons.person_outline_rounded, size: 16),
+          ),
+        ],
+        selected: {_source},
+        showSelectedIcon: false,
+        onSelectionChanged: (value) => setState(() {
+          _source = value.single;
+          _search = '';
+          _searchController.clear();
+        }),
+      ),
+    ),
+  );
+
+  Widget _moodSettings(BuildContext context) {
+    final injectedState = widget.moodMapState;
+    if (injectedState != null) {
+      return _moodSettingsContent(context, injectedState);
+    }
+    return BlocBuilder<MoodMapCubit, MoodMapState>(
+      builder: _moodSettingsContent,
+    );
+  }
+
+  Widget _moodSettingsContent(BuildContext context, MoodMapState mapState) {
+    final displayState = mapState.copyWith(
+      targetValence: _target.valence,
+      targetArousal: _target.arousal,
+    );
+    return ListView(
+      key: const ValueKey('mood-wave-settings'),
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
+      children: [
+        Text(context.tr('waveSession.mode'), style: AppText.bodyL),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: MoodWaveMode.values
+              .map(
+                (mode) => ChoiceChip(
+                  key: ValueKey('wave-mode-${mode.name}'),
+                  label: Text(_modeLabel(context, mode)),
+                  selected: _moodMode == mode,
+                  onSelected: (_) => setState(() => _moodMode = mode),
+                ),
+              )
+              .toList(growable: false),
+        ),
+        const SizedBox(height: 20),
+        Row(
+          children: [
+            Text(context.tr('waveSession.radius'), style: AppText.bodyL),
+            const Spacer(),
+            Text(_radius.toStringAsFixed(2), style: AppText.bodyM),
+          ],
+        ),
+        Slider(
+          key: const ValueKey('wave-radius'),
+          value: _radius.clamp(0.05, 2),
+          min: 0.05,
+          max: 2,
+          onChanged: (value) => setState(() => _radius = value),
+        ),
+        const SizedBox(height: 8),
+        Text(context.tr('waveSession.targetMood'), style: AppText.bodyL),
+        const SizedBox(height: 4),
+        Text(
+          context.tr(
+            'waveSession.target',
+            namedArgs: {
+              'valence': _target.valence.toStringAsFixed(2),
+              'arousal': _target.arousal.toStringAsFixed(2),
+            },
+          ),
+          style: AppText.bodyM,
+        ),
+        const SizedBox(height: 10),
+        switch (mapState.status) {
+          MoodMapStatus.initial || MoodMapStatus.loading => const SizedBox(
+            height: 280,
+            child: Center(child: CircularProgressIndicator()),
+          ),
+          MoodMapStatus.failure => SizedBox(
+            height: 280,
+            child: Center(
+              child: Text(context.tr('moodMap.error'), style: AppText.bodyM),
+            ),
+          ),
+          MoodMapStatus.ready => MoodMapPanel(
+            key: const ValueKey('wave-target-map'),
+            state: displayState,
+            onTargetChanged: (target) => setState(() => _target = target),
+          ),
+        },
+      ],
+    );
+  }
+
+  Widget _trackSettings(BuildContext context, List<Track> tracks) => Column(
+    key: const ValueKey('track-wave-settings'),
+    children: [
+      _searchField(context, 'waveSession.searchTracks'),
+      Expanded(
+        child: tracks.isEmpty
+            ? _emptyResults(context)
+            : ListView.separated(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: tracks.length,
+                separatorBuilder: (_, _) =>
+                    const Divider(height: 1, color: AppColors.border),
+                itemBuilder: (context, index) {
+                  final track = tracks[index];
+                  return _SelectionRow(
+                    key: ValueKey('wave-track-${track.id}'),
+                    title: track.title,
+                    subtitle: track.artists.map((e) => e.name).join(', '),
+                    imageUrl: track.imageUrl,
+                    selected: track.id == _selectedTrackId,
+                    onTap: () => setState(() => _selectedTrackId = track.id),
+                  );
+                },
               ),
-              child: Text('$selectedCount', style: AppText.bodyXS),
-            ),
-          ],
-          const Spacer(),
-          IconButton(
-            tooltip: context.tr('common.close'),
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.close, size: 18, color: AppColors.muted),
+      ),
+    ],
+  );
+
+  Widget _artistSettings(BuildContext context, List<ArtistSummary> artists) =>
+      Column(
+        key: const ValueKey('artist-wave-settings'),
+        children: [
+          _searchField(context, 'waveSession.searchArtists'),
+          Expanded(
+            child: artists.isEmpty
+                ? _emptyResults(context)
+                : ListView.separated(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: artists.length,
+                    separatorBuilder: (_, _) =>
+                        const Divider(height: 1, color: AppColors.border),
+                    itemBuilder: (context, index) {
+                      final artist = artists[index];
+                      return _SelectionRow(
+                        key: ValueKey('wave-artist-${artist.id}'),
+                        title: artist.name,
+                        subtitle: context.tr(
+                          'common.trackCount',
+                          namedArgs: {'count': artist.trackCount.toString()},
+                        ),
+                        imageUrl: artist.coverImageUrls.isEmpty
+                            ? null
+                            : artist.coverImageUrls.first,
+                        selected: artist.id == _selectedArtistId,
+                        onTap: () => setState(() {
+                          _selectedArtistId = artist.id;
+                          _selectedArtistName = artist.name;
+                          _selectedArtistImageUrl =
+                              artist.coverImageUrls.isEmpty
+                              ? null
+                              : artist.coverImageUrls.first;
+                        }),
+                      );
+                    },
+                  ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildTabs(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 14, 20, 6),
-      child: SizedBox(
-        width: double.infinity,
-        child: SegmentedButton<_WaveTab>(
-          segments: [
-            ButtonSegment(
-              value: _WaveTab.artists,
-              icon: const Icon(Icons.person_outline, size: 17),
-              label: Text(context.tr('wave.artists')),
-            ),
-            ButtonSegment(
-              value: _WaveTab.tracks,
-              icon: const Icon(Icons.music_note, size: 17),
-              label: Text(context.tr('wave.tracks')),
-            ),
-          ],
-          selected: {_tab},
-          showSelectedIcon: false,
-          onSelectionChanged: (selection) => setState(() {
-            _tab = selection.single;
-            _search = '';
-            _searchCtrl.clear();
-          }),
-          style: ButtonStyle(
-            foregroundColor: WidgetStateProperty.resolveWith(
-              (states) => states.contains(WidgetState.selected)
-                  ? AppColors.text
-                  : AppColors.muted,
-            ),
-            backgroundColor: WidgetStateProperty.resolveWith(
-              (states) => states.contains(WidgetState.selected)
-                  ? AppColors.surface2
-                  : Colors.transparent,
-            ),
-            side: WidgetStateProperty.all(
-              const BorderSide(color: AppColors.border),
-            ),
-            shape: WidgetStateProperty.all(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            textStyle: WidgetStateProperty.all(AppText.bodyS),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSearch(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
-      child: SizedBox(
-        height: 40,
-        child: TextField(
-          controller: _searchCtrl,
-          onChanged: (value) => setState(() => _search = value),
-          style: AppText.bodyM.copyWith(color: AppColors.text),
-          decoration: InputDecoration(
-            hintText: context.tr(
-              _tab == _WaveTab.artists
-                  ? 'wave.searchArtists'
-                  : 'wave.searchTracks',
-            ),
-            hintStyle: AppText.bodyM,
-            prefixIcon: const Icon(
-              Icons.search,
-              size: 16,
-              color: AppColors.muted,
-            ),
-            filled: true,
-            fillColor: AppColors.surface,
-            contentPadding: const EdgeInsets.symmetric(vertical: 8),
-            border: _searchBorder(AppColors.border),
-            enabledBorder: _searchBorder(AppColors.border),
-            focusedBorder: _searchBorder(AppColors.borderAct),
-          ),
-        ),
-      ),
-    );
-  }
-
-  OutlineInputBorder _searchBorder(Color color) {
-    return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(8),
-      borderSide: BorderSide(color: color),
-    );
-  }
-
-  Widget _buildArtistList(List<String> artists) {
-    if (artists.isEmpty) {
-      return Center(
-        child: Text(
-          context.tr(_search.isEmpty ? 'wave.noArtists' : 'wave.noResults'),
-          style: AppText.bodyM,
-        ),
       );
-    }
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      itemCount: artists.length,
-      separatorBuilder: (_, _) =>
-          const Divider(height: 1, color: AppColors.border),
-      itemBuilder: (context, index) {
-        final artist = artists[index];
-        final selected = _containsSeed(artist);
-        return _WaveSeedRow(
-          primary: artist,
-          secondary: null,
-          icon: Icons.person_outline,
-          isSelected: selected,
-          onTap: () => _toggleSeed(artist),
-        );
-      },
-    );
-  }
 
-  Widget _buildTrackList(List<Track> tracks) {
-    if (tracks.isEmpty) {
-      return Center(
-        child: Text(
-          context.tr(_search.isEmpty ? 'wave.noTracksReady' : 'wave.noResults'),
-          style: AppText.bodyM,
-        ),
-      );
-    }
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      itemCount: tracks.length,
-      separatorBuilder: (_, _) =>
-          const Divider(height: 1, color: AppColors.border),
-      itemBuilder: (context, index) {
-        final track = tracks[index];
-        final selected = _draft.tracks.any((item) => item.id == track.id);
-        return _WaveSeedRow(
-          primary: track.title,
-          secondary: track.artists.map((artist) => artist.name).join(', '),
-          icon: Icons.music_note,
-          isSelected: selected,
-          onTap: () => _toggleTrack(track),
-        );
-      },
-    );
-  }
+  Widget _searchField(BuildContext context, String hintKey) => Padding(
+    padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
+    child: TextField(
+      controller: _searchController,
+      onChanged: (value) => setState(() => _search = value),
+      decoration: InputDecoration(
+        prefixIcon: const Icon(Icons.search_rounded, size: 18),
+        hintText: context.tr(hintKey),
+      ),
+    ),
+  );
 
-  Widget _buildFooter(BuildContext context) {
-    final canBuild = _hasBasis(_draft);
+  Widget _emptyResults(BuildContext context) => Center(
+    child: Text(context.tr('waveSession.noResults'), style: AppText.bodyM),
+  );
+
+  Widget _footer(BuildContext context, List<Track> tracks) {
+    final active = _playerState(context).waveSession;
+    final selectedTrack = _trackById(tracks, _selectedTrackId);
+    final canSubmit = switch (_source) {
+      _WaveSourceChoice.mood => true,
+      _WaveSourceChoice.track => selectedTrack != null,
+      _WaveSourceChoice.artist => _selectedArtistId != null,
+    };
     return Container(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
       decoration: const BoxDecoration(
         border: Border(top: BorderSide(color: AppColors.border)),
       ),
-      padding: EdgeInsets.fromLTRB(
-        20,
-        14,
-        20,
-        14 + MediaQuery.paddingOf(context).bottom,
-      ),
       child: Row(
         children: [
-          SizedBox(
-            width: 44,
-            height: 44,
-            child: IconButton.outlined(
-              tooltip: context.tr('wave.reset'),
+          if (active != null) ...[
+            TextButton(
+              key: const ValueKey('stop-wave-in-settings'),
               onPressed: () {
-                context.read<WaveBloc>().add(WaveResetRequested());
+                _dispatch(context, PlayerWaveStopped());
                 Navigator.pop(context);
               },
-              icon: const Icon(Icons.restart_alt, size: 19),
-              style: IconButton.styleFrom(
-                foregroundColor: AppColors.textSub,
-                side: const BorderSide(color: AppColors.border),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
+              child: Text(context.tr('waveSession.stop')),
             ),
-          ),
-          const SizedBox(width: 12),
+            const SizedBox(width: 8),
+          ],
           Expanded(
-            child: SizedBox(
-              height: 44,
-              child: OutlinedButton.icon(
-                onPressed: canBuild
-                    ? () {
-                        context.read<WaveBloc>().add(WaveConfigApplied(_draft));
-                        Navigator.pop(context);
-                      }
-                    : null,
-                icon: const Icon(Icons.waves_rounded, size: 18),
-                label: Text(context.tr('wave.build')),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.text,
-                  disabledForegroundColor: AppColors.muted2,
-                  backgroundColor: AppColors.surface2,
-                  disabledBackgroundColor: AppColors.surface,
-                  side: const BorderSide(color: AppColors.border),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  textStyle: AppText.bodyL.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+            child: FilledButton.icon(
+              key: const ValueKey('apply-wave-settings'),
+              onPressed: canSubmit
+                  ? () => _submit(context, active, selectedTrack)
+                  : null,
+              icon: const Icon(Icons.waves_rounded),
+              label: Text(
+                context.tr(
+                  active == null
+                      ? 'waveSession.startWave'
+                      : 'waveSession.applyOrSwitch',
                 ),
               ),
             ),
@@ -543,165 +572,170 @@ class _WaveSettingsSheetState extends State<_WaveSettingsSheet> {
     );
   }
 
-  List<String> _uniqueArtists(List<Track> tracks) {
-    final artists = <String, String>{};
-    for (final artist in tracks.expand((track) => track.artists)) {
-      final normalized = _normalizeName(artist.name);
-      if (normalized.isEmpty) continue;
-      artists.putIfAbsent(normalized, () => artist.name.trim());
+  void _submit(
+    BuildContext context,
+    WaveSession? active,
+    Track? selectedTrack,
+  ) {
+    switch (_source) {
+      case _WaveSourceChoice.mood:
+        final target = _target;
+        if (active?.source is MoodWaveSource) {
+          _dispatch(
+            context,
+            PlayerWaveMoodSettingsUpdated(
+              mode: _moodMode,
+              radius: _radius,
+              targetValence: target.valence,
+              targetArousal: target.arousal,
+            ),
+          );
+        } else {
+          _dispatch(
+            context,
+            PlayerMoodWaveStarted(
+              targetValence: target.valence,
+              targetArousal: target.arousal,
+              radius: _radius,
+              mode: _moodMode,
+            ),
+          );
+        }
+      case _WaveSourceChoice.track:
+        _dispatch(context, PlayerTrackWaveStarted(track: selectedTrack!));
+      case _WaveSourceChoice.artist:
+        _dispatch(
+          context,
+          PlayerArtistWaveStarted(
+            artistId: _selectedArtistId!,
+            artistName:
+                _selectedArtistName ?? context.tr('waveSession.unknownArtist'),
+            imageUrl: _selectedArtistImageUrl,
+          ),
+        );
     }
-    final result = artists.values.toList();
-    result.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-    return result;
+    Navigator.pop(context);
   }
 
-  bool _containsSeed(String artist) {
-    final normalized = _normalizeName(artist);
-    return _draft.seeds.any((seed) => _normalizeName(seed) == normalized);
+  List<Track> _filterTracks(List<Track> tracks) {
+    final query = _search.trim().toLowerCase();
+    if (query.isEmpty) return tracks;
+    return tracks
+        .where(
+          (track) =>
+              track.title.toLowerCase().contains(query) ||
+              track.artists.any(
+                (artist) => artist.name.toLowerCase().contains(query),
+              ),
+        )
+        .toList(growable: false);
   }
 
-  void _toggleSeed(String artist) {
-    final normalized = _normalizeName(artist);
-    setState(() {
-      final selected = _draft.seeds.any(
-        (seed) => _normalizeName(seed) == normalized,
-      );
-      _draft = _draft.copyWith(
-        seeds: selected
-            ? _draft.seeds
-                  .where((seed) => _normalizeName(seed) != normalized)
-                  .toList()
-            : [..._draft.seeds, artist.trim()],
-      );
-    });
+  List<ArtistSummary> _filterArtists(List<ArtistSummary> artists) {
+    final query = _search.trim().toLowerCase();
+    if (query.isEmpty) return artists;
+    return artists
+        .where((artist) => artist.name.toLowerCase().contains(query))
+        .toList(growable: false);
   }
 
-  void _toggleTrack(Track track) {
-    setState(() {
-      final selected = _draft.tracks.any((item) => item.id == track.id);
-      _draft = _draft.copyWith(
-        tracks: selected
-            ? _draft.tracks.where((item) => item.id != track.id).toList()
-            : [..._draft.tracks, track],
-      );
-    });
+  PlayerState _playerState(BuildContext context) =>
+      widget.playerState ?? context.read<PlayerBloc>().state;
+
+  void _dispatch(BuildContext context, PlayerEvent event) {
+    final callback = widget.onEvent;
+    if (callback != null) {
+      callback(event);
+    } else {
+      context.read<PlayerBloc>().add(event);
+    }
   }
+}
+
+class _SelectionRow extends StatelessWidget {
+  const _SelectionRow({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.imageUrl,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String title;
+  final String subtitle;
+  final String? imageUrl;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => ListTile(
+    contentPadding: EdgeInsets.zero,
+    onTap: onTap,
+    leading: ClipRRect(
+      borderRadius: BorderRadius.circular(6),
+      child: CachedImage(
+        url: imageUrl,
+        size: 42,
+        fallback: const Icon(Icons.music_note_rounded),
+      ),
+    ),
+    title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
+    subtitle: subtitle.isEmpty
+        ? null
+        : Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis),
+    trailing: selected
+        ? const Icon(Icons.check_circle_rounded)
+        : const Icon(Icons.circle_outlined, color: AppColors.muted2),
+  );
 }
 
 class _SheetHandle extends StatelessWidget {
   const _SheetHandle();
 
   @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        margin: const EdgeInsets.only(top: 12, bottom: 8),
-        width: 32,
-        height: 4,
-        decoration: BoxDecoration(
-          color: AppColors.muted2,
-          borderRadius: BorderRadius.circular(2),
-        ),
+  Widget build(BuildContext context) => Center(
+    child: Container(
+      margin: const EdgeInsets.only(top: 12, bottom: 8),
+      width: 32,
+      height: 4,
+      decoration: BoxDecoration(
+        color: AppColors.muted2,
+        borderRadius: BorderRadius.circular(2),
       ),
-    );
-  }
+    ),
+  );
 }
 
-class _WaveSeedRow extends StatelessWidget {
-  const _WaveSeedRow({
-    required this.primary,
-    required this.secondary,
-    required this.icon,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final String primary;
-  final String? secondary;
-  final IconData icon;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 11),
-        child: Row(
-          children: [
-            Icon(icon, size: 16, color: AppColors.muted),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    primary,
-                    style: AppText.bodyL.copyWith(
-                      color: isSelected ? AppColors.text : AppColors.textSub,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  if (secondary != null && secondary!.isNotEmpty)
-                    Text(
-                      secondary!,
-                      style: AppText.bodyXS,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                ],
-              ),
-            ),
-            SizedBox(
-              width: 24,
-              child: AnimatedOpacity(
-                opacity: isSelected ? 1 : 0,
-                duration: AppAnim.fast,
-                child: const Icon(
-                  Icons.check,
-                  size: 16,
-                  color: AppColors.textSub,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+Track? _trackById(List<Track> tracks, String? id) {
+  if (id == null) return null;
+  for (final track in tracks) {
+    if (track.id == id) return track;
   }
+  return null;
 }
 
-WaveConfig _configOf(WaveState state) => switch (state) {
-  WaveReady(:final config) => config,
-  WaveGenerating(:final config) => config,
-  WaveEmpty(:final config) => config,
-  WaveError(:final config) => config,
-  _ => const WaveConfig(seeds: [], tracks: []),
+String _sourceLabel(
+  BuildContext context,
+  WaveSource source,
+) => switch (source) {
+  MoodWaveSource(:final mode) => context.tr(
+    'waveSession.moodSource',
+    namedArgs: {'mode': _modeLabel(context, mode)},
+  ),
+  TrackWaveSource(:final trackTitle) => context.tr(
+    'waveSession.trackSource',
+    namedArgs: {'title': trackTitle ?? context.tr('waveSession.unknownTrack')},
+  ),
+  ArtistWaveSource(:final artistName) => context.tr(
+    'waveSession.artistSource',
+    namedArgs: {'name': artistName ?? context.tr('waveSession.unknownArtist')},
+  ),
 };
 
-List<Track> _visibleTracksOf(WaveState state) => switch (state) {
-  WaveReady(:final tracks) => tracks,
-  WaveGenerating(:final previousTracks) => previousTracks,
-  WaveError(:final previousTracks) => previousTracks,
-  _ => const [],
+String _modeLabel(BuildContext context, MoodWaveMode mode) => switch (mode) {
+  MoodWaveMode.stay => context.tr('moodMap.modeStay'),
+  MoodWaveMode.explore => context.tr('moodMap.modeExplore'),
+  MoodWaveMode.lift => context.tr('moodMap.modeLift'),
+  MoodWaveMode.calm => context.tr('moodMap.modeCalm'),
 };
-
-bool _hasBasis(WaveConfig config) {
-  return config.seeds.isNotEmpty || config.tracks.isNotEmpty;
-}
-
-String _basisSummary(WaveConfig config) {
-  final labels = [
-    ...config.seeds.map((seed) => seed.trim()),
-    ...config.tracks.map((track) => track.title.trim()),
-  ].where((label) => label.isNotEmpty).toList();
-  final visible = labels.take(2).join(', ');
-  final hiddenCount = labels.length - 2;
-  return hiddenCount > 0 ? '$visible +$hiddenCount' : visible;
-}
-
-String _normalizeName(String name) {
-  return name.trim().toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
-}

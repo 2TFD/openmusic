@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:openmusic/core/di/di.dart';
+import 'package:openmusic/core/services/recommendation/wave_recommendation_engine.dart';
 import 'package:openmusic/layers/domain/entities/statistic.dart';
 import 'package:openmusic/layers/domain/repositories/artist_repository.dart';
 import 'package:openmusic/layers/domain/repositories/download_task_repository.dart';
@@ -8,9 +9,9 @@ import 'package:openmusic/layers/domain/repositories/listening_summary_repositor
 import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
 import 'package:openmusic/layers/domain/repositories/search_source.dart';
 import 'package:openmusic/layers/domain/repositories/track_repository.dart';
+import 'package:openmusic/layers/domain/repositories/track_external_actions.dart';
 import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
 import 'package:openmusic/layers/domain/usecases/build_playback_queue_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/generate_wave_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/skip_track_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/clear_history_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/create_playlist_use_case.dart';
@@ -28,7 +29,6 @@ import 'package:openmusic/layers/presentation/blocs/history/history_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist/playlist_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/statistic/statistic_bloc.dart';
-import 'package:openmusic/layers/presentation/blocs/wave/wave_bloc.dart';
 import 'package:openmusic/core/services/track_source_resolver.dart';
 import '../../layers/domain/usecases/add_track_use_case.dart';
 import '../../layers/domain/usecases/get_tracks_use_case.dart';
@@ -99,6 +99,7 @@ class BlocScope extends StatelessWidget {
             skipTrack: const SkipTrackUseCase(),
             commands: getIt(),
             listeningTracker: getIt(),
+            waveRecommendationEngine: getIt<WaveRecommendationEngine>(),
           ),
         ),
         BlocProvider(
@@ -117,9 +118,6 @@ class BlocScope extends StatelessWidget {
               searchSource: getIt<SearchSource>(),
             ),
           ),
-        ),
-        BlocProvider(
-          create: (context) => WaveBloc(generate: getIt<GenerateWaveUseCase>()),
         ),
         BlocProvider(
           create: (context) => DownloadStatusCubit(
@@ -142,7 +140,10 @@ class BlocScope extends StatelessWidget {
           )..add(const LoadHistoryEvent()),
         ),
       ],
-      child: child,
+      child: RepositoryProvider<TrackExternalActions>.value(
+        value: getIt<TrackExternalActions>(),
+        child: child,
+      ),
     );
   }
 }

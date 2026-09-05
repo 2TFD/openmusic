@@ -22,6 +22,9 @@ import 'package:openmusic/layers/data/datasources/local/similarity_evaluation/si
 import 'package:openmusic/layers/data/datasources/local/track_embedding/drift/track_embedding_table.dart';
 import 'package:openmusic/layers/data/datasources/local/track_temporal_embedding/track_temporal_embedding_segment_table.dart';
 import 'package:openmusic/layers/data/datasources/local/track_temporal_embedding/track_temporal_embedding_table.dart';
+import 'package:openmusic/layers/data/datasources/local/track_emotion/track_emotion_analysis_table.dart';
+import 'package:openmusic/layers/data/datasources/local/track_emotion/track_emotion_segment_table.dart';
+import 'package:openmusic/layers/data/datasources/local/track_emotion/personal_mood_adjustment_table.dart';
 import 'package:path_provider/path_provider.dart';
 
 part 'app_database.g.dart';
@@ -50,13 +53,16 @@ part 'app_database.g.dart';
     TrackLyricsTable,
     LyricsResolutionStateTable,
     LyricsResolutionTaskTable,
+    TrackEmotionAnalysisTable,
+    TrackEmotionSegmentTable,
+    PersonalMoodAdjustmentTable,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 17;
+  int get schemaVersion => 18;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -72,6 +78,7 @@ class AppDatabase extends _$AppDatabase {
       await _createV12Indexes(m.database);
       await _createV14Indexes(m.database);
       await _createV17Indexes(m.database);
+      await _createV18Indexes(m.database);
     },
     onUpgrade: (m, from, to) async {
       if (from < 2) {
@@ -311,10 +318,7 @@ SET content_revision = 'audio:' || audio_revision
 WHERE modality = 'audio' AND audio_revision IS NOT NULL
 ''');
         }
-        if (!await _hasTable(
-          m.database,
-          trackLyricsTable.actualTableName,
-        )) {
+        if (!await _hasTable(m.database, trackLyricsTable.actualTableName)) {
           await m.createTable(trackLyricsTable);
         }
         if (!await _hasTable(
@@ -336,6 +340,27 @@ WHERE modality = 'audio' AND audio_revision IS NOT NULL
           await _rebuildMusicAnalysisTaskForV17(m.database);
         }
         await _createV17Indexes(m.database);
+      }
+      if (from < 18) {
+        if (!await _hasTable(
+          m.database,
+          trackEmotionAnalysisTable.actualTableName,
+        )) {
+          await m.createTable(trackEmotionAnalysisTable);
+        }
+        if (!await _hasTable(
+          m.database,
+          trackEmotionSegmentTable.actualTableName,
+        )) {
+          await m.createTable(trackEmotionSegmentTable);
+        }
+        if (!await _hasTable(
+          m.database,
+          personalMoodAdjustmentTable.actualTableName,
+        )) {
+          await m.createTable(personalMoodAdjustmentTable);
+        }
+        await _createV18Indexes(m.database);
       }
     },
     beforeOpen: (details) async {
@@ -471,6 +496,18 @@ WHERE modality = 'audio' AND audio_revision IS NOT NULL
     await database.customStatement(
       'CREATE INDEX IF NOT EXISTS idx_analysis_task_track_status'
       ' ON music_analysis_task_table(track_id, status)',
+    );
+  }
+
+  static Future<void> _createV18Indexes(GeneratedDatabase database) async {
+    await database.customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_track_emotion_track'
+      ' ON track_emotion_analysis_table(track_id)',
+    );
+    await database.customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_track_emotion_pipeline'
+      ' ON track_emotion_analysis_table('
+      'representation, model_id, model_version, preprocessing_version)',
     );
   }
 

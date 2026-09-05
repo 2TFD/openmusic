@@ -7,4 +7,5 @@ class AppRouterNames {
   static String get allPlaylists => 'all_playlists';
   static String get artist => 'artist';
   static String get settings => "settings_screen";
+  static String get moodMap => 'mood_map';
 }
