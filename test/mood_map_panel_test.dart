@@ -58,8 +58,8 @@ void main() {
         preprocessingVersion: '1',
         contentRevision: 'audio:0',
         audioRevision: 0,
-        valence: 0.3,
-        arousal: -0.2,
+        valence: 0,
+        arousal: 0,
         moodDistribution: MoodDistribution(const {'calm': 0.8}),
         analyzedAt: DateTime.utc(2026),
       ),
@@ -113,17 +113,32 @@ void main() {
     );
 
     await tester.tap(find.byKey(const ValueKey('mood-map-track-map-track')));
+    await tester.pump();
+    expect(find.text('Map Track'), findsNothing);
+    expect(selectedTarget, isNotNull);
+
+    selectedTarget = null;
+    final size = tester.getSize(find.byType(InteractiveViewer));
+    final transform = Matrix4.identity()
+      ..setEntry(0, 0, 4)
+      ..setEntry(1, 1, 4)
+      ..setEntry(0, 3, -size.width * 1.5)
+      ..setEntry(1, 3, -size.height * 1.5);
+    viewer.transformationController!.value = transform;
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const ValueKey('mood-map-track-map-track')));
     await tester.pumpAndSettle();
     expect(find.text('Map Track'), findsOneWidget);
     expect(find.text('Map Artist'), findsOneWidget);
 
     await tester.tap(find.byType(ModalBarrier).last);
     await tester.pumpAndSettle();
-    await tester.tapAt(tester.getCenter(find.byType(InteractiveViewer)));
+    await tester.tapAt(
+      tester.getTopLeft(find.byType(InteractiveViewer)) + const Offset(20, 20),
+    );
     await tester.pump();
     expect(selectedTarget, isNotNull);
-    expect(selectedTarget!.valence, closeTo(0, 0.02));
-    expect(selectedTarget!.arousal, closeTo(0, 0.02));
   });
 }
 

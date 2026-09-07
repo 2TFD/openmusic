@@ -128,9 +128,9 @@ void main() {
 
     final secondSessionId = harness.bloc.state.waveSession!.id;
     expect(harness.bloc.state.waveSession!.source, isA<MoodWaveSource>());
-    expect(harness.bloc.state.queue.first.id, 'track-0');
+    expect(harness.bloc.state.queue.first.id, isNot('track-0'));
     expect(
-      harness.bloc.state.queueProvenance.skip(1),
+      harness.bloc.state.queueProvenance,
       everyElement(
         isA<QueueEntryProvenance>().having(
           (value) => value.waveSessionId,
@@ -193,55 +193,158 @@ void main() {
     },
   );
 
-  test('stop preserves manual future queue entries', () async {
-    final harness = await _Harness.create(trackCount: 12);
+  test(
+    'start replaces a manual queue and stop keeps only current Wave track',
+    () async {
+      final harness = await _Harness.create(trackCount: 12);
+      addTearDown(harness.close);
+      final manual = [
+        _track('manual-0'),
+        _track('manual-1'),
+        _track('manual-2'),
+      ];
+      harness.bloc.add(PlayerQueueSet(manual, autoPlay: false));
+      await _until(() => harness.bloc.state.queue.length == manual.length);
+
+      harness.start(autoPlay: true);
+      await _until(
+        () =>
+            harness.bloc.state.queue.length == 5 &&
+            !harness.bloc.state.isWaveGenerating,
+      );
+      final sessionId = harness.bloc.state.waveSession!.id;
+      expect(
+        harness.bloc.state.queue.map((track) => track.id).toSet(),
+        isNot(containsAll(manual.map((track) => track.id))),
+      );
+      expect(
+        harness.bloc.state.queueProvenance,
+        everyElement(
+          isA<QueueEntryProvenance>().having(
+            (value) => value.waveSessionId,
+            'waveSessionId',
+            sessionId,
+          ),
+        ),
+      );
+      expect(harness.player.playCalls, 1);
+      final current = harness.bloc.state.currentTrack;
+
+      harness.bloc.add(PlayerWaveStopped());
+      await _until(() => !harness.bloc.state.isWaveActive);
+
+      expect(harness.bloc.state.queue, [current]);
+    },
+  );
+
+  test(
+    'long manual queue is replaced by the first Wave batch immediately',
+    () async {
+      final harness = await _Harness.create(trackCount: 12);
+      addTearDown(harness.close);
+      final manual = List.generate(5, (index) => _track('manual-$index'));
+      harness.bloc.add(PlayerQueueSet(manual, autoPlay: false));
+      await _until(() => harness.bloc.state.queue.length == manual.length);
+
+      harness.start();
+      await _until(
+        () =>
+            harness.bloc.state.isWaveActive &&
+            !harness.bloc.state.isWaveGenerating,
+      );
+
+      expect(harness.moods.loadCalls, 1);
+      expect(harness.player.appendCalls, 0);
+      expect(
+        harness.bloc.state.waveContinuationStatus,
+        WaveContinuationStatus.ready,
+      );
+      expect(harness.bloc.state.queue, hasLength(5));
+      expect(
+        harness.bloc.state.queue.map((track) => track.id),
+        isNot(containsAll(manual.map((track) => track.id))),
+      );
+      expect(
+        harness.bloc.state.queueProvenance,
+        everyElement(
+          isA<QueueEntryProvenance>().having(
+            (value) => value.waveSessionId,
+            'waveSessionId',
+            harness.bloc.state.waveSession!.id,
+          ),
+        ),
+      );
+    },
+  );
+
+  test('exhausted pool starts a new cycle and allows cooled repeats', () async {
+    final harness = await _Harness.create(trackCount: 6);
     addTearDown(harness.close);
-    final manual = [_track('manual-0'), _track('manual-1'), _track('manual-2')];
-    harness.bloc.add(PlayerQueueSet(manual, autoPlay: false));
-    await _until(() => harness.bloc.state.queue.length == manual.length);
-
     harness.start();
-    await _until(() => harness.bloc.state.queue.length == manual.length + 5);
-    final sessionId = harness.bloc.state.waveSession!.id;
-    expect(
-      harness.bloc.state.queueProvenance.take(manual.length),
-      everyElement(
-        isA<QueueEntryProvenance>().having(
-          (value) => value.origin,
-          'origin',
-          QueueEntryOrigin.manual,
-        ),
-      ),
-    );
-    expect(
-      harness.bloc.state.queueProvenance.skip(manual.length),
-      everyElement(
-        isA<QueueEntryProvenance>().having(
-          (value) => value.waveSessionId,
-          'waveSessionId',
-          sessionId,
-        ),
-      ),
-    );
+    await _until(() => harness.bloc.state.queue.length == 5);
 
-    harness.bloc.add(PlayerWaveStopped());
-    await _until(() => !harness.bloc.state.isWaveActive);
+    harness.player.index.add(1);
+    await _until(() => harness.player.appendCalls == 1);
+    expect(harness.bloc.state.queue, hasLength(6));
 
-    expect(harness.bloc.state.queue, manual);
+    harness.player.index.add(2);
+    await _until(() => harness.player.appendCalls == 2);
+
+    expect(harness.bloc.state.isWaveActive, isTrue);
+    expect(harness.bloc.state.isWaveWaiting, isFalse);
+    expect(harness.bloc.state.queue.length, greaterThan(6));
     expect(
-      harness.bloc.state.queueProvenance,
-      everyElement(
-        isA<QueueEntryProvenance>().having(
-          (value) => value.origin,
-          'origin',
-          QueueEntryOrigin.manual,
-        ),
-      ),
+      harness.bloc.state.queue.map((track) => track.id).toSet().length,
+      lessThan(harness.bloc.state.queue.length),
     );
   });
 
+  test('logical future queue follows shuffle playback order', () {
+    final tracks = List.generate(4, (index) => _track('track-$index'));
+    final state = PlayerState(
+      queue: tracks,
+      currentIndex: 2,
+      currentTrack: tracks[2],
+      isShuffleEnabled: true,
+      shuffleIndices: const [1, 2, 0, 3],
+    );
+
+    expect(state.futureQueueIndices, [0, 3]);
+    expect(state.futureQueueTrackIds, {'track-0', 'track-3'});
+    expect(state.remainingQueueCount, 2);
+  });
+
   test(
-    'zero candidates ends start gracefully and keeps existing queue',
+    'stop removes only logical future Wave entries while shuffled',
+    () async {
+      final harness = await _Harness.create(
+        trackCount: 5,
+        config: const MoodWaveConfig(remainingQueueThreshold: 0),
+      );
+      addTearDown(harness.close);
+      harness.start();
+      await _until(() => harness.bloc.state.queue.length == 5);
+
+      harness.player.nextShuffleIndices = const [0, 2, 1, 4, 3];
+      harness.bloc.add(PlayerShuffleToggled());
+      await _until(() => harness.bloc.state.isShuffleEnabled);
+      harness.player.index.add(2);
+      await _until(() => harness.bloc.state.currentIndex == 2);
+
+      harness.bloc.add(PlayerWaveStopped());
+      await _until(() => !harness.bloc.state.isWaveActive);
+
+      expect(harness.bloc.state.queue.map((track) => track.id), [
+        'track-0',
+        'track-2',
+      ]);
+      expect(harness.bloc.state.currentIndex, 1);
+      expect(harness.bloc.state.currentTrack?.id, 'track-2');
+    },
+  );
+
+  test(
+    'zero candidates keeps an active waiting Wave and supports retry',
     () async {
       final harness = await _Harness.create(trackCount: 0);
       addTearDown(harness.close);
@@ -257,8 +360,18 @@ void main() {
       );
 
       expect(harness.bloc.state.queue, [existing]);
-      expect(harness.bloc.state.isMoodWaveActive, isFalse);
+      expect(harness.bloc.state.isMoodWaveActive, isTrue);
+      expect(harness.bloc.state.isWaveWaiting, isTrue);
       expect(harness.player.appendCalls, 0);
+
+      harness.bloc.add(PlayerWaveMoodSettingsUpdated(radius: 0.8));
+      await _until(() => harness.moods.loadCalls == 2);
+      expect(harness.bloc.state.isWaveWaiting, isTrue);
+
+      harness.bloc.add(PlayerWaveRetryRequested());
+      await _until(() => harness.moods.loadCalls == 3);
+      expect(harness.bloc.state.isMoodWaveActive, isTrue);
+      expect(harness.bloc.state.isWaveWaiting, isTrue);
     },
   );
 }
@@ -270,7 +383,10 @@ class _Harness {
   final _MoodMapMemory moods;
   final PlayerBloc bloc;
 
-  static Future<_Harness> create({required int trackCount}) async {
+  static Future<_Harness> create({
+    required int trackCount,
+    MoodWaveConfig config = const MoodWaveConfig(),
+  }) async {
     final player = _FakeAudioPlayer();
     final moods = _MoodMapMemory(
       List.generate(trackCount, (index) => _moodTrack('track-$index', index)),
@@ -281,7 +397,7 @@ class _Harness {
       globalEmbeddings: _EmptyGlobalEmbeddings(),
       temporalEmbeddings: _EmptyTemporalEmbeddings(),
       registry: MusicAnalysisModelRegistry(_EmptyAnalysisClient()),
-      config: const MoodWaveConfig(),
+      config: config,
     );
     final bloc = PlayerBloc(
       service: player,
@@ -304,13 +420,13 @@ class _Harness {
     return _Harness(player: player, moods: moods, bloc: bloc);
   }
 
-  void start() => bloc.add(
+  void start({bool autoPlay = false}) => bloc.add(
     PlayerMoodWaveStarted(
       targetValence: 0,
       targetArousal: 0,
       radius: 0.5,
       mode: MoodWaveMode.stay,
-      autoPlay: false,
+      autoPlay: autoPlay,
     ),
   );
 
@@ -388,7 +504,9 @@ class _FakeAudioPlayer implements AudioPlayerPort {
   List<Track> queue = [];
   List<Track> appended = [];
   int appendCalls = 0;
+  int playCalls = 0;
   PlaybackLoopMode loopMode = PlaybackLoopMode.off;
+  List<int>? nextShuffleIndices;
 
   @override
   Stream<Duration> get positionStream => position.stream;
@@ -401,7 +519,7 @@ class _FakeAudioPlayer implements AudioPlayerPort {
   @override
   Stream<PlaybackProcessingState> get processingStream => processing.stream;
   @override
-  List<int>? get shuffleIndices => null;
+  List<int>? get shuffleIndices => nextShuffleIndices;
 
   @override
   Future<void> appendQueue(List<Track> tracks) async {
@@ -417,6 +535,7 @@ class _FakeAudioPlayer implements AudioPlayerPort {
     for (final index in descending) {
       if (index >= 0 && index < queue.length) queue.removeAt(index);
     }
+    nextShuffleIndices = null;
   }
 
   @override
@@ -426,7 +545,11 @@ class _FakeAudioPlayer implements AudioPlayerPort {
   @override
   Future<void> pause() async => playing.add(false);
   @override
-  Future<void> play() async => playing.add(true);
+  Future<void> play() async {
+    playCalls++;
+    playing.add(true);
+  }
+
   @override
   Future<void> seek(Duration value) async => position.add(value);
   @override

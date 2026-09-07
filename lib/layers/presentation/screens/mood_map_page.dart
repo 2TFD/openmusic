@@ -426,20 +426,26 @@ class _MoodMapCanvasState extends State<_MoodMapCanvas> {
         top: center.dy - markerSize / 2,
         child: GestureDetector(
           key: ValueKey('mood-map-track-${entry.track.id}'),
-          onTap: () => widget.onTrackTap(entry),
-          onLongPress: () => widget.onTrackLongPress(entry),
-          onPanUpdate: (details) => _drag(entry, details.globalPosition, size),
-          onPanEnd: (_) {
-            final cubit = context.read<MoodMapCubit>();
-            final current = cubit.state.tracks.firstWhere(
-              (candidate) => candidate.track.id == entry.track.id,
-            );
-            cubit.savePersonalPosition(
-              current.track.id,
-              current.valence,
-              current.arousal,
-            );
-          },
+          onTap: showArtwork ? () => widget.onTrackTap(entry) : null,
+          onLongPress: showArtwork
+              ? () => widget.onTrackLongPress(entry)
+              : null,
+          onPanUpdate: showArtwork
+              ? (details) => _drag(entry, details.globalPosition, size)
+              : null,
+          onPanEnd: showArtwork
+              ? (_) {
+                  final cubit = context.read<MoodMapCubit>();
+                  final current = cubit.state.tracks.firstWhere(
+                    (candidate) => candidate.track.id == entry.track.id,
+                  );
+                  cubit.savePersonalPosition(
+                    current.track.id,
+                    current.valence,
+                    current.arousal,
+                  );
+                }
+              : null,
           child: Opacity(
             opacity: showArtwork ? artworkOpacity : 1,
             child: Container(
@@ -505,17 +511,19 @@ class _MoodMapCanvasState extends State<_MoodMapCanvas> {
 
   void _handlePlotTap(Offset offset, Size size) {
     MoodMapTrack? nearest;
-    var distance = 18 / _scale;
-    for (final entry in widget.state.tracks) {
-      final point = MoodMapGeometry.toCanvas(
-        valence: entry.valence,
-        arousal: entry.arousal,
-        size: size,
-      );
-      final candidate = (point - offset).distance;
-      if (candidate < distance) {
-        distance = candidate;
-        nearest = entry;
+    if (MoodMapViewPolicy.artworkOpacity(_scale) > 0) {
+      var distance = 18 / _scale;
+      for (final entry in widget.state.tracks) {
+        final point = MoodMapGeometry.toCanvas(
+          valence: entry.valence,
+          arousal: entry.arousal,
+          size: size,
+        );
+        final candidate = (point - offset).distance;
+        if (candidate < distance) {
+          distance = candidate;
+          nearest = entry;
+        }
       }
     }
     if (nearest != null) {

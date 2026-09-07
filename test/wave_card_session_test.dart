@@ -33,6 +33,7 @@ void main() {
     final screen = ValueNotifier(0);
     final state = ValueNotifier(PlayerState());
     final events = <PlayerEvent>[];
+    var retryCount = 0;
     final track = Track(
       id: 'track',
       title: 'Seed song',
@@ -66,8 +67,11 @@ void main() {
                 builder: (context, page, _) => page == 0
                     ? ValueListenableBuilder<PlayerState>(
                         valueListenable: state,
-                        builder: (context, value, _) =>
-                            WaveCardView(state: value, onConfigure: () {}),
+                        builder: (context, value, _) => WaveCardView(
+                          state: value,
+                          onConfigure: () {},
+                          onRetry: () => retryCount++,
+                        ),
                       )
                     : WaveSettingsSheet(
                         playerState: state.value,
@@ -117,7 +121,19 @@ void main() {
       ),
     );
     await tester.pump();
-    expect(find.text('Based on: Artist — Wave Artist'), findsOneWidget);
+    expect(find.text('Similar in sound to Wave Artist'), findsOneWidget);
+
+    state.value = PlayerState(
+      waveSession: WaveSession.startArtist(
+        artistId: artist.id,
+        artistName: artist.name,
+      ),
+      waveContinuationStatus: WaveContinuationStatus.waiting,
+    );
+    await tester.pump();
+    expect(find.text('Waiting for suitable tracks…'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('wave-card-retry')));
+    expect(retryCount, 1);
 
     state.value = PlayerState(
       waveSession: WaveSession.startMood(

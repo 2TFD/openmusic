@@ -68,7 +68,7 @@ class MoodWaveEngine implements WaveRecommendationStrategy {
 
     final excludedIds = <String>{
       ...session.recentTrackIds,
-      ...session.generatedTrackIds,
+      ...session.cycleTrackIds,
       ...queuedTrackIds,
       ?session.seedTrackId,
       ?currentTrackId,

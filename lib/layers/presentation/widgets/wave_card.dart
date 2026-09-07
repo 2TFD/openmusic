@@ -34,11 +34,15 @@ class WaveCard extends StatelessWidget {
     return BlocBuilder<PlayerBloc, PlayerState>(
       buildWhen: (previous, current) =>
           previous.waveSession != current.waveSession ||
-          previous.isWaveGenerating != current.isWaveGenerating ||
+          previous.waveContinuationStatus != current.waveContinuationStatus ||
           previous.queue != current.queue ||
           previous.currentIndex != current.currentIndex,
-      builder: (context, state) =>
-          WaveCardView(state: state, onConfigure: () => _openSettings(context)),
+      builder: (context, state) => WaveCardView(
+        state: state,
+        onConfigure: () => _openSettings(context),
+        onRetry: () =>
+            context.read<PlayerBloc>().add(PlayerWaveRetryRequested()),
+      ),
     );
   }
 }
@@ -48,10 +52,12 @@ class WaveCardView extends StatelessWidget {
     super.key,
     required this.state,
     required this.onConfigure,
+    this.onRetry,
   });
 
   final PlayerState state;
   final VoidCallback onConfigure;
+  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -97,21 +103,29 @@ class WaveCardView extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 4),
-                          Text(
-                            session == null
-                                ? context.tr('waveSession.inactiveDescription')
-                                : context.tr(
-                                    state.isWaveGenerating
-                                        ? 'waveSession.generating'
-                                        : 'waveSession.readyWithRemaining',
-                                    namedArgs: {
-                                      'count': state.remainingQueueCount
-                                          .toString(),
-                                    },
-                                  ),
-                            style: AppText.bodyM,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                          Semantics(
+                            liveRegion: true,
+                            child: Text(
+                              session == null
+                                  ? context.tr(
+                                      'waveSession.inactiveDescription',
+                                    )
+                                  : context.tr(
+                                      state.isWaveGenerating
+                                          ? 'waveSession.generating'
+                                          : state.isWaveWaiting
+                                          ? 'waveSession.waiting'
+                                          : 'waveSession.readyWithRemaining',
+                                      namedArgs: {
+                                        'count': state.remainingQueueCount
+                                            .toString(),
+                                      },
+                                    ),
+                              key: const ValueKey('wave-card-status'),
+                              style: AppText.bodyM,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ],
                       ),
@@ -121,6 +135,13 @@ class WaveCardView extends StatelessWidget {
                       const SizedBox.square(
                         dimension: 22,
                         child: CircularProgressIndicator(strokeWidth: 1.5),
+                      )
+                    else if (state.isWaveWaiting)
+                      IconButton(
+                        key: const ValueKey('wave-card-retry'),
+                        tooltip: context.tr('waveSession.retry'),
+                        onPressed: onRetry,
+                        icon: const Icon(Icons.refresh_rounded, size: 20),
                       )
                     else
                       IconButton(

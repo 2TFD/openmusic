@@ -179,11 +179,16 @@ void main() {
         mode: MoodWaveMode.stay,
         seedTrackId: 'seed',
       );
-      session = session.recordPlayed('one', contextSize: 2);
-      session = session.recordPlayed('two', skipped: true, contextSize: 2);
-      session = session.recordPlayed('three', contextSize: 2);
+      session = session.recordPlayed('one', contextSize: 2, cooldownSize: 4);
+      session = session.recordPlayed(
+        'two',
+        skipped: true,
+        contextSize: 2,
+        cooldownSize: 4,
+      );
+      session = session.recordPlayed('three', contextSize: 2, cooldownSize: 4);
 
-      expect(session.recentTrackIds, ['two', 'three']);
+      expect(session.recentTrackIds, ['one', 'two', 'three']);
       expect(session.profileTrackIds, ['one', 'three']);
       expect(session.seedTrackId, 'seed');
     },
@@ -265,7 +270,7 @@ void main() {
       expect(batch.tracks.map((track) => track.id).toSet(), {'t4', 't5'});
     });
 
-    test('successive batches are unique for the entire session', () async {
+    test('successive batches are unique inside the current cycle', () async {
       final engine = _engine(
         moods: [for (var i = 0; i < 5; i++) _mood('t$i')],
         config: const MoodWaveConfig(batchSize: 2, maxRadiusExpansion: 0),
@@ -282,7 +287,8 @@ void main() {
             .intersection(second.tracks.map((track) => track.id).toSet()),
         isEmpty,
       );
-      expect(second.session.generatedTrackIds, hasLength(4));
+      expect(second.session.cycleTrackIds, hasLength(4));
+      expect(second.session.beginNewCycle().cycleTrackIds, isEmpty);
     });
 
     test(
@@ -296,7 +302,7 @@ void main() {
 
         expect(batch.isEmpty, isTrue);
         expect(batch.session.generationCount, 0);
-        expect(batch.session.generatedTrackIds, isEmpty);
+        expect(batch.session.cycleTrackIds, isEmpty);
       },
     );
   });

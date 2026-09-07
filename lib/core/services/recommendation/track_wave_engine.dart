@@ -79,7 +79,7 @@ class TrackWaveEngine implements WaveRecommendationStrategy {
     final excluded = <String>{
       source.trackId,
       ...session.recentTrackIds,
-      ...session.generatedTrackIds,
+      ...session.cycleTrackIds,
       ...queuedTrackIds,
       ?currentTrackId,
     };

@@ -8,6 +8,7 @@ class ArtistWaveConfig {
     this.temporalWeight = 0.35,
     this.recentProfileWeight = 0.35,
     this.excludeSameArtistTracks = true,
+    this.allowSameArtistFallback = true,
   }) : assert(batchSize > 0),
        assert(globalCandidatePoolSize > 0),
        assert(representativeTrackLimit > 0),
@@ -27,4 +28,5 @@ class ArtistWaveConfig {
   final double temporalWeight;
   final double recentProfileWeight;
   final bool excludeSameArtistTracks;
+  final bool allowSameArtistFallback;
 }

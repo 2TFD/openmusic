@@ -64,11 +64,19 @@ class ArtistWaveEngine implements WaveRecommendationStrategy {
       compatibleTrackIds: data.globals.keys.toSet(),
       limit: _config.representativeTrackLimit,
     );
+    final globalProfileTrackIds = _globalProfileTrackIds(
+      cachedIds: source.globalProfileTrackIds,
+      artistTracks: artistTracks,
+      compatibleTrackIds: data.globals.keys.toSet(),
+    );
     final updatedSession = session.withSource(
-      source.copyWith(representativeTrackIds: representatives),
+      source.copyWith(
+        globalProfileTrackIds: globalProfileTrackIds,
+        representativeTrackIds: representatives,
+      ),
     );
     final seedVectors = [
-      for (final id in representatives) data.globals[id]!.vector,
+      for (final id in globalProfileTrackIds) data.globals[id]!.vector,
     ];
     if (seedVectors.isEmpty) {
       return WaveRecommendationBatch(
@@ -101,30 +109,11 @@ class ArtistWaveEngine implements WaveRecommendationStrategy {
     final excluded = <String>{
       ...representatives,
       ...session.recentTrackIds,
-      ...session.generatedTrackIds,
+      ...session.cycleTrackIds,
       ...queuedTrackIds,
       ?currentTrackId,
-      if (_config.excludeSameArtistTracks)
-        ...artistTracks.map((track) => track.id),
     };
-    final globalRanked = <({String id, double cosine, double similarity})>[];
-    for (final track in data.tracks) {
-      if (excluded.contains(track.id) || !isPlayableWaveTrack(track)) continue;
-      final embedding = data.globals[track.id];
-      if (embedding == null) continue;
-      final cosine = AudioWaveScoring.cosine(profile, embedding.vector);
-      if (cosine == null) continue;
-      globalRanked.add((
-        id: track.id,
-        cosine: cosine,
-        similarity: AudioWaveScoring.normalizeCosine(cosine),
-      ));
-    }
-    globalRanked.sort((left, right) {
-      final score = right.similarity.compareTo(left.similarity);
-      return score != 0 ? score : left.id.compareTo(right.id);
-    });
-    final pool = globalRanked.take(_config.globalCandidatePoolSize);
+    final artistTrackIds = artistTracks.map((track) => track.id).toSet();
     final seedTemporal = [
       for (final id in representatives)
         if (data.temporals[id] case final embedding?) embedding.segments,
@@ -133,36 +122,66 @@ class ArtistWaveEngine implements WaveRecommendationStrategy {
       for (final id in recentIds)
         if (data.temporals[id] case final embedding?) embedding.segments,
     ];
-    final candidates = <WaveCandidate>[];
-    for (final global in pool) {
-      final temporal = data.temporals[global.id];
-      final temporalSimilarity = temporal == null
-          ? null
-          : AudioWaveScoring.blendedTemporal(
-              seedProfiles: seedTemporal,
-              recentProfiles: recentTemporal,
-              candidate: temporal.segments,
-              recentWeight: _config.recentProfileWeight,
-            );
-      final score = AudioWaveScoring.weightedScore(
-        globalSimilarity: global.similarity,
-        temporalSimilarity: temporalSimilarity,
-        globalWeight: _config.globalWeight,
-        temporalWeight: _config.temporalWeight,
-      );
-      candidates.add(
-        WaveCandidate(
-          track: data.byId[global.id]!,
-          globalCosineSimilarity: global.cosine,
+    List<WaveCandidate> rank({required bool excludeArtist}) {
+      final globalRanked = <({String id, double cosine, double similarity})>[];
+      for (final track in data.tracks) {
+        if (excluded.contains(track.id) ||
+            (excludeArtist && artistTrackIds.contains(track.id)) ||
+            !isPlayableWaveTrack(track)) {
+          continue;
+        }
+        final embedding = data.globals[track.id];
+        if (embedding == null) continue;
+        final cosine = AudioWaveScoring.cosine(profile, embedding.vector);
+        if (cosine == null) continue;
+        globalRanked.add((
+          id: track.id,
+          cosine: cosine,
+          similarity: AudioWaveScoring.normalizeCosine(cosine),
+        ));
+      }
+      globalRanked.sort((left, right) {
+        final score = right.similarity.compareTo(left.similarity);
+        return score != 0 ? score : left.id.compareTo(right.id);
+      });
+      final candidates = <WaveCandidate>[];
+      for (final global in globalRanked.take(_config.globalCandidatePoolSize)) {
+        final temporal = data.temporals[global.id];
+        final temporalSimilarity = temporal == null
+            ? null
+            : AudioWaveScoring.blendedTemporal(
+                seedProfiles: seedTemporal,
+                recentProfiles: recentTemporal,
+                candidate: temporal.segments,
+                recentWeight: _config.recentProfileWeight,
+              );
+        final score = AudioWaveScoring.weightedScore(
           globalSimilarity: global.similarity,
           temporalSimilarity: temporalSimilarity,
-          finalScore: score.score,
-          availableWeight: score.availableWeight,
-        ),
-      );
+          globalWeight: _config.globalWeight,
+          temporalWeight: _config.temporalWeight,
+        );
+        candidates.add(
+          WaveCandidate(
+            track: data.byId[global.id]!,
+            globalCosineSimilarity: global.cosine,
+            globalSimilarity: global.similarity,
+            temporalSimilarity: temporalSimilarity,
+            finalScore: score.score,
+            availableWeight: score.availableWeight,
+          ),
+        );
+      }
+      candidates.sort(_compareCandidates);
+      return candidates.take(_config.batchSize).toList(growable: false);
     }
-    candidates.sort(_compareCandidates);
-    final selected = candidates.take(_config.batchSize).toList(growable: false);
+
+    var selected = rank(excludeArtist: _config.excludeSameArtistTracks);
+    if (selected.isEmpty &&
+        _config.excludeSameArtistTracks &&
+        _config.allowSameArtistFallback) {
+      selected = rank(excludeArtist: false);
+    }
     return WaveRecommendationBatch(
       candidates: selected,
       session: updatedSession.withGeneratedTracks(
@@ -190,7 +209,8 @@ class ArtistWaveEngine implements WaveRecommendationStrategy {
   }) {
     final eligibleById = <String, Track>{
       for (final track in artistTracks)
-        if (compatibleTrackIds.contains(track.id)) track.id: track,
+        if (isPlayableWaveTrack(track) && compatibleTrackIds.contains(track.id))
+          track.id: track,
     };
     if (cachedIds.isNotEmpty) {
       return [
@@ -214,6 +234,27 @@ class ArtistWaveEngine implements WaveRecommendationStrategy {
       if (result.length == limit) break;
     }
     return result;
+  }
+
+  static List<String> _globalProfileTrackIds({
+    required List<String> cachedIds,
+    required List<Track> artistTracks,
+    required Set<String> compatibleTrackIds,
+  }) {
+    final eligibleIds = {
+      for (final track in artistTracks)
+        if (isPlayableWaveTrack(track) && compatibleTrackIds.contains(track.id))
+          track.id,
+    };
+    if (cachedIds.isNotEmpty) {
+      final cached = [
+        for (final id in cachedIds)
+          if (eligibleIds.contains(id)) id,
+      ];
+      if (cached.length == eligibleIds.length) return cached;
+    }
+    final sorted = eligibleIds.toList()..sort();
+    return sorted;
   }
 
   static String _releaseKey(Track track) {

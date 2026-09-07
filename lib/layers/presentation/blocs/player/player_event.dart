@@ -69,6 +69,8 @@ class PlayerWaveMoodSettingsUpdated extends PlayerEvent {
 
 class PlayerWaveStopped extends PlayerEvent {}
 
+class PlayerWaveRetryRequested extends PlayerEvent {}
+
 @Deprecated('Use PlayerWaveStopped')
 class PlayerMoodWaveStopped extends PlayerEvent {}
 

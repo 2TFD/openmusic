@@ -109,8 +109,12 @@ class ArtistWaveSource extends WaveSource {
     required this.artistId,
     this.artistName,
     this.imageUrl,
+    List<String> globalProfileTrackIds = const [],
     List<String> representativeTrackIds = const [],
-  }) : representativeTrackIds = List.unmodifiable(
+  }) : globalProfileTrackIds = List.unmodifiable(
+         _unique(globalProfileTrackIds),
+       ),
+       representativeTrackIds = List.unmodifiable(
          _unique(representativeTrackIds),
        );
 
@@ -118,6 +122,7 @@ class ArtistWaveSource extends WaveSource {
   final String? artistName;
   @override
   final String? imageUrl;
+  final List<String> globalProfileTrackIds;
   final List<String> representativeTrackIds;
 
   @override
@@ -126,20 +131,24 @@ class ArtistWaveSource extends WaveSource {
   @override
   String? get displayTitle => artistName;
 
-  ArtistWaveSource copyWith({List<String>? representativeTrackIds}) =>
-      ArtistWaveSource(
-        artistId: artistId,
-        artistName: artistName,
-        imageUrl: imageUrl,
-        representativeTrackIds:
-            representativeTrackIds ?? this.representativeTrackIds,
-      );
+  ArtistWaveSource copyWith({
+    List<String>? globalProfileTrackIds,
+    List<String>? representativeTrackIds,
+  }) => ArtistWaveSource(
+    artistId: artistId,
+    artistName: artistName,
+    imageUrl: imageUrl,
+    globalProfileTrackIds: globalProfileTrackIds ?? this.globalProfileTrackIds,
+    representativeTrackIds:
+        representativeTrackIds ?? this.representativeTrackIds,
+  );
 
   @override
   List<Object?> get props => [
     artistId,
     artistName,
     imageUrl,
+    globalProfileTrackIds,
     representativeTrackIds,
   ];
 }
@@ -208,7 +217,7 @@ class WaveSession extends Equatable {
       seedAudioRevision: seedAudioRevision,
       recentTrackIds: recent,
       profileTrackIds: recent,
-      generatedTrackIds: const {},
+      cycleTrackIds: const {},
       generationCount: 0,
     );
   }
@@ -237,7 +246,7 @@ class WaveSession extends Equatable {
       seedAudioRevision: seedAudioRevision,
       recentTrackIds: const [],
       profileTrackIds: const [],
-      generatedTrackIds: const {},
+      cycleTrackIds: const {},
       generationCount: 0,
     );
   }
@@ -265,7 +274,7 @@ class WaveSession extends Equatable {
       seedAudioRevision: null,
       recentTrackIds: const [],
       profileTrackIds: const [],
-      generatedTrackIds: const {},
+      cycleTrackIds: const {},
       generationCount: 0,
     );
   }
@@ -278,11 +287,11 @@ class WaveSession extends Equatable {
     required this.seedAudioRevision,
     required List<String> recentTrackIds,
     required List<String> profileTrackIds,
-    required Set<String> generatedTrackIds,
+    required Set<String> cycleTrackIds,
     required this.generationCount,
   }) : recentTrackIds = List.unmodifiable(recentTrackIds),
        profileTrackIds = List.unmodifiable(profileTrackIds),
-       generatedTrackIds = Set.unmodifiable(generatedTrackIds);
+       cycleTrackIds = Set.unmodifiable(cycleTrackIds);
 
   final String id;
   final WaveSource source;
@@ -291,7 +300,15 @@ class WaveSession extends Equatable {
   final int? seedAudioRevision;
   final List<String> recentTrackIds;
   final List<String> profileTrackIds;
-  final Set<String> generatedTrackIds;
+
+  /// Tracks already selected in the current library cycle.
+  ///
+  /// Unlike the former lifetime generated set, this is cleared when the
+  /// recommendation pool is exhausted so a Wave can continue indefinitely.
+  final Set<String> cycleTrackIds;
+
+  @Deprecated('Use cycleTrackIds; generated tracks are no longer permanent')
+  Set<String> get generatedTrackIds => cycleTrackIds;
   final int generationCount;
 
   MoodWaveSource get moodSource {
@@ -313,9 +330,11 @@ class WaveSession extends Equatable {
     String trackId, {
     bool skipped = false,
     int contextSize = 3,
+    int? cooldownSize,
   }) {
-    if (trackId.isEmpty || contextSize <= 0) return this;
-    final recent = _appendRecent(recentTrackIds, trackId, contextSize);
+    final recentLimit = cooldownSize ?? contextSize;
+    if (trackId.isEmpty || contextSize <= 0 || recentLimit <= 0) return this;
+    final recent = _appendRecent(recentTrackIds, trackId, recentLimit);
     final profile = skipped
         ? profileTrackIds.where((id) => id != trackId).toList(growable: false)
         : _appendRecent(profileTrackIds, trackId, contextSize);
@@ -348,7 +367,7 @@ class WaveSession extends Equatable {
     MoodWaveMode? mode,
     List<String>? recentTrackIds,
     List<String>? profileTrackIds,
-    Set<String>? generatedTrackIds,
+    Set<String>? cycleTrackIds,
     int? generationCount,
   }) {
     var nextSource = source ?? this.source;
@@ -374,7 +393,7 @@ class WaveSession extends Equatable {
       seedAudioRevision: seedAudioRevision,
       recentTrackIds: recentTrackIds ?? this.recentTrackIds,
       profileTrackIds: profileTrackIds ?? this.profileTrackIds,
-      generatedTrackIds: generatedTrackIds ?? this.generatedTrackIds,
+      cycleTrackIds: cycleTrackIds ?? this.cycleTrackIds,
       generationCount: generationCount ?? this.generationCount,
     );
   }
@@ -392,10 +411,12 @@ class WaveSession extends Equatable {
     };
     return copyWith(
       source: nextSource,
-      generatedTrackIds: {...generatedTrackIds, ...ids},
+      cycleTrackIds: {...cycleTrackIds, ...ids},
       generationCount: ids.isEmpty ? generationCount : generationCount + 1,
     );
   }
+
+  WaveSession beginNewCycle() => copyWith(cycleTrackIds: const {});
 
   static List<String> _appendRecent(
     List<String> values,
@@ -430,7 +451,7 @@ class WaveSession extends Equatable {
     seedAudioRevision,
     recentTrackIds,
     profileTrackIds,
-    generatedTrackIds,
+    cycleTrackIds,
     generationCount,
   ];
 }

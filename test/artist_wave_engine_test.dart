@@ -30,6 +30,34 @@ void main() {
     expect(batch.candidates.first.globalSimilarity, closeTo(1, 1e-12));
   });
 
+  test(
+    'global centroid uses all artist tracks beyond temporal limit',
+    () async {
+      final batch = await _engine(
+        tracks: [
+          waveTrack('seed-a', artistId: 'artist', album: 'A'),
+          waveTrack('seed-b', artistId: 'artist', album: 'B'),
+          waveTrack('seed-c', artistId: 'artist', album: 'C'),
+          waveTrack('all-profile-match'),
+          waveTrack('first-representative-match'),
+        ],
+        globals: [
+          waveGlobal('seed-a', const [1, 0]),
+          waveGlobal('seed-b', const [0, 1]),
+          waveGlobal('seed-c', const [0, 1]),
+          waveGlobal('all-profile-match', const [0.45, 0.9]),
+          waveGlobal('first-representative-match', const [1, 0]),
+        ],
+        config: const ArtistWaveConfig(representativeTrackLimit: 1),
+      ).generate(session: _session());
+
+      final source = batch.session.source as ArtistWaveSource;
+      expect(source.representativeTrackIds, ['seed-a']);
+      expect(source.globalProfileTrackIds, ['seed-a', 'seed-b', 'seed-c']);
+      expect(batch.tracks.first.id, 'all-profile-match');
+    },
+  );
+
   test('incompatible current-model embeddings are ignored', () async {
     final batch = await _engine(
       tracks: [
@@ -133,6 +161,25 @@ void main() {
     expect(excluded.tracks.map((track) => track.id), ['external']);
     expect(allowed.tracks.first.id, 'same-artist');
   });
+
+  test(
+    'same-artist tracks are only used after external pool is empty',
+    () async {
+      final batch = await _engine(
+        tracks: [
+          waveTrack('seed', artistId: 'artist', album: 'A'),
+          waveTrack('same-artist', artistId: 'artist', album: 'B'),
+        ],
+        globals: [
+          waveGlobal('seed', const [1, 0]),
+          waveGlobal('same-artist', const [1, 0]),
+        ],
+        config: const ArtistWaveConfig(representativeTrackLimit: 1),
+      ).generate(session: _session());
+
+      expect(batch.tracks.map((track) => track.id), ['same-artist']);
+    },
+  );
 
   test('one analyzed artist track is a valid fallback profile', () async {
     final batch = await _engine(

@@ -1,5 +1,7 @@
 part of 'player_bloc.dart';
 
+enum WaveContinuationStatus { inactive, ready, generating, waiting }
+
 class PlayerState extends Equatable {
   final Track? currentTrack;
   final List<Track> queue;
@@ -15,7 +17,7 @@ class PlayerState extends Equatable {
   final String? error;
   final bool isRestoring;
   final WaveSession? waveSession;
-  final bool isWaveGenerating;
+  final WaveContinuationStatus waveContinuationStatus;
 
   PlayerState({
     this.currentTrack,
@@ -31,9 +33,18 @@ class PlayerState extends Equatable {
     this.error,
     this.isRestoring = false,
     this.waveSession,
-    this.isWaveGenerating = false,
+    WaveContinuationStatus? waveContinuationStatus,
+    bool? isWaveGenerating,
     List<QueueEntryProvenance>? queueProvenance,
-  }) : queue = List.unmodifiable(queue),
+  }) : waveContinuationStatus =
+           waveContinuationStatus ??
+           (isWaveGenerating == true
+               ? WaveContinuationStatus.generating
+               : null) ??
+           (waveSession == null
+               ? WaveContinuationStatus.inactive
+               : WaveContinuationStatus.ready),
+       queue = List.unmodifiable(queue),
        queueProvenance = List.unmodifiable(
          queueProvenance ??
              List.filled(queue.length, const QueueEntryProvenance.manual()),
@@ -47,6 +58,12 @@ class PlayerState extends Equatable {
   }
 
   bool get isWaveActive => waveSession != null;
+
+  bool get isWaveGenerating =>
+      waveContinuationStatus == WaveContinuationStatus.generating;
+
+  bool get isWaveWaiting =>
+      waveContinuationStatus == WaveContinuationStatus.waiting;
 
   @Deprecated('Use waveSession')
   MoodWaveSession? get moodWaveSession => waveSession;
@@ -70,10 +87,27 @@ class PlayerState extends Equatable {
   }
 
   int get remainingQueueCount {
-    if (queue.isEmpty) return 0;
-    final remaining = queue.length - _effectivePosition - 1;
-    return remaining < 0 ? 0 : remaining;
+    return futureQueueIndices.length;
   }
+
+  List<int> get futureQueueIndices {
+    if (queue.isEmpty) return const [];
+    final playbackOrder =
+        isShuffleEnabled &&
+            shuffleIndices != null &&
+            shuffleIndices!.length == queue.length
+        ? shuffleIndices!
+        : List<int>.generate(queue.length, (index) => index);
+    final position = playbackOrder.indexOf(currentIndex);
+    final effectivePosition = position < 0 ? currentIndex : position;
+    if (effectivePosition >= playbackOrder.length - 1) return const [];
+    return List.unmodifiable(playbackOrder.sublist(effectivePosition + 1));
+  }
+
+  Set<String> get futureQueueTrackIds => {
+    for (final index in futureQueueIndices)
+      if (index >= 0 && index < queue.length) queue[index].id,
+  };
 
   int get _effectivePosition {
     final indices = shuffleIndices;
@@ -106,7 +140,7 @@ class PlayerState extends Equatable {
     error,
     isRestoring,
     waveSession,
-    isWaveGenerating,
+    waveContinuationStatus,
   ];
 
   PlayerState copyWith({
@@ -124,6 +158,7 @@ class PlayerState extends Equatable {
     Object? error = _unset,
     bool? isRestoring,
     Object? waveSession = _unset,
+    WaveContinuationStatus? waveContinuationStatus,
     bool? isWaveGenerating,
   }) {
     final nextQueue = queue ?? this.queue;
@@ -156,7 +191,26 @@ class PlayerState extends Equatable {
       waveSession: identical(waveSession, _unset)
           ? this.waveSession
           : waveSession as WaveSession?,
-      isWaveGenerating: isWaveGenerating ?? this.isWaveGenerating,
+      waveContinuationStatus:
+          waveContinuationStatus ??
+          (isWaveGenerating == true
+              ? WaveContinuationStatus.generating
+              : isWaveGenerating == false
+              ? (identical(waveSession, _unset)
+                    ? (this.waveSession == null
+                          ? WaveContinuationStatus.inactive
+                          : WaveContinuationStatus.ready)
+                    : waveSession == null
+                    ? WaveContinuationStatus.inactive
+                    : WaveContinuationStatus.ready)
+              : null) ??
+          (identical(waveSession, _unset)
+              ? this.waveContinuationStatus
+              : waveSession == null
+              ? WaveContinuationStatus.inactive
+              : this.waveSession == null
+              ? WaveContinuationStatus.ready
+              : this.waveContinuationStatus),
     );
   }
 }
