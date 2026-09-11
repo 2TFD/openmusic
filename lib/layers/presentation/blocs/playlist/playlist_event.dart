@@ -17,10 +17,11 @@ class CreatePlaylistEvent extends PlaylistEvent {
 
 class _PlaylistStreamErrored extends PlaylistEvent {
   final Object error;
-  const _PlaylistStreamErrored(this.error);
+  final StackTrace stackTrace;
+  const _PlaylistStreamErrored(this.error, this.stackTrace);
 
   @override
-  List<Object> get props => [error];
+  List<Object> get props => [error, stackTrace];
 }
 
 class _PlaylistSnapshotReceived extends PlaylistEvent {

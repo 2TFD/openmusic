@@ -4,9 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:openmusic/core/app_router/app_router_names.dart';
+import 'package:openmusic/core/layout/app_layout.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
 import 'package:openmusic/layers/domain/entities/playlist.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist/playlist_bloc.dart';
+import 'package:openmusic/layers/presentation/models/ui_error_localization.dart';
 import 'package:openmusic/layers/presentation/widgets/playlist_cover.dart';
 import 'package:openmusic/layers/presentation/widgets/sheets/create_playlist_sheet.dart';
 
@@ -54,7 +56,7 @@ class AllPlaylistsScreen extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(32),
                 child: Text(
-                  state.error.tr(),
+                  state.error.localized(context),
                   style: GoogleFonts.figtree(
                     fontSize: 14,
                     color: AppColors.textSub,
@@ -124,17 +126,24 @@ class AllPlaylistsScreen extends StatelessWidget {
             );
           }
 
-          return GridView.builder(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              childAspectRatio: 0.72,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-            ),
-            itemCount: playlists.length,
-            itemBuilder: (context, index) =>
-                _PlaylistGridCard(playlist: playlists[index]),
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final sidePadding = AppLayout.horizontalPaddingFor(
+                constraints.maxWidth,
+              );
+              return GridView.builder(
+                padding: EdgeInsets.fromLTRB(sidePadding, 8, sidePadding, 100),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 220,
+                  childAspectRatio: 0.72,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                ),
+                itemCount: playlists.length,
+                itemBuilder: (context, index) =>
+                    _PlaylistGridCard(playlist: playlists[index]),
+              );
+            },
           );
         },
       ),

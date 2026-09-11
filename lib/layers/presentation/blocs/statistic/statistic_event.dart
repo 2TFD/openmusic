@@ -19,8 +19,9 @@ class ChangePeriodEvent extends StatisticEvent {
 
 class _StatisticStreamErrored extends StatisticEvent {
   final Object error;
-  const _StatisticStreamErrored(this.error);
+  final StackTrace stackTrace;
+  const _StatisticStreamErrored(this.error, this.stackTrace);
 
   @override
-  List<Object> get props => [error];
+  List<Object> get props => [error, stackTrace];
 }

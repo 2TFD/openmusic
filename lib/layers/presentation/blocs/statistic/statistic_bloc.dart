@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:openmusic/core/errors/failures/failure.dart';
+import 'package:openmusic/core/utils/app_logger.dart';
 import 'package:openmusic/layers/domain/entities/statistic.dart';
 import 'package:openmusic/layers/domain/usecases/get_statistic_use_case.dart';
+import 'package:openmusic/layers/presentation/models/ui_error.dart';
 
 part 'statistic_event.dart';
 part 'statistic_state.dart';
@@ -27,16 +27,26 @@ class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
         add(LoadStatisticEvent(period));
       },
       onError: (error, stackTrace) {
-        log('[StatisticBloc] Stream error: $error, stackTrace: $stackTrace');
-        add(_StatisticStreamErrored(error));
+        AppLogger.warning(
+          '[StatisticBloc] Stream error: $error, stackTrace: $stackTrace',
+          operation: 'statistics.watch',
+        );
+        add(_StatisticStreamErrored(error, stackTrace));
       },
     );
     on<LoadStatisticEvent>(_onLoad);
     on<ChangePeriodEvent>(_onChangePeriod);
-    on<_StatisticStreamErrored>(
-      (e, emit) =>
-          emit(StatisticsError(failureFromException(e.error).toLocaleKey())),
-    );
+    on<_StatisticStreamErrored>((e, emit) {
+      emit(
+        StatisticsError(
+          UiError.fromException(
+            e.error,
+            e.stackTrace,
+            operation: 'statistics.watch',
+          ),
+        ),
+      );
+    });
   }
 
   @override
@@ -53,8 +63,12 @@ class StatisticBloc extends Bloc<StatisticEvent, StatisticState> {
     try {
       final stats = await getStatistics.execute(e.period);
       emit(StatisticsLoaded(stats));
-    } catch (e) {
-      emit(StatisticsError(failureFromException(e).toLocaleKey()));
+    } catch (e, stackTrace) {
+      emit(
+        StatisticsError(
+          UiError.fromException(e, stackTrace, operation: 'statistics.load'),
+        ),
+      );
     }
   }
 

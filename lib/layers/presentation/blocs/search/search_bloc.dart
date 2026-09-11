@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/entities/track_preview.dart';
 import 'package:openmusic/layers/domain/usecases/search_use_case.dart';
+import 'package:openmusic/layers/presentation/models/ui_error.dart';
 
 part 'search_event.dart';
 part 'search_state.dart';
@@ -48,8 +48,12 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
           currentOffset: result.offset,
         ),
       );
-    } catch (e) {
-      emit(SearchError(failureFromException(e).toLocaleKey()));
+    } catch (e, stackTrace) {
+      emit(
+        SearchError(
+          UiError.fromException(e, stackTrace, operation: 'search.local'),
+        ),
+      );
     }
   }
 
@@ -90,8 +94,12 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
           currentOffset: event.offset,
         ),
       );
-    } catch (e) {
-      emit(SearchError(failureFromException(e).toLocaleKey()));
+    } catch (e, stackTrace) {
+      emit(
+        SearchError(
+          UiError.fromException(e, stackTrace, operation: 'search.external'),
+        ),
+      );
     }
   }
 

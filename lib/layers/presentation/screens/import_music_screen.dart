@@ -47,7 +47,7 @@ class _ImportMusicScreenState extends State<ImportMusicScreen> {
       case LocalTracksSelectionEmpty():
         CustomSnackBar.info(context, context.tr('import.noFilesSelected'));
       case LocalTracksPickFailure():
-        CustomSnackBar.error(context, context.tr('import.filePickError'));
+        CustomSnackBar.uiError(context, state.error);
       default:
         break;
     }

@@ -7,6 +7,7 @@ import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/entities/track_preview.dart';
 import 'package:openmusic/layers/presentation/blocs/add_track/add_track_bloc.dart';
+import 'package:openmusic/layers/presentation/models/ui_error_localization.dart';
 import 'package:openmusic/layers/presentation/widgets/cached_image.dart';
 import 'package:openmusic/layers/presentation/widgets/snackbars/custom_snack_bar.dart';
 
@@ -22,11 +23,26 @@ class AddTrackSheet extends StatelessWidget {
       child: BlocConsumer<AddTrackBloc, AddTrackState>(
         listener: (context, state) {
           if (state is AddTrackSuccess) {
-            CustomSnackBar.trackAdded(context, state.track.title);
+            final skipped =
+                state.resolved.issues.length + state.result.failures.length;
+            if (state.resolved.collection != null || skipped > 0) {
+              CustomSnackBar.success(
+                context,
+                context.tr(
+                  'import.collectionResult',
+                  namedArgs: {
+                    'added': '${state.result.addedTracks.length}',
+                    'skipped': '$skipped',
+                  },
+                ),
+              );
+            } else {
+              CustomSnackBar.trackAdded(context, state.track.title);
+            }
             Navigator.pop(context);
             context.read<AddTrackBloc>().add(const ResetAddTrack());
           } else if (state is AddTrackError) {
-            CustomSnackBar.error(context, state.message.tr());
+            CustomSnackBar.uiError(context, state.error);
           }
         },
         builder: (context, state) {
@@ -66,6 +82,9 @@ class AddTrackSheet extends StatelessWidget {
       return _PreviewBody(
         key: const ValueKey('preview'),
         preview: state.preview,
+        collectionName: state.resolved.collection?.name,
+        trackCount: state.resolved.tracks.length,
+        skippedCount: state.resolved.issues.length,
         adding: false,
         onAdd: () {
           context.read<AddTrackBloc>().add(AddTrackToLibrary(state.resolved));
@@ -76,6 +95,9 @@ class AddTrackSheet extends StatelessWidget {
       return _PreviewBody(
         key: const ValueKey('preview_loading'),
         preview: state.preview,
+        collectionName: state.resolved.collection?.name,
+        trackCount: state.resolved.tracks.length,
+        skippedCount: state.resolved.issues.length,
         adding: true,
         onAdd: () {},
         onCancel: () {},
@@ -83,7 +105,7 @@ class AddTrackSheet extends StatelessWidget {
     } else if (state is AddTrackError) {
       return _ErrorBody(
         key: const ValueKey('error'),
-        message: state.message.tr(),
+        message: state.error.localized(context),
         onRetry: () {
           context.read<AddTrackBloc>().add(FetchTrackPreview(url));
         },
@@ -116,6 +138,7 @@ extension on Track {
       duration: duration,
       source: source.type,
       originalUrl: source.originalUrl,
+      media: source.media,
       year: null,
     );
   }
@@ -222,6 +245,9 @@ class _PreviewBody extends StatelessWidget {
   final bool adding;
   final VoidCallback onAdd;
   final VoidCallback onCancel;
+  final String? collectionName;
+  final int trackCount;
+  final int skippedCount;
 
   const _PreviewBody({
     super.key,
@@ -229,6 +255,9 @@ class _PreviewBody extends StatelessWidget {
     required this.adding,
     required this.onAdd,
     required this.onCancel,
+    this.collectionName,
+    this.trackCount = 1,
+    this.skippedCount = 0,
   });
 
   String _fmt(Duration? d) {
@@ -293,13 +322,25 @@ class _PreviewBody extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    _SourceBadge(source: preview.source),
+                    _SourceBadge(preview: preview),
                   ],
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
+          if (collectionName != null) ...[
+            Text(collectionName!, style: AppText.display3),
+            const SizedBox(height: 4),
+            Text(
+              context.tr(
+                'import.collectionPreview',
+                namedArgs: {'ready': '$trackCount', 'skipped': '$skippedCount'},
+              ),
+              style: AppText.bodyXS,
+            ),
+            const SizedBox(height: 12),
+          ],
           Container(
             padding: const EdgeInsets.symmetric(vertical: 14),
             decoration: const BoxDecoration(
@@ -357,8 +398,8 @@ class _PreviewBody extends StatelessWidget {
 }
 
 class _SourceBadge extends StatelessWidget {
-  final SourceType source;
-  const _SourceBadge({required this.source});
+  final TrackPreview preview;
+  const _SourceBadge({required this.preview});
 
   @override
   Widget build(BuildContext context) {
@@ -382,11 +423,16 @@ class _SourceBadge extends StatelessWidget {
           ),
           const SizedBox(width: 5),
           Text(
-            context.tr(switch (source) {
-              SourceType.localFile => 'library.filterLocal',
-              SourceType.soundcloud => 'library.filterSoundcloud',
-              SourceType.unknown => 'library.filterUnknown',
-            }),
+            preview.source == SourceType.spotify &&
+                    preview.media?.type == SourceType.youtube
+                ? context.tr('import.spotifyYoutubeSource')
+                : context.tr(switch (preview.source) {
+                    SourceType.localFile => 'library.filterLocal',
+                    SourceType.soundcloud => 'library.filterSoundcloud',
+                    SourceType.youtube => 'library.filterYoutube',
+                    SourceType.spotify => 'library.filterSpotify',
+                    SourceType.unknown => 'library.filterUnknown',
+                  }),
             style: GoogleFonts.figtree(
               fontSize: 10,
               fontWeight: FontWeight.w600,

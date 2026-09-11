@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/layers/domain/usecases/playlist_metadata_validation.dart';
 
 void main() {
@@ -20,14 +21,14 @@ void main() {
         name: 'Playlist',
         imageUrl: 'https:cover.jpg',
       ),
-      throwsArgumentError,
+      throwsA(isA<ValidationFailure>()),
     );
     expect(
       () => validatePlaylistMetadata(
         name: 'Playlist',
         imageUrl: 'file:///cover.jpg',
       ),
-      throwsArgumentError,
+      throwsA(isA<ValidationFailure>()),
     );
   });
 }

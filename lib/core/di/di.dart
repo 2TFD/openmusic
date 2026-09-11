@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:openmusic/core/errors/failures/failure.dart';
+import 'package:openmusic/core/services/spotify/spotify_auth_service.dart';
 import 'package:openmusic/core/services/download/download_worker.dart';
 import 'package:openmusic/core/services/music_analysis/music_analysis_backfill_service.dart';
 import 'package:openmusic/core/services/music_analysis/music_analysis_config.dart';
@@ -41,6 +42,8 @@ import 'package:openmusic/layers/data/datasources/lyrics/lrclib_lyrics_provider.
 import 'package:openmusic/layers/data/datasources/lyrics/sidecar_lrc_lyrics_provider.dart';
 import 'package:openmusic/layers/data/datasources/remote/music_analysis/dio_music_analysis_client.dart';
 import 'package:openmusic/layers/data/datasources/remote/soundcloud_track_source.dart';
+import 'package:openmusic/layers/data/datasources/remote/spotify_track_source.dart';
+import 'package:openmusic/layers/data/datasources/remote/youtube_track_source.dart';
 import 'package:openmusic/layers/data/repositories/download_repository_impl.dart';
 import 'package:openmusic/layers/data/repositories/artist_repository_impl.dart';
 import 'package:openmusic/layers/data/repositories/listening_summary_repository_impl.dart';
@@ -113,18 +116,44 @@ import 'package:openmusic/layers/presentation/blocs/artist_detail/artist_detail_
 import 'package:openmusic/layers/presentation/blocs/import_music/import_music_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist_detail/playlist_detail_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/mood_map/mood_map_cubit.dart';
+import 'package:openmusic/core/telemetry/crash_reporter.dart';
+import 'package:openmusic/core/telemetry/telemetry_consent_store.dart';
+import 'package:openmusic/layers/presentation/blocs/telemetry/telemetry_cubit.dart';
 
 final getIt = GetIt.instance;
 
-Future<void> configureDependencies({required String appDir}) async {
+Future<void> configureDependencies({
+  required String appDir,
+  AppDatabase? database,
+  CrashReporter crashReporter = const NoopCrashReporter(),
+  TelemetryConsentStore? telemetryConsentStore,
+  bool initialTelemetryConsent = false,
+}) async {
   // primitive
   getIt.registerSingleton<String>(appDir);
+  getIt.registerSingleton<CrashReporter>(crashReporter);
+  getIt.registerSingleton<TelemetryConsentStore>(
+    telemetryConsentStore ?? SharedPreferencesTelemetryConsentStore(),
+  );
+  getIt.registerSingleton<bool>(
+    initialTelemetryConsent,
+    instanceName: 'initialTelemetryConsent',
+  );
 
   // datasource
-  getIt.registerSingleton<AppDatabase>(AppDatabase());
+  getIt.registerSingleton<AppDatabase>(database ?? AppDatabase());
 
   getIt.registerLazySingleton<LocalFileTrackSource>(LocalFileTrackSource.new);
   getIt.registerLazySingleton<SoundcloudTrackSource>(SoundcloudTrackSource.new);
+  getIt.registerLazySingleton<YoutubeTrackSource>(YoutubeTrackSource.new);
+  getIt.registerLazySingleton<SpotifyAuthConfig>(SpotifyAuthConfig.new);
+  getIt.registerLazySingleton<SpotifyTokenStore>(SecureSpotifyTokenStore.new);
+  getIt.registerLazySingleton(
+    () => SpotifyAuthService(config: getIt(), tokenStore: getIt()),
+  );
+  getIt.registerLazySingleton(
+    () => SpotifyTrackSource(auth: getIt(), youtube: getIt()),
+  );
   getIt.registerLazySingleton<LocalTrackPicker>(
     () => getIt<LocalFileTrackSource>(),
   );
@@ -275,6 +304,8 @@ Future<void> configureDependencies({required String appDir}) async {
     () => TrackSourceResolver([
       getIt<LocalFileTrackSource>(),
       getIt<SoundcloudTrackSource>(),
+      getIt<YoutubeTrackSource>(),
+      getIt<SpotifyTrackSource>(),
     ]),
   );
   getIt.registerLazySingleton(
@@ -476,6 +507,13 @@ Future<void> configureDependencies({required String appDir}) async {
   );
   getIt.registerFactory(() => MusicAnalysisStatusCubit(tasks: getIt()));
   getIt.registerFactory(() => MoodMapCubit(repository: getIt()));
+  getIt.registerFactory(
+    () => TelemetryCubit(
+      reporter: getIt(),
+      consentStore: getIt(),
+      initialConsent: getIt(instanceName: 'initialTelemetryConsent'),
+    ),
+  );
   getIt.registerFactory(
     () => PlaylistDetailBloc(
       getPlaylistWithTracks: GetPlaylistWithTracksUseCase(

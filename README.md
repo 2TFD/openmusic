@@ -74,6 +74,40 @@ flutter pub get
 flutter run
 ```
 
+Crash reporting is opt-in and disabled unless a Sentry DSN is supplied at
+build time. The DSN is not stored in the repository:
+
+```bash
+flutter run \
+  --dart-define=SENTRY_DSN=https://public-key@o0.ingest.sentry.io/project-id \
+  --dart-define=SENTRY_ENVIRONMENT=development
+```
+
+Users can enable anonymous error reports in Settings. Performance tracing,
+session replay, request capture, and default PII collection remain disabled.
+
+### YouTube and Spotify import
+
+YouTube video/playlist import and Spotify track/album/owned-playlist import
+are available in debug, profile, and release builds without a feature flag.
+For Spotify, register `openmusic-spotify-login://callback` in the Spotify
+dashboard and supply the client ID when running or building the app:
+
+```bash
+flutter run \
+  --dart-define=SPOTIFY_CLIENT_ID=your-client-id
+```
+
+For an Android release, use
+`flutter build apk --dart-define=SPOTIFY_CLIENT_ID=your-client-id`.
+YouTube import requires no build-time configuration. Previously failed downloads
+can be retried from the app after updating.
+
+Spotify uses Authorization Code with PKCE; no client secret is embedded in the
+app. Tokens are kept in platform secure storage. Spotify Development Mode
+requires an allowlisted account, and playlist contents may only be available
+for playlists owned by or collaborative with that account.
+
 After modifying Drift table definitions:
 ```bash
 dart run build_runner build

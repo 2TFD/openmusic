@@ -1,5 +1,7 @@
 import 'package:openmusic/layers/domain/entities/resolved_track_input.dart';
 import 'package:openmusic/layers/domain/entities/track_preview.dart';
+import 'package:openmusic/core/errors/failures/failure.dart';
+import 'package:openmusic/core/utils/app_logger.dart';
 
 typedef TrackImportOperation = Future<void> Function(ResolvedTrackInput input);
 
@@ -23,7 +25,14 @@ class ImportLocalTracksUseCase {
       try {
         await _addTrack(ResolvedTrackInput.single(preview));
         added++;
-      } catch (_) {
+      } catch (error, stackTrace) {
+        final failure = failureFromException(error);
+        await AppLogger.warning(
+          'Local track import failed with ${failure.runtimeType}.',
+          operation: 'import.local_track',
+          error: error,
+          stackTrace: stackTrace,
+        );
         failed++;
       }
     }

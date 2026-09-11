@@ -37,7 +37,7 @@ final class SearchLoaded extends SearchState {
 }
 
 final class SearchError extends SearchState {
-  final String error;
+  final UiError error;
 
   const SearchError(this.error);
 

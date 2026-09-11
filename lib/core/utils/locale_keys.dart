@@ -133,4 +133,19 @@ abstract class LocaleKeys {
   static const errorFileNotFound = 'errors.fileNotFound';
   static const errorNoInternet = 'errors.noInternet';
   static const errorUnknown = 'errors.unknown';
+  static const errorPermission = 'errors.permission';
+  static const errorStorage = 'errors.storage';
+  static const errorRemoteAccess = 'errors.remoteAccess';
+  static const errorRateLimited = 'errors.rateLimited';
+  static const errorInvalidInput = 'errors.invalidInput';
+  static const errorStartup = 'errors.startup';
+  static const errorStartupDescription = 'errors.startupDescription';
+  static const errorRetry = 'errors.retry';
+
+  // ── telemetry ─────────────────────────────────────────────────────────────
+  static const settingsCrashReports = 'settings.crashReports';
+  static const settingsCrashReportsDescription =
+      'settings.crashReportsDescription';
+  static const settingsCrashReportsUnavailable =
+      'settings.crashReportsUnavailable';
 }

@@ -25,6 +25,19 @@ class TrackMapper {
           orElse: () => SourceType.unknown,
         ),
         originalUrl: dto.originalUrl,
+        media:
+            dto.mediaSourceType != null &&
+                dto.mediaSourceId != null &&
+                dto.mediaSourceUrl != null
+            ? MediaLocator(
+                type: SourceType.values.firstWhere(
+                  (type) => type.name == dto.mediaSourceType,
+                  orElse: () => SourceType.unknown,
+                ),
+                id: dto.mediaSourceId!,
+                url: dto.mediaSourceUrl!,
+              )
+            : null,
       ),
       addedAt:
           dto.addedAt ?? DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
@@ -53,6 +66,9 @@ class TrackMapper {
       imageUrl: entity.imageUrl,
       audioRevision: entity.audioRevision,
       metadataRevision: entity.metadataRevision,
+      mediaSourceType: entity.source.media?.type.name,
+      mediaSourceId: entity.source.media?.id,
+      mediaSourceUrl: entity.source.media?.url,
     );
   }
 }

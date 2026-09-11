@@ -1,3 +1,5 @@
+import 'package:openmusic/core/errors/failures/failure.dart';
+
 typedef ValidatedPlaylistMetadata = ({
   String name,
   String? description,
@@ -14,10 +16,10 @@ ValidatedPlaylistMetadata validatePlaylistMetadata({
   final normalizedImageUrl = _trimToNull(imageUrl);
 
   if (normalizedName.isEmpty || normalizedName.length > 50) {
-    throw ArgumentError.value(name, 'name');
+    throw const ValidationFailure('name');
   }
   if ((normalizedDescription?.length ?? 0) > 500) {
-    throw ArgumentError.value(description, 'description');
+    throw const ValidationFailure('description');
   }
   if (normalizedImageUrl != null) {
     final uri = Uri.tryParse(normalizedImageUrl);
@@ -25,7 +27,7 @@ ValidatedPlaylistMetadata validatePlaylistMetadata({
         (uri.scheme != 'http' && uri.scheme != 'https') ||
         !uri.hasAuthority ||
         uri.host.isEmpty) {
-      throw ArgumentError.value(imageUrl, 'imageUrl');
+      throw const ValidationFailure('imageUrl');
     }
   }
 

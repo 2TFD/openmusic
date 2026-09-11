@@ -16,6 +16,7 @@ import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/track/track_bloc.dart';
 import 'package:openmusic/layers/presentation/widgets/cached_image.dart';
 import 'package:openmusic/layers/presentation/widgets/snackbars/custom_snack_bar.dart';
+import 'package:openmusic/layers/presentation/models/ui_error.dart';
 
 Future<void> showPlayerTrackActions(
   BuildContext context,
@@ -35,6 +36,8 @@ Future<void> showPlayerTrackActions(
           Navigator.of(sheetContext).pop(_PlayerTrackAction.startWave),
       onOpenSource: () =>
           Navigator.of(sheetContext).pop(_PlayerTrackAction.openSource),
+      onOpenMediaSource: () =>
+          Navigator.of(sheetContext).pop(_PlayerTrackAction.openMediaSource),
     ),
   );
   if (action == null || !context.mounted) return;
@@ -52,21 +55,42 @@ Future<void> showPlayerTrackActions(
           track,
           sharePositionOrigin: sharePositionOrigin,
         );
-      } on FileNotFoundFailure catch (_) {
+      } on FileNotFoundFailure {
         if (!context.mounted) return;
         CustomSnackBar.error(
           context,
           context.tr('player.localFileUnavailable'),
         );
-      } on TrackNotReadyFailure catch (_) {
+      } on TrackNotReadyFailure {
         if (!context.mounted) return;
         CustomSnackBar.error(
           context,
           context.tr('player.localFileUnavailable'),
         );
-      } catch (_) {
+      } catch (error, stackTrace) {
         if (!context.mounted) return;
-        CustomSnackBar.error(context, context.tr('player.sourceOpenFailed'));
+        CustomSnackBar.uiError(
+          context,
+          UiError.fromException(
+            error,
+            stackTrace,
+            operation: 'track_actions.open_source',
+          ),
+        );
+      }
+    case _PlayerTrackAction.openMediaSource:
+      try {
+        await externalActions.openMediaSource(track);
+      } catch (error, stackTrace) {
+        if (!context.mounted) return;
+        CustomSnackBar.uiError(
+          context,
+          UiError.fromException(
+            error,
+            stackTrace,
+            operation: 'track_actions.open_media_source',
+          ),
+        );
       }
   }
 }
@@ -79,18 +103,20 @@ Rect _sharePositionOriginOf(BuildContext context) {
   return Offset.zero & MediaQuery.sizeOf(context);
 }
 
-enum _PlayerTrackAction { startWave, openSource }
+enum _PlayerTrackAction { startWave, openSource, openMediaSource }
 
 class _PlayerTrackActionsSheet extends StatelessWidget {
   const _PlayerTrackActionsSheet({
     required this.track,
     required this.onStartWave,
     required this.onOpenSource,
+    required this.onOpenMediaSource,
   });
 
   final Track track;
   final VoidCallback onStartWave;
   final VoidCallback onOpenSource;
+  final VoidCallback onOpenMediaSource;
 
   @override
   Widget build(BuildContext context) {
@@ -108,11 +134,25 @@ class _PlayerTrackActionsSheet extends StatelessWidget {
             label: context.tr('waveSession.startWave'),
             onTap: onStartWave,
           ),
-          if (track.source.type == SourceType.soundcloud)
+          if (track.source.type == SourceType.soundcloud ||
+              track.source.type == SourceType.youtube ||
+              track.source.type == SourceType.spotify)
             _SheetAction(
               icon: Icons.open_in_new_rounded,
-              label: context.tr('player.openInSoundCloud'),
+              label: context.tr(switch (track.source.type) {
+                SourceType.soundcloud => 'player.openInSoundCloud',
+                SourceType.youtube => 'player.openInYouTube',
+                SourceType.spotify => 'player.openInSpotify',
+                SourceType.localFile ||
+                SourceType.unknown => 'player.openSource',
+              }),
               onTap: onOpenSource,
+            ),
+          if (track.source.media?.type == SourceType.youtube)
+            _SheetAction(
+              icon: Icons.play_circle_outline_rounded,
+              label: context.tr('player.openAudioInYouTube'),
+              onTap: onOpenMediaSource,
             ),
           if (track.source.type == SourceType.localFile)
             _SheetAction(
@@ -189,9 +229,16 @@ Future<void> showTrackLibraryActions(BuildContext context, Track track) async {
     await removal.future;
     if (!context.mounted) return;
     CustomSnackBar.success(context, context.tr('track.deleted'));
-  } catch (_) {
+  } catch (error, stackTrace) {
     if (!context.mounted) return;
-    CustomSnackBar.error(context, context.tr('track.deleteFailed'));
+    CustomSnackBar.uiError(
+      context,
+      UiError.fromException(
+        error,
+        stackTrace,
+        operation: 'track_actions.delete',
+      ),
+    );
   }
 }
 
@@ -220,9 +267,12 @@ Future<void> showTrackDownloadFailure(
         await context.read<DownloadStatusCubit>().retry(track);
         if (!context.mounted) return;
         CustomSnackBar.info(context, context.tr('download.retryQueued'));
-      } catch (_) {
+      } catch (error, stackTrace) {
         if (!context.mounted) return;
-        CustomSnackBar.error(context, context.tr('download.retryFailed'));
+        CustomSnackBar.uiError(
+          context,
+          UiError.fromException(error, stackTrace, operation: 'download.retry'),
+        );
       }
     case _DownloadFailureAction.copyDetails:
       final failure = task.failure;

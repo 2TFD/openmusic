@@ -19,7 +19,7 @@ class MoodMapState extends Equatable {
   final double? targetArousal;
   final double radius;
   final String? selectedTrackId;
-  final Object? error;
+  final UiError? error;
 
   MoodMapTrack? get selectedTrack {
     for (final track in tracks) {
@@ -70,7 +70,9 @@ class MoodMapState extends Equatable {
     selectedTrackId: identical(selectedTrackId, _unsetMoodMapValue)
         ? this.selectedTrackId
         : selectedTrackId as String?,
-    error: identical(error, _unsetMoodMapValue) ? this.error : error,
+    error: identical(error, _unsetMoodMapValue)
+        ? this.error
+        : error as UiError?,
   );
 
   @override

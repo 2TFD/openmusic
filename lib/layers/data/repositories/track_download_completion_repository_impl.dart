@@ -63,7 +63,7 @@ class TrackDownloadCompletionRepositoryImpl
               ),
             );
     if (updated != 1) {
-      throw StateError('Concurrent audio update for track $trackId');
+      throw ConflictFailure('track audio', trackId);
     }
   }
 }

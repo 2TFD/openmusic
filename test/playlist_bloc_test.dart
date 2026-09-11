@@ -45,7 +45,7 @@ void main() {
     await pumpEventQueue();
     final afterError = bloc.state as PlaylistLoaded;
     expect(afterError.playlists, [_summary()]);
-    expect(afterError.errorKey, isNotNull);
+    expect(afterError.error, isNotNull);
 
     await subscription.cancel();
     await bloc.close();

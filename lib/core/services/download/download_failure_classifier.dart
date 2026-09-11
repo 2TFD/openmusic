@@ -59,12 +59,17 @@ class DownloadFailureClassifier {
     return switch (failure) {
       NetworkFailure() => DownloadFailureCodes.network,
       FileNotFoundFailure() => DownloadFailureCodes.fileNotFound,
+      PermissionFailure() => DownloadFailureCodes.filePermission,
+      StorageFailure() => DownloadFailureCodes.fileSystem,
+      RateLimitFailure() => DownloadFailureCodes.rateLimited,
       UnsupportedSourceFailure() ||
       UnsupportedMediaFailure() => DownloadFailureCodes.unsupported,
       RemoteServiceFailure(:final statusCode) when statusCode == 429 =>
         DownloadFailureCodes.rateLimited,
       RemoteServiceFailure() ||
+      RemoteAccessFailure() ||
       EmptyResultFailure() ||
+      ValidationFailure() ||
       YouTubeFailure() ||
       ParseFailure() => DownloadFailureCodes.sourceUnavailable,
       DbFailure() => DownloadFailureCodes.fileSystem,

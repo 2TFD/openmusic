@@ -11,6 +11,7 @@ import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist/playlist_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/statistic/statistic_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/track/track_bloc.dart';
+import 'package:openmusic/layers/presentation/models/ui_error_localization.dart';
 import 'package:openmusic/layers/presentation/widgets/playlist_cover.dart';
 import 'package:openmusic/layers/presentation/widgets/sheets/create_playlist_sheet.dart';
 import 'package:openmusic/layers/presentation/widgets/track_item.dart';
@@ -47,7 +48,9 @@ class HomeScreen extends StatelessWidget {
     return BlocBuilder<TrackBloc, TrackState>(
       builder: (context, state) {
         if (state is TrackError) {
-          return Scaffold(body: Center(child: Text(state.error.tr())));
+          return Scaffold(
+            body: Center(child: Text(state.error.localized(context))),
+          );
         }
         if (state is! TrackLoaded) {
           return const Scaffold(
@@ -88,36 +91,45 @@ class HomeScreen extends StatelessWidget {
   Widget _buildMiniTextHeader(BuildContext context) {
     return Row(
       children: [
-        Text(
-          _timeContext(context).toUpperCase(),
-          style: GoogleFonts.figtree(
-            fontSize: 10,
-            letterSpacing: 1.5,
-            color: AppColors.muted,
-            fontWeight: FontWeight.w500,
+        Expanded(
+          child: Text(
+            _timeContext(context).toUpperCase(),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.figtree(
+              fontSize: 10,
+              letterSpacing: 1.5,
+              color: AppColors.muted,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
-        const Spacer(),
-        BlocBuilder<StatisticBloc, StatisticState>(
-          builder: (context, state) {
-            final Duration hours = state is StatisticsLoaded
-                ? state.statistics.totalTime
-                : Duration.zero;
-            return Text(
-              context
-                  .tr(
-                    'home.statisticsHours',
-                    namedArgs: {'hours': hours.inHours.toString()},
-                  )
-                  .toUpperCase(),
-              style: GoogleFonts.figtree(
-                fontSize: 10,
-                letterSpacing: 1.5,
-                color: AppColors.muted,
-                fontWeight: FontWeight.w500,
-              ),
-            );
-          },
+        const SizedBox(width: 12),
+        Flexible(
+          child: BlocBuilder<StatisticBloc, StatisticState>(
+            builder: (context, state) {
+              final Duration hours = state is StatisticsLoaded
+                  ? state.statistics.totalTime
+                  : Duration.zero;
+              return Text(
+                context
+                    .tr(
+                      'home.statisticsHours',
+                      namedArgs: {'hours': hours.inHours.toString()},
+                    )
+                    .toUpperCase(),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
+                style: GoogleFonts.figtree(
+                  fontSize: 10,
+                  letterSpacing: 1.5,
+                  color: AppColors.muted,
+                  fontWeight: FontWeight.w500,
+                ),
+              );
+            },
+          ),
         ),
       ],
     );
@@ -126,32 +138,38 @@ class HomeScreen extends StatelessWidget {
   Widget _buildHeader(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Text(
-                context.tr('app.title'),
-                style: GoogleFonts.outfit(
-                  fontSize: 52,
-                  fontWeight: FontWeight.w900,
+          Expanded(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  context.tr('app.title'),
+                  maxLines: 1,
+                  style: GoogleFonts.outfit(
+                    fontSize: 52,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
               ),
-              const Spacer(),
-              IconButton(
-                onPressed: () async {
-                  context.pushNamed(AppRouterNames.search);
-                },
-                icon: const Icon(Icons.search, size: 60),
-              ),
-              IconButton(
-                onPressed: () async {
-                  context.pushNamed(AppRouterNames.importMusic);
-                },
-                icon: const Icon(Icons.add, size: 60),
-              ),
-            ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          IconButton(
+            tooltip: context.tr('common.search'),
+            constraints: const BoxConstraints.tightFor(width: 48, height: 48),
+            padding: EdgeInsets.zero,
+            onPressed: () => context.pushNamed(AppRouterNames.search),
+            icon: const Icon(Icons.search, size: 38),
+          ),
+          IconButton(
+            tooltip: context.tr('import.title'),
+            constraints: const BoxConstraints.tightFor(width: 48, height: 48),
+            padding: EdgeInsets.zero,
+            onPressed: () => context.pushNamed(AppRouterNames.importMusic),
+            icon: const Icon(Icons.add, size: 38),
           ),
         ],
       ),
@@ -263,7 +281,7 @@ class _HistorySection extends StatelessWidget {
                           ),
                           child: Center(
                             child: Text(
-                              state.message.tr(),
+                              state.error.localized(context),
                               style: GoogleFonts.figtree(
                                 fontSize: 13,
                                 color: AppColors.muted,
@@ -452,7 +470,7 @@ class _PlaylistSection extends StatelessWidget {
               if (state is PlaylistError) {
                 return Center(
                   child: Text(
-                    state.error.tr(),
+                    state.error.localized(context),
                     style: GoogleFonts.figtree(
                       fontSize: 13,
                       color: AppColors.muted,

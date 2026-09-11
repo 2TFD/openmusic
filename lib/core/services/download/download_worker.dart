@@ -4,6 +4,7 @@ import 'package:openmusic/core/utils/app_logger.dart';
 import 'package:openmusic/core/services/download/download_failure_classifier.dart';
 import 'package:openmusic/core/services/track_source_resolver.dart';
 import 'package:openmusic/core/services/task_lease.dart';
+import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/layers/domain/entities/download_track_task.dart';
 import 'package:openmusic/layers/domain/entities/operation_cancellation.dart';
 import 'package:openmusic/layers/domain/repositories/download_task_repository.dart';
@@ -84,9 +85,22 @@ class DownloadWorker {
         );
         if (!completed) throw TaskLeaseLostException(task.trackId);
       } catch (e, st) {
-        AppLogger.log(
-          '[DownloadWorker] Error processing ${task?.trackId}: $e\n$st',
-        );
+        final failure = failureFromException(e);
+        if (failure is UnknownFailure) {
+          await AppLogger.captureException(
+            e,
+            st,
+            operation: 'download_worker.process',
+            message: 'Download worker failed unexpectedly',
+          );
+        } else {
+          await AppLogger.warning(
+            '[DownloadWorker] Error processing ${task?.trackId}',
+            operation: 'download_worker.process',
+            error: e,
+            stackTrace: st,
+          );
+        }
         if (task != null) {
           final trackId = task.trackId;
           final terminalUpdate =
@@ -107,9 +121,12 @@ class DownloadWorker {
                     originalUrl: task.originalUrl,
                   ),
                 );
-          await terminalUpdate.catchError((e2) {
-            AppLogger.log(
-              '[DownloadWorker] terminal update failed for $trackId: $e2',
+          await terminalUpdate.catchError((error, stackTrace) {
+            AppLogger.captureException(
+              error,
+              stackTrace,
+              operation: 'download_worker.terminal_update',
+              message: 'Download worker could not save terminal state',
             );
             return false;
           });

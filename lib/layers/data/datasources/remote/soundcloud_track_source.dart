@@ -438,7 +438,14 @@ class SoundcloudTrackSource implements TrackSource {
           return _cachedClientId!;
         }
       }
-    } catch (_) {}
+    } catch (error, stackTrace) {
+      await AppLogger.warning(
+        'Using the bundled SoundCloud client fallback.',
+        operation: 'soundcloud.resolve_client_id',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
 
     // Fallback to bundled value if parsing fails
     return _cachedClientId = _fallbackClientId;

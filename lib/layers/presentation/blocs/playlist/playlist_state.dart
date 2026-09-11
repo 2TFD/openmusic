@@ -12,14 +12,14 @@ final class PlaylistLoaded extends PlaylistState {
   final bool isMutating;
   final String? completedOperationId;
   final String? failedOperationId;
-  final String? errorKey;
+  final UiError? error;
 
   const PlaylistLoaded(
     this.playlists, {
     this.isMutating = false,
     this.completedOperationId,
     this.failedOperationId,
-    this.errorKey,
+    this.error,
   });
 
   @override
@@ -28,14 +28,14 @@ final class PlaylistLoaded extends PlaylistState {
     isMutating,
     completedOperationId,
     failedOperationId,
-    errorKey,
+    error,
   ];
 }
 
 final class PlaylistLoading extends PlaylistState {}
 
 final class PlaylistError extends PlaylistState {
-  final String error;
+  final UiError error;
   const PlaylistError(this.error);
 
   @override

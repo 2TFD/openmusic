@@ -38,10 +38,10 @@ class HistoryLoaded extends HistoryState {
 }
 
 class HistoryError extends HistoryState {
-  final String message;
+  final UiError error;
 
-  const HistoryError(this.message);
+  const HistoryError(this.error);
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [error];
 }

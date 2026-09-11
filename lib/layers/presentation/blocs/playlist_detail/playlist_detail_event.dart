@@ -75,9 +75,10 @@ class _PlaylistTrackDataChanged extends PlaylistDetailEvent {
 
 class _PlaylistDetailStreamErrored extends PlaylistDetailEvent {
   final Object error;
+  final StackTrace stackTrace;
 
-  const _PlaylistDetailStreamErrored(this.error);
+  const _PlaylistDetailStreamErrored(this.error, this.stackTrace);
 
   @override
-  List<Object> get props => [error];
+  List<Object> get props => [error, stackTrace];
 }

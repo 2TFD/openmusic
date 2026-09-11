@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:openmusic/core/app_router/app_router_names.dart';
+import 'package:openmusic/core/layout/app_layout.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
 import 'package:openmusic/layers/domain/entities/artist.dart';
 import 'package:openmusic/layers/domain/entities/download_track_task.dart';
@@ -13,6 +14,7 @@ import 'package:openmusic/layers/presentation/blocs/artists/artists_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/download_status/download_status_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/track/track_bloc.dart';
+import 'package:openmusic/layers/presentation/models/ui_error_localization.dart';
 import 'package:openmusic/layers/presentation/widgets/artist_cover.dart';
 import 'package:openmusic/layers/presentation/widgets/sheets/track_context_sheets.dart';
 import 'package:openmusic/layers/presentation/widgets/track_item.dart';
@@ -32,6 +34,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
     ('library.filterAll', null),
     ('library.filterLocal', SourceType.localFile),
     ('library.filterSoundcloud', SourceType.soundcloud),
+    ('library.filterYoutube', SourceType.youtube),
+    ('library.filterSpotify', SourceType.spotify),
     ('library.filterUnknown', SourceType.unknown),
   ];
 
@@ -40,7 +44,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
     return BlocBuilder<TrackBloc, TrackState>(
       builder: (context, state) {
         if (state is TrackError) {
-          return Scaffold(body: Center(child: Text(state.error.tr())));
+          return Scaffold(
+            body: Center(child: Text(state.error.localized(context))),
+          );
         }
         if (state is! TrackLoaded) {
           return const Center(child: CircularProgressIndicator());
@@ -191,20 +197,29 @@ class _ArtistsGrid extends StatelessWidget {
     return BlocBuilder<ArtistsCubit, ArtistsState>(
       builder: (context, state) {
         return switch (state) {
-          ArtistsError() => Center(child: Text(state.errorKey.tr())),
+          ArtistsError() => Center(child: Text(state.error.localized(context))),
           ArtistsLoaded() when state.artists.isEmpty => Center(
             child: Text(context.tr('library.noArtists'), style: AppText.bodyM),
           ),
           ArtistsLoaded() => LayoutBuilder(
             builder: (context, constraints) {
-              const horizontalPadding = 48.0;
+              final sidePadding = AppLayout.horizontalPaddingFor(
+                constraints.maxWidth,
+              );
+              final horizontalPadding = sidePadding * 2;
               const spacing = 12.0;
-              final availableWidth = constraints.maxWidth - horizontalPadding;
-              final columns = (availableWidth / 170).floor().clamp(2, 6);
+              final availableWidth = (constraints.maxWidth - horizontalPadding)
+                  .clamp(0.0, double.infinity);
+              final columns = AppLayout.gridColumnCount(
+                availableWidth: availableWidth,
+                minItemWidth: 145,
+                spacing: spacing,
+                minColumns: constraints.maxWidth < 320 ? 1 : 2,
+              );
               final itemWidth =
                   (availableWidth - spacing * (columns - 1)) / columns;
               return GridView.builder(
-                padding: const EdgeInsets.fromLTRB(24, 18, 24, 110),
+                padding: EdgeInsets.fromLTRB(sidePadding, 18, sidePadding, 110),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: columns,
                   crossAxisSpacing: spacing,

@@ -4,11 +4,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
+import 'package:openmusic/core/di/di.dart';
+import 'package:openmusic/core/services/spotify/spotify_auth_service.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/entities/statistic.dart';
 import 'package:openmusic/layers/presentation/blocs/music_analysis_status/music_analysis_status_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/history/history_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/statistic/statistic_bloc.dart';
+import 'package:openmusic/layers/presentation/blocs/telemetry/telemetry_cubit.dart';
+import 'package:openmusic/layers/presentation/models/ui_error_localization.dart';
+import 'package:openmusic/layers/presentation/models/ui_error.dart';
+import 'package:openmusic/layers/presentation/widgets/snackbars/custom_snack_bar.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -167,7 +173,7 @@ class _ListeningSection extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Text(
-                    state.error.tr(),
+                    state.error.localized(context),
                     style: GoogleFonts.figtree(
                       fontSize: 13,
                       color: AppColors.muted,
@@ -264,6 +270,8 @@ class _StatsBody extends StatelessWidget {
       context.tr(switch (type) {
         SourceType.localFile => 'library.filterLocal',
         SourceType.soundcloud => 'library.filterSoundcloud',
+        SourceType.youtube => 'library.filterYoutube',
+        SourceType.spotify => 'library.filterSpotify',
         SourceType.unknown => 'library.filterUnknown',
       });
 
@@ -619,44 +627,158 @@ class _AppSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: AppRadius.cardBR,
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        children: [
-          _AppRow(
-            label: context.tr('settings.version'),
-            trailing: const Text('0.1.0'),
-          ),
-          const Divider(height: 1, thickness: 1, color: AppColors.border),
-          GestureDetector(
-            onTap: () => _clearHistory(context),
-            behavior: HitTestBehavior.opaque,
-            child: _AppRow(
-              label: context.tr('settings.clearPlayHistory'),
-              labelColor: AppColors.error,
-              trailing: const Icon(
-                Icons.delete_outline_rounded,
-                color: AppColors.error,
-                size: 16,
+    return BlocConsumer<TelemetryCubit, TelemetryState>(
+      listenWhen: (previous, current) =>
+          previous.error?.occurrenceId != current.error?.occurrenceId &&
+          current.error != null,
+      listener: (context, state) {
+        CustomSnackBar.uiError(context, state.error!);
+      },
+      builder: (context, telemetry) => Container(
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          borderRadius: AppRadius.cardBR,
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Column(
+          children: [
+            _AppRow(
+              label: context.tr('settings.crashReports'),
+              subtitle: context.tr(
+                telemetry.available
+                    ? 'settings.crashReportsDescription'
+                    : 'settings.crashReportsUnavailable',
+              ),
+              trailing: Switch.adaptive(
+                value: telemetry.consentEnabled,
+                onChanged: telemetry.available && !telemetry.isUpdating
+                    ? context.read<TelemetryCubit>().setConsent
+                    : null,
               ),
             ),
-          ),
-        ],
+            const Divider(height: 1, thickness: 1, color: AppColors.border),
+            const _SpotifyConnectionRow(),
+            const Divider(height: 1, thickness: 1, color: AppColors.border),
+            _AppRow(
+              label: context.tr('settings.version'),
+              trailing: const Text('0.1.0'),
+            ),
+            const Divider(height: 1, thickness: 1, color: AppColors.border),
+            GestureDetector(
+              onTap: () => _clearHistory(context),
+              behavior: HitTestBehavior.opaque,
+              child: _AppRow(
+                label: context.tr('settings.clearPlayHistory'),
+                labelColor: AppColors.error,
+                trailing: const Icon(
+                  Icons.delete_outline_rounded,
+                  color: AppColors.error,
+                  size: 16,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
+    );
+  }
+}
+
+class _SpotifyConnectionRow extends StatefulWidget {
+  const _SpotifyConnectionRow();
+
+  @override
+  State<_SpotifyConnectionRow> createState() => _SpotifyConnectionRowState();
+}
+
+class _SpotifyConnectionRowState extends State<_SpotifyConnectionRow> {
+  late Future<bool> _connected;
+  bool _working = false;
+
+  SpotifyAuthService get _auth => getIt<SpotifyAuthService>();
+
+  @override
+  void initState() {
+    super.initState();
+    _connected = _auth.isConnected;
+  }
+
+  Future<void> _toggle(bool connected) async {
+    setState(() => _working = true);
+    try {
+      if (connected) {
+        await _auth.disconnect();
+      } else {
+        await _auth.accessToken(forceLogin: true);
+      }
+      if (!mounted) return;
+      setState(() => _connected = _auth.isConnected);
+    } catch (error, stackTrace) {
+      if (!mounted) return;
+      CustomSnackBar.uiError(
+        context,
+        UiError.fromException(
+          error,
+          stackTrace,
+          operation: 'settings.spotify_auth',
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _working = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: _connected,
+      builder: (context, snapshot) {
+        final connected = snapshot.data ?? false;
+        final configured = _auth.isConfigured;
+        return _AppRow(
+          label: context.tr('settings.spotify'),
+          subtitle: context.tr(
+            !configured
+                ? 'settings.spotifyNotConfigured'
+                : connected
+                ? 'settings.spotifyConnected'
+                : 'settings.spotifyDisconnected',
+          ),
+          trailing: TextButton(
+            onPressed: configured && !_working
+                ? () => _toggle(connected)
+                : null,
+            child: _working
+                ? const SizedBox.square(
+                    dimension: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Text(
+                    context.tr(
+                      connected
+                          ? 'settings.spotifyDisconnect'
+                          : 'settings.spotifyConnect',
+                    ),
+                  ),
+          ),
+        );
+      },
     );
   }
 }
 
 class _AppRow extends StatelessWidget {
   final String label;
+  final String? subtitle;
   final Color? labelColor;
   final Widget? trailing;
 
-  const _AppRow({required this.label, this.labelColor, this.trailing});
+  const _AppRow({
+    required this.label,
+    this.subtitle,
+    this.labelColor,
+    this.trailing,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -667,15 +789,26 @@ class _AppRow extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text(
-            label,
-            style: GoogleFonts.figtree(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: labelColor ?? AppColors.text,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: GoogleFonts.figtree(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: labelColor ?? AppColors.text,
+                  ),
+                ),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 3),
+                  Text(subtitle!, style: AppText.bodyXS),
+                ],
+              ],
             ),
           ),
-          const Spacer(),
+          const SizedBox(width: AppSpacing.m),
           if (trailing != null)
             DefaultTextStyle(style: AppText.bodyXS, child: trailing!),
         ],

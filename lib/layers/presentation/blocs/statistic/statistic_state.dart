@@ -20,6 +20,6 @@ class StatisticsLoaded extends StatisticState {
 }
 
 class StatisticsError extends StatisticState {
-  final String error;
+  final UiError error;
   const StatisticsError(this.error);
 }

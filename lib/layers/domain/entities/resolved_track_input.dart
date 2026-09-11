@@ -1,6 +1,15 @@
 import 'package:openmusic/layers/domain/entities/source.dart';
 import 'package:openmusic/layers/domain/entities/track_preview.dart';
 
+enum TrackResolutionIssueReason { unavailable, noMatch, unsupported }
+
+class TrackResolutionIssue {
+  const TrackResolutionIssue({required this.label, required this.reason});
+
+  final String label;
+  final TrackResolutionIssueReason reason;
+}
+
 class ResolvedTrackCollection {
   const ResolvedTrackCollection({
     required this.id,
@@ -21,6 +30,7 @@ class ResolvedTrackInput {
     required this.sourceType,
     required this.tracks,
     this.collection,
+    this.issues = const [],
   });
 
   factory ResolvedTrackInput.single(TrackPreview preview) => ResolvedTrackInput(
@@ -33,6 +43,7 @@ class ResolvedTrackInput {
   final SourceType sourceType;
   final List<TrackPreview> tracks;
   final ResolvedTrackCollection? collection;
+  final List<TrackResolutionIssue> issues;
 
   TrackPreview get firstTrack => tracks.first;
 }

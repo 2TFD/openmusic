@@ -200,6 +200,9 @@ class TrackDriftLocalSource implements TrackLocalDataSource {
       durationMs: Value(track.durationMs),
       sourceType: Value(track.sourceType),
       sourceUri: Value(track.originalUrl),
+      mediaSourceType: Value(track.mediaSourceType),
+      mediaSourceId: Value(track.mediaSourceId),
+      mediaSourceUri: Value(track.mediaSourceUrl),
       addedAt: Value(track.addedAt),
       album: Value(track.album),
       imageUrl: Value(track.imageUrl),
@@ -229,6 +232,9 @@ class TrackDriftLocalSource implements TrackLocalDataSource {
       trackDescriptorJson: data.trackDescriptorJson,
       audioRevision: data.audioRevision,
       metadataRevision: data.metadataRevision,
+      mediaSourceType: data.mediaSourceType,
+      mediaSourceId: data.mediaSourceId,
+      mediaSourceUrl: data.mediaSourceUri,
     );
   }
 }

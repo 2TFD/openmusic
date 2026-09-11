@@ -20,7 +20,7 @@ final class TrackLoaded extends TrackState {
 final class TrackLoading extends TrackState {}
 
 final class TrackError extends TrackState {
-  final String error;
+  final UiError error;
   const TrackError(this.error);
 
   @override

@@ -8,6 +8,7 @@ import '../../../layers/domain/repositories/track_repository.dart';
 import '../../../layers/domain/services/lyrics_content_hasher.dart';
 import '../../../layers/domain/usecases/queue_lyrics_analysis_use_case.dart';
 import 'lyrics_config.dart';
+import '../../utils/app_logger.dart';
 
 class LyricsResolver {
   LyricsResolver({
@@ -77,7 +78,12 @@ class LyricsResolver {
       final LyricsProviderResult result;
       try {
         result = await provider.resolve(request);
-      } catch (_) {
+      } catch (error, stackTrace) {
+        await AppLogger.captureException(
+          error,
+          stackTrace,
+          operation: 'lyrics.provider.resolve',
+        );
         temporaryFailure = const LyricsProviderTemporaryFailure(
           code: 'unexpected_provider_failure',
         );
@@ -255,8 +261,14 @@ class LyricsResolver {
     );
     try {
       await _queueAnalysis(track);
-    } catch (_) {
+    } catch (error, stackTrace) {
       // The durable analysis backfill can recover this independently.
+      await AppLogger.warning(
+        'Lyrics analysis scheduling failed; backfill will retry.',
+        operation: 'lyrics.queue_analysis',
+        error: error,
+        stackTrace: stackTrace,
+      );
     }
     return state;
   }

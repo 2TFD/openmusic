@@ -34,10 +34,30 @@ class TrackExternalActionsService implements TrackExternalActions {
     switch (track.source.type) {
       case SourceType.soundcloud:
         await _openSoundCloud(track.source.originalUrl);
+      case SourceType.youtube:
+      case SourceType.spotify:
+        await _openWebSource(track.source.originalUrl);
       case SourceType.localFile:
         await _shareTrackFile(track, sharePositionOrigin);
       case SourceType.unknown:
         throw UnsupportedSourceFailure(track.source.originalUrl);
+    }
+  }
+
+  @override
+  Future<void> openMediaSource(Track track) async {
+    final media = track.source.media;
+    if (media == null) throw UnsupportedSourceFailure(track.source.originalUrl);
+    await _openWebSource(media.url);
+  }
+
+  Future<void> _openWebSource(String originalUrl) async {
+    final uri = Uri.tryParse(originalUrl);
+    if (uri == null || !{'http', 'https'}.contains(uri.scheme)) {
+      throw UnsupportedSourceFailure(originalUrl);
+    }
+    if (!await _launchExternalUrl(uri)) {
+      throw RemoteServiceFailure('open ${uri.host}');
     }
   }
 

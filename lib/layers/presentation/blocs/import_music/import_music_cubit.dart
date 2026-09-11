@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:openmusic/layers/domain/entities/track_preview.dart';
 import 'package:openmusic/layers/domain/usecases/import_local_tracks_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/pick_local_tracks_use_case.dart';
+import 'package:openmusic/layers/presentation/models/ui_error.dart';
 
 part 'import_music_state.dart';
 
@@ -29,8 +30,18 @@ class ImportMusicCubit extends Cubit<ImportMusicState> {
       } else {
         emit(LocalTracksPicked(previews));
       }
-    } catch (_) {
-      if (!isClosed) emit(const LocalTracksPickFailure());
+    } catch (error, stackTrace) {
+      if (!isClosed) {
+        emit(
+          LocalTracksPickFailure(
+            UiError.fromException(
+              error,
+              stackTrace,
+              operation: 'import.pick_local_tracks',
+            ),
+          ),
+        );
+      }
     }
   }
 

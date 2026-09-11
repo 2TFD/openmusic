@@ -59,8 +59,8 @@ class _CreatePlaylistSheetState extends State<CreatePlaylistSheet> {
           Navigator.of(context).pop();
         } else if (state.failedOperationId == _operationId) {
           setState(() => _isSubmitting = false);
-          if (state.errorKey != null) {
-            CustomSnackBar.error(context, state.errorKey!.tr());
+          if (state.error != null) {
+            CustomSnackBar.uiError(context, state.error!);
           }
         }
       },

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:ui';
 
 import 'package:easy_localization/easy_localization.dart';
@@ -7,11 +6,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:openmusic/core/app_router/app_router.dart';
 import 'package:openmusic/core/bootstrap/app_bootstrap.dart';
+import 'package:openmusic/core/bootstrap/app_initializer.dart';
 import 'package:openmusic/core/bootstrap/app_lifecycle_scope.dart';
+import 'package:openmusic/core/bootstrap/bootstrap_host.dart';
 import 'package:openmusic/core/di/bloc_scope.dart';
 import 'package:openmusic/core/di/di.dart';
 import 'package:openmusic/core/services/audio_player/audio_player_service.dart';
 import 'package:openmusic/core/services/audio_player/openmusic_audio_handler.dart';
+import 'package:openmusic/core/telemetry/sentry_crash_reporter.dart';
+import 'package:openmusic/core/telemetry/telemetry_consent_store.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
 import 'package:openmusic/layers/domain/repositories/playback_command_bus.dart';
 import 'package:openmusic/core/utils/app_bloc_observer.dart';
@@ -22,27 +25,66 @@ import 'package:openmusic/layers/presentation/screens/startup_screen.dart';
 import 'package:path_provider/path_provider.dart';
 
 Future<void> main() async {
-  await runZonedGuarded(
-    () async {
-      WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
-      FlutterError.onError = (details) {
-        FlutterError.presentError(details);
-        AppLogger.log(
-          '[FlutterError] ${details.exceptionAsString()}, stackTrace: ${details.stack}',
-        );
-      };
-      PlatformDispatcher.instance.onError = (error, stack) {
-        AppLogger.log('[PlatformDispatcher] $error, stackTrace: $stack');
-        return true;
-      };
-      Bloc.observer = const AppBlocObserver();
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    AppLogger.warning(
+      '[FlutterError] ${details.exceptionAsString()}, '
+      'stackTrace: ${details.stack}',
+      operation: 'flutter.framework',
+    );
+  };
+  PlatformDispatcher.instance.onError = (error, stack) {
+    AppLogger.warning(
+      '[PlatformDispatcher] $error, stackTrace: $stack',
+      operation: 'flutter.platform_dispatcher',
+    );
+    return true;
+  };
+  Bloc.observer = const AppBlocObserver();
 
-      final dir = await getApplicationDocumentsDirectory();
-      await configureDependencies(appDir: dir.path);
-      await AppBootstrap(getIt).run();
-      await EasyLocalization.ensureInitialized();
-      await AudioService.init(
+  final consentStore = SharedPreferencesTelemetryConsentStore();
+  final crashReporter = SentryCrashReporter();
+  var consentEnabled = false;
+  try {
+    consentEnabled = await consentStore.load();
+    await crashReporter.setEnabled(consentEnabled);
+  } catch (error, stackTrace) {
+    await AppLogger.captureException(
+      error,
+      stackTrace,
+      operation: 'telemetry.initialize',
+    );
+  }
+  AppLogger.configure(crashReporter);
+
+  String? appDir;
+  AppBootstrap? bootstrap;
+  final initializer = AppInitializer([
+    const BootstrapStep(
+      BootstrapPhase.localization,
+      EasyLocalization.ensureInitialized,
+    ),
+    BootstrapStep(BootstrapPhase.appDirectory, () async {
+      appDir = (await getApplicationDocumentsDirectory()).path;
+    }),
+    BootstrapStep(BootstrapPhase.dependencies, () async {
+      if (getIt.isRegistered<String>()) await getIt.reset();
+      await configureDependencies(
+        appDir: appDir!,
+        crashReporter: crashReporter,
+        telemetryConsentStore: consentStore,
+        initialTelemetryConsent: consentEnabled,
+      );
+    }),
+    BootstrapStep(BootstrapPhase.recovery, () async {
+      bootstrap ??= AppBootstrap(getIt);
+      await bootstrap!.run();
+    }),
+    BootstrapStep(
+      BootstrapPhase.audio,
+      () => AudioService.init(
         builder: () => OpenmusicAudioHandler(
           player: getIt<AudioPlayerService>(),
           commands: getIt<PlaybackCommandBus>(),
@@ -52,32 +94,18 @@ Future<void> main() async {
           androidNotificationChannelName: 'Audio playback',
           androidNotificationOngoing: true,
         ),
-      );
+      ),
+    ),
+  ]);
 
-      runApp(
-        EasyLocalization(
-          supportedLocales: const [Locale('en'), Locale('ru')],
-          path: 'assets/translations',
-          fallbackLocale: const Locale('en'),
-
-          child: const MainApp(),
-        ),
-      );
-    },
-    (error, stack) {
-      AppLogger.log('[runZonedGuarded] $error, stackTrace: $stack');
-    },
+  runApp(
+    BootstrapHost(initializer: initializer, appBuilder: (_) => const MainApp()),
   );
 }
 
-class MainApp extends StatefulWidget {
+class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
-  @override
-  State<MainApp> createState() => _MainAppState();
-}
-
-class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return BlocScope(

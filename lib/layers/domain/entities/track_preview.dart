@@ -16,6 +16,7 @@ class TrackPreview {
   final String originalUrl;
   final int? year;
   final String urlFile;
+  final MediaLocator? media;
 
   const TrackPreview({
     required this.id,
@@ -29,6 +30,7 @@ class TrackPreview {
     required this.originalUrl,
     this.year,
     required this.urlFile,
+    this.media,
   });
 
   Track toTrack(
@@ -51,7 +53,7 @@ class TrackPreview {
     album: album,
     imageUrl: artworkUrl,
     filePath: filePath,
-    source: Source(type: source, originalUrl: originalUrl),
+    source: Source(type: source, originalUrl: originalUrl, media: media),
   );
 
   Map<String, dynamic> toMap() {
@@ -67,6 +69,7 @@ class TrackPreview {
       'originalUrl': originalUrl,
       'year': year,
       'urlFile': urlFile,
+      'media': media?.toJson(),
     };
   }
 
@@ -87,6 +90,9 @@ class TrackPreview {
       originalUrl: map['originalUrl'] as String,
       year: map['year'] != null ? map['year'] as int : null,
       urlFile: map['urlFile'] as String,
+      media: map['media'] is Map<String, dynamic>
+          ? MediaLocator.fromJson(map['media'] as Map<String, dynamic>)
+          : null,
     );
   }
 
@@ -107,6 +113,7 @@ class TrackPreview {
     String? originalUrl,
     int? year,
     String? urlFile,
+    MediaLocator? media,
   }) {
     return TrackPreview(
       id: id ?? this.id,
@@ -120,6 +127,7 @@ class TrackPreview {
       originalUrl: originalUrl ?? this.originalUrl,
       year: year ?? this.year,
       urlFile: urlFile ?? this.urlFile,
+      media: media ?? this.media,
     );
   }
 }

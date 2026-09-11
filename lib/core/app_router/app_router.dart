@@ -20,9 +20,10 @@ import 'package:openmusic/layers/presentation/screens/settings_screen.dart';
 import 'package:openmusic/layers/presentation/screens/mood_map_page.dart';
 import 'package:openmusic/layers/presentation/blocs/mood_map/mood_map_cubit.dart';
 import 'package:openmusic/core/app_router/app_shell.dart';
+import 'package:openmusic/layers/presentation/blocs/telemetry/telemetry_cubit.dart';
 
 class AppRouter {
-  static GoRouter get router => GoRouter(
+  static final GoRouter router = GoRouter(
     initialLocation: '/${AppRouterNames.home}',
     routes: [
       ShellRoute(
@@ -87,8 +88,14 @@ class AppRouter {
           GoRoute(
             path: '/${AppRouterNames.settings}',
             name: AppRouterNames.settings,
-            builder: (context, state) => BlocProvider(
-              create: (_) => getIt<MusicAnalysisStatusCubit>()..initialize(),
+            builder: (context, state) => MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                  create: (_) =>
+                      getIt<MusicAnalysisStatusCubit>()..initialize(),
+                ),
+                BlocProvider(create: (_) => getIt<TelemetryCubit>()),
+              ],
               child: const SettingsScreen(),
             ),
           ),
@@ -113,5 +120,3 @@ class AppRouter {
     ),
   );
 }
-
-late final GoRouter router;

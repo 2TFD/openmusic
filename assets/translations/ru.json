@@ -56,7 +56,7 @@
         "fileAction": "Выбрать файлы",
         "fileActionSub": "Добавить аудио с устройства",
         "linkTitle": "Ссылка",
-        "linkHint": "Вставьте ссылку SoundCloud",
+        "linkHint": "Вставьте ссылку SoundCloud, YouTube или Spotify",
         "paste": "Вставить",
         "addLink": "Добавить",
         "clipboardEmpty": "Буфер обмена пуст",
@@ -68,7 +68,10 @@
         "addSelectedCount": "Добавить {count}",
         "filesAdded": "Добавлено {count}",
         "filesPartiallyAdded": "{added} добавлено · {failed} ошибок",
-        "filesAddFailed": "Не удалось добавить файлы"
+        "filesAddFailed": "Не удалось добавить файлы",
+        "collectionPreview": "Готово: {ready} · пропущено: {skipped}",
+        "collectionResult": "Добавлено: {added} · пропущено: {skipped}",
+        "spotifyYoutubeSource": "Spotify · аудио: YouTube"
     },
     "playlist": {
         "create": {
@@ -174,6 +177,10 @@
         "addToWave": "Добавить в Wave",
         "removeFromWave": "Убрать из Wave",
         "openInSoundCloud": "Открыть в SoundCloud",
+        "openInYouTube": "Открыть в YouTube",
+        "openInSpotify": "Открыть в Spotify",
+        "openAudioInYouTube": "Открыть аудио в YouTube",
+        "openSource": "Открыть источник",
         "shareFile": "Поделиться файлом",
         "sourceOpenFailed": "Не удалось открыть источник трека",
         "localFileUnavailable": "Локальный файл недоступен",
@@ -221,6 +228,7 @@
         "artists": "Исполнители",
         "filterAll": "Все",
         "filterYoutube": "YouTube",
+        "filterSpotify": "Spotify",
         "filterLocal": "Локальные",
         "filterSoundcloud": "SoundCloud",
         "filterUnknown": "Неизвестные",
@@ -274,7 +282,16 @@
         "clearHistory": "Очистить историю",
         "clearHistoryConfirm": "Вся история прослушивания будет удалена безвозвратно.",
         "version": "Версия",
-        "clearPlayHistory": "Очистить историю прослушивания"
+        "clearPlayHistory": "Очистить историю прослушивания",
+        "crashReports": "Отправлять отчёты об ошибках",
+        "crashReportsDescription": "Анонимно отправлять диагностику сбоев для улучшения приложения",
+        "crashReportsUnavailable": "Недоступно в этой сборке",
+        "spotify": "Spotify",
+        "spotifyConnected": "Подключён для импорта по ссылкам",
+        "spotifyDisconnected": "Подключите для импорта треков, альбомов и своих плейлистов",
+        "spotifyNotConfigured": "Задайте SPOTIFY_CLIENT_ID для этой сборки",
+        "spotifyConnect": "Подключить",
+        "spotifyDisconnect": "Отключить"
     },
     "allPlaylists": {
         "title": "Все плейлисты",
@@ -349,6 +366,14 @@
         "youtube": "YouTube недоступен",
         "fileNotFound": "Файл не найден",
         "noInternet": "Нет подключения к интернету",
-        "unknown": "Неизвестная ошибка"
+        "unknown": "Неизвестная ошибка",
+        "permission": "Нет необходимого разрешения",
+        "storage": "Не удалось выполнить операцию с хранилищем",
+        "remoteAccess": "Удалённый сервис отклонил доступ",
+        "rateLimited": "Слишком много запросов. Попробуйте позже",
+        "invalidInput": "Проверьте введённые данные",
+        "startup": "Не удалось запустить OpenMusic",
+        "startupDescription": "Проверьте хранилище устройства и попробуйте снова. Код ошибки: {id}",
+        "retry": "Повторить"
     }
 }

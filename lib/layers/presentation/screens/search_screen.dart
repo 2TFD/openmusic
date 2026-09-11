@@ -11,6 +11,7 @@ import 'package:openmusic/layers/domain/entities/resolved_track_input.dart';
 import 'package:openmusic/layers/presentation/blocs/add_track/add_track_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/search/search_bloc.dart';
+import 'package:openmusic/layers/presentation/models/ui_error_localization.dart';
 import 'package:openmusic/layers/presentation/widgets/add_track_sheet.dart';
 import 'package:openmusic/layers/presentation/widgets/cached_image.dart';
 import 'package:openmusic/layers/presentation/widgets/track_item.dart';
@@ -222,7 +223,7 @@ class _SearchScreenState extends State<SearchScreen> {
         child: Padding(
           padding: const EdgeInsets.all(32),
           child: Text(
-            state.error.tr(),
+            state.error.localized(context),
             style: AppText.bodyM,
             textAlign: TextAlign.center,
           ),

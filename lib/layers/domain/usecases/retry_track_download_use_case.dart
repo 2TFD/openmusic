@@ -8,6 +8,6 @@ class RetryTrackDownloadUseCase {
 
   Future<void> call(Track track) async {
     if (track.filePath != null) return;
-    await _repository.enqueue(track.id, track.source.originalUrl);
+    await _repository.enqueue(track.id, track.source.effectiveMediaUrl);
   }
 }

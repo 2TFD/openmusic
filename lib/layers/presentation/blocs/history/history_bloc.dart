@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/usecases/clear_history_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/get_history_use_case.dart';
+import 'package:openmusic/layers/presentation/models/ui_error.dart';
 
 part 'history_event.dart';
 part 'history_state.dart';
@@ -39,8 +39,12 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
           totalRecords: historyTracks.length,
         ),
       );
-    } catch (e) {
-      emit(HistoryError(failureFromException(e).toLocaleKey()));
+    } catch (e, stackTrace) {
+      emit(
+        HistoryError(
+          UiError.fromException(e, stackTrace, operation: 'history.load'),
+        ),
+      );
     }
   }
 
@@ -59,8 +63,12 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
           totalRecords: historyTracks.length,
         ),
       );
-    } catch (e) {
-      emit(HistoryError(failureFromException(e).toLocaleKey()));
+    } catch (e, stackTrace) {
+      emit(
+        HistoryError(
+          UiError.fromException(e, stackTrace, operation: 'history.refresh'),
+        ),
+      );
     }
   }
 
@@ -71,8 +79,12 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
     try {
       await _clearHistoryUseCase();
       emit(const HistoryLoaded(tracks: [], totalRecords: 0));
-    } catch (e) {
-      emit(HistoryError(failureFromException(e).toLocaleKey()));
+    } catch (e, stackTrace) {
+      emit(
+        HistoryError(
+          UiError.fromException(e, stackTrace, operation: 'history.clear'),
+        ),
+      );
     }
   }
 }

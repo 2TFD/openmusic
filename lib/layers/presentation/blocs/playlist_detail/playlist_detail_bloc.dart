@@ -10,6 +10,7 @@ import 'package:openmusic/layers/domain/usecases/delete_playlist_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/get_playlist_with_tracks_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/update_playlist_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/watch_playlist_use_case.dart';
+import 'package:openmusic/layers/presentation/models/ui_error.dart';
 
 part 'playlist_detail_event.dart';
 part 'playlist_detail_state.dart';
@@ -72,7 +73,7 @@ class PlaylistDetailBloc
     } else if (event is _PlaylistTrackDataChanged) {
       await _refreshTracks(emit);
     } else if (event is _PlaylistDetailStreamErrored) {
-      _emitFailure(event.error, emit);
+      _emitFailure(event.error, event.stackTrace, emit);
     }
   }
 
@@ -86,11 +87,13 @@ class PlaylistDetailBloc
     await _trackSubscription?.cancel();
     _playlistSubscription = _watchPlaylist(event.playlistId).listen(
       (playlist) => add(_PlaylistDetailSnapshotReceived(playlist)),
-      onError: (error, _) => add(_PlaylistDetailStreamErrored(error)),
+      onError: (error, stackTrace) =>
+          add(_PlaylistDetailStreamErrored(error, stackTrace)),
     );
     _trackSubscription = _trackChanges.listen(
       (_) => add(const _PlaylistTrackDataChanged()),
-      onError: (error, _) => add(_PlaylistDetailStreamErrored(error)),
+      onError: (error, stackTrace) =>
+          add(_PlaylistDetailStreamErrored(error, stackTrace)),
     );
   }
 
@@ -104,7 +107,13 @@ class PlaylistDetailBloc
         emit(PlaylistDetailDeleted());
       } else {
         emit(
-          PlaylistDetailError(const NotFoundFailure('playlist').toLocaleKey()),
+          PlaylistDetailError(
+            UiError.fromException(
+              const NotFoundFailure('playlist'),
+              StackTrace.current,
+              operation: 'playlist_detail.load',
+            ),
+          ),
         );
       }
       return;
@@ -116,8 +125,8 @@ class PlaylistDetailBloc
       emit(
         PlaylistDetailLoaded(playlist: result.playlist, tracks: result.tracks),
       );
-    } catch (error) {
-      _emitFailure(error, emit);
+    } catch (error, stackTrace) {
+      _emitFailure(error, stackTrace, emit);
     }
   }
 
@@ -131,8 +140,8 @@ class PlaylistDetailBloc
       emit(
         PlaylistDetailLoaded(playlist: result.playlist, tracks: result.tracks),
       );
-    } catch (error) {
-      _emitFailure(error, emit);
+    } catch (error, stackTrace) {
+      _emitFailure(error, stackTrace, emit);
     }
   }
 
@@ -162,8 +171,8 @@ class PlaylistDetailBloc
           tracks: [...current.tracks, event.track],
         ),
       );
-    } catch (error) {
-      _emitLoadedFailure(current, error, emit);
+    } catch (error, stackTrace) {
+      _emitLoadedFailure(current, error, stackTrace, emit);
     }
   }
 
@@ -186,8 +195,8 @@ class PlaylistDetailBloc
     emit(PlaylistDetailLoaded(playlist: optimistic, tracks: tracks));
     try {
       await _updatePlaylist.removeTrack(current.playlist, event.trackId);
-    } catch (error) {
-      _emitLoadedFailure(current, error, emit);
+    } catch (error, stackTrace) {
+      _emitLoadedFailure(current, error, stackTrace, emit);
     }
   }
 
@@ -204,7 +213,12 @@ class PlaylistDetailBloc
         event.oldIndex >= current.tracks.length ||
         newIndex < 0 ||
         newIndex >= current.tracks.length) {
-      _emitLoadedFailure(current, RangeError('playlist reorder'), emit);
+      _emitLoadedFailure(
+        current,
+        RangeError('playlist reorder'),
+        StackTrace.current,
+        emit,
+      );
       return;
     }
 
@@ -223,8 +237,8 @@ class PlaylistDetailBloc
         event.oldIndex,
         event.newIndex,
       );
-    } catch (error) {
-      _emitLoadedFailure(current, error, emit);
+    } catch (error, stackTrace) {
+      _emitLoadedFailure(current, error, stackTrace, emit);
     }
   }
 
@@ -253,8 +267,8 @@ class PlaylistDetailBloc
         clearDescription: event.description == null,
         clearImageUrl: event.imageUrl == null,
       );
-    } catch (error) {
-      _emitLoadedFailure(current, error, emit);
+    } catch (error, stackTrace) {
+      _emitLoadedFailure(current, error, stackTrace, emit);
     }
   }
 
@@ -264,31 +278,48 @@ class PlaylistDetailBloc
     try {
       await _deletePlaylist(current.playlist.id);
       emit(PlaylistDetailDeleted());
-    } catch (error) {
-      _emitLoadedFailure(current, error, emit);
+    } catch (error, stackTrace) {
+      _emitLoadedFailure(current, error, stackTrace, emit);
     }
   }
 
   void _emitLoadedFailure(
     PlaylistDetailLoaded previous,
     Object error,
+    StackTrace stackTrace,
     Emitter<PlaylistDetailState> emit,
   ) {
     emit(
       PlaylistDetailLoaded(
         playlist: previous.playlist,
         tracks: previous.tracks,
-        errorKey: failureFromException(error).toLocaleKey(),
+        error: UiError.fromException(
+          error,
+          stackTrace,
+          operation: 'playlist_detail.mutate',
+        ),
       ),
     );
   }
 
-  void _emitFailure(Object error, Emitter<PlaylistDetailState> emit) {
+  void _emitFailure(
+    Object error,
+    StackTrace stackTrace,
+    Emitter<PlaylistDetailState> emit,
+  ) {
     final current = state;
     if (current is PlaylistDetailLoaded) {
-      _emitLoadedFailure(current, error, emit);
+      _emitLoadedFailure(current, error, stackTrace, emit);
     } else {
-      emit(PlaylistDetailError(failureFromException(error).toLocaleKey()));
+      emit(
+        PlaylistDetailError(
+          UiError.fromException(
+            error,
+            stackTrace,
+            operation: 'playlist_detail.load',
+          ),
+        ),
+      );
     }
   }
 }

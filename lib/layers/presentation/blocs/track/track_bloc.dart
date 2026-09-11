@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/core/utils/app_logger.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/usecases/add_track_use_case.dart';
@@ -10,6 +9,7 @@ import 'package:openmusic/layers/domain/usecases/get_tracks_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/remove_track_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/search_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/update_track_use_case.dart';
+import 'package:openmusic/layers/presentation/models/ui_error.dart';
 
 part 'track_event.dart';
 part 'track_state.dart';
@@ -33,10 +33,17 @@ class TrackBloc extends Bloc<TrackEvent, TrackState> {
     on<LoadTracksEvent>(_onLoadTracks);
     on<RemoveTrackEvent>(_onRemoveTrack);
     on<UpdateTrackEvent>(_onUpdateTrack);
-    on<_TrackStreamErrored>(
-      (e, emit) =>
-          emit(TrackError(failureFromException(e.error).toLocaleKey())),
-    );
+    on<_TrackStreamErrored>((e, emit) {
+      emit(
+        TrackError(
+          UiError.fromException(
+            e.error,
+            e.stackTrace,
+            operation: 'tracks.watch',
+          ),
+        ),
+      );
+    });
 
     _trackChangesSubscription = trackChangesStream.listen(
       (e) {
@@ -46,7 +53,7 @@ class TrackBloc extends Bloc<TrackEvent, TrackState> {
         AppLogger.log(
           '[TrackBloc] Stream error: $error, stackTrace: $stackTrace',
         );
-        add(_TrackStreamErrored(error));
+        add(_TrackStreamErrored(error, stackTrace));
       },
     );
   }
@@ -75,7 +82,11 @@ class TrackBloc extends Bloc<TrackEvent, TrackState> {
         );
         return;
       }
-      emit(TrackError(failureFromException(e).toLocaleKey()));
+      emit(
+        TrackError(
+          UiError.fromException(e, stackTrace, operation: 'tracks.load'),
+        ),
+      );
     }
   }
 
@@ -102,7 +113,11 @@ class TrackBloc extends Bloc<TrackEvent, TrackState> {
       if (current is TrackLoaded) {
         emit(current);
       } else {
-        emit(TrackError(failureFromException(e).toLocaleKey()));
+        emit(
+          TrackError(
+            UiError.fromException(e, stackTrace, operation: 'tracks.remove'),
+          ),
+        );
       }
       _completeRemoveTrack(event, error: e, stackTrace: stackTrace);
     }
@@ -128,8 +143,12 @@ class TrackBloc extends Bloc<TrackEvent, TrackState> {
   ) async {
     try {
       await updateTrackUseCase(event.track);
-    } catch (e) {
-      emit(TrackError(failureFromException(e).toLocaleKey()));
+    } catch (e, stackTrace) {
+      emit(
+        TrackError(
+          UiError.fromException(e, stackTrace, operation: 'tracks.update'),
+        ),
+      );
     }
   }
 }

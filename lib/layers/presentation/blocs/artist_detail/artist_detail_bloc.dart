@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/layers/domain/entities/artist.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/usecases/get_artist_tracks_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/watch_artist_use_case.dart';
+import 'package:openmusic/layers/presentation/models/ui_error.dart';
 
 part 'artist_detail_event.dart';
 part 'artist_detail_state.dart';
@@ -43,7 +43,13 @@ class ArtistDetailBloc extends Bloc<ArtistDetailEvent, ArtistDetailState> {
         await _onSnapshot(event, emit);
       case _ArtistDetailStreamErrored():
         emit(
-          ArtistDetailError(failureFromException(event.error).toLocaleKey()),
+          ArtistDetailError(
+            UiError.fromException(
+              event.error,
+              event.stackTrace,
+              operation: 'artist_detail.watch',
+            ),
+          ),
         );
     }
   }
@@ -57,8 +63,8 @@ class ArtistDetailBloc extends Bloc<ArtistDetailEvent, ArtistDetailState> {
     await _subscription?.cancel();
     _subscription = _watchArtist(event.artistId).listen(
       (artist) => add(_ArtistDetailSnapshotReceived(artist)),
-      onError: (Object error, StackTrace _) {
-        add(_ArtistDetailStreamErrored(error));
+      onError: (Object error, StackTrace stackTrace) {
+        add(_ArtistDetailStreamErrored(error, stackTrace));
       },
     );
   }
@@ -76,8 +82,16 @@ class ArtistDetailBloc extends Bloc<ArtistDetailEvent, ArtistDetailState> {
     try {
       final tracks = await _getArtistTracks(artistId);
       emit(ArtistDetailLoaded(artist: artist, tracks: tracks));
-    } catch (error) {
-      emit(ArtistDetailError(failureFromException(error).toLocaleKey()));
+    } catch (error, stackTrace) {
+      emit(
+        ArtistDetailError(
+          UiError.fromException(
+            error,
+            stackTrace,
+            operation: 'artist_detail.load_tracks',
+          ),
+        ),
+      );
     }
   }
 }

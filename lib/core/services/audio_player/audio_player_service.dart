@@ -1,8 +1,12 @@
-import 'dart:developer';
 import 'package:just_audio/just_audio.dart';
 import 'package:openmusic/core/infrastructure/mappers/track_audio_mapper.dart';
+import 'package:openmusic/core/utils/app_logger.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
+
+void log(String message) {
+  AppLogger.warning(message, operation: 'audio_player.command');
+}
 
 class AudioPlayerService implements AudioPlayerPort {
   AudioPlayerService({required this.appDir});

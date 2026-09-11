@@ -14,7 +14,7 @@ class PlayerState extends Equatable {
   final bool isShuffleEnabled;
   final PlaybackLoopMode loopMode;
   final List<int>? shuffleIndices;
-  final String? error;
+  final UiError? error;
   final bool isRestoring;
   final WaveSession? waveSession;
   final WaveContinuationStatus waveContinuationStatus;
@@ -186,7 +186,7 @@ class PlayerState extends Equatable {
       shuffleIndices: identical(shuffleIndices, _unset)
           ? this.shuffleIndices
           : shuffleIndices as List<int>?,
-      error: identical(error, _unset) ? this.error : error as String?,
+      error: identical(error, _unset) ? this.error : error as UiError?,
       isRestoring: isRestoring ?? this.isRestoring,
       waveSession: identical(waveSession, _unset)
           ? this.waveSession

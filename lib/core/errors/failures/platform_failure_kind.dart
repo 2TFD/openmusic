@@ -1,1 +1,1 @@
-enum PlatformFailureKind { network, fileNotFound }
+enum PlatformFailureKind { network, fileNotFound, permission, storage }

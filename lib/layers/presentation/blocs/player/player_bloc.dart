@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/core/services/recommendation/mood_wave_engine.dart';
 import 'package:openmusic/core/services/recommendation/wave_recommendation_engine.dart';
 import 'package:openmusic/core/utils/app_logger.dart';
@@ -21,6 +20,7 @@ import 'package:openmusic/layers/domain/usecases/restore_playback_session_use_ca
 import 'package:openmusic/layers/domain/usecases/save_listening_summary_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/skip_track_use_case.dart';
 import 'package:openmusic/layers/domain/services/listening_tracker.dart';
+import 'package:openmusic/layers/presentation/models/ui_error.dart';
 
 part 'player_event.dart';
 part 'player_state.dart';
@@ -139,7 +139,11 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       case _PlayerPlaybackFailed():
         emit(
           state.copyWith(
-            error: failureFromException(event.error).toLocaleKey(),
+            error: UiError.fromException(
+              event.error,
+              event.stackTrace,
+              operation: 'player.start_playback',
+            ),
           ),
         );
       case _PlayerSystemCommandReceived():
@@ -368,7 +372,11 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       if (e.autoPlay) _startPlayback();
     } catch (e, st) {
       AppLogger.log('[PlayerBloc._onQueueSet] Error: $e, stackTrace: $st');
-      emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
+      emit(
+        state.copyWith(
+          error: UiError.fromException(e, st, operation: 'player.set_queue'),
+        ),
+      );
     }
   }
 
@@ -496,7 +504,11 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
         state.copyWith(
           waveSession: initialSession,
           waveContinuationStatus: WaveContinuationStatus.waiting,
-          error: failureFromException(error).toLocaleKey(),
+          error: UiError.fromException(
+            error,
+            stackTrace,
+            operation: 'player.start_wave',
+          ),
         ),
       );
     }
@@ -605,7 +617,11 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       emit(
         state.copyWith(
           waveContinuationStatus: WaveContinuationStatus.waiting,
-          error: failureFromException(error).toLocaleKey(),
+          error: UiError.fromException(
+            error,
+            stackTrace,
+            operation: 'player.continue_wave',
+          ),
         ),
       );
     } finally {
@@ -778,7 +794,15 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
         '$error, stackTrace: $stackTrace',
       );
       _completeTrackRemoval(e, error: error, stackTrace: stackTrace);
-      emit(state.copyWith(error: failureFromException(error).toLocaleKey()));
+      emit(
+        state.copyWith(
+          error: UiError.fromException(
+            error,
+            stackTrace,
+            operation: 'player.remove_track',
+          ),
+        ),
+      );
     }
   }
 
@@ -912,7 +936,15 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       }
     } catch (e, st) {
       AppLogger.log('[PlayerBloc._onPlayPause] Error: $e, stackTrace: $st');
-      emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
+      emit(
+        state.copyWith(
+          error: UiError.fromException(
+            e,
+            st,
+            operation: 'player.toggle_playback',
+          ),
+        ),
+      );
     }
   }
 
@@ -921,7 +953,11 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       await _seekTo(e.position, emit);
     } catch (e, st) {
       AppLogger.log('[PlayerBloc._onSeeked] Error: $e, stackTrace: $st');
-      emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
+      emit(
+        state.copyWith(
+          error: UiError.fromException(e, st, operation: 'player.seek'),
+        ),
+      );
     }
   }
 
@@ -990,7 +1026,11 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       _waveNextTransitionSkipped = false;
       _listeningTracker.cancelNavigationRequest();
       AppLogger.log('[PlayerBloc._onTrackSelected] Error: $e, stackTrace: $st');
-      emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
+      emit(
+        state.copyWith(
+          error: UiError.fromException(e, st, operation: 'player.select_track'),
+        ),
+      );
     }
   }
 
@@ -1038,7 +1078,11 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       _waveNextTransitionSkipped = false;
       _listeningTracker.cancelNavigationRequest();
       AppLogger.log('[PlayerBloc._onSkip] Error: $e, stackTrace: $st');
-      emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
+      emit(
+        state.copyWith(
+          error: UiError.fromException(e, st, operation: 'player.skip'),
+        ),
+      );
     }
   }
 
@@ -1058,7 +1102,15 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       _scheduleSessionWrite();
     } catch (e, st) {
       AppLogger.log('[PlayerBloc._onShuffleToggle] Error: $e, stackTrace: $st');
-      emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
+      emit(
+        state.copyWith(
+          error: UiError.fromException(
+            e,
+            st,
+            operation: 'player.toggle_shuffle',
+          ),
+        ),
+      );
     }
   }
 
@@ -1077,7 +1129,11 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
       _scheduleSessionWrite();
     } catch (e, st) {
       AppLogger.log('[PlayerBloc._onRepeatCycle] Error: $e, stackTrace: $st');
-      emit(state.copyWith(error: failureFromException(e).toLocaleKey()));
+      emit(
+        state.copyWith(
+          error: UiError.fromException(e, st, operation: 'player.cycle_repeat'),
+        ),
+      );
     }
   }
 
@@ -1241,7 +1297,7 @@ class PlayerBloc extends Bloc<PlayerEvent, PlayerState> {
             '$error, stackTrace: $stackTrace',
           ),
         );
-        if (!isClosed) add(_PlayerPlaybackFailed(error));
+        if (!isClosed) add(_PlayerPlaybackFailed(error, stackTrace));
       }),
     );
   }

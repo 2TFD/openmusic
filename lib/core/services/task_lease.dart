@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:openmusic/core/utils/app_logger.dart';
+
 class TaskLeasePolicy {
   static const duration = Duration(minutes: 1);
   static const heartbeatInterval = Duration(seconds: 20);
@@ -50,8 +52,14 @@ class LeaseHeartbeat {
           _leaseLost = true;
           return;
         }
-      } catch (_) {
+      } catch (error, stackTrace) {
         _leaseLost = true;
+        await AppLogger.warning(
+          'Task lease renewal failed.',
+          operation: 'task_lease.renew',
+          error: error,
+          stackTrace: stackTrace,
+        );
         return;
       }
     }

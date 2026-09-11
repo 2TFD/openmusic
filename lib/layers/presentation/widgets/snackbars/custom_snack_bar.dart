@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:openmusic/core/themes/app_theme.dart';
 import 'package:openmusic/core/utils/locale_keys.dart';
+import 'package:openmusic/layers/presentation/models/ui_error.dart';
+import 'package:openmusic/layers/presentation/models/ui_error_localization.dart';
 
 class CustomSnackBar {
   static void success(BuildContext context, String message) {
@@ -23,6 +25,10 @@ class CustomSnackBar {
       iconColor: const Color(0xFFFF6B6B),
       iconBg: const Color(0x1AFF6B6B),
     );
+  }
+
+  static void uiError(BuildContext context, UiError error) {
+    CustomSnackBar.error(context, error.localized(context));
   }
 
   static void info(BuildContext context, String message) {

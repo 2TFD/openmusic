@@ -125,6 +125,11 @@ class _FakeExternalActions implements TrackExternalActions {
     openedTrack = track;
     this.sharePositionOrigin = sharePositionOrigin;
   }
+
+  @override
+  Future<void> openMediaSource(Track track) async {
+    openedTrack = track;
+  }
 }
 
 Track _track(SourceType type) => Track(

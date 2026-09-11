@@ -457,7 +457,7 @@ INSERT INTO track_table (
       tables.map((row) => row.read<String>('name')),
       isNot(contains('play_record_table')),
     );
-    expect(version.read<int>('user_version'), 18);
+    expect(version.read<int>('user_version'), 19);
   });
 
   test('schema v12 marks existing embedding revision as unknown', () async {
@@ -801,6 +801,53 @@ INSERT INTO music_analysis_task_table (
         migrated.trackTable,
       )..where((table) => table.id.equals('legacy-lyrics-track'))).go();
       expect(await migrated.select(migrated.trackLyricsTable).get(), isEmpty);
+    },
+  );
+
+  test(
+    'schema v18 adds optional media locator columns without data loss',
+    () async {
+      final tempDir = await Directory.systemTemp.createTemp(
+        'openmusic_schema_v19_migration_',
+      );
+      addTearDown(() => tempDir.delete(recursive: true));
+      final databaseFile = File('${tempDir.path}/migration.sqlite');
+
+      final legacy = AppDatabase(NativeDatabase(databaseFile));
+      await legacy.customSelect('SELECT 1').get();
+      await legacy.customStatement('''
+INSERT INTO track_table (id, title, source_type, source_uri)
+VALUES ('existing', 'Existing', 'soundcloud', 'https://example.com/track')
+''');
+      await legacy.customStatement(
+        'ALTER TABLE track_table DROP COLUMN media_source_type',
+      );
+      await legacy.customStatement(
+        'ALTER TABLE track_table DROP COLUMN media_source_id',
+      );
+      await legacy.customStatement(
+        'ALTER TABLE track_table DROP COLUMN media_source_uri',
+      );
+      await legacy.customStatement('PRAGMA user_version = 18');
+      await legacy.close();
+
+      final migrated = AppDatabase(NativeDatabase(databaseFile));
+      addTearDown(migrated.close);
+      final row = await migrated.select(migrated.trackTable).getSingle();
+      final columns = await migrated
+          .customSelect('PRAGMA table_info(track_table)')
+          .get();
+
+      expect(row.id, 'existing');
+      expect(row.mediaSourceType, isNull);
+      expect(
+        columns.map((column) => column.read<String>('name')),
+        containsAll([
+          'media_source_type',
+          'media_source_id',
+          'media_source_uri',
+        ]),
+      );
     },
   );
 }

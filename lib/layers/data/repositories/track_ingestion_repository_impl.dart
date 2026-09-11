@@ -52,7 +52,7 @@ WHERE download_task_table.status IN (?, ?)
 ''',
         variables: [
           Variable<String>(track.id),
-          Variable<String>(track.source.originalUrl),
+          Variable<String>(track.source.effectiveMediaUrl),
           Variable<String>(DownloadStatus.queued.name),
           Variable<DateTime>(DateTime.now()),
           Variable<String>(DownloadStatus.completed.name),
@@ -95,7 +95,7 @@ WHERE download_task_table.status IN (?, ?)
                 ),
               );
       if (updated != 1) {
-        throw StateError('Concurrent audio update for track ${track.id}');
+        throw ConflictFailure('track audio', track.id);
       }
     });
     return _loadTrack(track.id);
@@ -128,6 +128,9 @@ WHERE download_task_table.status IN (?, ?)
             durationMs: Value(track.duration.inMilliseconds),
             sourceType: track.source.type.name,
             sourceUri: track.source.originalUrl,
+            mediaSourceType: Value(track.source.media?.type.name),
+            mediaSourceId: Value(track.source.media?.id),
+            mediaSourceUri: Value(track.source.media?.url),
             addedAt: Value(track.addedAt),
             album: Value(track.album),
             imageUrl: Value(track.imageUrl),

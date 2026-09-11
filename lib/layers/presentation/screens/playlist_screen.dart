@@ -8,6 +8,7 @@ import 'package:openmusic/layers/domain/entities/playlist.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/blocs/playlist_detail/playlist_detail_bloc.dart';
+import 'package:openmusic/layers/presentation/models/ui_error_localization.dart';
 import 'package:openmusic/layers/presentation/blocs/track/track_bloc.dart';
 import 'package:openmusic/layers/presentation/widgets/cached_image.dart';
 import 'package:openmusic/layers/presentation/widgets/playlist_cover.dart';
@@ -159,8 +160,8 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
         if (state is PlaylistDetailDeleted) {
           context.pop();
         }
-        if (state is PlaylistDetailLoaded && state.errorKey != null) {
-          CustomSnackBar.error(context, state.errorKey!.tr());
+        if (state is PlaylistDetailLoaded && state.error != null) {
+          CustomSnackBar.uiError(context, state.error!);
         }
       },
       child: BlocBuilder<PlaylistDetailBloc, PlaylistDetailState>(
@@ -176,11 +177,11 @@ class _PlaylistScreenBodyState extends State<_PlaylistScreenBody> {
                   strokeWidth: 1.5,
                 ),
               ),
-              PlaylistDetailError(:final message) => Center(
+              PlaylistDetailError(:final error) => Center(
                 child: Padding(
                   padding: const EdgeInsets.all(32),
                   child: Text(
-                    message,
+                    error.localized(context),
                     style: AppText.bodyL.copyWith(color: AppColors.textSub),
                     textAlign: TextAlign.center,
                   ),

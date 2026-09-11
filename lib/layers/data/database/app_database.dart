@@ -62,7 +62,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 18;
+  int get schemaVersion => 19;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -279,6 +279,7 @@ FROM track_table
           trackTable.actualTableName,
           'embedding',
         )) {
+          await _ensureMediaSourceColumns(m, m.database);
           await m.alterTable(TableMigration(trackTable));
         }
       }
@@ -362,6 +363,9 @@ WHERE modality = 'audio' AND audio_revision IS NOT NULL
         }
         await _createV18Indexes(m.database);
       }
+      if (from < 19) {
+        await _ensureMediaSourceColumns(m, m.database);
+      }
     },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
@@ -380,6 +384,33 @@ WHERE modality = 'audio' AND audio_revision IS NOT NULL
         )
         .getSingleOrNull();
     return row != null;
+  }
+
+  Future<void> _ensureMediaSourceColumns(
+    Migrator migrator,
+    GeneratedDatabase database,
+  ) async {
+    if (!await _hasColumn(
+      database,
+      trackTable.actualTableName,
+      trackTable.mediaSourceType.$name,
+    )) {
+      await migrator.addColumn(trackTable, trackTable.mediaSourceType);
+    }
+    if (!await _hasColumn(
+      database,
+      trackTable.actualTableName,
+      trackTable.mediaSourceId.$name,
+    )) {
+      await migrator.addColumn(trackTable, trackTable.mediaSourceId);
+    }
+    if (!await _hasColumn(
+      database,
+      trackTable.actualTableName,
+      trackTable.mediaSourceUri.$name,
+    )) {
+      await migrator.addColumn(trackTable, trackTable.mediaSourceUri);
+    }
   }
 
   static Future<bool> _hasColumn(

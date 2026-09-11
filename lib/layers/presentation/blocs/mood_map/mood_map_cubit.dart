@@ -7,6 +7,7 @@ import '../../../domain/entities/mood_map.dart';
 import '../../../domain/entities/track_emotion_analysis.dart';
 import '../../../domain/repositories/mood_map_repository.dart';
 import '../../mood_map/mood_map_geometry.dart';
+import '../../models/ui_error.dart';
 
 part 'mood_map_state.dart';
 
@@ -34,8 +35,17 @@ class MoodMapCubit extends Cubit<MoodMapState> {
           error: null,
         ),
       );
-    } catch (error) {
-      emit(state.copyWith(status: MoodMapStatus.failure, error: error));
+    } catch (error, stackTrace) {
+      emit(
+        state.copyWith(
+          status: MoodMapStatus.failure,
+          error: UiError.fromException(
+            error,
+            stackTrace,
+            operation: 'mood_map.load',
+          ),
+        ),
+      );
     }
   }
 

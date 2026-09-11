@@ -63,6 +63,39 @@ void main() {
     );
   });
 
+  test(
+    'opens Spotify provenance and matched YouTube media separately',
+    () async {
+      final launched = <Uri>[];
+      final service = TrackExternalActionsService(
+        appDirectory: tempDirectory.path,
+        launchExternalUrl: (uri) async {
+          launched.add(uri);
+          return true;
+        },
+      );
+      final track = _track(
+        source: const Source(
+          type: SourceType.spotify,
+          originalUrl: 'https://open.spotify.com/track/spotify-id',
+          media: MediaLocator(
+            type: SourceType.youtube,
+            id: 'video-id',
+            url: 'https://www.youtube.com/watch?v=video-id',
+          ),
+        ),
+      );
+
+      await service.openSource(track);
+      await service.openMediaSource(track);
+
+      expect(launched, [
+        Uri.parse('https://open.spotify.com/track/spotify-id'),
+        Uri.parse('https://www.youtube.com/watch?v=video-id'),
+      ]);
+    },
+  );
+
   test('shares a relative local path from the app directory', () async {
     final audioFile = File('${tempDirectory.path}/track.mp3');
     await audioFile.writeAsBytes([1, 2, 3]);

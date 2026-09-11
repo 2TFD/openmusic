@@ -131,7 +131,8 @@ class _PlayerProcessingUpdated extends PlayerEvent {
 
 class _PlayerPlaybackFailed extends PlayerEvent {
   final Object error;
-  _PlayerPlaybackFailed(this.error);
+  final StackTrace stackTrace;
+  _PlayerPlaybackFailed(this.error, this.stackTrace);
 }
 
 /// Команда с экрана блокировки / наушников / Bluetooth. Приходит как обычное

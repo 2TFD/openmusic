@@ -30,9 +30,10 @@ class UpdateTrackEvent extends TrackEvent {
 
 class _TrackStreamErrored extends TrackEvent {
   final Object error;
+  final StackTrace stackTrace;
 
-  const _TrackStreamErrored(this.error);
+  const _TrackStreamErrored(this.error, this.stackTrace);
 
   @override
-  List<Object> get props => [error];
+  List<Object> get props => [error, stackTrace];
 }

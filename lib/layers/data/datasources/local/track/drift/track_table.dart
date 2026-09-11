@@ -8,6 +8,9 @@ class TrackTable extends Table {
   IntColumn get durationMs => integer().nullable()();
   TextColumn get sourceType => text()();
   TextColumn get sourceUri => text()();
+  TextColumn get mediaSourceType => text().nullable()();
+  TextColumn get mediaSourceId => text().nullable()();
+  TextColumn get mediaSourceUri => text().nullable()();
   DateTimeColumn get addedAt => dateTime().nullable()();
   TextColumn get album => text().nullable()();
   TextColumn get imageUrl => text().nullable()();

@@ -1,13 +1,13 @@
-import 'dart:developer';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:openmusic/core/errors/failures/failure.dart';
+import 'package:openmusic/core/utils/app_logger.dart';
 import 'package:openmusic/layers/domain/entities/resolved_track_input.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/domain/entities/track_preview.dart';
 import 'package:openmusic/layers/domain/usecases/add_track_use_case.dart';
 import 'package:openmusic/layers/domain/usecases/fetch_track_preview_use_case.dart';
+import 'package:openmusic/layers/presentation/models/ui_error.dart';
 
 part 'add_track_event.dart';
 part 'add_track_state.dart';
@@ -37,14 +37,16 @@ class AddTrackBloc extends Bloc<AddTrackEvent, AddTrackState> {
       if (emit.isDone) return;
       emit(AddTrackPreviewLoaded(resolved: resolved));
     } catch (e, st) {
-      log(
-        'Error fetching track preview ${event.url}.',
-        error: e,
-        stackTrace: st,
-        name: 'AddTrackBloc',
+      await AppLogger.warning(
+        'Error fetching track preview.',
+        operation: 'add_track.fetch_preview',
       );
       if (emit.isDone) return;
-      emit(AddTrackError(failureFromException(e).toLocaleKey()));
+      emit(
+        AddTrackError(
+          UiError.fromException(e, st, operation: 'add_track.fetch_preview'),
+        ),
+      );
     }
   }
 
@@ -70,13 +72,16 @@ class AddTrackBloc extends Bloc<AddTrackEvent, AddTrackState> {
       }
 
       if (emit.isDone) return;
-      emit(AddTrackSuccess(track, result: result));
-    } catch (e) {
-      log('Error adding track to library', error: e, name: 'AddTrackBloc');
+      emit(AddTrackSuccess(track, result: result, resolved: event.resolved));
+    } catch (e, stackTrace) {
       if (emit.isDone) return;
       emit(
         AddTrackError(
-          failureFromException(e).toLocaleKey(),
+          UiError.fromException(
+            e,
+            stackTrace,
+            operation: 'add_track.add_to_library',
+          ),
           preview: event.resolved.firstTrack,
         ),
       );

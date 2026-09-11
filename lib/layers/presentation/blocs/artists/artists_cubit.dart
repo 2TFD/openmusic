@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:openmusic/core/errors/failures/failure.dart';
 import 'package:openmusic/layers/domain/entities/artist.dart';
 import 'package:openmusic/layers/domain/usecases/watch_artist_summaries_use_case.dart';
+import 'package:openmusic/layers/presentation/models/ui_error.dart';
 
 sealed class ArtistsState extends Equatable {
   const ArtistsState();
@@ -25,12 +25,12 @@ final class ArtistsLoaded extends ArtistsState {
 }
 
 final class ArtistsError extends ArtistsState {
-  const ArtistsError(this.errorKey);
+  const ArtistsError(this.error);
 
-  final String errorKey;
+  final UiError error;
 
   @override
-  List<Object> get props => [errorKey];
+  List<Object> get props => [error];
 }
 
 class ArtistsCubit extends Cubit<ArtistsState> {
@@ -38,8 +38,16 @@ class ArtistsCubit extends Cubit<ArtistsState> {
     : super(ArtistsLoading()) {
     _subscription = watchArtists().listen(
       (artists) => emit(ArtistsLoaded(artists)),
-      onError: (Object error, StackTrace _) {
-        emit(ArtistsError(failureFromException(error).toLocaleKey()));
+      onError: (Object error, StackTrace stackTrace) {
+        emit(
+          ArtistsError(
+            UiError.fromException(
+              error,
+              stackTrace,
+              operation: 'artists.watch',
+            ),
+          ),
+        );
       },
     );
   }

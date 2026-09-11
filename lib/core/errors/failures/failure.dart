@@ -18,6 +18,14 @@ class FileNotFoundFailure extends Failure {
   const FileNotFoundFailure();
 }
 
+class PermissionFailure extends Failure {
+  const PermissionFailure();
+}
+
+class StorageFailure extends Failure {
+  const StorageFailure();
+}
+
 class TrackNotReadyFailure extends Failure {
   const TrackNotReadyFailure();
 }
@@ -67,10 +75,26 @@ class RemoteServiceFailure extends Failure {
   final int? statusCode;
 }
 
+class RemoteAccessFailure extends Failure {
+  const RemoteAccessFailure();
+}
+
+class RateLimitFailure extends Failure {
+  const RateLimitFailure({this.retryAfter});
+
+  final Duration? retryAfter;
+}
+
 class EmptyResultFailure extends Failure {
   const EmptyResultFailure(this.operation);
 
   final String operation;
+}
+
+class ValidationFailure extends Failure {
+  const ValidationFailure(this.field);
+
+  final String field;
 }
 
 class UnknownFailure extends Failure {
@@ -89,6 +113,10 @@ Failure failureFromException(Object e) {
       return const NetworkFailure();
     case PlatformFailureKind.fileNotFound:
       return const FileNotFoundFailure();
+    case PlatformFailureKind.permission:
+      return const PermissionFailure();
+    case PlatformFailureKind.storage:
+      return const StorageFailure();
     case null:
       break;
   }
@@ -104,8 +132,21 @@ Failure _failureFromDio(DioException e) {
       return const NetworkFailure();
     case DioExceptionType.badResponse:
       final code = e.response?.statusCode;
-      if (code != null && code >= 500) return const NetworkFailure();
-      return UnknownFailure(e);
+      if (code == 401 || code == 403) return const RemoteAccessFailure();
+      if (code == 404) return const NotFoundFailure('remote resource');
+      if (code == 408) return const NetworkFailure();
+      if (code == 429) {
+        final seconds = int.tryParse(
+          e.response?.headers.value('retry-after') ?? '',
+        );
+        return RateLimitFailure(
+          retryAfter: seconds == null ? null : Duration(seconds: seconds),
+        );
+      }
+      if (code != null && code >= 500) {
+        return RemoteServiceFailure('remote', statusCode: code);
+      }
+      return RemoteServiceFailure('remote', statusCode: code);
     case DioExceptionType.cancel:
     case DioExceptionType.badCertificate:
     case DioExceptionType.unknown:
@@ -122,6 +163,8 @@ extension FailureLocaleKey on Failure {
   String toLocaleKey() => switch (this) {
     NetworkFailure() => LocaleKeys.errorNoInternet,
     FileNotFoundFailure() => LocaleKeys.errorFileNotFound,
+    PermissionFailure() => LocaleKeys.errorPermission,
+    StorageFailure() => LocaleKeys.errorStorage,
     TrackNotReadyFailure() => LocaleKeys.snackDownloading,
     YouTubeFailure() => LocaleKeys.errorYoutube,
     ParseFailure() => LocaleKeys.snackErrorLoad,
@@ -131,7 +174,10 @@ extension FailureLocaleKey on Failure {
     UnsupportedSourceFailure() => LocaleKeys.snackErrorLoad,
     UnsupportedMediaFailure() => LocaleKeys.snackErrorLoad,
     RemoteServiceFailure() => LocaleKeys.snackErrorNetwork,
+    RemoteAccessFailure() => LocaleKeys.errorRemoteAccess,
+    RateLimitFailure() => LocaleKeys.errorRateLimited,
     EmptyResultFailure() => LocaleKeys.snackErrorLoad,
+    ValidationFailure() => LocaleKeys.errorInvalidInput,
     UnknownFailure() => LocaleKeys.errorUnknown,
   };
 }

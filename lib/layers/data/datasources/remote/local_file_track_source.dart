@@ -4,6 +4,7 @@ import 'package:ffmpeg_kit_flutter_new/ffmpeg_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/ffprobe_kit.dart';
 import 'package:ffmpeg_kit_flutter_new/return_code.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:openmusic/core/utils/app_logger.dart';
 import 'package:openmusic/layers/domain/entities/operation_cancellation.dart';
 import 'package:openmusic/layers/domain/entities/resolved_track_input.dart';
 import 'package:openmusic/layers/domain/entities/source.dart';
@@ -71,7 +72,13 @@ class LocalFileTrackSource implements TrackSource, LocalTrackPicker {
 
         artworkPath = await _extractArtwork(filePath, fileName);
       }
-    } catch (_) {
+    } catch (error, stackTrace) {
+      await AppLogger.warning(
+        'Falling back to filename metadata after local media probe failed.',
+        operation: 'local_track.read_metadata',
+        error: error,
+        stackTrace: stackTrace,
+      );
       final parts = fileName.split(' - ');
       if (parts.length >= 2) {
         artist = parts.first.trim();
@@ -118,7 +125,13 @@ class LocalFileTrackSource implements TrackSource, LocalTrackPicker {
 
       try {
         previews.add(await fetchPreview(path));
-      } catch (_) {
+      } catch (error, stackTrace) {
+        await AppLogger.warning(
+          'Using a fallback preview for an unreadable local track.',
+          operation: 'local_track.pick_preview',
+          error: error,
+          stackTrace: stackTrace,
+        );
         previews.add(_fallbackPreview(path));
       }
     }
@@ -164,7 +177,13 @@ class LocalFileTrackSource implements TrackSource, LocalTrackPicker {
       if (ReturnCode.isSuccess(returnCode) && await File(outPath).exists()) {
         return outPath;
       }
-    } catch (_) {
+    } catch (error, stackTrace) {
+      await AppLogger.warning(
+        'Embedded artwork extraction failed.',
+        operation: 'local_track.extract_artwork',
+        error: error,
+        stackTrace: stackTrace,
+      );
       return null;
     }
 

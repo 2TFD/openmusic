@@ -26,10 +26,11 @@ final class _ArtistDetailSnapshotReceived extends ArtistDetailEvent {
 }
 
 final class _ArtistDetailStreamErrored extends ArtistDetailEvent {
-  const _ArtistDetailStreamErrored(this.error);
+  const _ArtistDetailStreamErrored(this.error, this.stackTrace);
 
   final Object error;
+  final StackTrace stackTrace;
 
   @override
-  List<Object> get props => [error];
+  List<Object> get props => [error, stackTrace];
 }

@@ -14,26 +14,26 @@ final class PlaylistDetailLoading extends PlaylistDetailState {}
 final class PlaylistDetailLoaded extends PlaylistDetailState {
   final Playlist playlist;
   final List<Track> tracks;
-  final String? errorKey;
+  final UiError? error;
   final bool isMutating;
 
   const PlaylistDetailLoaded({
     required this.playlist,
     required this.tracks,
-    this.errorKey,
+    this.error,
     this.isMutating = false,
   });
 
   @override
-  List<Object?> get props => [playlist, tracks, errorKey, isMutating];
+  List<Object?> get props => [playlist, tracks, error, isMutating];
 }
 
 final class PlaylistDetailDeleted extends PlaylistDetailState {}
 
 final class PlaylistDetailError extends PlaylistDetailState {
-  final String message;
-  const PlaylistDetailError(this.message);
+  final UiError error;
+  const PlaylistDetailError(this.error);
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [error];
 }

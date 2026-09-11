@@ -32,6 +32,9 @@ class TrackDto extends Equatable {
     this.trackDescriptorJson,
     this.audioRevision = 0,
     this.metadataRevision = 0,
+    this.mediaSourceType,
+    this.mediaSourceId,
+    this.mediaSourceUrl,
   });
 
   final String id;
@@ -48,6 +51,9 @@ class TrackDto extends Equatable {
   final String? trackDescriptorJson;
   final int audioRevision;
   final int metadataRevision;
+  final String? mediaSourceType;
+  final String? mediaSourceId;
+  final String? mediaSourceUrl;
 
   Map<String, dynamic> toJson() => {
     'id': id,
@@ -64,6 +70,9 @@ class TrackDto extends Equatable {
     'trackDescriptorJson': trackDescriptorJson,
     'audioRevision': audioRevision,
     'metadataRevision': metadataRevision,
+    'mediaSourceType': mediaSourceType,
+    'mediaSourceId': mediaSourceId,
+    'mediaSourceUrl': mediaSourceUrl,
   };
 
   factory TrackDto.fromJson(Map<String, dynamic> json) {
@@ -94,6 +103,9 @@ class TrackDto extends Equatable {
       trackDescriptorJson: json['trackDescriptorJson'] as String?,
       audioRevision: json['audioRevision'] as int? ?? 0,
       metadataRevision: json['metadataRevision'] as int? ?? 0,
+      mediaSourceType: json['mediaSourceType'] as String?,
+      mediaSourceId: json['mediaSourceId'] as String?,
+      mediaSourceUrl: json['mediaSourceUrl'] as String?,
     );
   }
 
@@ -125,5 +137,8 @@ class TrackDto extends Equatable {
     trackDescriptorJson,
     audioRevision,
     metadataRevision,
+    mediaSourceType,
+    mediaSourceId,
+    mediaSourceUrl,
   ];
 }

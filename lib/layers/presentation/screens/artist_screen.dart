@@ -6,6 +6,7 @@ import 'package:openmusic/layers/domain/entities/artist.dart';
 import 'package:openmusic/layers/domain/entities/download_track_task.dart';
 import 'package:openmusic/layers/domain/entities/track.dart';
 import 'package:openmusic/layers/presentation/blocs/artist_detail/artist_detail_bloc.dart';
+import 'package:openmusic/layers/presentation/models/ui_error_localization.dart';
 import 'package:openmusic/layers/presentation/blocs/download_status/download_status_cubit.dart';
 import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
 import 'package:openmusic/layers/presentation/widgets/artist_cover.dart';
@@ -36,7 +37,9 @@ class ArtistScreen extends StatelessWidget {
               artist: state.artist,
               tracks: state.tracks,
             ),
-            ArtistDetailError() => Center(child: Text(state.errorKey.tr())),
+            ArtistDetailError() => Center(
+              child: Text(state.error.localized(context)),
+            ),
             ArtistDetailNotFound() => Center(
               child: Text(context.tr('artist.notFound'), style: AppText.bodyM),
             ),

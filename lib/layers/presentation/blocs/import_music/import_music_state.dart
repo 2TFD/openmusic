@@ -29,7 +29,12 @@ final class LocalTracksSelectionEmpty extends ImportMusicState {
 }
 
 final class LocalTracksPickFailure extends ImportMusicState {
-  const LocalTracksPickFailure();
+  const LocalTracksPickFailure(this.error);
+
+  final UiError error;
+
+  @override
+  List<Object?> get props => [error];
 }
 
 final class LocalTracksImporting extends ImportMusicState {

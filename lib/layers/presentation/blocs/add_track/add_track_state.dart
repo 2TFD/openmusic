@@ -38,17 +38,27 @@ final class AddTrackLoading extends AddTrackState {
 final class AddTrackSuccess extends AddTrackState {
   final Track track;
   final AddTrackResult result;
-  const AddTrackSuccess(this.track, {required this.result});
+  final ResolvedTrackInput resolved;
+  const AddTrackSuccess(
+    this.track, {
+    required this.result,
+    required this.resolved,
+  });
 
   @override
-  List<Object?> get props => [track, result.addedTracks, result.failures];
+  List<Object?> get props => [
+    track,
+    result.addedTracks,
+    result.failures,
+    resolved,
+  ];
 }
 
 final class AddTrackError extends AddTrackState {
-  final String message;
+  final UiError error;
   final TrackPreview? preview;
-  const AddTrackError(this.message, {this.preview});
+  const AddTrackError(this.error, {this.preview});
 
   @override
-  List<Object?> get props => [message, preview];
+  List<Object?> get props => [error, preview];
 }

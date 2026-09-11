@@ -994,6 +994,39 @@ class $TrackTableTable extends TrackTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _mediaSourceTypeMeta = const VerificationMeta(
+    'mediaSourceType',
+  );
+  @override
+  late final GeneratedColumn<String> mediaSourceType = GeneratedColumn<String>(
+    'media_source_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _mediaSourceIdMeta = const VerificationMeta(
+    'mediaSourceId',
+  );
+  @override
+  late final GeneratedColumn<String> mediaSourceId = GeneratedColumn<String>(
+    'media_source_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _mediaSourceUriMeta = const VerificationMeta(
+    'mediaSourceUri',
+  );
+  @override
+  late final GeneratedColumn<String> mediaSourceUri = GeneratedColumn<String>(
+    'media_source_uri',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _addedAtMeta = const VerificationMeta(
     'addedAt',
   );
@@ -1069,6 +1102,9 @@ class $TrackTableTable extends TrackTable
     durationMs,
     sourceType,
     sourceUri,
+    mediaSourceType,
+    mediaSourceId,
+    mediaSourceUri,
     addedAt,
     album,
     imageUrl,
@@ -1140,6 +1176,33 @@ class $TrackTableTable extends TrackTable
       );
     } else if (isInserting) {
       context.missing(_sourceUriMeta);
+    }
+    if (data.containsKey('media_source_type')) {
+      context.handle(
+        _mediaSourceTypeMeta,
+        mediaSourceType.isAcceptableOrUnknown(
+          data['media_source_type']!,
+          _mediaSourceTypeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('media_source_id')) {
+      context.handle(
+        _mediaSourceIdMeta,
+        mediaSourceId.isAcceptableOrUnknown(
+          data['media_source_id']!,
+          _mediaSourceIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('media_source_uri')) {
+      context.handle(
+        _mediaSourceUriMeta,
+        mediaSourceUri.isAcceptableOrUnknown(
+          data['media_source_uri']!,
+          _mediaSourceUriMeta,
+        ),
+      );
     }
     if (data.containsKey('added_at')) {
       context.handle(
@@ -1223,6 +1286,18 @@ class $TrackTableTable extends TrackTable
         DriftSqlType.string,
         data['${effectivePrefix}source_uri'],
       )!,
+      mediaSourceType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}media_source_type'],
+      ),
+      mediaSourceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}media_source_id'],
+      ),
+      mediaSourceUri: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}media_source_uri'],
+      ),
       addedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}added_at'],
@@ -1264,6 +1339,9 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
   final int? durationMs;
   final String sourceType;
   final String sourceUri;
+  final String? mediaSourceType;
+  final String? mediaSourceId;
+  final String? mediaSourceUri;
   final DateTime? addedAt;
   final String? album;
   final String? imageUrl;
@@ -1278,6 +1356,9 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
     this.durationMs,
     required this.sourceType,
     required this.sourceUri,
+    this.mediaSourceType,
+    this.mediaSourceId,
+    this.mediaSourceUri,
     this.addedAt,
     this.album,
     this.imageUrl,
@@ -1301,6 +1382,15 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
     }
     map['source_type'] = Variable<String>(sourceType);
     map['source_uri'] = Variable<String>(sourceUri);
+    if (!nullToAbsent || mediaSourceType != null) {
+      map['media_source_type'] = Variable<String>(mediaSourceType);
+    }
+    if (!nullToAbsent || mediaSourceId != null) {
+      map['media_source_id'] = Variable<String>(mediaSourceId);
+    }
+    if (!nullToAbsent || mediaSourceUri != null) {
+      map['media_source_uri'] = Variable<String>(mediaSourceUri);
+    }
     if (!nullToAbsent || addedAt != null) {
       map['added_at'] = Variable<DateTime>(addedAt);
     }
@@ -1333,6 +1423,15 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
           : Value(durationMs),
       sourceType: Value(sourceType),
       sourceUri: Value(sourceUri),
+      mediaSourceType: mediaSourceType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(mediaSourceType),
+      mediaSourceId: mediaSourceId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(mediaSourceId),
+      mediaSourceUri: mediaSourceUri == null && nullToAbsent
+          ? const Value.absent()
+          : Value(mediaSourceUri),
       addedAt: addedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(addedAt),
@@ -1363,6 +1462,9 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
       durationMs: serializer.fromJson<int?>(json['durationMs']),
       sourceType: serializer.fromJson<String>(json['sourceType']),
       sourceUri: serializer.fromJson<String>(json['sourceUri']),
+      mediaSourceType: serializer.fromJson<String?>(json['mediaSourceType']),
+      mediaSourceId: serializer.fromJson<String?>(json['mediaSourceId']),
+      mediaSourceUri: serializer.fromJson<String?>(json['mediaSourceUri']),
       addedAt: serializer.fromJson<DateTime?>(json['addedAt']),
       album: serializer.fromJson<String?>(json['album']),
       imageUrl: serializer.fromJson<String?>(json['imageUrl']),
@@ -1384,6 +1486,9 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
       'durationMs': serializer.toJson<int?>(durationMs),
       'sourceType': serializer.toJson<String>(sourceType),
       'sourceUri': serializer.toJson<String>(sourceUri),
+      'mediaSourceType': serializer.toJson<String?>(mediaSourceType),
+      'mediaSourceId': serializer.toJson<String?>(mediaSourceId),
+      'mediaSourceUri': serializer.toJson<String?>(mediaSourceUri),
       'addedAt': serializer.toJson<DateTime?>(addedAt),
       'album': serializer.toJson<String?>(album),
       'imageUrl': serializer.toJson<String?>(imageUrl),
@@ -1401,6 +1506,9 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
     Value<int?> durationMs = const Value.absent(),
     String? sourceType,
     String? sourceUri,
+    Value<String?> mediaSourceType = const Value.absent(),
+    Value<String?> mediaSourceId = const Value.absent(),
+    Value<String?> mediaSourceUri = const Value.absent(),
     Value<DateTime?> addedAt = const Value.absent(),
     Value<String?> album = const Value.absent(),
     Value<String?> imageUrl = const Value.absent(),
@@ -1417,6 +1525,15 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
     durationMs: durationMs.present ? durationMs.value : this.durationMs,
     sourceType: sourceType ?? this.sourceType,
     sourceUri: sourceUri ?? this.sourceUri,
+    mediaSourceType: mediaSourceType.present
+        ? mediaSourceType.value
+        : this.mediaSourceType,
+    mediaSourceId: mediaSourceId.present
+        ? mediaSourceId.value
+        : this.mediaSourceId,
+    mediaSourceUri: mediaSourceUri.present
+        ? mediaSourceUri.value
+        : this.mediaSourceUri,
     addedAt: addedAt.present ? addedAt.value : this.addedAt,
     album: album.present ? album.value : this.album,
     imageUrl: imageUrl.present ? imageUrl.value : this.imageUrl,
@@ -1443,6 +1560,15 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
           ? data.sourceType.value
           : this.sourceType,
       sourceUri: data.sourceUri.present ? data.sourceUri.value : this.sourceUri,
+      mediaSourceType: data.mediaSourceType.present
+          ? data.mediaSourceType.value
+          : this.mediaSourceType,
+      mediaSourceId: data.mediaSourceId.present
+          ? data.mediaSourceId.value
+          : this.mediaSourceId,
+      mediaSourceUri: data.mediaSourceUri.present
+          ? data.mediaSourceUri.value
+          : this.mediaSourceUri,
       addedAt: data.addedAt.present ? data.addedAt.value : this.addedAt,
       album: data.album.present ? data.album.value : this.album,
       imageUrl: data.imageUrl.present ? data.imageUrl.value : this.imageUrl,
@@ -1468,6 +1594,9 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
           ..write('durationMs: $durationMs, ')
           ..write('sourceType: $sourceType, ')
           ..write('sourceUri: $sourceUri, ')
+          ..write('mediaSourceType: $mediaSourceType, ')
+          ..write('mediaSourceId: $mediaSourceId, ')
+          ..write('mediaSourceUri: $mediaSourceUri, ')
           ..write('addedAt: $addedAt, ')
           ..write('album: $album, ')
           ..write('imageUrl: $imageUrl, ')
@@ -1487,6 +1616,9 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
     durationMs,
     sourceType,
     sourceUri,
+    mediaSourceType,
+    mediaSourceId,
+    mediaSourceUri,
     addedAt,
     album,
     imageUrl,
@@ -1505,6 +1637,9 @@ class TrackTableData extends DataClass implements Insertable<TrackTableData> {
           other.durationMs == this.durationMs &&
           other.sourceType == this.sourceType &&
           other.sourceUri == this.sourceUri &&
+          other.mediaSourceType == this.mediaSourceType &&
+          other.mediaSourceId == this.mediaSourceId &&
+          other.mediaSourceUri == this.mediaSourceUri &&
           other.addedAt == this.addedAt &&
           other.album == this.album &&
           other.imageUrl == this.imageUrl &&
@@ -1521,6 +1656,9 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
   final Value<int?> durationMs;
   final Value<String> sourceType;
   final Value<String> sourceUri;
+  final Value<String?> mediaSourceType;
+  final Value<String?> mediaSourceId;
+  final Value<String?> mediaSourceUri;
   final Value<DateTime?> addedAt;
   final Value<String?> album;
   final Value<String?> imageUrl;
@@ -1536,6 +1674,9 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
     this.durationMs = const Value.absent(),
     this.sourceType = const Value.absent(),
     this.sourceUri = const Value.absent(),
+    this.mediaSourceType = const Value.absent(),
+    this.mediaSourceId = const Value.absent(),
+    this.mediaSourceUri = const Value.absent(),
     this.addedAt = const Value.absent(),
     this.album = const Value.absent(),
     this.imageUrl = const Value.absent(),
@@ -1552,6 +1693,9 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
     this.durationMs = const Value.absent(),
     required String sourceType,
     required String sourceUri,
+    this.mediaSourceType = const Value.absent(),
+    this.mediaSourceId = const Value.absent(),
+    this.mediaSourceUri = const Value.absent(),
     this.addedAt = const Value.absent(),
     this.album = const Value.absent(),
     this.imageUrl = const Value.absent(),
@@ -1571,6 +1715,9 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
     Expression<int>? durationMs,
     Expression<String>? sourceType,
     Expression<String>? sourceUri,
+    Expression<String>? mediaSourceType,
+    Expression<String>? mediaSourceId,
+    Expression<String>? mediaSourceUri,
     Expression<DateTime>? addedAt,
     Expression<String>? album,
     Expression<String>? imageUrl,
@@ -1587,6 +1734,9 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
       if (durationMs != null) 'duration_ms': durationMs,
       if (sourceType != null) 'source_type': sourceType,
       if (sourceUri != null) 'source_uri': sourceUri,
+      if (mediaSourceType != null) 'media_source_type': mediaSourceType,
+      if (mediaSourceId != null) 'media_source_id': mediaSourceId,
+      if (mediaSourceUri != null) 'media_source_uri': mediaSourceUri,
       if (addedAt != null) 'added_at': addedAt,
       if (album != null) 'album': album,
       if (imageUrl != null) 'image_url': imageUrl,
@@ -1606,6 +1756,9 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
     Value<int?>? durationMs,
     Value<String>? sourceType,
     Value<String>? sourceUri,
+    Value<String?>? mediaSourceType,
+    Value<String?>? mediaSourceId,
+    Value<String?>? mediaSourceUri,
     Value<DateTime?>? addedAt,
     Value<String?>? album,
     Value<String?>? imageUrl,
@@ -1622,6 +1775,9 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
       durationMs: durationMs ?? this.durationMs,
       sourceType: sourceType ?? this.sourceType,
       sourceUri: sourceUri ?? this.sourceUri,
+      mediaSourceType: mediaSourceType ?? this.mediaSourceType,
+      mediaSourceId: mediaSourceId ?? this.mediaSourceId,
+      mediaSourceUri: mediaSourceUri ?? this.mediaSourceUri,
       addedAt: addedAt ?? this.addedAt,
       album: album ?? this.album,
       imageUrl: imageUrl ?? this.imageUrl,
@@ -1655,6 +1811,15 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
     }
     if (sourceUri.present) {
       map['source_uri'] = Variable<String>(sourceUri.value);
+    }
+    if (mediaSourceType.present) {
+      map['media_source_type'] = Variable<String>(mediaSourceType.value);
+    }
+    if (mediaSourceId.present) {
+      map['media_source_id'] = Variable<String>(mediaSourceId.value);
+    }
+    if (mediaSourceUri.present) {
+      map['media_source_uri'] = Variable<String>(mediaSourceUri.value);
     }
     if (addedAt.present) {
       map['added_at'] = Variable<DateTime>(addedAt.value);
@@ -1692,6 +1857,9 @@ class TrackTableCompanion extends UpdateCompanion<TrackTableData> {
           ..write('durationMs: $durationMs, ')
           ..write('sourceType: $sourceType, ')
           ..write('sourceUri: $sourceUri, ')
+          ..write('mediaSourceType: $mediaSourceType, ')
+          ..write('mediaSourceId: $mediaSourceId, ')
+          ..write('mediaSourceUri: $mediaSourceUri, ')
           ..write('addedAt: $addedAt, ')
           ..write('album: $album, ')
           ..write('imageUrl: $imageUrl, ')
@@ -14592,6 +14760,9 @@ typedef $$TrackTableTableCreateCompanionBuilder =
       Value<int?> durationMs,
       required String sourceType,
       required String sourceUri,
+      Value<String?> mediaSourceType,
+      Value<String?> mediaSourceId,
+      Value<String?> mediaSourceUri,
       Value<DateTime?> addedAt,
       Value<String?> album,
       Value<String?> imageUrl,
@@ -14609,6 +14780,9 @@ typedef $$TrackTableTableUpdateCompanionBuilder =
       Value<int?> durationMs,
       Value<String> sourceType,
       Value<String> sourceUri,
+      Value<String?> mediaSourceType,
+      Value<String?> mediaSourceId,
+      Value<String?> mediaSourceUri,
       Value<DateTime?> addedAt,
       Value<String?> album,
       Value<String?> imageUrl,
@@ -15047,6 +15221,21 @@ class $$TrackTableTableFilterComposer
 
   ColumnFilters<String> get sourceUri => $composableBuilder(
     column: $table.sourceUri,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get mediaSourceType => $composableBuilder(
+    column: $table.mediaSourceType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get mediaSourceId => $composableBuilder(
+    column: $table.mediaSourceId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get mediaSourceUri => $composableBuilder(
+    column: $table.mediaSourceUri,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -15495,6 +15684,21 @@ class $$TrackTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get mediaSourceType => $composableBuilder(
+    column: $table.mediaSourceType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get mediaSourceId => $composableBuilder(
+    column: $table.mediaSourceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get mediaSourceUri => $composableBuilder(
+    column: $table.mediaSourceUri,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get addedAt => $composableBuilder(
     column: $table.addedAt,
     builder: (column) => ColumnOrderings(column),
@@ -15563,6 +15767,21 @@ class $$TrackTableTableAnnotationComposer
 
   GeneratedColumn<String> get sourceUri =>
       $composableBuilder(column: $table.sourceUri, builder: (column) => column);
+
+  GeneratedColumn<String> get mediaSourceType => $composableBuilder(
+    column: $table.mediaSourceType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get mediaSourceId => $composableBuilder(
+    column: $table.mediaSourceId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get mediaSourceUri => $composableBuilder(
+    column: $table.mediaSourceUri,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<DateTime> get addedAt =>
       $composableBuilder(column: $table.addedAt, builder: (column) => column);
@@ -16014,6 +16233,9 @@ class $$TrackTableTableTableManager
                 Value<int?> durationMs = const Value.absent(),
                 Value<String> sourceType = const Value.absent(),
                 Value<String> sourceUri = const Value.absent(),
+                Value<String?> mediaSourceType = const Value.absent(),
+                Value<String?> mediaSourceId = const Value.absent(),
+                Value<String?> mediaSourceUri = const Value.absent(),
                 Value<DateTime?> addedAt = const Value.absent(),
                 Value<String?> album = const Value.absent(),
                 Value<String?> imageUrl = const Value.absent(),
@@ -16029,6 +16251,9 @@ class $$TrackTableTableTableManager
                 durationMs: durationMs,
                 sourceType: sourceType,
                 sourceUri: sourceUri,
+                mediaSourceType: mediaSourceType,
+                mediaSourceId: mediaSourceId,
+                mediaSourceUri: mediaSourceUri,
                 addedAt: addedAt,
                 album: album,
                 imageUrl: imageUrl,
@@ -16046,6 +16271,9 @@ class $$TrackTableTableTableManager
                 Value<int?> durationMs = const Value.absent(),
                 required String sourceType,
                 required String sourceUri,
+                Value<String?> mediaSourceType = const Value.absent(),
+                Value<String?> mediaSourceId = const Value.absent(),
+                Value<String?> mediaSourceUri = const Value.absent(),
                 Value<DateTime?> addedAt = const Value.absent(),
                 Value<String?> album = const Value.absent(),
                 Value<String?> imageUrl = const Value.absent(),
@@ -16061,6 +16289,9 @@ class $$TrackTableTableTableManager
                 durationMs: durationMs,
                 sourceType: sourceType,
                 sourceUri: sourceUri,
+                mediaSourceType: mediaSourceType,
+                mediaSourceId: mediaSourceId,
+                mediaSourceUri: mediaSourceUri,
                 addedAt: addedAt,
                 album: album,
                 imageUrl: imageUrl,

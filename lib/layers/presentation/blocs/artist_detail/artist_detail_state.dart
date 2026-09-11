@@ -24,10 +24,10 @@ final class ArtistDetailLoaded extends ArtistDetailState {
 final class ArtistDetailNotFound extends ArtistDetailState {}
 
 final class ArtistDetailError extends ArtistDetailState {
-  const ArtistDetailError(this.errorKey);
+  const ArtistDetailError(this.error);
 
-  final String errorKey;
+  final UiError error;
 
   @override
-  List<Object> get props => [errorKey];
+  List<Object> get props => [error];
 }

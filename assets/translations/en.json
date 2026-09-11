@@ -56,7 +56,7 @@
         "fileAction": "Choose files",
         "fileActionSub": "Add audio from this device",
         "linkTitle": "Link",
-        "linkHint": "Paste a SoundCloud link",
+        "linkHint": "Paste a SoundCloud, YouTube, or Spotify link",
         "paste": "Paste",
         "addLink": "Add",
         "clipboardEmpty": "Clipboard is empty",
@@ -68,7 +68,10 @@
         "addSelectedCount": "Add {count}",
         "filesAdded": "Added {count}",
         "filesPartiallyAdded": "{added} added · {failed} failed",
-        "filesAddFailed": "Failed to add files"
+        "filesAddFailed": "Failed to add files",
+        "collectionPreview": "{ready} ready · {skipped} skipped",
+        "collectionResult": "{added} added · {skipped} skipped",
+        "spotifyYoutubeSource": "Spotify · audio: YouTube"
     },
     "playlist": {
         "create": {
@@ -174,6 +177,10 @@
         "addToWave": "Add to Wave",
         "removeFromWave": "Remove from Wave",
         "openInSoundCloud": "Open in SoundCloud",
+        "openInYouTube": "Open in YouTube",
+        "openInSpotify": "Open in Spotify",
+        "openAudioInYouTube": "Open audio in YouTube",
+        "openSource": "Open source",
         "shareFile": "Share file",
         "sourceOpenFailed": "Could not open track source",
         "localFileUnavailable": "Local file is unavailable",
@@ -221,6 +228,7 @@
         "artists": "Artists",
         "filterAll": "All",
         "filterYoutube": "YouTube",
+        "filterSpotify": "Spotify",
         "filterLocal": "Local",
         "filterSoundcloud": "SoundCloud",
         "filterUnknown": "Unknown",
@@ -274,7 +282,16 @@
         "clearHistory": "Clear history",
         "clearHistoryConfirm": "All play history will be deleted permanently.",
         "version": "Version",
-        "clearPlayHistory": "Clear play history"
+        "clearPlayHistory": "Clear play history",
+        "crashReports": "Send error reports",
+        "crashReportsDescription": "Share anonymous crash diagnostics to help improve the app",
+        "crashReportsUnavailable": "Unavailable in this build",
+        "spotify": "Spotify",
+        "spotifyConnected": "Connected for link imports",
+        "spotifyDisconnected": "Connect to import tracks, albums and your playlists",
+        "spotifyNotConfigured": "Set SPOTIFY_CLIENT_ID for this build",
+        "spotifyConnect": "Connect",
+        "spotifyDisconnect": "Disconnect"
     },
     "allPlaylists": {
         "title": "All playlists",
@@ -349,6 +366,14 @@
         "youtube": "YouTube unavailable",
         "fileNotFound": "File not found",
         "noInternet": "No internet connection",
-        "unknown": "Unknown error"
+        "unknown": "Unknown error",
+        "permission": "Permission denied",
+        "storage": "Storage operation failed",
+        "remoteAccess": "The remote service denied access",
+        "rateLimited": "Too many requests. Try again later",
+        "invalidInput": "Check the entered data",
+        "startup": "OpenMusic could not start",
+        "startupDescription": "Check the device storage and try again. Error ID: {id}",
+        "retry": "Try again"
     }
 }

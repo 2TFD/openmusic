@@ -43,9 +43,11 @@ class LyricsResolutionWorker {
       try {
         if (await processNext()) continue;
       } catch (error, stackTrace) {
-        await AppLogger.log(
-          '[LyricsResolutionWorker] queue loop error=${error.runtimeType}; '
-          'stackTrace=$stackTrace',
+        await AppLogger.captureException(
+          error,
+          stackTrace,
+          operation: 'lyrics_resolution_worker.queue_loop',
+          message: 'Lyrics resolution queue loop failed',
         );
       }
       if (_running) await Future<void>.delayed(const Duration(seconds: 2));
@@ -71,9 +73,11 @@ class LyricsResolutionWorker {
         await _tasks.complete(task.id);
       }
     } catch (error, stackTrace) {
-      await AppLogger.log(
-        '[LyricsResolutionWorker] trackId=${task.trackId}; '
-        'error=${error.runtimeType}; stackTrace=$stackTrace',
+      await AppLogger.captureException(
+        error,
+        stackTrace,
+        operation: 'lyrics_resolution_worker.resolve',
+        message: 'Lyrics resolution failed unexpectedly',
       );
       await _tasks.fail(
         task.id,

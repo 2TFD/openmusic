@@ -6,8 +6,11 @@ class AppBlocObserver extends BlocObserver {
 
   @override
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
-    AppLogger.log(
-      '[${bloc.runtimeType}] Unhandled error: $error, stackTrace: $stackTrace',
+    AppLogger.captureException(
+      error,
+      stackTrace,
+      operation: 'bloc.${bloc.runtimeType}.unhandled',
+      message: '[${bloc.runtimeType}] Unhandled error',
     );
     super.onError(bloc, error, stackTrace);
   }

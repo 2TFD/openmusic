@@ -39,9 +39,11 @@ class MusicAnalysisWorker {
       try {
         if (await processNext()) continue;
       } catch (error, stackTrace) {
-        await AppLogger.log(
-          '[MusicAnalysisWorker] queue loop error: $error; '
-          'stackTrace=$stackTrace',
+        await AppLogger.captureException(
+          error,
+          stackTrace,
+          operation: 'music_analysis_worker.queue_loop',
+          message: 'Music analysis queue loop failed',
         );
       }
       if (_running) {
@@ -63,9 +65,11 @@ class MusicAnalysisWorker {
       );
       await _tasks.complete(task.id);
     } on MusicAnalysisFailure catch (failure, stackTrace) {
-      await AppLogger.log(
-        '[MusicAnalysisWorker] ${failure.kind}: ${failure.details}; '
-        'stackTrace=$stackTrace',
+      await AppLogger.warning(
+        '[MusicAnalysisWorker] ${failure.kind}: ${failure.details}',
+        operation: 'music_analysis_worker.analyze',
+        error: failure,
+        stackTrace: stackTrace,
       );
       await _tasks.fail(
         task.id,
@@ -76,8 +80,11 @@ class MusicAnalysisWorker {
         await Future<void>.delayed(const Duration(seconds: 3));
       }
     } catch (error, stackTrace) {
-      await AppLogger.log(
-        '[MusicAnalysisWorker] unknown: $error; stackTrace=$stackTrace',
+      await AppLogger.captureException(
+        error,
+        stackTrace,
+        operation: 'music_analysis_worker.analyze',
+        message: 'Music analysis failed unexpectedly',
       );
       await _tasks.fail(
         task.id,

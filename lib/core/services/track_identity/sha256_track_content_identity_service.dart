@@ -13,6 +13,12 @@ class Sha256TrackContentIdentityService implements TrackContentIdentityService {
   Future<String?> createFor(TrackPreview preview) => switch (preview.source) {
     SourceType.localFile => forLocalFile(preview.originalUrl),
     SourceType.soundcloud => Future.value(forSoundCloudTrack(preview.id)),
+    SourceType.youtube => Future.value('youtube:${preview.id}'),
+    SourceType.spotify => Future.value(
+      preview.media?.type == SourceType.youtube
+          ? 'youtube:${preview.media!.id}'
+          : 'spotify:${preview.id}',
+    ),
     SourceType.unknown => Future.value(),
   };
 
