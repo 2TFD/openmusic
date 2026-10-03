@@ -1,23 +1,59 @@
-# OpenMusic
+# OwlSonic
 
-A mobile app for listening to music from multiple sources in a single library. Built with Flutter and Clean Architecture.
+**Your personal music library, everywhere — mapped by mood and powered by Wave.**
 
----
+OwlSonic is a cross-platform personal music library that combines local-first playback, cloud library sync, streaming, offline access, Mood Map, Wave recommendations, and ML-powered music analysis.
 
-## Features
-
-- **Unified library** — tracks from different sources in one place
-- **SoundCloud** — import tracks, playlists and likes by URL
-- **Background playback** — controls in the notification shade
-- **Wave** — endless queue based on ML track similarity (cosine distance between embeddings)
-- **Search** across library and SoundCloud
-- **Play history**
-- **Playlists** — create and manage
-- **Localization** — English and Russian
+> Canonical product definition: [docs/PRODUCT_MVP.md](docs/PRODUCT_MVP.md). This README separates what exists today from the MVP target.
 
 ---
 
-## Architecture
+## What is OwlSonic?
+
+A personal music library that works locally and across devices, with Mood Map and Wave for rediscovering your music. It is a single Flutter codebase (Android, iOS, Windows, macOS, Linux). No account is required for local use.
+
+## Core experiences
+
+- **Local-first library** — works without an account.
+- **Cloud library & sync** — *MVP target*: one logical library across devices, audio upload, synced playlists and state.
+- **Mood Map** — a 2D valence/arousal map of your library; ML sets the default position, you can override it.
+- **Wave** — radio for the music already in your library, based on mood, audio/track similarity and artist context.
+- **Offline + streaming** — *MVP target*: Play picks the available source (offline copy → local original → cloud stream).
+
+## Platforms
+
+Flutter codebase targeting Android, iOS, Windows, macOS and Linux. Web is not part of the MVP.
+
+## Build flavors
+
+*MVP target* (not implemented yet — one codebase, build flavors and feature registration):
+
+- **Community / OSS** — includes experimental community integrations (import providers such as YouTube, SoundCloud, Spotify metadata/matching).
+- **Store** — compatible with App Store / Google Play requirements; disallowed experimental providers are not registered.
+
+## Current implementation status
+
+Implemented today:
+
+- Unified local library, background playback, playlists, play history, search
+- Experimental import providers: SoundCloud, YouTube, Spotify (available in all builds for now)
+- Wave (local engines), Mood Map, lyrics
+- ML analysis through a remote ML API (configurable via `ML_BASE_URL`)
+- English and Russian localization
+
+Not implemented yet: accounts, cloud library/upload/streaming, cross-device sync, flavors, provenance metadata. No backend lives in this repository.
+
+## MVP target architecture
+
+Planned backend integration (target, not implemented): the main backend handles auth, devices, library, uploads, storage and streaming authorization, sync, ML jobs and quotas. Audio goes directly between client and object storage via presigned/short-lived signed URLs; sync is cursor-based delta sync. Cloud audio from all origins, including Community imports, shares one storage with explicit provenance. Details: [docs/PRODUCT_MVP.md](docs/PRODUCT_MVP.md).
+
+## ML architecture
+
+Centralized analysis: CLAP audio embeddings, CLAP zero-shot emotion, E5 text/lyrics embeddings, versioned representations; they power Mood Map and Wave. The ML worker is a stateless inference service; the client should eventually talk only to the main backend.
+
+---
+
+## Code architecture
 
 Layered Clean Architecture:
 
@@ -26,7 +62,7 @@ lib/
 ├── core/
 │   ├── di/               # get_it DI + BlocScope
 │   ├── app_router/       # go_router (ShellRoute + bottom nav)
-│   ├── services/         # AudioPlayerService, WaveEngine, EmbeddingEngine
+│   ├── services/         # audio player, recommendation (Wave), music analysis, lyrics
 │   ├── themes/           # AppTheme
 │   └── utils/
 └── layers/
@@ -58,13 +94,13 @@ lib/
 
 ---
 
-## Getting Started
+## Development
 
 **Requirements:** Flutter SDK ^3.10.4, connected device or emulator.
 
 ```bash
-git clone https://github.com/2tfd/openmusic.git
-cd openmusic
+git clone https://github.com/2tfd/owlsonic.git
+cd owlsonic
 
 # Create .env from example
 cp .env.example .env
@@ -86,11 +122,11 @@ flutter run \
 Users can enable anonymous error reports in Settings. Performance tracing,
 session replay, request capture, and default PII collection remain disabled.
 
-### YouTube and Spotify import
+### Experimental import providers (YouTube, Spotify)
 
 YouTube video/playlist import and Spotify track/album/owned-playlist import
 are available in debug, profile, and release builds without a feature flag.
-For Spotify, register `openmusic-spotify-login://callback` in the Spotify
+For Spotify, register `owlsonic-spotify-login://callback` in the Spotify
 dashboard and supply the client ID when running or building the app:
 
 ```bash
@@ -115,6 +151,6 @@ dart run build_runner build
 
 ---
 
-## License
+## License / third-party notes
 
-MIT — see [LICENSE](LICENSE)
+MIT — see [LICENSE](LICENSE). Experimental community integrations rely on third-party services; being open source does not by itself make them permissible under those services' terms.

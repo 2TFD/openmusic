@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-OpenMusic follows Clean Architecture. `lib/main.dart` is the entry point; shared routing, dependency injection, services, themes, and utilities live in `lib/core/`. Feature code is divided into `lib/layers/data/` (Drift, data sources, DTOs, mappers, and implementations), `lib/layers/domain/` (entities, contracts, services, and use cases), and `lib/layers/presentation/` (BLoCs/Cubits, screens, and widgets). Keep dependencies flowing through domain abstractions.
+OwlSonic (canonical product definition: `docs/PRODUCT_MVP.md`) follows Clean Architecture. `lib/main.dart` is the entry point; shared routing, dependency injection, services, themes, and utilities live in `lib/core/`. Feature code is divided into `lib/layers/data/` (Drift, data sources, DTOs, mappers, and implementations), `lib/layers/domain/` (entities, contracts, services, and use cases), and `lib/layers/presentation/` (BLoCs/Cubits, screens, and widgets). Keep dependencies flowing through domain abstractions.
 
 Tests are in `test/`, with fakes in `test/support/`. Images and English/Russian translations live under `assets/`. Platform projects use the standard Flutter directories.
 
