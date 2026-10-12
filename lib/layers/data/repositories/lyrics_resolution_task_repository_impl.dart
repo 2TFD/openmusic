@@ -1,9 +1,9 @@
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../domain/entities/lyrics_resolution_task.dart';
-import '../../domain/repositories/lyrics_resolution_task_repository.dart';
-import '../database/app_database.dart';
+import 'package:owlsonic/layers/domain/entities/lyrics_resolution_task.dart';
+import 'package:owlsonic/layers/domain/repositories/lyrics_resolution_task_repository.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
 
 class LyricsResolutionTaskRepositoryImpl
     implements LyricsResolutionTaskRepository {

@@ -1,10 +1,10 @@
-import '../../../layers/domain/entities/music_analysis.dart';
-import '../../../layers/domain/entities/track_embedding.dart';
-import '../../../layers/domain/repositories/track_embedding_repository.dart';
-import '../../../layers/domain/repositories/track_lyrics_repository.dart';
-import '../../../layers/domain/repositories/track_repository.dart';
-import '../../../layers/domain/services/vector_similarity.dart';
-import '../music_analysis/music_analysis_model_registry.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/track_embedding.dart';
+import 'package:owlsonic/layers/domain/repositories/track_embedding_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_lyrics_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/layers/domain/services/vector_similarity.dart';
+import 'package:owlsonic/core/services/music_analysis/music_analysis_model_registry.dart';
 
 class LyricsSemanticResearchCoverage {
   const LyricsSemanticResearchCoverage({

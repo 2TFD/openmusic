@@ -1,5 +1,5 @@
-import '../entities/listening_event.dart';
-import '../repositories/listening_event_repository.dart';
+import 'package:owlsonic/layers/domain/entities/listening_event.dart';
+import 'package:owlsonic/layers/domain/repositories/listening_event_repository.dart';
 
 class SaveListeningEventUseCase {
   const SaveListeningEventUseCase(this.repository);

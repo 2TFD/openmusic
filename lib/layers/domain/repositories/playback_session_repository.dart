@@ -1,4 +1,4 @@
-import 'package:openmusic/layers/domain/entities/playback_session.dart';
+import 'package:owlsonic/layers/domain/entities/playback_session.dart';
 
 abstract class PlaybackSessionRepository {
   Future<PlaybackSession?> load();

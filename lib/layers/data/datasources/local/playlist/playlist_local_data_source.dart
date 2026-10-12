@@ -1,4 +1,4 @@
-import 'package:openmusic/layers/data/models/playlist_dto.dart';
+import 'package:owlsonic/layers/data/models/playlist_dto.dart';
 
 enum PlaylistMutationResult { applied, notFound, conflict }
 

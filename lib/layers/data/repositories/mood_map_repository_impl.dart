@@ -1,11 +1,11 @@
-import '../../../core/services/music_analysis/music_analysis_model_registry.dart';
-import '../../domain/entities/mood_map.dart';
-import '../../domain/entities/music_analysis.dart';
-import '../../domain/entities/track_emotion_analysis.dart';
-import '../../domain/repositories/mood_map_repository.dart';
-import '../../domain/repositories/track_emotion_repository.dart';
-import '../../domain/repositories/track_repository.dart';
-import '../database/app_database.dart';
+import 'package:owlsonic/core/services/music_analysis/music_analysis_model_registry.dart';
+import 'package:owlsonic/layers/domain/entities/mood_map.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/track_emotion_analysis.dart';
+import 'package:owlsonic/layers/domain/repositories/mood_map_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_emotion_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
 
 class MoodMapRepositoryImpl implements MoodMapRepository {
   MoodMapRepositoryImpl({

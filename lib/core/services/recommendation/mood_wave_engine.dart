@@ -11,6 +11,8 @@ import '../../../layers/domain/repositories/track_temporal_embedding_repository.
 import '../../../layers/domain/services/temporal_dtw_similarity.dart';
 import '../../../layers/domain/services/vector_similarity.dart';
 import '../music_analysis/music_analysis_model_registry.dart';
+import '../../../layers/domain/entities/track.dart';
+import 'audio_wave_support.dart';
 import 'mood_wave_config.dart';
 import 'wave_recommendation_strategy.dart';
 
@@ -21,7 +23,9 @@ class MoodWaveEngine implements WaveRecommendationStrategy {
     required TrackTemporalEmbeddingRepository temporalEmbeddings,
     required MusicAnalysisModelRegistry registry,
     required MoodWaveConfig config,
-  }) : _moods = moods,
+    bool Function(Track track)? isPlayable,
+  }) : _isPlayable = isPlayable ?? isPlayableWaveTrack,
+       _moods = moods,
        _globalEmbeddings = globalEmbeddings,
        _temporalEmbeddings = temporalEmbeddings,
        _registry = registry,
@@ -31,6 +35,9 @@ class MoodWaveEngine implements WaveRecommendationStrategy {
   final TrackEmbeddingRepository _globalEmbeddings;
   final TrackTemporalEmbeddingRepository _temporalEmbeddings;
   final MusicAnalysisModelRegistry _registry;
+
+  /// Eligibility filter (e.g. offline-aware); ranking is unaffected.
+  final bool Function(Track track) _isPlayable;
   final MoodWaveConfig _config;
 
   MoodWaveConfig get config => _config;
@@ -78,8 +85,7 @@ class MoodWaveEngine implements WaveRecommendationStrategy {
       final track = entry.track;
       if (available.containsKey(track.id) ||
           excludedIds.contains(track.id) ||
-          !track.isReadyToPlay ||
-          !track.source.isAvailable ||
+          !_isPlayable(track) ||
           !_validMood(entry.valence, entry.arousal)) {
         continue;
       }

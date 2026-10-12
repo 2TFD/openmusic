@@ -20,7 +20,7 @@ class LyricsConfig {
 
   static const defaultBaseUrl = 'https://lrclib.net';
   static const defaultUserAgent =
-      'OpenMusic/0.1.0 (https://github.com/openmusic-app/openmusic)';
+      'Owlsonic/0.1.0 (https://github.com/owlsonic-app/owlsonic)';
 
   final Uri baseUri;
   final String userAgent;

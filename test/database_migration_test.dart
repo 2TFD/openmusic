@@ -3,14 +3,14 @@ import 'dart:io';
 import 'package:drift/drift.dart' hide isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
 
 void main() {
   test(
     'schema v6 migrates through revisions, indexes, and durable work tables',
     () async {
       final tempDir = await Directory.systemTemp.createTemp(
-        'openmusic_schema_v7_migration_',
+        'owlsonic_schema_v7_migration_',
       );
       addTearDown(() => tempDir.delete(recursive: true));
       final databaseFile = File('${tempDir.path}/migration.sqlite');
@@ -101,7 +101,7 @@ void main() {
 
   test('schema v3 migrates both task tables to lease columns', () async {
     final tempDir = await Directory.systemTemp.createTemp(
-      'openmusic_schema_migration_',
+      'owlsonic_schema_migration_',
     );
     addTearDown(() => tempDir.delete(recursive: true));
     final databaseFile = File('${tempDir.path}/migration.sqlite');
@@ -145,7 +145,7 @@ void main() {
 
   test('schema v4 converts ISO addedAt text to an indexed timestamp', () async {
     final tempDir = await Directory.systemTemp.createTemp(
-      'openmusic_track_date_migration_',
+      'owlsonic_track_date_migration_',
     );
     addTearDown(() => tempDir.delete(recursive: true));
     final databaseFile = File('${tempDir.path}/migration.sqlite');
@@ -192,7 +192,7 @@ INSERT INTO track_table (
 
   test('schema v5 normalizes artists, playlists, and play duration', () async {
     final tempDir = await Directory.systemTemp.createTemp(
-      'openmusic_normalized_schema_migration_',
+      'owlsonic_normalized_schema_migration_',
     );
     addTearDown(() => tempDir.delete(recursive: true));
     final databaseFile = File('${tempDir.path}/migration.sqlite');
@@ -288,7 +288,7 @@ ORDER BY position
 
   test('schema v9 migrates playback and navigation state tables', () async {
     final tempDir = await Directory.systemTemp.createTemp(
-      'openmusic_state_schema_migration_',
+      'owlsonic_state_schema_migration_',
     );
     addTearDown(() => tempDir.delete(recursive: true));
     final databaseFile = File('${tempDir.path}/migration.sqlite');
@@ -322,7 +322,7 @@ ORDER BY position
 
   test('schema v11 adds recommendation foundation without data loss', () async {
     final tempDir = await Directory.systemTemp.createTemp(
-      'openmusic_schema_v12_migration_',
+      'owlsonic_schema_v12_migration_',
     );
     addTearDown(() => tempDir.delete(recursive: true));
     final databaseFile = File('${tempDir.path}/migration.sqlite');
@@ -397,7 +397,7 @@ INSERT INTO track_table (
 
   test('partially applied v11 migration resumes idempotently', () async {
     final tempDir = await Directory.systemTemp.createTemp(
-      'openmusic_partial_v12_migration_',
+      'owlsonic_partial_v12_migration_',
     );
     addTearDown(() => tempDir.delete(recursive: true));
     final databaseFile = File('${tempDir.path}/migration.sqlite');
@@ -457,12 +457,12 @@ INSERT INTO track_table (
       tables.map((row) => row.read<String>('name')),
       isNot(contains('play_record_table')),
     );
-    expect(version.read<int>('user_version'), 19);
+    expect(version.read<int>('user_version'), 20);
   });
 
   test('schema v12 marks existing embedding revision as unknown', () async {
     final tempDir = await Directory.systemTemp.createTemp(
-      'openmusic_schema_v13_migration_',
+      'owlsonic_schema_v13_migration_',
     );
     addTearDown(() => tempDir.delete(recursive: true));
     final databaseFile = File('${tempDir.path}/migration.sqlite');
@@ -512,7 +512,7 @@ INSERT INTO track_embedding_table (
     'schema v13 adds versioned research storage without data loss',
     () async {
       final tempDir = await Directory.systemTemp.createTemp(
-        'openmusic_schema_v14_migration_',
+        'owlsonic_schema_v14_migration_',
       );
       addTearDown(() => tempDir.delete(recursive: true));
       final databaseFile = File('${tempDir.path}/migration.sqlite');
@@ -583,7 +583,7 @@ INSERT INTO track_embedding_table (
 
   test('schema v14 removes only legacy embedding storage', () async {
     final tempDir = await Directory.systemTemp.createTemp(
-      'openmusic_schema_v15_migration_',
+      'owlsonic_schema_v15_migration_',
     );
     addTearDown(() => tempDir.delete(recursive: true));
     final databaseFile = File('${tempDir.path}/migration.sqlite');
@@ -718,7 +718,7 @@ INSERT INTO similarity_evaluation_table (
     'schema v16 upgrades lyrics tables and preserves current embeddings',
     () async {
       final tempDir = await Directory.systemTemp.createTemp(
-        'openmusic_schema_v17_lyrics_migration_',
+        'owlsonic_schema_v17_lyrics_migration_',
       );
       addTearDown(() => tempDir.delete(recursive: true));
       final databaseFile = File('${tempDir.path}/migration.sqlite');
@@ -808,7 +808,7 @@ INSERT INTO music_analysis_task_table (
     'schema v18 adds optional media locator columns without data loss',
     () async {
       final tempDir = await Directory.systemTemp.createTemp(
-        'openmusic_schema_v19_migration_',
+        'owlsonic_schema_v19_migration_',
       );
       addTearDown(() => tempDir.delete(recursive: true));
       final databaseFile = File('${tempDir.path}/migration.sqlite');

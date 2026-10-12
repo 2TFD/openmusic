@@ -1,9 +1,9 @@
 import 'package:drift/drift.dart';
 
-import '../../domain/entities/lyrics_resolution_state.dart';
-import '../../domain/entities/track_lyrics.dart';
-import '../../domain/repositories/track_lyrics_repository.dart';
-import '../database/app_database.dart';
+import 'package:owlsonic/layers/domain/entities/lyrics_resolution_state.dart';
+import 'package:owlsonic/layers/domain/entities/track_lyrics.dart';
+import 'package:owlsonic/layers/domain/repositories/track_lyrics_repository.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
 
 class TrackLyricsRepositoryImpl implements TrackLyricsRepository {
   TrackLyricsRepositoryImpl(this.database);

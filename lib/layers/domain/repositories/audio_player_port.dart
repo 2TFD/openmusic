@@ -1,4 +1,4 @@
-import 'package:openmusic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
 
 enum PlaybackLoopMode { off, all, one }
 
@@ -18,6 +18,7 @@ abstract class AudioPlayerPort {
   Future<void> seekToIndex(int index);
   Future<void> skipToNext();
   Future<void> skipToPrevious();
+  Future<void> setVolume(double volume);
   Future<void> setLoopMode(PlaybackLoopMode mode);
   Future<void> setShuffleModeEnabled(bool enabled);
   Future<void> setQueue(

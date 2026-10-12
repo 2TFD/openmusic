@@ -1,4 +1,4 @@
-import 'package:openmusic/layers/data/models/track_dto.dart';
+import 'package:owlsonic/layers/data/models/track_dto.dart';
 
 abstract class TrackLocalDataSource {
   Future<List<TrackDto>> getTracks();

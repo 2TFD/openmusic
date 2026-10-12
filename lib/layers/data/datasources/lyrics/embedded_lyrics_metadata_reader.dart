@@ -1,4 +1,4 @@
-import 'package:ffmpeg_kit_flutter_new/ffprobe_kit.dart';
+import 'package:ffmpeg_kit_flutter_new_audio/ffprobe_kit.dart';
 import 'package:path/path.dart' as path;
 
 class EmbeddedLyricsMetadata {

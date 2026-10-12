@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
-import 'package:openmusic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
 
 class WaveConfig {
   final List<String> seeds;

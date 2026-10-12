@@ -1,5 +1,5 @@
-import 'package:openmusic/layers/data/models/download_task_dto.dart';
-import 'package:openmusic/layers/domain/entities/download_track_task.dart';
+import 'package:owlsonic/layers/data/models/download_task_dto.dart';
+import 'package:owlsonic/layers/domain/entities/download_track_task.dart';
 
 abstract class DownloadTaskLocalDataSource {
   Future<List<DownloadTaskDto>> getAll();
@@ -25,4 +25,11 @@ abstract class DownloadTaskLocalDataSource {
     required DownloadFailureInfo failure,
   });
   Future<DownloadTaskDto?> getByTrackId(String trackId);
+
+  /// Puts failed tasks with one of [codes] that failed before [failedBefore]
+  /// back into the queue. Returns how many were re-queued.
+  Future<int> requeueFailed({
+    required Set<String> codes,
+    required DateTime failedBefore,
+  });
 }

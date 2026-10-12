@@ -1,18 +1,18 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/datasources/local/playlist/drift/playlist_drift_local_source.dart';
-import 'package:openmusic/layers/data/datasources/local/track/drift/track_drift_local_source.dart';
-import 'package:openmusic/layers/data/models/playlist_dto.dart';
-import 'package:openmusic/layers/data/models/track_dto.dart';
-import 'package:openmusic/layers/data/repositories/playlist_repository_impl.dart';
-import 'package:openmusic/layers/data/repositories/track_repository_impl.dart';
-import 'package:openmusic/layers/domain/usecases/add_track_to_playlist_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/delete_playlist_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/get_playlist_with_tracks_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/update_playlist_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/watch_playlist_use_case.dart';
-import 'package:openmusic/layers/presentation/blocs/playlist_detail/playlist_detail_bloc.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/datasources/local/playlist/drift/playlist_drift_local_source.dart';
+import 'package:owlsonic/layers/data/datasources/local/track/drift/track_drift_local_source.dart';
+import 'package:owlsonic/layers/data/models/playlist_dto.dart';
+import 'package:owlsonic/layers/data/models/track_dto.dart';
+import 'package:owlsonic/layers/data/repositories/playlist_repository_impl.dart';
+import 'package:owlsonic/layers/data/repositories/track_repository_impl.dart';
+import 'package:owlsonic/layers/domain/usecases/add_track_to_playlist_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/delete_playlist_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/get_playlist_with_tracks_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/update_playlist_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/watch_playlist_use_case.dart';
+import 'package:owlsonic/layers/presentation/features/playlist/bloc/playlist_detail/playlist_detail_bloc.dart';
 
 void main() {
   test('detail reacts to database changes and serializes mutations', () async {
@@ -61,7 +61,7 @@ void main() {
       ['a', 'b'],
     );
 
-    bloc.add(const PlaylistDetailReorder(0, 2));
+    bloc.add(const PlaylistDetailReorder(0, 1));
     bloc.add(const PlaylistDetailRemoveTrack('a'));
     await pumpEventQueue(times: 80);
 

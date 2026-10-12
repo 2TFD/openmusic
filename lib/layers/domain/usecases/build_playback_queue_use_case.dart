@@ -1,5 +1,5 @@
-import 'package:openmusic/core/errors/failures/failure.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
 
 class PlaybackQueue {
   final List<Track> tracks;

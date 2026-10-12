@@ -1,7 +1,7 @@
-import '../../../layers/domain/entities/lyrics_resolution_state.dart';
-import '../../../layers/domain/repositories/lyrics_resolution_task_repository.dart';
-import '../../../layers/domain/repositories/track_lyrics_repository.dart';
-import '../../../layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/layers/domain/entities/lyrics_resolution_state.dart';
+import 'package:owlsonic/layers/domain/repositories/lyrics_resolution_task_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_lyrics_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
 import 'lyrics_config.dart';
 
 abstract interface class LyricsBackfill {

@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 
-enum SourceType { localFile, soundcloud, youtube, spotify, unknown }
+/// [owlsonic]: a track of the signed-in user's OwlSonic cloud library. It is
+/// streamable without a local file.
+enum SourceType { localFile, soundcloud, youtube, spotify, owlsonic, unknown }
 
 class MediaLocator extends Equatable {
   const MediaLocator({required this.type, required this.id, required this.url});

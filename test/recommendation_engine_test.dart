@@ -1,22 +1,21 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/services/music_analysis/music_analysis_model_registry.dart';
-import 'package:openmusic/core/services/recommendation/recommendation_config.dart';
-import 'package:openmusic/core/services/recommendation/recommendation_engine.dart';
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/music_analysis.dart';
-import 'package:openmusic/layers/domain/entities/recommendation.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/entities/track_embedding.dart';
-import 'package:openmusic/layers/domain/entities/track_lyrics.dart';
-import 'package:openmusic/layers/domain/entities/lyrics_resolution_state.dart';
-import 'package:openmusic/layers/domain/entities/track_temporal_embedding.dart';
-import 'package:openmusic/layers/domain/entities/wave_config.dart';
-import 'package:openmusic/layers/domain/repositories/music_analysis_client.dart';
-import 'package:openmusic/layers/domain/repositories/track_embedding_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_lyrics_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_temporal_embedding_repository.dart';
+import 'package:owlsonic/core/services/music_analysis/music_analysis_model_registry.dart';
+import 'package:owlsonic/core/services/recommendation/recommendation_config.dart';
+import 'package:owlsonic/core/services/recommendation/recommendation_engine.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/recommendation.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/track_embedding.dart';
+import 'package:owlsonic/layers/domain/entities/track_lyrics.dart';
+import 'package:owlsonic/layers/domain/entities/lyrics_resolution_state.dart';
+import 'package:owlsonic/layers/domain/entities/track_temporal_embedding.dart';
+import 'package:owlsonic/layers/domain/entities/wave_config.dart';
+import 'package:owlsonic/layers/domain/repositories/track_embedding_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_lyrics_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_temporal_embedding_repository.dart';
 
 void main() {
   test(
@@ -230,7 +229,7 @@ RecommendationEngine _engine({
     globalEmbeddings: _Globals(globals),
     temporalEmbeddings: _Temporals(temporals),
     lyrics: lyrics,
-    registry: MusicAnalysisModelRegistry(client),
+    registry: MusicAnalysisModelRegistry(models: client.models),
     config: config,
   );
 }
@@ -323,12 +322,8 @@ TrackTemporalEmbedding _temporal(String trackId, List<double> vector) =>
       ],
     );
 
-class _ModelsClient implements MusicAnalysisClient {
-  @override
-  String get baseUrl => 'https://analysis.example';
-
-  @override
-  Future<MusicAnalysisModels> getModels() async => MusicAnalysisModels(
+class _ModelsClient {
+  MusicAnalysisModels get models => MusicAnalysisModels(
     schemaVersion: '1',
     models: [
       MusicAnalysisModel(
@@ -360,15 +355,6 @@ class _ModelsClient implements MusicAnalysisClient {
       ),
     ],
   );
-
-  @override
-  Future<MusicAnalysisResponse> analyze({
-    required String trackId,
-    required String filePath,
-    String? contentIdentity,
-    String? lyrics,
-    required Set<MusicAnalysisRepresentation> requestedRepresentations,
-  }) => throw UnimplementedError();
 }
 
 class _Tracks implements TrackRepository {

@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
-import '../entities/source.dart';
-import '../entities/track_lyrics.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track_lyrics.dart';
 
 class LyricsRequest extends Equatable {
   LyricsRequest({

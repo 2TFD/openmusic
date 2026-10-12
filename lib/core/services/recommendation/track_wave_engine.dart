@@ -1,8 +1,9 @@
-import '../../../layers/domain/entities/wave_session.dart';
-import '../../../layers/domain/repositories/track_embedding_repository.dart';
-import '../../../layers/domain/repositories/track_repository.dart';
-import '../../../layers/domain/repositories/track_temporal_embedding_repository.dart';
-import '../music_analysis/music_analysis_model_registry.dart';
+import 'package:owlsonic/layers/domain/entities/wave_session.dart';
+import 'package:owlsonic/layers/domain/repositories/track_embedding_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_temporal_embedding_repository.dart';
+import 'package:owlsonic/core/services/music_analysis/music_analysis_model_registry.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
 import 'audio_wave_support.dart';
 import 'track_wave_config.dart';
 import 'wave_recommendation_strategy.dart';
@@ -14,7 +15,9 @@ class TrackWaveEngine implements WaveRecommendationStrategy {
     required TrackTemporalEmbeddingRepository temporalEmbeddings,
     required MusicAnalysisModelRegistry registry,
     required TrackWaveConfig config,
-  }) : _loader = AudioWaveDataLoader(
+    bool Function(Track track)? isPlayable,
+  }) : _isPlayable = isPlayable ?? isPlayableWaveTrack,
+       _loader = AudioWaveDataLoader(
          tracks: tracks,
          globals: globalEmbeddings,
          temporals: temporalEmbeddings,
@@ -23,6 +26,9 @@ class TrackWaveEngine implements WaveRecommendationStrategy {
        _config = config;
 
   final AudioWaveDataLoader _loader;
+
+  /// Eligibility filter (e.g. offline-aware); ranking is unaffected.
+  final bool Function(Track track) _isPlayable;
   final TrackWaveConfig _config;
 
   TrackWaveConfig get config => _config;
@@ -85,7 +91,7 @@ class TrackWaveEngine implements WaveRecommendationStrategy {
     };
     final globalRanked = <({String id, double cosine, double similarity})>[];
     for (final track in data.tracks) {
-      if (excluded.contains(track.id) || !isPlayableWaveTrack(track)) continue;
+      if (excluded.contains(track.id) || !_isPlayable(track)) continue;
       final embedding = data.globals[track.id];
       if (embedding == null) continue;
       final cosine = AudioWaveScoring.cosine(profile, embedding.vector);

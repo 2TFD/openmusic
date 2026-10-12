@@ -1,4 +1,4 @@
-import '../../../layers/domain/entities/wave_session.dart';
+import 'package:owlsonic/layers/domain/entities/wave_session.dart';
 import 'artist_wave_engine.dart';
 import 'mood_wave_engine.dart';
 import 'track_wave_engine.dart';

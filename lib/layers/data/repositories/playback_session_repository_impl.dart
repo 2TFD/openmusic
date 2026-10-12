@@ -1,8 +1,8 @@
 import 'package:drift/drift.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/domain/entities/playback_session.dart';
-import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
-import 'package:openmusic/layers/domain/repositories/playback_session_repository.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/domain/entities/playback_session.dart';
+import 'package:owlsonic/layers/domain/repositories/audio_player_port.dart';
+import 'package:owlsonic/layers/domain/repositories/playback_session_repository.dart';
 
 class PlaybackSessionRepositoryImpl implements PlaybackSessionRepository {
   PlaybackSessionRepositoryImpl(this.database);

@@ -1,6 +1,6 @@
-import '../../../domain/entities/track_lyrics.dart';
-import '../../../domain/repositories/lyrics_provider.dart';
-import '../../../domain/services/lrc_parser.dart';
+import 'package:owlsonic/layers/domain/entities/track_lyrics.dart';
+import 'package:owlsonic/layers/domain/repositories/lyrics_provider.dart';
+import 'package:owlsonic/layers/domain/services/lrc_parser.dart';
 import 'embedded_lyrics_metadata_reader.dart';
 
 class EmbeddedLyricsProvider implements LyricsProvider {

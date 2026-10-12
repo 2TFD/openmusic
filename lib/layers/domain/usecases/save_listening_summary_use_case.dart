@@ -1,7 +1,7 @@
-import 'package:openmusic/layers/domain/entities/listening_summary.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/repositories/listening_summary_repository.dart';
+import 'package:owlsonic/layers/domain/entities/listening_summary.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/repositories/listening_summary_repository.dart';
 import 'package:uuid/uuid.dart';
 
 class SaveListeningSummaryUseCase {
@@ -16,7 +16,8 @@ class SaveListeningSummaryUseCase {
     Duration listenedDuration, {
     String? summaryId,
   }) => saveSnapshot(
-    summaryId: summaryId ?? const Uuid().v4(),
+    // UUIDv7: the summary id doubles as the OwlSonic play-event id.
+    summaryId: summaryId ?? const Uuid().v7(),
     trackId: track.id,
     trackTitle: track.title,
     artistName: track.artists.map((artist) => artist.name).join(', '),

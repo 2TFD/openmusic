@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/repositories/track_external_actions.dart';
-import 'package:openmusic/layers/presentation/widgets/sheets/track_context_sheets.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/repositories/track_external_actions.dart';
+import 'package:owlsonic/layers/presentation/features/track/ui/widgets/sheets/track_context_sheets.dart';
 
 void main() {
   const preferencesChannel = MethodChannel(

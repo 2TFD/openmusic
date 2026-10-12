@@ -1,4 +1,4 @@
-import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/playlist_repository.dart';
 
 class DeletePlaylistUseCase {
   final PlaylistRepository _repository;

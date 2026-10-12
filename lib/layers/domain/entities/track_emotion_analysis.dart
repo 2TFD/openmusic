@@ -3,8 +3,13 @@ import 'package:equatable/equatable.dart';
 import 'music_analysis.dart';
 import 'track.dart';
 
-String emotionContentRevisionFor(Track track) =>
-    track.contentIdentity ?? 'audio:${track.audioRevision}';
+/// Cloud tracks use one fixed revision: their canonical analysis is keyed by
+/// track id on the backend and replaced wholesale by `analysis.upsert`.
+const cloudEmotionContentRevision = 'owlsonic-cloud';
+
+String emotionContentRevisionFor(Track track) => track.isCloudTrack
+    ? cloudEmotionContentRevision
+    : track.contentIdentity ?? 'audio:${track.audioRevision}';
 
 class TrackEmotionAnalysis extends Equatable {
   const TrackEmotionAnalysis({
@@ -36,7 +41,9 @@ class TrackEmotionAnalysis extends Equatable {
   final double arousal;
   final double? rawValence;
   final double? rawArousal;
-  final MoodDistribution moodDistribution;
+
+  /// Null for backend (cloud) analysis, which carries no mood labels.
+  final MoodDistribution? moodDistribution;
   final DateTime analyzedAt;
 
   @override

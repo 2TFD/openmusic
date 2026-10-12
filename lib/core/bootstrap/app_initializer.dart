@@ -1,6 +1,9 @@
+import 'package:owlsonic/core/utils/app_logger.dart';
+
 typedef BootstrapRunner = Future<void> Function();
 
 enum BootstrapPhase {
+  telemetryConsent,
   localization,
   appDirectory,
   dependencies,
@@ -38,9 +41,22 @@ final class AppInitializer {
   }
 
   Future<void> _runRemaining() async {
+    final total = Stopwatch()..start();
     while (_nextStep < _steps.length) {
-      await _steps[_nextStep].run();
+      final step = _steps[_nextStep];
+      final stopwatch = Stopwatch()..start();
+      await step.run();
+      stopwatch.stop();
+      await AppLogger.info(
+        'Startup phase ${step.phase.name}: ${stopwatch.elapsedMilliseconds} ms',
+        operation: 'startup.${step.phase.name}',
+      );
       _nextStep++;
     }
+    total.stop();
+    await AppLogger.info(
+      'Essential startup complete: ${total.elapsedMilliseconds} ms',
+      operation: 'startup.essential_complete',
+    );
   }
 }

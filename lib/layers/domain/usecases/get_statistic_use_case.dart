@@ -1,5 +1,5 @@
-import 'package:openmusic/layers/domain/entities/statistic.dart';
-import 'package:openmusic/layers/domain/repositories/listening_summary_repository.dart';
+import 'package:owlsonic/layers/domain/entities/statistic.dart';
+import 'package:owlsonic/layers/domain/repositories/listening_summary_repository.dart';
 
 class GetStatisticsUseCase {
   final ListeningSummaryRepository _repo;

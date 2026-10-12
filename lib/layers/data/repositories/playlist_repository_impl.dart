@@ -1,8 +1,8 @@
-import 'package:openmusic/core/errors/failures/failure.dart';
-import 'package:openmusic/layers/data/datasources/local/playlist/playlist_local_data_source.dart';
-import 'package:openmusic/layers/data/mappers/playlist_mapper.dart';
-import 'package:openmusic/layers/domain/entities/playlist.dart';
-import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
+import 'package:owlsonic/layers/data/datasources/local/playlist/playlist_local_data_source.dart';
+import 'package:owlsonic/layers/data/mappers/playlist_mapper.dart';
+import 'package:owlsonic/layers/domain/entities/playlist.dart';
+import 'package:owlsonic/layers/domain/repositories/playlist_repository.dart';
 
 class PlaylistRepositoryImpl implements PlaylistRepository {
   final PlaylistLocalDataSource localDataSource;

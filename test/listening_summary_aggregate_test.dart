@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/datasources/local/listening_summary/drift/listening_summary_drift_local_source.dart';
-import 'package:openmusic/layers/data/models/listening_summary_dto.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/datasources/local/listening_summary/drift/listening_summary_drift_local_source.dart';
+import 'package:owlsonic/layers/data/models/listening_summary_dto.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
 
 void main() {
   test('statistics are aggregated and filtered by SQLite', () async {

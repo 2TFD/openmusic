@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
 
 class PlaylistDto extends Equatable {
   const PlaylistDto({

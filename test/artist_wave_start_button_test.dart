@@ -2,8 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/presentation/screens/artist_screen.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/presentation/features/artist/ui/artist_screen.dart';
 
 void main() {
   const preferencesChannel = MethodChannel(

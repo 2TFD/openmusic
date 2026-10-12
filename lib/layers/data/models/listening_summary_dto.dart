@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
 
 class ListeningSummaryDto {
   final String id;

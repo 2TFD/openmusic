@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/download_track_task.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/repositories/download_task_repository.dart';
-import 'package:openmusic/layers/domain/usecases/retry_track_download_use_case.dart';
-import 'package:openmusic/layers/presentation/blocs/download_status/download_status_cubit.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/domain/entities/download_track_task.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/repositories/download_task_repository.dart';
+import 'package:owlsonic/layers/domain/usecases/retry_track_download_use_case.dart';
+import 'package:owlsonic/layers/presentation/shared/blocs/download_status/download_status_cubit.dart';
 
 void main() {
   test('publishes tasks by track id and retries downloads', () async {
@@ -87,4 +87,10 @@ class _FakeDownloadTaskRepository implements DownloadTaskRepository {
     required String trackId,
     required String ownerId,
   }) async => false;
+
+  @override
+  Future<int> requeueFailed({
+    required Set<String> codes,
+    required DateTime failedBefore,
+  }) async => 0;
 }

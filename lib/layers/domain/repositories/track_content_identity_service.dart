@@ -1,4 +1,4 @@
-import '../entities/track_preview.dart';
+import 'package:owlsonic/layers/domain/entities/track_preview.dart';
 
 abstract interface class TrackContentIdentityService {
   Future<String?> createFor(TrackPreview preview);

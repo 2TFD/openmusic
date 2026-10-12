@@ -1,27 +1,24 @@
-import '../../../layers/domain/entities/lyrics_resolution_state.dart';
-import '../../../layers/domain/entities/source.dart';
-import '../../../layers/domain/entities/track.dart';
-import '../../../layers/domain/entities/track_lyrics.dart';
-import '../../../layers/domain/repositories/lyrics_provider.dart';
-import '../../../layers/domain/repositories/track_lyrics_repository.dart';
-import '../../../layers/domain/repositories/track_repository.dart';
-import '../../../layers/domain/services/lyrics_content_hasher.dart';
-import '../../../layers/domain/usecases/queue_lyrics_analysis_use_case.dart';
+import 'package:owlsonic/layers/domain/entities/lyrics_resolution_state.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/track_lyrics.dart';
+import 'package:owlsonic/layers/domain/repositories/lyrics_provider.dart';
+import 'package:owlsonic/layers/domain/repositories/track_lyrics_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/layers/domain/services/lyrics_content_hasher.dart';
 import 'lyrics_config.dart';
-import '../../utils/app_logger.dart';
+import 'package:owlsonic/core/utils/app_logger.dart';
 
 class LyricsResolver {
   LyricsResolver({
     required TrackRepository tracks,
     required TrackLyricsRepository lyrics,
     required List<LyricsProvider> providers,
-    required QueueLyricsAnalysisUseCase queueAnalysis,
     required LyricsConfig config,
     DateTime Function()? now,
   }) : _tracks = tracks,
        _lyrics = lyrics,
        _providers = List.unmodifiable(providers),
-       _queueAnalysis = queueAnalysis,
        _config = config,
        _now = now ?? DateTime.now {
     if (_providers.isEmpty) throw ArgumentError.value(providers, 'providers');
@@ -30,7 +27,6 @@ class LyricsResolver {
   final TrackRepository _tracks;
   final TrackLyricsRepository _lyrics;
   final List<LyricsProvider> _providers;
-  final QueueLyricsAnalysisUseCase _queueAnalysis;
   final LyricsConfig _config;
   final DateTime Function() _now;
 
@@ -259,17 +255,6 @@ class LyricsResolver {
         lastAttemptAt: startedAt,
       ),
     );
-    try {
-      await _queueAnalysis(track);
-    } catch (error, stackTrace) {
-      // The durable analysis backfill can recover this independently.
-      await AppLogger.warning(
-        'Lyrics analysis scheduling failed; backfill will retry.',
-        operation: 'lyrics.queue_analysis',
-        error: error,
-        stackTrace: stackTrace,
-      );
-    }
     return state;
   }
 

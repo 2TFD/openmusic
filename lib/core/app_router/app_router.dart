@@ -2,25 +2,33 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:openmusic/core/app_router/app_router_names.dart';
-import 'package:openmusic/core/app_router/transitions/goo_transition_page.dart';
-import 'package:openmusic/core/di/di.dart';
-import 'package:openmusic/layers/presentation/blocs/music_analysis_status/music_analysis_status_cubit.dart';
-import 'package:openmusic/layers/presentation/blocs/artist_detail/artist_detail_bloc.dart';
-import 'package:openmusic/layers/presentation/blocs/import_music/import_music_cubit.dart';
-import 'package:openmusic/layers/presentation/blocs/playlist_detail/playlist_detail_bloc.dart';
-import 'package:openmusic/layers/presentation/screens/all_playlists_screen.dart';
-import 'package:openmusic/layers/presentation/screens/artist_screen.dart';
-import 'package:openmusic/layers/presentation/screens/home_screen.dart';
-import 'package:openmusic/layers/presentation/screens/import_music_screen.dart';
-import 'package:openmusic/layers/presentation/screens/library_screen.dart';
-import 'package:openmusic/layers/presentation/screens/playlist_screen.dart';
-import 'package:openmusic/layers/presentation/screens/search_screen.dart';
-import 'package:openmusic/layers/presentation/screens/settings_screen.dart';
-import 'package:openmusic/layers/presentation/screens/mood_map_page.dart';
-import 'package:openmusic/layers/presentation/blocs/mood_map/mood_map_cubit.dart';
-import 'package:openmusic/core/app_router/app_shell.dart';
-import 'package:openmusic/layers/presentation/blocs/telemetry/telemetry_cubit.dart';
+import 'package:owlsonic/core/app_router/app_router_names.dart';
+import 'package:owlsonic/core/app_router/transitions/fade_slide_transition_page.dart';
+import 'package:owlsonic/core/di/di.dart';
+import 'package:owlsonic/layers/presentation/shared/blocs/music_analysis_status/music_analysis_status_cubit.dart';
+import 'package:owlsonic/layers/presentation/features/artist/bloc/artist_detail/artist_detail_bloc.dart';
+import 'package:owlsonic/layers/presentation/features/import_music/bloc/import_music/import_music_cubit.dart';
+import 'package:owlsonic/layers/presentation/features/playlist/bloc/playlist_detail/playlist_detail_bloc.dart';
+import 'package:owlsonic/layers/presentation/features/playlist/ui/all_playlists_screen.dart';
+import 'package:owlsonic/layers/presentation/features/artist/ui/artist_screen.dart';
+import 'package:owlsonic/layers/presentation/features/home/ui/home_screen.dart';
+import 'package:owlsonic/layers/presentation/features/import_music/ui/import_music_screen.dart';
+import 'package:owlsonic/layers/presentation/features/library/ui/library_screen.dart';
+import 'package:owlsonic/layers/presentation/features/playlist/ui/playlist_screen.dart';
+import 'package:owlsonic/layers/presentation/features/search/ui/search_screen.dart';
+import 'package:owlsonic/layers/presentation/features/settings/ui/settings_screen.dart';
+import 'package:owlsonic/layers/presentation/features/mood_map/ui/mood_map_page.dart';
+import 'package:owlsonic/layers/presentation/features/mood_map/bloc/mood_map/mood_map_cubit.dart';
+import 'package:owlsonic/layers/presentation/features/history/ui/history_screen.dart';
+import 'package:owlsonic/core/app_router/app_shell.dart';
+import 'package:owlsonic/layers/presentation/features/telemetry/bloc/telemetry/telemetry_cubit.dart';
+import 'package:owlsonic/layers/presentation/features/account/bloc/cloud_account_cubit.dart';
+import 'package:owlsonic/layers/presentation/features/account/bloc/password_reset_cubit.dart';
+import 'package:owlsonic/layers/presentation/features/account/bloc/verify_email_cubit.dart';
+import 'package:owlsonic/layers/presentation/features/account/ui/cloud_account_screen.dart';
+import 'package:owlsonic/layers/presentation/features/account/ui/forgot_password_screen.dart';
+import 'package:owlsonic/layers/presentation/features/account/ui/verify_email_screen.dart';
+import 'package:owlsonic/layers/presentation/features/wave/ui/wave_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -29,6 +37,7 @@ class AppRouter {
       ShellRoute(
         builder: (context, state, child) => AppShell(child: child),
         routes: [
+          // ── Root tabs: no push animation (instant shell switch) ──────────
           GoRoute(
             path: '/${AppRouterNames.home}',
             name: AppRouterNames.home,
@@ -40,9 +49,16 @@ class AppRouter {
             builder: (context, state) => const LibraryScreen(),
           ),
           GoRoute(
+            path: '/${AppRouterNames.history}',
+            name: AppRouterNames.history,
+            builder: (context, state) => const HistoryScreen(),
+          ),
+
+          // ── Push screens: fade + slide ────────────────────────────────────
+          GoRoute(
             path: '/${AppRouterNames.importMusic}',
             name: AppRouterNames.importMusic,
-            pageBuilder: (context, state) => GooTransitionPage<void>(
+            pageBuilder: (context, state) => FadeSlideTransitionPage<void>(
               key: state.pageKey,
               child: BlocProvider(
                 create: (_) => getIt<ImportMusicCubit>(),
@@ -53,58 +69,131 @@ class AppRouter {
           GoRoute(
             path: '/${AppRouterNames.playlist}/:id',
             name: AppRouterNames.playlist,
-            builder: (context, state) {
+            pageBuilder: (context, state) {
               final playlistId = state.pathParameters['id'] ?? '';
-              return BlocProvider(
-                create: (_) =>
-                    getIt<PlaylistDetailBloc>()
-                      ..add(PlaylistDetailLoad(playlistId)),
-                child: const PlaylistScreen(),
+              return FadeSlideTransitionPage<void>(
+                key: state.pageKey,
+                child: BlocProvider(
+                  create: (_) =>
+                      getIt<PlaylistDetailBloc>()
+                        ..add(PlaylistDetailLoad(playlistId)),
+                  child: const PlaylistScreen(),
+                ),
               );
             },
           ),
           GoRoute(
             path: '/${AppRouterNames.artist}/:id',
             name: AppRouterNames.artist,
-            builder: (context, state) {
+            pageBuilder: (context, state) {
               final artistId = state.pathParameters['id'] ?? '';
-              return BlocProvider(
-                create: (_) =>
-                    getIt<ArtistDetailBloc>()..add(ArtistDetailLoad(artistId)),
-                child: const ArtistScreen(),
+              return FadeSlideTransitionPage<void>(
+                key: state.pageKey,
+                child: BlocProvider(
+                  create: (_) =>
+                      getIt<ArtistDetailBloc>()
+                        ..add(ArtistDetailLoad(artistId)),
+                  child: const ArtistScreen(),
+                ),
               );
             },
           ),
           GoRoute(
             path: '/${AppRouterNames.search}',
             name: AppRouterNames.search,
-            builder: (context, state) => const SearchScreen(),
+            pageBuilder: (context, state) => FadeSlideTransitionPage<void>(
+              key: state.pageKey,
+              child: const SearchScreen(),
+            ),
           ),
           GoRoute(
             path: '/${AppRouterNames.allPlaylists}',
             name: AppRouterNames.allPlaylists,
-            builder: (context, state) => const AllPlaylistsScreen(),
+            pageBuilder: (context, state) => FadeSlideTransitionPage<void>(
+              key: state.pageKey,
+              child: const AllPlaylistsScreen(),
+            ),
           ),
           GoRoute(
             path: '/${AppRouterNames.settings}',
             name: AppRouterNames.settings,
-            builder: (context, state) => MultiBlocProvider(
-              providers: [
-                BlocProvider(
-                  create: (_) =>
-                      getIt<MusicAnalysisStatusCubit>()..initialize(),
+            pageBuilder: (context, state) => FadeSlideTransitionPage<void>(
+              key: state.pageKey,
+              child: MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (_) =>
+                        getIt<MusicAnalysisStatusCubit>()..initialize(),
+                  ),
+                  BlocProvider(create: (_) => getIt<TelemetryCubit>()),
+                ],
+                child: const SettingsScreen(),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: '/${AppRouterNames.about}',
+            name: AppRouterNames.about,
+            pageBuilder: (context, state) => FadeSlideTransitionPage<void>(
+              key: state.pageKey,
+              child: const AboutAppScreen(),
+            ),
+          ),
+          GoRoute(
+            path: '/${AppRouterNames.account}',
+            name: AppRouterNames.account,
+            pageBuilder: (context, state) => FadeSlideTransitionPage<void>(
+              key: state.pageKey,
+              child: BlocProvider(
+                create: (_) => getIt<CloudAccountCubit>()..initialize(),
+                child: CloudAccountScreen(
+                  initialRegister:
+                      state.uri.queryParameters['mode'] == 'register',
                 ),
-                BlocProvider(create: (_) => getIt<TelemetryCubit>()),
-              ],
-              child: const SettingsScreen(),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: '/${AppRouterNames.verifyEmail}',
+            name: AppRouterNames.verifyEmail,
+            pageBuilder: (context, state) => FadeSlideTransitionPage<void>(
+              key: state.pageKey,
+              child: BlocProvider(
+                create: (_) => getIt<VerifyEmailCubit>()..initialize(),
+                child: const VerifyEmailScreen(),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: '/${AppRouterNames.forgotPassword}',
+            name: AppRouterNames.forgotPassword,
+            pageBuilder: (context, state) => FadeSlideTransitionPage<void>(
+              key: state.pageKey,
+              child: BlocProvider(
+                create: (_) => getIt<PasswordResetCubit>(),
+                child: ForgotPasswordScreen(
+                  initialEmail: state.uri.queryParameters['email'] ?? '',
+                ),
+              ),
+            ),
+          ),
+          GoRoute(
+            path: '/${AppRouterNames.wave}',
+            name: AppRouterNames.wave,
+            pageBuilder: (context, state) => FadeSlideTransitionPage<void>(
+              key: state.pageKey,
+              child: const WaveScreen(),
             ),
           ),
           GoRoute(
             path: '/${AppRouterNames.moodMap}',
             name: AppRouterNames.moodMap,
-            builder: (context, state) => BlocProvider(
-              create: (_) => getIt<MoodMapCubit>()..initialize(),
-              child: const MoodMapPage(),
+            pageBuilder: (context, state) => FadeSlideTransitionPage<void>(
+              key: state.pageKey,
+              child: BlocProvider(
+                create: (_) => getIt<MoodMapCubit>()..initialize(),
+                child: const MoodMapPage(),
+              ),
             ),
           ),
         ],

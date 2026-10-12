@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:openmusic/core/utils/app_logger.dart';
+import 'package:owlsonic/core/utils/app_logger.dart';
 
 class AppBlocObserver extends BlocObserver {
   const AppBlocObserver();

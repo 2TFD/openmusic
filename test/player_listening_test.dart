@@ -1,36 +1,39 @@
+import 'package:owlsonic/core/telemetry/analytics_tracker.dart';
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/listening_summary.dart';
-import 'package:openmusic/layers/domain/entities/listening_event.dart';
-import 'package:openmusic/layers/domain/entities/playback_session.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
-import 'package:openmusic/layers/domain/repositories/listening_checkpoint_repository.dart';
-import 'package:openmusic/layers/domain/repositories/listening_event_repository.dart';
-import 'package:openmusic/layers/domain/repositories/listening_summary_repository.dart';
-import 'package:openmusic/layers/domain/repositories/playback_session_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_repository.dart';
-import 'package:openmusic/layers/domain/usecases/build_playback_queue_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/save_listening_summary_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/restore_playback_session_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/skip_track_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/save_listening_event_use_case.dart';
-import 'package:openmusic/layers/domain/services/listening_tracker.dart';
-import 'package:openmusic/core/services/audio_player/playback_command_bus_impl.dart';
-import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/domain/entities/listening_summary.dart';
+import 'package:owlsonic/layers/domain/entities/listening_event.dart';
+import 'package:owlsonic/layers/domain/entities/playback_session.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/repositories/audio_player_port.dart';
+import 'package:owlsonic/layers/domain/repositories/listening_checkpoint_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/listening_event_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/listening_summary_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/playback_session_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/layers/domain/usecases/build_playback_queue_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/save_listening_summary_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/restore_playback_session_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/skip_track_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/save_listening_event_use_case.dart';
+import 'package:owlsonic/layers/domain/services/listening_tracker.dart';
+import 'package:owlsonic/core/services/audio_player/playback_command_bus_impl.dart';
+import 'package:owlsonic/layers/presentation/features/player/bloc/player/player_bloc.dart';
 
 void main() {
   test(
     'records played deltas, ignores seek jump, and flushes on close',
     () async {
       final player = _FakeAudioPlayer();
+      final analytics = _RecordingAnalytics();
       final records = _FakeListeningSummaryRepository();
       final checkpoints = _FakeCheckpointRepository();
       final sessions = _FakePlaybackSessionRepository();
       final bloc = PlayerBloc(
+        analytics: analytics,
         service: player,
         saveListeningSummary: SaveListeningSummaryUseCase(repo: records),
         checkpoints: checkpoints,
@@ -46,8 +49,12 @@ void main() {
       );
       bloc.add(PlayerQueueSet([_track()], autoPlay: false));
       await _pump();
+      expect(analytics.events, isEmpty);
       player.playing.add(true);
       await _pump();
+      player.playing.add(true);
+      await _pump();
+      expect(analytics.events, ['first_playback_started']);
 
       for (var second = 0; second <= 31; second++) {
         player.position.add(Duration(seconds: second));
@@ -82,6 +89,7 @@ void main() {
       final checkpoints = _FakeCheckpointRepository();
       final sessions = _FakePlaybackSessionRepository();
       final bloc = PlayerBloc(
+        analytics: const NoopAnalyticsTracker(),
         service: player,
         saveListeningSummary: SaveListeningSummaryUseCase(repo: records),
         checkpoints: checkpoints,
@@ -139,6 +147,7 @@ void main() {
       final checkpoints = _FakeCheckpointRepository();
       final sessions = _FakePlaybackSessionRepository();
       final bloc = PlayerBloc(
+        analytics: const NoopAnalyticsTracker(),
         service: player,
         saveListeningSummary: SaveListeningSummaryUseCase(
           repo: _FakeListeningSummaryRepository(),
@@ -257,6 +266,9 @@ class _FakeAudioPlayer implements AudioPlayerPort {
   Future<void> skipToPrevious() async {}
   @override
   Future<void> setLoopMode(PlaybackLoopMode mode) async {}
+
+  @override
+  Future<void> setVolume(double volume) async {}
   @override
   Future<void> setQueue(
     List<Track> tracks, {
@@ -356,4 +368,24 @@ class _FakeListeningEventRepository implements ListeningEventRepository {
   @override
   Future<List<ListeningEvent>> getForTrack(String trackId) async =>
       saved.where((event) => event.trackId == trackId).toList();
+}
+
+final class _RecordingAnalytics implements AnalyticsTracker {
+  final events = <String>[];
+  @override
+  bool get isAvailable => true;
+  @override
+  bool get isEnabled => true;
+  @override
+  Future<void> setEnabled(bool enabled) async {}
+  @override
+  Future<void> logEvent(String name, {Map<String, Object>? properties}) async {
+    events.add(name);
+  }
+
+  @override
+  Future<void> identify(
+    String userId, {
+    Map<String, Object>? properties,
+  }) async {}
 }

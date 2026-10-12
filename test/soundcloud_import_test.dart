@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/network/retry_policy.dart';
-import 'package:openmusic/layers/data/datasources/remote/soundcloud_track_source.dart';
+import 'package:owlsonic/core/network/retry_policy.dart';
+import 'package:owlsonic/layers/data/datasources/remote/soundcloud_track_source.dart';
 
 /// Экран подтверждения импорта ждёт resolve целиком, поэтому цена resolve —
 /// это и есть время загрузки UI. Тесты фиксируют количество запросов.
@@ -20,11 +20,11 @@ void main() {
     );
 
     expect(resolved.tracks.length, 121, reason: '1 готовый + 120 заглушек');
-    expect(
-      resolved.tracks.map((track) => track.id).take(3),
-      ['1', '2', '3'],
-      reason: 'порядок плейлиста должен пережить батч-ответ',
-    );
+    expect(resolved.tracks.map((track) => track.id).take(3), [
+      '1',
+      '2',
+      '3',
+    ], reason: 'порядок плейлиста должен пережить батч-ответ');
 
     final batches = requests.where((uri) => uri.path == '/tracks').toList();
     expect(batches.length, 3, reason: '120 заглушек = 50 + 50 + 20');
@@ -62,7 +62,7 @@ void main() {
     expect(requests.where((uri) => uri.path.endsWith('/likes')).length, 3);
   });
 
-  test('likes drop HLS-only tracks without failing the import', () async {
+  test('likes keep HLS-only tracks: HLS is downloadable', () async {
     final requests = <Uri>[];
     final source = _source(
       requests,
@@ -73,7 +73,79 @@ void main() {
 
     final resolved = await source.resolve('https://soundcloud.com/user/likes');
 
+    expect(resolved.tracks.length, 4);
+    expect(resolved.issues, isEmpty);
+  });
+
+  test('Go+ 30-second previews are reported, not imported', () async {
+    final requests = <Uri>[];
+    final source = _source(
+      requests,
+      likesPages: 1,
+      likesPerPage: 4,
+      snippedEvery: 2,
+    );
+
+    final resolved = await source.resolve('https://soundcloud.com/user/likes');
+
     expect(resolved.tracks.length, 2);
+    expect(resolved.issues.length, 2);
+  });
+
+  test(
+    'a track slug starting with "likes" is a track, not a likes page',
+    () async {
+      final requests = <Uri>[];
+      final source = _source(requests);
+
+      final resolved = await source.resolve(
+        'https://soundcloud.com/artist/likes-you?si=abc',
+      );
+
+      expect(resolved.tracks.single.id, '9');
+      expect(requests.where((uri) => uri.path.endsWith('/likes')), isEmpty);
+    },
+  );
+
+  test('a profile link is rejected without network calls', () async {
+    final requests = <Uri>[];
+    final source = _source(requests);
+
+    await expectLater(
+      source.resolve('https://soundcloud.com/artist'),
+      throwsA(anything),
+    );
+    expect(requests.where((uri) => uri.path == '/resolve'), isEmpty);
+  });
+
+  test(
+    'a discover system playlist is rejected without network calls',
+    () async {
+      final requests = <Uri>[];
+      final source = _source(requests);
+
+      await expectLater(
+        source.resolve('https://soundcloud.com/discover/sets/weekly::user'),
+        throwsA(anything),
+      );
+      expect(requests.where((uri) => uri.path == '/resolve'), isEmpty);
+    },
+  );
+
+  test('a 401 while hydrating retries with a fresh client id', () async {
+    final requests = <Uri>[];
+    final source = _source(
+      requests,
+      resolvePlaylist: _playlist(hydratedIds: [1], stubIds: _range(2, 10)),
+      rejectFirstBatch: true,
+    );
+
+    final resolved = await source.resolve(
+      'https://soundcloud.com/user/sets/mix',
+    );
+
+    expect(resolved.tracks.length, 10);
+    expect(resolved.issues, isEmpty);
   });
 }
 
@@ -94,8 +166,14 @@ Map<String, dynamic> _playlist({
   ],
 };
 
-Map<String, dynamic> _track(int id, {bool hlsOnly = false}) => {
+Map<String, dynamic> _track(
+  int id, {
+  bool hlsOnly = false,
+  bool snipped = false,
+}) => {
   'id': id,
+  'kind': 'track',
+  if (snipped) 'policy': 'SNIP',
   'title': 'Track $id',
   'permalink_url': 'https://soundcloud.com/user/track-$id',
   'duration': 180000,
@@ -107,12 +185,14 @@ Map<String, dynamic> _track(int id, {bool hlsOnly = false}) => {
     'transcodings': [
       {
         'url': 'https://api-v2.soundcloud.com/media/$id/stream/hls',
-        'format': {'protocol': 'hls'},
+        'format': {'protocol': 'hls', 'mime_type': 'audio/mp4'},
+        'snipped': snipped,
       },
       if (!hlsOnly)
         {
           'url': 'https://api-v2.soundcloud.com/media/$id/stream/progressive',
           'format': {'protocol': 'progressive'},
+          'snipped': snipped,
         },
     ],
   },
@@ -124,7 +204,10 @@ SoundcloudTrackSource _source(
   int likesPages = 0,
   int likesPerPage = 0,
   int? hlsOnlyEvery,
+  int? snippedEvery,
+  bool rejectFirstBatch = false,
 }) {
+  var batchRejected = !rejectFirstBatch;
   final dio = Dio();
   dio.interceptors.add(
     InterceptorsWrapper(
@@ -157,6 +240,10 @@ SoundcloudTrackSource _source(
             handler.resolve(ok(resolvePlaylist));
             return;
           }
+          if (target.endsWith('/artist/likes-you')) {
+            handler.resolve(ok(_track(9)));
+            return;
+          }
           handler.resolve(
             ok({'id': 42, 'permalink': 'user', 'username': 'User'}),
           );
@@ -175,6 +262,9 @@ SoundcloudTrackSource _source(
                       hlsOnly:
                           hlsOnlyEvery != null &&
                           (offset + i) % hlsOnlyEvery == 1,
+                      snipped:
+                          snippedEvery != null &&
+                          (offset + i) % snippedEvery == 1,
                     ),
                   },
               ],
@@ -182,6 +272,24 @@ SoundcloudTrackSource _source(
                   ? 'https://api-v2.soundcloud.com/users/42/likes?page=${page + 1}'
                   : null,
             }),
+          );
+          return;
+        }
+        if (uri.path.startsWith('/tracks/')) {
+          handler.resolve(ok(_track(int.parse(uri.pathSegments.last))));
+          return;
+        }
+        if (uri.path == '/tracks' && !batchRejected) {
+          batchRejected = true;
+          handler.reject(
+            DioException.badResponse(
+              statusCode: 401,
+              requestOptions: options,
+              response: Response<void>(
+                requestOptions: options,
+                statusCode: 401,
+              ),
+            ),
           );
           return;
         }

@@ -1,10 +1,10 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/datasources/local/track/drift/track_drift_local_source.dart';
-import 'package:openmusic/layers/data/repositories/track_ingestion_repository_impl.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track_preview.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/datasources/local/track/drift/track_drift_local_source.dart';
+import 'package:owlsonic/layers/data/repositories/track_ingestion_repository_impl.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track_preview.dart';
 
 void main() {
   late AppDatabase database;

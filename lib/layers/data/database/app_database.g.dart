@@ -13897,6 +13897,3295 @@ class PersonalMoodAdjustmentTableCompanion
   }
 }
 
+class $CloudLibraryItemTableTable extends CloudLibraryItemTable
+    with TableInfo<$CloudLibraryItemTableTable, CloudLibraryItemTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CloudLibraryItemTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _trackIdMeta = const VerificationMeta(
+    'trackId',
+  );
+  @override
+  late final GeneratedColumn<String> trackId = GeneratedColumn<String>(
+    'track_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES track_table (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _canonicalTitleMeta = const VerificationMeta(
+    'canonicalTitle',
+  );
+  @override
+  late final GeneratedColumn<String> canonicalTitle = GeneratedColumn<String>(
+    'canonical_title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _canonicalArtistNameMeta =
+      const VerificationMeta('canonicalArtistName');
+  @override
+  late final GeneratedColumn<String> canonicalArtistName =
+      GeneratedColumn<String>(
+        'canonical_artist_name',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _canonicalAlbumTitleMeta =
+      const VerificationMeta('canonicalAlbumTitle');
+  @override
+  late final GeneratedColumn<String> canonicalAlbumTitle =
+      GeneratedColumn<String>(
+        'canonical_album_title',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _albumArtistMeta = const VerificationMeta(
+    'albumArtist',
+  );
+  @override
+  late final GeneratedColumn<String> albumArtist = GeneratedColumn<String>(
+    'album_artist',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _trackNumberMeta = const VerificationMeta(
+    'trackNumber',
+  );
+  @override
+  late final GeneratedColumn<int> trackNumber = GeneratedColumn<int>(
+    'track_number',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _discNumberMeta = const VerificationMeta(
+    'discNumber',
+  );
+  @override
+  late final GeneratedColumn<int> discNumber = GeneratedColumn<int>(
+    'disc_number',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _yearMeta = const VerificationMeta('year');
+  @override
+  late final GeneratedColumn<int> year = GeneratedColumn<int>(
+    'year',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _genresJsonMeta = const VerificationMeta(
+    'genresJson',
+  );
+  @override
+  late final GeneratedColumn<String> genresJson = GeneratedColumn<String>(
+    'genres_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _durationMsMeta = const VerificationMeta(
+    'durationMs',
+  );
+  @override
+  late final GeneratedColumn<int> durationMs = GeneratedColumn<int>(
+    'duration_ms',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hasArtworkMeta = const VerificationMeta(
+    'hasArtwork',
+  );
+  @override
+  late final GeneratedColumn<bool> hasArtwork = GeneratedColumn<bool>(
+    'has_artwork',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("has_artwork" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _analysisStatusMeta = const VerificationMeta(
+    'analysisStatus',
+  );
+  @override
+  late final GeneratedColumn<String> analysisStatus = GeneratedColumn<String>(
+    'analysis_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _customTitleMeta = const VerificationMeta(
+    'customTitle',
+  );
+  @override
+  late final GeneratedColumn<String> customTitle = GeneratedColumn<String>(
+    'custom_title',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _customArtistNameMeta = const VerificationMeta(
+    'customArtistName',
+  );
+  @override
+  late final GeneratedColumn<String> customArtistName = GeneratedColumn<String>(
+    'custom_artist_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _customAlbumTitleMeta = const VerificationMeta(
+    'customAlbumTitle',
+  );
+  @override
+  late final GeneratedColumn<String> customAlbumTitle = GeneratedColumn<String>(
+    'custom_album_title',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _favoriteMeta = const VerificationMeta(
+    'favorite',
+  );
+  @override
+  late final GeneratedColumn<bool> favorite = GeneratedColumn<bool>(
+    'favorite',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("favorite" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _customValenceMeta = const VerificationMeta(
+    'customValence',
+  );
+  @override
+  late final GeneratedColumn<double> customValence = GeneratedColumn<double>(
+    'custom_valence',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _customArousalMeta = const VerificationMeta(
+    'customArousal',
+  );
+  @override
+  late final GeneratedColumn<double> customArousal = GeneratedColumn<double>(
+    'custom_arousal',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _playCountMeta = const VerificationMeta(
+    'playCount',
+  );
+  @override
+  late final GeneratedColumn<int> playCount = GeneratedColumn<int>(
+    'play_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _lastPlayedAtMeta = const VerificationMeta(
+    'lastPlayedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastPlayedAt = GeneratedColumn<DateTime>(
+    'last_played_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _addedAtMeta = const VerificationMeta(
+    'addedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> addedAt = GeneratedColumn<DateTime>(
+    'added_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    trackId,
+    canonicalTitle,
+    canonicalArtistName,
+    canonicalAlbumTitle,
+    albumArtist,
+    trackNumber,
+    discNumber,
+    year,
+    genresJson,
+    durationMs,
+    hasArtwork,
+    analysisStatus,
+    customTitle,
+    customArtistName,
+    customAlbumTitle,
+    favorite,
+    customValence,
+    customArousal,
+    playCount,
+    lastPlayedAt,
+    addedAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cloud_library_item_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CloudLibraryItemTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('track_id')) {
+      context.handle(
+        _trackIdMeta,
+        trackId.isAcceptableOrUnknown(data['track_id']!, _trackIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_trackIdMeta);
+    }
+    if (data.containsKey('canonical_title')) {
+      context.handle(
+        _canonicalTitleMeta,
+        canonicalTitle.isAcceptableOrUnknown(
+          data['canonical_title']!,
+          _canonicalTitleMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_canonicalTitleMeta);
+    }
+    if (data.containsKey('canonical_artist_name')) {
+      context.handle(
+        _canonicalArtistNameMeta,
+        canonicalArtistName.isAcceptableOrUnknown(
+          data['canonical_artist_name']!,
+          _canonicalArtistNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('canonical_album_title')) {
+      context.handle(
+        _canonicalAlbumTitleMeta,
+        canonicalAlbumTitle.isAcceptableOrUnknown(
+          data['canonical_album_title']!,
+          _canonicalAlbumTitleMeta,
+        ),
+      );
+    }
+    if (data.containsKey('album_artist')) {
+      context.handle(
+        _albumArtistMeta,
+        albumArtist.isAcceptableOrUnknown(
+          data['album_artist']!,
+          _albumArtistMeta,
+        ),
+      );
+    }
+    if (data.containsKey('track_number')) {
+      context.handle(
+        _trackNumberMeta,
+        trackNumber.isAcceptableOrUnknown(
+          data['track_number']!,
+          _trackNumberMeta,
+        ),
+      );
+    }
+    if (data.containsKey('disc_number')) {
+      context.handle(
+        _discNumberMeta,
+        discNumber.isAcceptableOrUnknown(data['disc_number']!, _discNumberMeta),
+      );
+    }
+    if (data.containsKey('year')) {
+      context.handle(
+        _yearMeta,
+        year.isAcceptableOrUnknown(data['year']!, _yearMeta),
+      );
+    }
+    if (data.containsKey('genres_json')) {
+      context.handle(
+        _genresJsonMeta,
+        genresJson.isAcceptableOrUnknown(data['genres_json']!, _genresJsonMeta),
+      );
+    }
+    if (data.containsKey('duration_ms')) {
+      context.handle(
+        _durationMsMeta,
+        durationMs.isAcceptableOrUnknown(data['duration_ms']!, _durationMsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_durationMsMeta);
+    }
+    if (data.containsKey('has_artwork')) {
+      context.handle(
+        _hasArtworkMeta,
+        hasArtwork.isAcceptableOrUnknown(data['has_artwork']!, _hasArtworkMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hasArtworkMeta);
+    }
+    if (data.containsKey('analysis_status')) {
+      context.handle(
+        _analysisStatusMeta,
+        analysisStatus.isAcceptableOrUnknown(
+          data['analysis_status']!,
+          _analysisStatusMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_analysisStatusMeta);
+    }
+    if (data.containsKey('custom_title')) {
+      context.handle(
+        _customTitleMeta,
+        customTitle.isAcceptableOrUnknown(
+          data['custom_title']!,
+          _customTitleMeta,
+        ),
+      );
+    }
+    if (data.containsKey('custom_artist_name')) {
+      context.handle(
+        _customArtistNameMeta,
+        customArtistName.isAcceptableOrUnknown(
+          data['custom_artist_name']!,
+          _customArtistNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('custom_album_title')) {
+      context.handle(
+        _customAlbumTitleMeta,
+        customAlbumTitle.isAcceptableOrUnknown(
+          data['custom_album_title']!,
+          _customAlbumTitleMeta,
+        ),
+      );
+    }
+    if (data.containsKey('favorite')) {
+      context.handle(
+        _favoriteMeta,
+        favorite.isAcceptableOrUnknown(data['favorite']!, _favoriteMeta),
+      );
+    }
+    if (data.containsKey('custom_valence')) {
+      context.handle(
+        _customValenceMeta,
+        customValence.isAcceptableOrUnknown(
+          data['custom_valence']!,
+          _customValenceMeta,
+        ),
+      );
+    }
+    if (data.containsKey('custom_arousal')) {
+      context.handle(
+        _customArousalMeta,
+        customArousal.isAcceptableOrUnknown(
+          data['custom_arousal']!,
+          _customArousalMeta,
+        ),
+      );
+    }
+    if (data.containsKey('play_count')) {
+      context.handle(
+        _playCountMeta,
+        playCount.isAcceptableOrUnknown(data['play_count']!, _playCountMeta),
+      );
+    }
+    if (data.containsKey('last_played_at')) {
+      context.handle(
+        _lastPlayedAtMeta,
+        lastPlayedAt.isAcceptableOrUnknown(
+          data['last_played_at']!,
+          _lastPlayedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('added_at')) {
+      context.handle(
+        _addedAtMeta,
+        addedAt.isAcceptableOrUnknown(data['added_at']!, _addedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_addedAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {trackId};
+  @override
+  CloudLibraryItemTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CloudLibraryItemTableData(
+      trackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}track_id'],
+      )!,
+      canonicalTitle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}canonical_title'],
+      )!,
+      canonicalArtistName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}canonical_artist_name'],
+      ),
+      canonicalAlbumTitle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}canonical_album_title'],
+      ),
+      albumArtist: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}album_artist'],
+      ),
+      trackNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}track_number'],
+      ),
+      discNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}disc_number'],
+      ),
+      year: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}year'],
+      ),
+      genresJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}genres_json'],
+      )!,
+      durationMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_ms'],
+      )!,
+      hasArtwork: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}has_artwork'],
+      )!,
+      analysisStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}analysis_status'],
+      )!,
+      customTitle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}custom_title'],
+      ),
+      customArtistName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}custom_artist_name'],
+      ),
+      customAlbumTitle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}custom_album_title'],
+      ),
+      favorite: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}favorite'],
+      )!,
+      customValence: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}custom_valence'],
+      ),
+      customArousal: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}custom_arousal'],
+      ),
+      playCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}play_count'],
+      )!,
+      lastPlayedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_played_at'],
+      ),
+      addedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}added_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CloudLibraryItemTableTable createAlias(String alias) {
+    return $CloudLibraryItemTableTable(attachedDatabase, alias);
+  }
+}
+
+class CloudLibraryItemTableData extends DataClass
+    implements Insertable<CloudLibraryItemTableData> {
+  final String trackId;
+  final String canonicalTitle;
+  final String? canonicalArtistName;
+  final String? canonicalAlbumTitle;
+  final String? albumArtist;
+  final int? trackNumber;
+  final int? discNumber;
+  final int? year;
+  final String genresJson;
+  final int durationMs;
+  final bool hasArtwork;
+
+  /// pending | ready | failed, from `library.upsert`.
+  final String analysisStatus;
+  final String? customTitle;
+  final String? customArtistName;
+  final String? customAlbumTitle;
+  final bool favorite;
+  final double? customValence;
+  final double? customArousal;
+  final int playCount;
+  final DateTime? lastPlayedAt;
+  final DateTime addedAt;
+  final DateTime updatedAt;
+  const CloudLibraryItemTableData({
+    required this.trackId,
+    required this.canonicalTitle,
+    this.canonicalArtistName,
+    this.canonicalAlbumTitle,
+    this.albumArtist,
+    this.trackNumber,
+    this.discNumber,
+    this.year,
+    required this.genresJson,
+    required this.durationMs,
+    required this.hasArtwork,
+    required this.analysisStatus,
+    this.customTitle,
+    this.customArtistName,
+    this.customAlbumTitle,
+    required this.favorite,
+    this.customValence,
+    this.customArousal,
+    required this.playCount,
+    this.lastPlayedAt,
+    required this.addedAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['track_id'] = Variable<String>(trackId);
+    map['canonical_title'] = Variable<String>(canonicalTitle);
+    if (!nullToAbsent || canonicalArtistName != null) {
+      map['canonical_artist_name'] = Variable<String>(canonicalArtistName);
+    }
+    if (!nullToAbsent || canonicalAlbumTitle != null) {
+      map['canonical_album_title'] = Variable<String>(canonicalAlbumTitle);
+    }
+    if (!nullToAbsent || albumArtist != null) {
+      map['album_artist'] = Variable<String>(albumArtist);
+    }
+    if (!nullToAbsent || trackNumber != null) {
+      map['track_number'] = Variable<int>(trackNumber);
+    }
+    if (!nullToAbsent || discNumber != null) {
+      map['disc_number'] = Variable<int>(discNumber);
+    }
+    if (!nullToAbsent || year != null) {
+      map['year'] = Variable<int>(year);
+    }
+    map['genres_json'] = Variable<String>(genresJson);
+    map['duration_ms'] = Variable<int>(durationMs);
+    map['has_artwork'] = Variable<bool>(hasArtwork);
+    map['analysis_status'] = Variable<String>(analysisStatus);
+    if (!nullToAbsent || customTitle != null) {
+      map['custom_title'] = Variable<String>(customTitle);
+    }
+    if (!nullToAbsent || customArtistName != null) {
+      map['custom_artist_name'] = Variable<String>(customArtistName);
+    }
+    if (!nullToAbsent || customAlbumTitle != null) {
+      map['custom_album_title'] = Variable<String>(customAlbumTitle);
+    }
+    map['favorite'] = Variable<bool>(favorite);
+    if (!nullToAbsent || customValence != null) {
+      map['custom_valence'] = Variable<double>(customValence);
+    }
+    if (!nullToAbsent || customArousal != null) {
+      map['custom_arousal'] = Variable<double>(customArousal);
+    }
+    map['play_count'] = Variable<int>(playCount);
+    if (!nullToAbsent || lastPlayedAt != null) {
+      map['last_played_at'] = Variable<DateTime>(lastPlayedAt);
+    }
+    map['added_at'] = Variable<DateTime>(addedAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  CloudLibraryItemTableCompanion toCompanion(bool nullToAbsent) {
+    return CloudLibraryItemTableCompanion(
+      trackId: Value(trackId),
+      canonicalTitle: Value(canonicalTitle),
+      canonicalArtistName: canonicalArtistName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(canonicalArtistName),
+      canonicalAlbumTitle: canonicalAlbumTitle == null && nullToAbsent
+          ? const Value.absent()
+          : Value(canonicalAlbumTitle),
+      albumArtist: albumArtist == null && nullToAbsent
+          ? const Value.absent()
+          : Value(albumArtist),
+      trackNumber: trackNumber == null && nullToAbsent
+          ? const Value.absent()
+          : Value(trackNumber),
+      discNumber: discNumber == null && nullToAbsent
+          ? const Value.absent()
+          : Value(discNumber),
+      year: year == null && nullToAbsent ? const Value.absent() : Value(year),
+      genresJson: Value(genresJson),
+      durationMs: Value(durationMs),
+      hasArtwork: Value(hasArtwork),
+      analysisStatus: Value(analysisStatus),
+      customTitle: customTitle == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customTitle),
+      customArtistName: customArtistName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customArtistName),
+      customAlbumTitle: customAlbumTitle == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customAlbumTitle),
+      favorite: Value(favorite),
+      customValence: customValence == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customValence),
+      customArousal: customArousal == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customArousal),
+      playCount: Value(playCount),
+      lastPlayedAt: lastPlayedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastPlayedAt),
+      addedAt: Value(addedAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory CloudLibraryItemTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CloudLibraryItemTableData(
+      trackId: serializer.fromJson<String>(json['trackId']),
+      canonicalTitle: serializer.fromJson<String>(json['canonicalTitle']),
+      canonicalArtistName: serializer.fromJson<String?>(
+        json['canonicalArtistName'],
+      ),
+      canonicalAlbumTitle: serializer.fromJson<String?>(
+        json['canonicalAlbumTitle'],
+      ),
+      albumArtist: serializer.fromJson<String?>(json['albumArtist']),
+      trackNumber: serializer.fromJson<int?>(json['trackNumber']),
+      discNumber: serializer.fromJson<int?>(json['discNumber']),
+      year: serializer.fromJson<int?>(json['year']),
+      genresJson: serializer.fromJson<String>(json['genresJson']),
+      durationMs: serializer.fromJson<int>(json['durationMs']),
+      hasArtwork: serializer.fromJson<bool>(json['hasArtwork']),
+      analysisStatus: serializer.fromJson<String>(json['analysisStatus']),
+      customTitle: serializer.fromJson<String?>(json['customTitle']),
+      customArtistName: serializer.fromJson<String?>(json['customArtistName']),
+      customAlbumTitle: serializer.fromJson<String?>(json['customAlbumTitle']),
+      favorite: serializer.fromJson<bool>(json['favorite']),
+      customValence: serializer.fromJson<double?>(json['customValence']),
+      customArousal: serializer.fromJson<double?>(json['customArousal']),
+      playCount: serializer.fromJson<int>(json['playCount']),
+      lastPlayedAt: serializer.fromJson<DateTime?>(json['lastPlayedAt']),
+      addedAt: serializer.fromJson<DateTime>(json['addedAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'trackId': serializer.toJson<String>(trackId),
+      'canonicalTitle': serializer.toJson<String>(canonicalTitle),
+      'canonicalArtistName': serializer.toJson<String?>(canonicalArtistName),
+      'canonicalAlbumTitle': serializer.toJson<String?>(canonicalAlbumTitle),
+      'albumArtist': serializer.toJson<String?>(albumArtist),
+      'trackNumber': serializer.toJson<int?>(trackNumber),
+      'discNumber': serializer.toJson<int?>(discNumber),
+      'year': serializer.toJson<int?>(year),
+      'genresJson': serializer.toJson<String>(genresJson),
+      'durationMs': serializer.toJson<int>(durationMs),
+      'hasArtwork': serializer.toJson<bool>(hasArtwork),
+      'analysisStatus': serializer.toJson<String>(analysisStatus),
+      'customTitle': serializer.toJson<String?>(customTitle),
+      'customArtistName': serializer.toJson<String?>(customArtistName),
+      'customAlbumTitle': serializer.toJson<String?>(customAlbumTitle),
+      'favorite': serializer.toJson<bool>(favorite),
+      'customValence': serializer.toJson<double?>(customValence),
+      'customArousal': serializer.toJson<double?>(customArousal),
+      'playCount': serializer.toJson<int>(playCount),
+      'lastPlayedAt': serializer.toJson<DateTime?>(lastPlayedAt),
+      'addedAt': serializer.toJson<DateTime>(addedAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  CloudLibraryItemTableData copyWith({
+    String? trackId,
+    String? canonicalTitle,
+    Value<String?> canonicalArtistName = const Value.absent(),
+    Value<String?> canonicalAlbumTitle = const Value.absent(),
+    Value<String?> albumArtist = const Value.absent(),
+    Value<int?> trackNumber = const Value.absent(),
+    Value<int?> discNumber = const Value.absent(),
+    Value<int?> year = const Value.absent(),
+    String? genresJson,
+    int? durationMs,
+    bool? hasArtwork,
+    String? analysisStatus,
+    Value<String?> customTitle = const Value.absent(),
+    Value<String?> customArtistName = const Value.absent(),
+    Value<String?> customAlbumTitle = const Value.absent(),
+    bool? favorite,
+    Value<double?> customValence = const Value.absent(),
+    Value<double?> customArousal = const Value.absent(),
+    int? playCount,
+    Value<DateTime?> lastPlayedAt = const Value.absent(),
+    DateTime? addedAt,
+    DateTime? updatedAt,
+  }) => CloudLibraryItemTableData(
+    trackId: trackId ?? this.trackId,
+    canonicalTitle: canonicalTitle ?? this.canonicalTitle,
+    canonicalArtistName: canonicalArtistName.present
+        ? canonicalArtistName.value
+        : this.canonicalArtistName,
+    canonicalAlbumTitle: canonicalAlbumTitle.present
+        ? canonicalAlbumTitle.value
+        : this.canonicalAlbumTitle,
+    albumArtist: albumArtist.present ? albumArtist.value : this.albumArtist,
+    trackNumber: trackNumber.present ? trackNumber.value : this.trackNumber,
+    discNumber: discNumber.present ? discNumber.value : this.discNumber,
+    year: year.present ? year.value : this.year,
+    genresJson: genresJson ?? this.genresJson,
+    durationMs: durationMs ?? this.durationMs,
+    hasArtwork: hasArtwork ?? this.hasArtwork,
+    analysisStatus: analysisStatus ?? this.analysisStatus,
+    customTitle: customTitle.present ? customTitle.value : this.customTitle,
+    customArtistName: customArtistName.present
+        ? customArtistName.value
+        : this.customArtistName,
+    customAlbumTitle: customAlbumTitle.present
+        ? customAlbumTitle.value
+        : this.customAlbumTitle,
+    favorite: favorite ?? this.favorite,
+    customValence: customValence.present
+        ? customValence.value
+        : this.customValence,
+    customArousal: customArousal.present
+        ? customArousal.value
+        : this.customArousal,
+    playCount: playCount ?? this.playCount,
+    lastPlayedAt: lastPlayedAt.present ? lastPlayedAt.value : this.lastPlayedAt,
+    addedAt: addedAt ?? this.addedAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  CloudLibraryItemTableData copyWithCompanion(
+    CloudLibraryItemTableCompanion data,
+  ) {
+    return CloudLibraryItemTableData(
+      trackId: data.trackId.present ? data.trackId.value : this.trackId,
+      canonicalTitle: data.canonicalTitle.present
+          ? data.canonicalTitle.value
+          : this.canonicalTitle,
+      canonicalArtistName: data.canonicalArtistName.present
+          ? data.canonicalArtistName.value
+          : this.canonicalArtistName,
+      canonicalAlbumTitle: data.canonicalAlbumTitle.present
+          ? data.canonicalAlbumTitle.value
+          : this.canonicalAlbumTitle,
+      albumArtist: data.albumArtist.present
+          ? data.albumArtist.value
+          : this.albumArtist,
+      trackNumber: data.trackNumber.present
+          ? data.trackNumber.value
+          : this.trackNumber,
+      discNumber: data.discNumber.present
+          ? data.discNumber.value
+          : this.discNumber,
+      year: data.year.present ? data.year.value : this.year,
+      genresJson: data.genresJson.present
+          ? data.genresJson.value
+          : this.genresJson,
+      durationMs: data.durationMs.present
+          ? data.durationMs.value
+          : this.durationMs,
+      hasArtwork: data.hasArtwork.present
+          ? data.hasArtwork.value
+          : this.hasArtwork,
+      analysisStatus: data.analysisStatus.present
+          ? data.analysisStatus.value
+          : this.analysisStatus,
+      customTitle: data.customTitle.present
+          ? data.customTitle.value
+          : this.customTitle,
+      customArtistName: data.customArtistName.present
+          ? data.customArtistName.value
+          : this.customArtistName,
+      customAlbumTitle: data.customAlbumTitle.present
+          ? data.customAlbumTitle.value
+          : this.customAlbumTitle,
+      favorite: data.favorite.present ? data.favorite.value : this.favorite,
+      customValence: data.customValence.present
+          ? data.customValence.value
+          : this.customValence,
+      customArousal: data.customArousal.present
+          ? data.customArousal.value
+          : this.customArousal,
+      playCount: data.playCount.present ? data.playCount.value : this.playCount,
+      lastPlayedAt: data.lastPlayedAt.present
+          ? data.lastPlayedAt.value
+          : this.lastPlayedAt,
+      addedAt: data.addedAt.present ? data.addedAt.value : this.addedAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CloudLibraryItemTableData(')
+          ..write('trackId: $trackId, ')
+          ..write('canonicalTitle: $canonicalTitle, ')
+          ..write('canonicalArtistName: $canonicalArtistName, ')
+          ..write('canonicalAlbumTitle: $canonicalAlbumTitle, ')
+          ..write('albumArtist: $albumArtist, ')
+          ..write('trackNumber: $trackNumber, ')
+          ..write('discNumber: $discNumber, ')
+          ..write('year: $year, ')
+          ..write('genresJson: $genresJson, ')
+          ..write('durationMs: $durationMs, ')
+          ..write('hasArtwork: $hasArtwork, ')
+          ..write('analysisStatus: $analysisStatus, ')
+          ..write('customTitle: $customTitle, ')
+          ..write('customArtistName: $customArtistName, ')
+          ..write('customAlbumTitle: $customAlbumTitle, ')
+          ..write('favorite: $favorite, ')
+          ..write('customValence: $customValence, ')
+          ..write('customArousal: $customArousal, ')
+          ..write('playCount: $playCount, ')
+          ..write('lastPlayedAt: $lastPlayedAt, ')
+          ..write('addedAt: $addedAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    trackId,
+    canonicalTitle,
+    canonicalArtistName,
+    canonicalAlbumTitle,
+    albumArtist,
+    trackNumber,
+    discNumber,
+    year,
+    genresJson,
+    durationMs,
+    hasArtwork,
+    analysisStatus,
+    customTitle,
+    customArtistName,
+    customAlbumTitle,
+    favorite,
+    customValence,
+    customArousal,
+    playCount,
+    lastPlayedAt,
+    addedAt,
+    updatedAt,
+  ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CloudLibraryItemTableData &&
+          other.trackId == this.trackId &&
+          other.canonicalTitle == this.canonicalTitle &&
+          other.canonicalArtistName == this.canonicalArtistName &&
+          other.canonicalAlbumTitle == this.canonicalAlbumTitle &&
+          other.albumArtist == this.albumArtist &&
+          other.trackNumber == this.trackNumber &&
+          other.discNumber == this.discNumber &&
+          other.year == this.year &&
+          other.genresJson == this.genresJson &&
+          other.durationMs == this.durationMs &&
+          other.hasArtwork == this.hasArtwork &&
+          other.analysisStatus == this.analysisStatus &&
+          other.customTitle == this.customTitle &&
+          other.customArtistName == this.customArtistName &&
+          other.customAlbumTitle == this.customAlbumTitle &&
+          other.favorite == this.favorite &&
+          other.customValence == this.customValence &&
+          other.customArousal == this.customArousal &&
+          other.playCount == this.playCount &&
+          other.lastPlayedAt == this.lastPlayedAt &&
+          other.addedAt == this.addedAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class CloudLibraryItemTableCompanion
+    extends UpdateCompanion<CloudLibraryItemTableData> {
+  final Value<String> trackId;
+  final Value<String> canonicalTitle;
+  final Value<String?> canonicalArtistName;
+  final Value<String?> canonicalAlbumTitle;
+  final Value<String?> albumArtist;
+  final Value<int?> trackNumber;
+  final Value<int?> discNumber;
+  final Value<int?> year;
+  final Value<String> genresJson;
+  final Value<int> durationMs;
+  final Value<bool> hasArtwork;
+  final Value<String> analysisStatus;
+  final Value<String?> customTitle;
+  final Value<String?> customArtistName;
+  final Value<String?> customAlbumTitle;
+  final Value<bool> favorite;
+  final Value<double?> customValence;
+  final Value<double?> customArousal;
+  final Value<int> playCount;
+  final Value<DateTime?> lastPlayedAt;
+  final Value<DateTime> addedAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const CloudLibraryItemTableCompanion({
+    this.trackId = const Value.absent(),
+    this.canonicalTitle = const Value.absent(),
+    this.canonicalArtistName = const Value.absent(),
+    this.canonicalAlbumTitle = const Value.absent(),
+    this.albumArtist = const Value.absent(),
+    this.trackNumber = const Value.absent(),
+    this.discNumber = const Value.absent(),
+    this.year = const Value.absent(),
+    this.genresJson = const Value.absent(),
+    this.durationMs = const Value.absent(),
+    this.hasArtwork = const Value.absent(),
+    this.analysisStatus = const Value.absent(),
+    this.customTitle = const Value.absent(),
+    this.customArtistName = const Value.absent(),
+    this.customAlbumTitle = const Value.absent(),
+    this.favorite = const Value.absent(),
+    this.customValence = const Value.absent(),
+    this.customArousal = const Value.absent(),
+    this.playCount = const Value.absent(),
+    this.lastPlayedAt = const Value.absent(),
+    this.addedAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CloudLibraryItemTableCompanion.insert({
+    required String trackId,
+    required String canonicalTitle,
+    this.canonicalArtistName = const Value.absent(),
+    this.canonicalAlbumTitle = const Value.absent(),
+    this.albumArtist = const Value.absent(),
+    this.trackNumber = const Value.absent(),
+    this.discNumber = const Value.absent(),
+    this.year = const Value.absent(),
+    this.genresJson = const Value.absent(),
+    required int durationMs,
+    required bool hasArtwork,
+    required String analysisStatus,
+    this.customTitle = const Value.absent(),
+    this.customArtistName = const Value.absent(),
+    this.customAlbumTitle = const Value.absent(),
+    this.favorite = const Value.absent(),
+    this.customValence = const Value.absent(),
+    this.customArousal = const Value.absent(),
+    this.playCount = const Value.absent(),
+    this.lastPlayedAt = const Value.absent(),
+    required DateTime addedAt,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : trackId = Value(trackId),
+       canonicalTitle = Value(canonicalTitle),
+       durationMs = Value(durationMs),
+       hasArtwork = Value(hasArtwork),
+       analysisStatus = Value(analysisStatus),
+       addedAt = Value(addedAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<CloudLibraryItemTableData> custom({
+    Expression<String>? trackId,
+    Expression<String>? canonicalTitle,
+    Expression<String>? canonicalArtistName,
+    Expression<String>? canonicalAlbumTitle,
+    Expression<String>? albumArtist,
+    Expression<int>? trackNumber,
+    Expression<int>? discNumber,
+    Expression<int>? year,
+    Expression<String>? genresJson,
+    Expression<int>? durationMs,
+    Expression<bool>? hasArtwork,
+    Expression<String>? analysisStatus,
+    Expression<String>? customTitle,
+    Expression<String>? customArtistName,
+    Expression<String>? customAlbumTitle,
+    Expression<bool>? favorite,
+    Expression<double>? customValence,
+    Expression<double>? customArousal,
+    Expression<int>? playCount,
+    Expression<DateTime>? lastPlayedAt,
+    Expression<DateTime>? addedAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (trackId != null) 'track_id': trackId,
+      if (canonicalTitle != null) 'canonical_title': canonicalTitle,
+      if (canonicalArtistName != null)
+        'canonical_artist_name': canonicalArtistName,
+      if (canonicalAlbumTitle != null)
+        'canonical_album_title': canonicalAlbumTitle,
+      if (albumArtist != null) 'album_artist': albumArtist,
+      if (trackNumber != null) 'track_number': trackNumber,
+      if (discNumber != null) 'disc_number': discNumber,
+      if (year != null) 'year': year,
+      if (genresJson != null) 'genres_json': genresJson,
+      if (durationMs != null) 'duration_ms': durationMs,
+      if (hasArtwork != null) 'has_artwork': hasArtwork,
+      if (analysisStatus != null) 'analysis_status': analysisStatus,
+      if (customTitle != null) 'custom_title': customTitle,
+      if (customArtistName != null) 'custom_artist_name': customArtistName,
+      if (customAlbumTitle != null) 'custom_album_title': customAlbumTitle,
+      if (favorite != null) 'favorite': favorite,
+      if (customValence != null) 'custom_valence': customValence,
+      if (customArousal != null) 'custom_arousal': customArousal,
+      if (playCount != null) 'play_count': playCount,
+      if (lastPlayedAt != null) 'last_played_at': lastPlayedAt,
+      if (addedAt != null) 'added_at': addedAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CloudLibraryItemTableCompanion copyWith({
+    Value<String>? trackId,
+    Value<String>? canonicalTitle,
+    Value<String?>? canonicalArtistName,
+    Value<String?>? canonicalAlbumTitle,
+    Value<String?>? albumArtist,
+    Value<int?>? trackNumber,
+    Value<int?>? discNumber,
+    Value<int?>? year,
+    Value<String>? genresJson,
+    Value<int>? durationMs,
+    Value<bool>? hasArtwork,
+    Value<String>? analysisStatus,
+    Value<String?>? customTitle,
+    Value<String?>? customArtistName,
+    Value<String?>? customAlbumTitle,
+    Value<bool>? favorite,
+    Value<double?>? customValence,
+    Value<double?>? customArousal,
+    Value<int>? playCount,
+    Value<DateTime?>? lastPlayedAt,
+    Value<DateTime>? addedAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return CloudLibraryItemTableCompanion(
+      trackId: trackId ?? this.trackId,
+      canonicalTitle: canonicalTitle ?? this.canonicalTitle,
+      canonicalArtistName: canonicalArtistName ?? this.canonicalArtistName,
+      canonicalAlbumTitle: canonicalAlbumTitle ?? this.canonicalAlbumTitle,
+      albumArtist: albumArtist ?? this.albumArtist,
+      trackNumber: trackNumber ?? this.trackNumber,
+      discNumber: discNumber ?? this.discNumber,
+      year: year ?? this.year,
+      genresJson: genresJson ?? this.genresJson,
+      durationMs: durationMs ?? this.durationMs,
+      hasArtwork: hasArtwork ?? this.hasArtwork,
+      analysisStatus: analysisStatus ?? this.analysisStatus,
+      customTitle: customTitle ?? this.customTitle,
+      customArtistName: customArtistName ?? this.customArtistName,
+      customAlbumTitle: customAlbumTitle ?? this.customAlbumTitle,
+      favorite: favorite ?? this.favorite,
+      customValence: customValence ?? this.customValence,
+      customArousal: customArousal ?? this.customArousal,
+      playCount: playCount ?? this.playCount,
+      lastPlayedAt: lastPlayedAt ?? this.lastPlayedAt,
+      addedAt: addedAt ?? this.addedAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (trackId.present) {
+      map['track_id'] = Variable<String>(trackId.value);
+    }
+    if (canonicalTitle.present) {
+      map['canonical_title'] = Variable<String>(canonicalTitle.value);
+    }
+    if (canonicalArtistName.present) {
+      map['canonical_artist_name'] = Variable<String>(
+        canonicalArtistName.value,
+      );
+    }
+    if (canonicalAlbumTitle.present) {
+      map['canonical_album_title'] = Variable<String>(
+        canonicalAlbumTitle.value,
+      );
+    }
+    if (albumArtist.present) {
+      map['album_artist'] = Variable<String>(albumArtist.value);
+    }
+    if (trackNumber.present) {
+      map['track_number'] = Variable<int>(trackNumber.value);
+    }
+    if (discNumber.present) {
+      map['disc_number'] = Variable<int>(discNumber.value);
+    }
+    if (year.present) {
+      map['year'] = Variable<int>(year.value);
+    }
+    if (genresJson.present) {
+      map['genres_json'] = Variable<String>(genresJson.value);
+    }
+    if (durationMs.present) {
+      map['duration_ms'] = Variable<int>(durationMs.value);
+    }
+    if (hasArtwork.present) {
+      map['has_artwork'] = Variable<bool>(hasArtwork.value);
+    }
+    if (analysisStatus.present) {
+      map['analysis_status'] = Variable<String>(analysisStatus.value);
+    }
+    if (customTitle.present) {
+      map['custom_title'] = Variable<String>(customTitle.value);
+    }
+    if (customArtistName.present) {
+      map['custom_artist_name'] = Variable<String>(customArtistName.value);
+    }
+    if (customAlbumTitle.present) {
+      map['custom_album_title'] = Variable<String>(customAlbumTitle.value);
+    }
+    if (favorite.present) {
+      map['favorite'] = Variable<bool>(favorite.value);
+    }
+    if (customValence.present) {
+      map['custom_valence'] = Variable<double>(customValence.value);
+    }
+    if (customArousal.present) {
+      map['custom_arousal'] = Variable<double>(customArousal.value);
+    }
+    if (playCount.present) {
+      map['play_count'] = Variable<int>(playCount.value);
+    }
+    if (lastPlayedAt.present) {
+      map['last_played_at'] = Variable<DateTime>(lastPlayedAt.value);
+    }
+    if (addedAt.present) {
+      map['added_at'] = Variable<DateTime>(addedAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CloudLibraryItemTableCompanion(')
+          ..write('trackId: $trackId, ')
+          ..write('canonicalTitle: $canonicalTitle, ')
+          ..write('canonicalArtistName: $canonicalArtistName, ')
+          ..write('canonicalAlbumTitle: $canonicalAlbumTitle, ')
+          ..write('albumArtist: $albumArtist, ')
+          ..write('trackNumber: $trackNumber, ')
+          ..write('discNumber: $discNumber, ')
+          ..write('year: $year, ')
+          ..write('genresJson: $genresJson, ')
+          ..write('durationMs: $durationMs, ')
+          ..write('hasArtwork: $hasArtwork, ')
+          ..write('analysisStatus: $analysisStatus, ')
+          ..write('customTitle: $customTitle, ')
+          ..write('customArtistName: $customArtistName, ')
+          ..write('customAlbumTitle: $customAlbumTitle, ')
+          ..write('favorite: $favorite, ')
+          ..write('customValence: $customValence, ')
+          ..write('customArousal: $customArousal, ')
+          ..write('playCount: $playCount, ')
+          ..write('lastPlayedAt: $lastPlayedAt, ')
+          ..write('addedAt: $addedAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CloudAnalysisTableTable extends CloudAnalysisTable
+    with TableInfo<$CloudAnalysisTableTable, CloudAnalysisTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CloudAnalysisTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _trackIdMeta = const VerificationMeta(
+    'trackId',
+  );
+  @override
+  late final GeneratedColumn<String> trackId = GeneratedColumn<String>(
+    'track_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES track_table (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _analysisVersionMeta = const VerificationMeta(
+    'analysisVersion',
+  );
+  @override
+  late final GeneratedColumn<int> analysisVersion = GeneratedColumn<int>(
+    'analysis_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _embeddingModelMeta = const VerificationMeta(
+    'embeddingModel',
+  );
+  @override
+  late final GeneratedColumn<String> embeddingModel = GeneratedColumn<String>(
+    'embedding_model',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _embeddingVersionMeta = const VerificationMeta(
+    'embeddingVersion',
+  );
+  @override
+  late final GeneratedColumn<String> embeddingVersion = GeneratedColumn<String>(
+    'embedding_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _embeddingDimensionMeta =
+      const VerificationMeta('embeddingDimension');
+  @override
+  late final GeneratedColumn<int> embeddingDimension = GeneratedColumn<int>(
+    'embedding_dimension',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _emotionVersionMeta = const VerificationMeta(
+    'emotionVersion',
+  );
+  @override
+  late final GeneratedColumn<String> emotionVersion = GeneratedColumn<String>(
+    'emotion_version',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valenceMeta = const VerificationMeta(
+    'valence',
+  );
+  @override
+  late final GeneratedColumn<double> valence = GeneratedColumn<double>(
+    'valence',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _arousalMeta = const VerificationMeta(
+    'arousal',
+  );
+  @override
+  late final GeneratedColumn<double> arousal = GeneratedColumn<double>(
+    'arousal',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    trackId,
+    analysisVersion,
+    embeddingModel,
+    embeddingVersion,
+    embeddingDimension,
+    emotionVersion,
+    valence,
+    arousal,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cloud_analysis_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CloudAnalysisTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('track_id')) {
+      context.handle(
+        _trackIdMeta,
+        trackId.isAcceptableOrUnknown(data['track_id']!, _trackIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_trackIdMeta);
+    }
+    if (data.containsKey('analysis_version')) {
+      context.handle(
+        _analysisVersionMeta,
+        analysisVersion.isAcceptableOrUnknown(
+          data['analysis_version']!,
+          _analysisVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_analysisVersionMeta);
+    }
+    if (data.containsKey('embedding_model')) {
+      context.handle(
+        _embeddingModelMeta,
+        embeddingModel.isAcceptableOrUnknown(
+          data['embedding_model']!,
+          _embeddingModelMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_embeddingModelMeta);
+    }
+    if (data.containsKey('embedding_version')) {
+      context.handle(
+        _embeddingVersionMeta,
+        embeddingVersion.isAcceptableOrUnknown(
+          data['embedding_version']!,
+          _embeddingVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_embeddingVersionMeta);
+    }
+    if (data.containsKey('embedding_dimension')) {
+      context.handle(
+        _embeddingDimensionMeta,
+        embeddingDimension.isAcceptableOrUnknown(
+          data['embedding_dimension']!,
+          _embeddingDimensionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_embeddingDimensionMeta);
+    }
+    if (data.containsKey('emotion_version')) {
+      context.handle(
+        _emotionVersionMeta,
+        emotionVersion.isAcceptableOrUnknown(
+          data['emotion_version']!,
+          _emotionVersionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_emotionVersionMeta);
+    }
+    if (data.containsKey('valence')) {
+      context.handle(
+        _valenceMeta,
+        valence.isAcceptableOrUnknown(data['valence']!, _valenceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valenceMeta);
+    }
+    if (data.containsKey('arousal')) {
+      context.handle(
+        _arousalMeta,
+        arousal.isAcceptableOrUnknown(data['arousal']!, _arousalMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_arousalMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {trackId};
+  @override
+  CloudAnalysisTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CloudAnalysisTableData(
+      trackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}track_id'],
+      )!,
+      analysisVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}analysis_version'],
+      )!,
+      embeddingModel: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}embedding_model'],
+      )!,
+      embeddingVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}embedding_version'],
+      )!,
+      embeddingDimension: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}embedding_dimension'],
+      )!,
+      emotionVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}emotion_version'],
+      )!,
+      valence: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}valence'],
+      )!,
+      arousal: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}arousal'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CloudAnalysisTableTable createAlias(String alias) {
+    return $CloudAnalysisTableTable(attachedDatabase, alias);
+  }
+}
+
+class CloudAnalysisTableData extends DataClass
+    implements Insertable<CloudAnalysisTableData> {
+  final String trackId;
+  final int analysisVersion;
+  final String embeddingModel;
+  final String embeddingVersion;
+  final int embeddingDimension;
+  final String emotionVersion;
+  final double valence;
+  final double arousal;
+  final DateTime updatedAt;
+  const CloudAnalysisTableData({
+    required this.trackId,
+    required this.analysisVersion,
+    required this.embeddingModel,
+    required this.embeddingVersion,
+    required this.embeddingDimension,
+    required this.emotionVersion,
+    required this.valence,
+    required this.arousal,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['track_id'] = Variable<String>(trackId);
+    map['analysis_version'] = Variable<int>(analysisVersion);
+    map['embedding_model'] = Variable<String>(embeddingModel);
+    map['embedding_version'] = Variable<String>(embeddingVersion);
+    map['embedding_dimension'] = Variable<int>(embeddingDimension);
+    map['emotion_version'] = Variable<String>(emotionVersion);
+    map['valence'] = Variable<double>(valence);
+    map['arousal'] = Variable<double>(arousal);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  CloudAnalysisTableCompanion toCompanion(bool nullToAbsent) {
+    return CloudAnalysisTableCompanion(
+      trackId: Value(trackId),
+      analysisVersion: Value(analysisVersion),
+      embeddingModel: Value(embeddingModel),
+      embeddingVersion: Value(embeddingVersion),
+      embeddingDimension: Value(embeddingDimension),
+      emotionVersion: Value(emotionVersion),
+      valence: Value(valence),
+      arousal: Value(arousal),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory CloudAnalysisTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CloudAnalysisTableData(
+      trackId: serializer.fromJson<String>(json['trackId']),
+      analysisVersion: serializer.fromJson<int>(json['analysisVersion']),
+      embeddingModel: serializer.fromJson<String>(json['embeddingModel']),
+      embeddingVersion: serializer.fromJson<String>(json['embeddingVersion']),
+      embeddingDimension: serializer.fromJson<int>(json['embeddingDimension']),
+      emotionVersion: serializer.fromJson<String>(json['emotionVersion']),
+      valence: serializer.fromJson<double>(json['valence']),
+      arousal: serializer.fromJson<double>(json['arousal']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'trackId': serializer.toJson<String>(trackId),
+      'analysisVersion': serializer.toJson<int>(analysisVersion),
+      'embeddingModel': serializer.toJson<String>(embeddingModel),
+      'embeddingVersion': serializer.toJson<String>(embeddingVersion),
+      'embeddingDimension': serializer.toJson<int>(embeddingDimension),
+      'emotionVersion': serializer.toJson<String>(emotionVersion),
+      'valence': serializer.toJson<double>(valence),
+      'arousal': serializer.toJson<double>(arousal),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  CloudAnalysisTableData copyWith({
+    String? trackId,
+    int? analysisVersion,
+    String? embeddingModel,
+    String? embeddingVersion,
+    int? embeddingDimension,
+    String? emotionVersion,
+    double? valence,
+    double? arousal,
+    DateTime? updatedAt,
+  }) => CloudAnalysisTableData(
+    trackId: trackId ?? this.trackId,
+    analysisVersion: analysisVersion ?? this.analysisVersion,
+    embeddingModel: embeddingModel ?? this.embeddingModel,
+    embeddingVersion: embeddingVersion ?? this.embeddingVersion,
+    embeddingDimension: embeddingDimension ?? this.embeddingDimension,
+    emotionVersion: emotionVersion ?? this.emotionVersion,
+    valence: valence ?? this.valence,
+    arousal: arousal ?? this.arousal,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  CloudAnalysisTableData copyWithCompanion(CloudAnalysisTableCompanion data) {
+    return CloudAnalysisTableData(
+      trackId: data.trackId.present ? data.trackId.value : this.trackId,
+      analysisVersion: data.analysisVersion.present
+          ? data.analysisVersion.value
+          : this.analysisVersion,
+      embeddingModel: data.embeddingModel.present
+          ? data.embeddingModel.value
+          : this.embeddingModel,
+      embeddingVersion: data.embeddingVersion.present
+          ? data.embeddingVersion.value
+          : this.embeddingVersion,
+      embeddingDimension: data.embeddingDimension.present
+          ? data.embeddingDimension.value
+          : this.embeddingDimension,
+      emotionVersion: data.emotionVersion.present
+          ? data.emotionVersion.value
+          : this.emotionVersion,
+      valence: data.valence.present ? data.valence.value : this.valence,
+      arousal: data.arousal.present ? data.arousal.value : this.arousal,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CloudAnalysisTableData(')
+          ..write('trackId: $trackId, ')
+          ..write('analysisVersion: $analysisVersion, ')
+          ..write('embeddingModel: $embeddingModel, ')
+          ..write('embeddingVersion: $embeddingVersion, ')
+          ..write('embeddingDimension: $embeddingDimension, ')
+          ..write('emotionVersion: $emotionVersion, ')
+          ..write('valence: $valence, ')
+          ..write('arousal: $arousal, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    trackId,
+    analysisVersion,
+    embeddingModel,
+    embeddingVersion,
+    embeddingDimension,
+    emotionVersion,
+    valence,
+    arousal,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CloudAnalysisTableData &&
+          other.trackId == this.trackId &&
+          other.analysisVersion == this.analysisVersion &&
+          other.embeddingModel == this.embeddingModel &&
+          other.embeddingVersion == this.embeddingVersion &&
+          other.embeddingDimension == this.embeddingDimension &&
+          other.emotionVersion == this.emotionVersion &&
+          other.valence == this.valence &&
+          other.arousal == this.arousal &&
+          other.updatedAt == this.updatedAt);
+}
+
+class CloudAnalysisTableCompanion
+    extends UpdateCompanion<CloudAnalysisTableData> {
+  final Value<String> trackId;
+  final Value<int> analysisVersion;
+  final Value<String> embeddingModel;
+  final Value<String> embeddingVersion;
+  final Value<int> embeddingDimension;
+  final Value<String> emotionVersion;
+  final Value<double> valence;
+  final Value<double> arousal;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const CloudAnalysisTableCompanion({
+    this.trackId = const Value.absent(),
+    this.analysisVersion = const Value.absent(),
+    this.embeddingModel = const Value.absent(),
+    this.embeddingVersion = const Value.absent(),
+    this.embeddingDimension = const Value.absent(),
+    this.emotionVersion = const Value.absent(),
+    this.valence = const Value.absent(),
+    this.arousal = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CloudAnalysisTableCompanion.insert({
+    required String trackId,
+    required int analysisVersion,
+    required String embeddingModel,
+    required String embeddingVersion,
+    required int embeddingDimension,
+    required String emotionVersion,
+    required double valence,
+    required double arousal,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : trackId = Value(trackId),
+       analysisVersion = Value(analysisVersion),
+       embeddingModel = Value(embeddingModel),
+       embeddingVersion = Value(embeddingVersion),
+       embeddingDimension = Value(embeddingDimension),
+       emotionVersion = Value(emotionVersion),
+       valence = Value(valence),
+       arousal = Value(arousal),
+       updatedAt = Value(updatedAt);
+  static Insertable<CloudAnalysisTableData> custom({
+    Expression<String>? trackId,
+    Expression<int>? analysisVersion,
+    Expression<String>? embeddingModel,
+    Expression<String>? embeddingVersion,
+    Expression<int>? embeddingDimension,
+    Expression<String>? emotionVersion,
+    Expression<double>? valence,
+    Expression<double>? arousal,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (trackId != null) 'track_id': trackId,
+      if (analysisVersion != null) 'analysis_version': analysisVersion,
+      if (embeddingModel != null) 'embedding_model': embeddingModel,
+      if (embeddingVersion != null) 'embedding_version': embeddingVersion,
+      if (embeddingDimension != null) 'embedding_dimension': embeddingDimension,
+      if (emotionVersion != null) 'emotion_version': emotionVersion,
+      if (valence != null) 'valence': valence,
+      if (arousal != null) 'arousal': arousal,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CloudAnalysisTableCompanion copyWith({
+    Value<String>? trackId,
+    Value<int>? analysisVersion,
+    Value<String>? embeddingModel,
+    Value<String>? embeddingVersion,
+    Value<int>? embeddingDimension,
+    Value<String>? emotionVersion,
+    Value<double>? valence,
+    Value<double>? arousal,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return CloudAnalysisTableCompanion(
+      trackId: trackId ?? this.trackId,
+      analysisVersion: analysisVersion ?? this.analysisVersion,
+      embeddingModel: embeddingModel ?? this.embeddingModel,
+      embeddingVersion: embeddingVersion ?? this.embeddingVersion,
+      embeddingDimension: embeddingDimension ?? this.embeddingDimension,
+      emotionVersion: emotionVersion ?? this.emotionVersion,
+      valence: valence ?? this.valence,
+      arousal: arousal ?? this.arousal,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (trackId.present) {
+      map['track_id'] = Variable<String>(trackId.value);
+    }
+    if (analysisVersion.present) {
+      map['analysis_version'] = Variable<int>(analysisVersion.value);
+    }
+    if (embeddingModel.present) {
+      map['embedding_model'] = Variable<String>(embeddingModel.value);
+    }
+    if (embeddingVersion.present) {
+      map['embedding_version'] = Variable<String>(embeddingVersion.value);
+    }
+    if (embeddingDimension.present) {
+      map['embedding_dimension'] = Variable<int>(embeddingDimension.value);
+    }
+    if (emotionVersion.present) {
+      map['emotion_version'] = Variable<String>(emotionVersion.value);
+    }
+    if (valence.present) {
+      map['valence'] = Variable<double>(valence.value);
+    }
+    if (arousal.present) {
+      map['arousal'] = Variable<double>(arousal.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CloudAnalysisTableCompanion(')
+          ..write('trackId: $trackId, ')
+          ..write('analysisVersion: $analysisVersion, ')
+          ..write('embeddingModel: $embeddingModel, ')
+          ..write('embeddingVersion: $embeddingVersion, ')
+          ..write('embeddingDimension: $embeddingDimension, ')
+          ..write('emotionVersion: $emotionVersion, ')
+          ..write('valence: $valence, ')
+          ..write('arousal: $arousal, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CloudPlaylistTableTable extends CloudPlaylistTable
+    with TableInfo<$CloudPlaylistTableTable, CloudPlaylistTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CloudPlaylistTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _playlistIdMeta = const VerificationMeta(
+    'playlistId',
+  );
+  @override
+  late final GeneratedColumn<String> playlistId = GeneratedColumn<String>(
+    'playlist_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES playlist_table (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [playlistId, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cloud_playlist_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CloudPlaylistTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('playlist_id')) {
+      context.handle(
+        _playlistIdMeta,
+        playlistId.isAcceptableOrUnknown(data['playlist_id']!, _playlistIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_playlistIdMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {playlistId};
+  @override
+  CloudPlaylistTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CloudPlaylistTableData(
+      playlistId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}playlist_id'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CloudPlaylistTableTable createAlias(String alias) {
+    return $CloudPlaylistTableTable(attachedDatabase, alias);
+  }
+}
+
+class CloudPlaylistTableData extends DataClass
+    implements Insertable<CloudPlaylistTableData> {
+  final String playlistId;
+  final DateTime updatedAt;
+  const CloudPlaylistTableData({
+    required this.playlistId,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['playlist_id'] = Variable<String>(playlistId);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  CloudPlaylistTableCompanion toCompanion(bool nullToAbsent) {
+    return CloudPlaylistTableCompanion(
+      playlistId: Value(playlistId),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory CloudPlaylistTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CloudPlaylistTableData(
+      playlistId: serializer.fromJson<String>(json['playlistId']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'playlistId': serializer.toJson<String>(playlistId),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  CloudPlaylistTableData copyWith({String? playlistId, DateTime? updatedAt}) =>
+      CloudPlaylistTableData(
+        playlistId: playlistId ?? this.playlistId,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
+  CloudPlaylistTableData copyWithCompanion(CloudPlaylistTableCompanion data) {
+    return CloudPlaylistTableData(
+      playlistId: data.playlistId.present
+          ? data.playlistId.value
+          : this.playlistId,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CloudPlaylistTableData(')
+          ..write('playlistId: $playlistId, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(playlistId, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CloudPlaylistTableData &&
+          other.playlistId == this.playlistId &&
+          other.updatedAt == this.updatedAt);
+}
+
+class CloudPlaylistTableCompanion
+    extends UpdateCompanion<CloudPlaylistTableData> {
+  final Value<String> playlistId;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const CloudPlaylistTableCompanion({
+    this.playlistId = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CloudPlaylistTableCompanion.insert({
+    required String playlistId,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : playlistId = Value(playlistId),
+       updatedAt = Value(updatedAt);
+  static Insertable<CloudPlaylistTableData> custom({
+    Expression<String>? playlistId,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (playlistId != null) 'playlist_id': playlistId,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CloudPlaylistTableCompanion copyWith({
+    Value<String>? playlistId,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return CloudPlaylistTableCompanion(
+      playlistId: playlistId ?? this.playlistId,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (playlistId.present) {
+      map['playlist_id'] = Variable<String>(playlistId.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CloudPlaylistTableCompanion(')
+          ..write('playlistId: $playlistId, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CloudPlaylistItemTableTable extends CloudPlaylistItemTable
+    with TableInfo<$CloudPlaylistItemTableTable, CloudPlaylistItemTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CloudPlaylistItemTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _itemIdMeta = const VerificationMeta('itemId');
+  @override
+  late final GeneratedColumn<String> itemId = GeneratedColumn<String>(
+    'item_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _playlistIdMeta = const VerificationMeta(
+    'playlistId',
+  );
+  @override
+  late final GeneratedColumn<String> playlistId = GeneratedColumn<String>(
+    'playlist_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES playlist_table (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _trackIdMeta = const VerificationMeta(
+    'trackId',
+  );
+  @override
+  late final GeneratedColumn<String> trackId = GeneratedColumn<String>(
+    'track_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [itemId, playlistId, trackId, position];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cloud_playlist_item_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CloudPlaylistItemTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('item_id')) {
+      context.handle(
+        _itemIdMeta,
+        itemId.isAcceptableOrUnknown(data['item_id']!, _itemIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_itemIdMeta);
+    }
+    if (data.containsKey('playlist_id')) {
+      context.handle(
+        _playlistIdMeta,
+        playlistId.isAcceptableOrUnknown(data['playlist_id']!, _playlistIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_playlistIdMeta);
+    }
+    if (data.containsKey('track_id')) {
+      context.handle(
+        _trackIdMeta,
+        trackId.isAcceptableOrUnknown(data['track_id']!, _trackIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_trackIdMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {itemId};
+  @override
+  CloudPlaylistItemTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CloudPlaylistItemTableData(
+      itemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}item_id'],
+      )!,
+      playlistId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}playlist_id'],
+      )!,
+      trackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}track_id'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+    );
+  }
+
+  @override
+  $CloudPlaylistItemTableTable createAlias(String alias) {
+    return $CloudPlaylistItemTableTable(attachedDatabase, alias);
+  }
+}
+
+class CloudPlaylistItemTableData extends DataClass
+    implements Insertable<CloudPlaylistItemTableData> {
+  final String itemId;
+  final String playlistId;
+  final String trackId;
+  final int position;
+  const CloudPlaylistItemTableData({
+    required this.itemId,
+    required this.playlistId,
+    required this.trackId,
+    required this.position,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['item_id'] = Variable<String>(itemId);
+    map['playlist_id'] = Variable<String>(playlistId);
+    map['track_id'] = Variable<String>(trackId);
+    map['position'] = Variable<int>(position);
+    return map;
+  }
+
+  CloudPlaylistItemTableCompanion toCompanion(bool nullToAbsent) {
+    return CloudPlaylistItemTableCompanion(
+      itemId: Value(itemId),
+      playlistId: Value(playlistId),
+      trackId: Value(trackId),
+      position: Value(position),
+    );
+  }
+
+  factory CloudPlaylistItemTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CloudPlaylistItemTableData(
+      itemId: serializer.fromJson<String>(json['itemId']),
+      playlistId: serializer.fromJson<String>(json['playlistId']),
+      trackId: serializer.fromJson<String>(json['trackId']),
+      position: serializer.fromJson<int>(json['position']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'itemId': serializer.toJson<String>(itemId),
+      'playlistId': serializer.toJson<String>(playlistId),
+      'trackId': serializer.toJson<String>(trackId),
+      'position': serializer.toJson<int>(position),
+    };
+  }
+
+  CloudPlaylistItemTableData copyWith({
+    String? itemId,
+    String? playlistId,
+    String? trackId,
+    int? position,
+  }) => CloudPlaylistItemTableData(
+    itemId: itemId ?? this.itemId,
+    playlistId: playlistId ?? this.playlistId,
+    trackId: trackId ?? this.trackId,
+    position: position ?? this.position,
+  );
+  CloudPlaylistItemTableData copyWithCompanion(
+    CloudPlaylistItemTableCompanion data,
+  ) {
+    return CloudPlaylistItemTableData(
+      itemId: data.itemId.present ? data.itemId.value : this.itemId,
+      playlistId: data.playlistId.present
+          ? data.playlistId.value
+          : this.playlistId,
+      trackId: data.trackId.present ? data.trackId.value : this.trackId,
+      position: data.position.present ? data.position.value : this.position,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CloudPlaylistItemTableData(')
+          ..write('itemId: $itemId, ')
+          ..write('playlistId: $playlistId, ')
+          ..write('trackId: $trackId, ')
+          ..write('position: $position')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(itemId, playlistId, trackId, position);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CloudPlaylistItemTableData &&
+          other.itemId == this.itemId &&
+          other.playlistId == this.playlistId &&
+          other.trackId == this.trackId &&
+          other.position == this.position);
+}
+
+class CloudPlaylistItemTableCompanion
+    extends UpdateCompanion<CloudPlaylistItemTableData> {
+  final Value<String> itemId;
+  final Value<String> playlistId;
+  final Value<String> trackId;
+  final Value<int> position;
+  final Value<int> rowid;
+  const CloudPlaylistItemTableCompanion({
+    this.itemId = const Value.absent(),
+    this.playlistId = const Value.absent(),
+    this.trackId = const Value.absent(),
+    this.position = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CloudPlaylistItemTableCompanion.insert({
+    required String itemId,
+    required String playlistId,
+    required String trackId,
+    required int position,
+    this.rowid = const Value.absent(),
+  }) : itemId = Value(itemId),
+       playlistId = Value(playlistId),
+       trackId = Value(trackId),
+       position = Value(position);
+  static Insertable<CloudPlaylistItemTableData> custom({
+    Expression<String>? itemId,
+    Expression<String>? playlistId,
+    Expression<String>? trackId,
+    Expression<int>? position,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (itemId != null) 'item_id': itemId,
+      if (playlistId != null) 'playlist_id': playlistId,
+      if (trackId != null) 'track_id': trackId,
+      if (position != null) 'position': position,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CloudPlaylistItemTableCompanion copyWith({
+    Value<String>? itemId,
+    Value<String>? playlistId,
+    Value<String>? trackId,
+    Value<int>? position,
+    Value<int>? rowid,
+  }) {
+    return CloudPlaylistItemTableCompanion(
+      itemId: itemId ?? this.itemId,
+      playlistId: playlistId ?? this.playlistId,
+      trackId: trackId ?? this.trackId,
+      position: position ?? this.position,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (itemId.present) {
+      map['item_id'] = Variable<String>(itemId.value);
+    }
+    if (playlistId.present) {
+      map['playlist_id'] = Variable<String>(playlistId.value);
+    }
+    if (trackId.present) {
+      map['track_id'] = Variable<String>(trackId.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CloudPlaylistItemTableCompanion(')
+          ..write('itemId: $itemId, ')
+          ..write('playlistId: $playlistId, ')
+          ..write('trackId: $trackId, ')
+          ..write('position: $position, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CloudUploadTableTable extends CloudUploadTable
+    with TableInfo<$CloudUploadTableTable, CloudUploadTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CloudUploadTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _trackIdMeta = const VerificationMeta(
+    'trackId',
+  );
+  @override
+  late final GeneratedColumn<String> trackId = GeneratedColumn<String>(
+    'track_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _idempotencyKeyMeta = const VerificationMeta(
+    'idempotencyKey',
+  );
+  @override
+  late final GeneratedColumn<String> idempotencyKey = GeneratedColumn<String>(
+    'idempotency_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _audioPathMeta = const VerificationMeta(
+    'audioPath',
+  );
+  @override
+  late final GeneratedColumn<String> audioPath = GeneratedColumn<String>(
+    'audio_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _artworkPathMeta = const VerificationMeta(
+    'artworkPath',
+  );
+  @override
+  late final GeneratedColumn<String> artworkPath = GeneratedColumn<String>(
+    'artwork_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _manifestJsonMeta = const VerificationMeta(
+    'manifestJson',
+  );
+  @override
+  late final GeneratedColumn<String> manifestJson = GeneratedColumn<String>(
+    'manifest_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sourceTrackIdMeta = const VerificationMeta(
+    'sourceTrackId',
+  );
+  @override
+  late final GeneratedColumn<String> sourceTrackId = GeneratedColumn<String>(
+    'source_track_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _contentIdentityMeta = const VerificationMeta(
+    'contentIdentity',
+  );
+  @override
+  late final GeneratedColumn<String> contentIdentity = GeneratedColumn<String>(
+    'content_identity',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _errorCodeMeta = const VerificationMeta(
+    'errorCode',
+  );
+  @override
+  late final GeneratedColumn<String> errorCode = GeneratedColumn<String>(
+    'error_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _errorMessageMeta = const VerificationMeta(
+    'errorMessage',
+  );
+  @override
+  late final GeneratedColumn<String> errorMessage = GeneratedColumn<String>(
+    'error_message',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _attemptsMeta = const VerificationMeta(
+    'attempts',
+  );
+  @override
+  late final GeneratedColumn<int> attempts = GeneratedColumn<int>(
+    'attempts',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    trackId,
+    idempotencyKey,
+    audioPath,
+    artworkPath,
+    manifestJson,
+    sourceTrackId,
+    contentIdentity,
+    status,
+    errorCode,
+    errorMessage,
+    attempts,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'cloud_upload_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CloudUploadTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('track_id')) {
+      context.handle(
+        _trackIdMeta,
+        trackId.isAcceptableOrUnknown(data['track_id']!, _trackIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_trackIdMeta);
+    }
+    if (data.containsKey('idempotency_key')) {
+      context.handle(
+        _idempotencyKeyMeta,
+        idempotencyKey.isAcceptableOrUnknown(
+          data['idempotency_key']!,
+          _idempotencyKeyMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_idempotencyKeyMeta);
+    }
+    if (data.containsKey('audio_path')) {
+      context.handle(
+        _audioPathMeta,
+        audioPath.isAcceptableOrUnknown(data['audio_path']!, _audioPathMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_audioPathMeta);
+    }
+    if (data.containsKey('artwork_path')) {
+      context.handle(
+        _artworkPathMeta,
+        artworkPath.isAcceptableOrUnknown(
+          data['artwork_path']!,
+          _artworkPathMeta,
+        ),
+      );
+    }
+    if (data.containsKey('manifest_json')) {
+      context.handle(
+        _manifestJsonMeta,
+        manifestJson.isAcceptableOrUnknown(
+          data['manifest_json']!,
+          _manifestJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_manifestJsonMeta);
+    }
+    if (data.containsKey('source_track_id')) {
+      context.handle(
+        _sourceTrackIdMeta,
+        sourceTrackId.isAcceptableOrUnknown(
+          data['source_track_id']!,
+          _sourceTrackIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('content_identity')) {
+      context.handle(
+        _contentIdentityMeta,
+        contentIdentity.isAcceptableOrUnknown(
+          data['content_identity']!,
+          _contentIdentityMeta,
+        ),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('error_code')) {
+      context.handle(
+        _errorCodeMeta,
+        errorCode.isAcceptableOrUnknown(data['error_code']!, _errorCodeMeta),
+      );
+    }
+    if (data.containsKey('error_message')) {
+      context.handle(
+        _errorMessageMeta,
+        errorMessage.isAcceptableOrUnknown(
+          data['error_message']!,
+          _errorMessageMeta,
+        ),
+      );
+    }
+    if (data.containsKey('attempts')) {
+      context.handle(
+        _attemptsMeta,
+        attempts.isAcceptableOrUnknown(data['attempts']!, _attemptsMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CloudUploadTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CloudUploadTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      trackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}track_id'],
+      )!,
+      idempotencyKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}idempotency_key'],
+      )!,
+      audioPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}audio_path'],
+      )!,
+      artworkPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}artwork_path'],
+      ),
+      manifestJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}manifest_json'],
+      )!,
+      sourceTrackId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_track_id'],
+      ),
+      contentIdentity: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}content_identity'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      errorCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}error_code'],
+      ),
+      errorMessage: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}error_message'],
+      ),
+      attempts: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}attempts'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CloudUploadTableTable createAlias(String alias) {
+    return $CloudUploadTableTable(attachedDatabase, alias);
+  }
+}
+
+class CloudUploadTableData extends DataClass
+    implements Insertable<CloudUploadTableData> {
+  final String id;
+  final String trackId;
+  final String idempotencyKey;
+  final String audioPath;
+  final String? artworkPath;
+  final String manifestJson;
+
+  /// Local-only track being migrated to the cloud, if any.
+  final String? sourceTrackId;
+
+  /// Content identity of the uploaded file, kept for duplicate warnings.
+  final String? contentIdentity;
+
+  /// pending | succeeded | failed
+  final String status;
+  final String? errorCode;
+  final String? errorMessage;
+  final int attempts;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const CloudUploadTableData({
+    required this.id,
+    required this.trackId,
+    required this.idempotencyKey,
+    required this.audioPath,
+    this.artworkPath,
+    required this.manifestJson,
+    this.sourceTrackId,
+    this.contentIdentity,
+    required this.status,
+    this.errorCode,
+    this.errorMessage,
+    required this.attempts,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['track_id'] = Variable<String>(trackId);
+    map['idempotency_key'] = Variable<String>(idempotencyKey);
+    map['audio_path'] = Variable<String>(audioPath);
+    if (!nullToAbsent || artworkPath != null) {
+      map['artwork_path'] = Variable<String>(artworkPath);
+    }
+    map['manifest_json'] = Variable<String>(manifestJson);
+    if (!nullToAbsent || sourceTrackId != null) {
+      map['source_track_id'] = Variable<String>(sourceTrackId);
+    }
+    if (!nullToAbsent || contentIdentity != null) {
+      map['content_identity'] = Variable<String>(contentIdentity);
+    }
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || errorCode != null) {
+      map['error_code'] = Variable<String>(errorCode);
+    }
+    if (!nullToAbsent || errorMessage != null) {
+      map['error_message'] = Variable<String>(errorMessage);
+    }
+    map['attempts'] = Variable<int>(attempts);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  CloudUploadTableCompanion toCompanion(bool nullToAbsent) {
+    return CloudUploadTableCompanion(
+      id: Value(id),
+      trackId: Value(trackId),
+      idempotencyKey: Value(idempotencyKey),
+      audioPath: Value(audioPath),
+      artworkPath: artworkPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(artworkPath),
+      manifestJson: Value(manifestJson),
+      sourceTrackId: sourceTrackId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceTrackId),
+      contentIdentity: contentIdentity == null && nullToAbsent
+          ? const Value.absent()
+          : Value(contentIdentity),
+      status: Value(status),
+      errorCode: errorCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(errorCode),
+      errorMessage: errorMessage == null && nullToAbsent
+          ? const Value.absent()
+          : Value(errorMessage),
+      attempts: Value(attempts),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory CloudUploadTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CloudUploadTableData(
+      id: serializer.fromJson<String>(json['id']),
+      trackId: serializer.fromJson<String>(json['trackId']),
+      idempotencyKey: serializer.fromJson<String>(json['idempotencyKey']),
+      audioPath: serializer.fromJson<String>(json['audioPath']),
+      artworkPath: serializer.fromJson<String?>(json['artworkPath']),
+      manifestJson: serializer.fromJson<String>(json['manifestJson']),
+      sourceTrackId: serializer.fromJson<String?>(json['sourceTrackId']),
+      contentIdentity: serializer.fromJson<String?>(json['contentIdentity']),
+      status: serializer.fromJson<String>(json['status']),
+      errorCode: serializer.fromJson<String?>(json['errorCode']),
+      errorMessage: serializer.fromJson<String?>(json['errorMessage']),
+      attempts: serializer.fromJson<int>(json['attempts']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'trackId': serializer.toJson<String>(trackId),
+      'idempotencyKey': serializer.toJson<String>(idempotencyKey),
+      'audioPath': serializer.toJson<String>(audioPath),
+      'artworkPath': serializer.toJson<String?>(artworkPath),
+      'manifestJson': serializer.toJson<String>(manifestJson),
+      'sourceTrackId': serializer.toJson<String?>(sourceTrackId),
+      'contentIdentity': serializer.toJson<String?>(contentIdentity),
+      'status': serializer.toJson<String>(status),
+      'errorCode': serializer.toJson<String?>(errorCode),
+      'errorMessage': serializer.toJson<String?>(errorMessage),
+      'attempts': serializer.toJson<int>(attempts),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  CloudUploadTableData copyWith({
+    String? id,
+    String? trackId,
+    String? idempotencyKey,
+    String? audioPath,
+    Value<String?> artworkPath = const Value.absent(),
+    String? manifestJson,
+    Value<String?> sourceTrackId = const Value.absent(),
+    Value<String?> contentIdentity = const Value.absent(),
+    String? status,
+    Value<String?> errorCode = const Value.absent(),
+    Value<String?> errorMessage = const Value.absent(),
+    int? attempts,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => CloudUploadTableData(
+    id: id ?? this.id,
+    trackId: trackId ?? this.trackId,
+    idempotencyKey: idempotencyKey ?? this.idempotencyKey,
+    audioPath: audioPath ?? this.audioPath,
+    artworkPath: artworkPath.present ? artworkPath.value : this.artworkPath,
+    manifestJson: manifestJson ?? this.manifestJson,
+    sourceTrackId: sourceTrackId.present
+        ? sourceTrackId.value
+        : this.sourceTrackId,
+    contentIdentity: contentIdentity.present
+        ? contentIdentity.value
+        : this.contentIdentity,
+    status: status ?? this.status,
+    errorCode: errorCode.present ? errorCode.value : this.errorCode,
+    errorMessage: errorMessage.present ? errorMessage.value : this.errorMessage,
+    attempts: attempts ?? this.attempts,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  CloudUploadTableData copyWithCompanion(CloudUploadTableCompanion data) {
+    return CloudUploadTableData(
+      id: data.id.present ? data.id.value : this.id,
+      trackId: data.trackId.present ? data.trackId.value : this.trackId,
+      idempotencyKey: data.idempotencyKey.present
+          ? data.idempotencyKey.value
+          : this.idempotencyKey,
+      audioPath: data.audioPath.present ? data.audioPath.value : this.audioPath,
+      artworkPath: data.artworkPath.present
+          ? data.artworkPath.value
+          : this.artworkPath,
+      manifestJson: data.manifestJson.present
+          ? data.manifestJson.value
+          : this.manifestJson,
+      sourceTrackId: data.sourceTrackId.present
+          ? data.sourceTrackId.value
+          : this.sourceTrackId,
+      contentIdentity: data.contentIdentity.present
+          ? data.contentIdentity.value
+          : this.contentIdentity,
+      status: data.status.present ? data.status.value : this.status,
+      errorCode: data.errorCode.present ? data.errorCode.value : this.errorCode,
+      errorMessage: data.errorMessage.present
+          ? data.errorMessage.value
+          : this.errorMessage,
+      attempts: data.attempts.present ? data.attempts.value : this.attempts,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CloudUploadTableData(')
+          ..write('id: $id, ')
+          ..write('trackId: $trackId, ')
+          ..write('idempotencyKey: $idempotencyKey, ')
+          ..write('audioPath: $audioPath, ')
+          ..write('artworkPath: $artworkPath, ')
+          ..write('manifestJson: $manifestJson, ')
+          ..write('sourceTrackId: $sourceTrackId, ')
+          ..write('contentIdentity: $contentIdentity, ')
+          ..write('status: $status, ')
+          ..write('errorCode: $errorCode, ')
+          ..write('errorMessage: $errorMessage, ')
+          ..write('attempts: $attempts, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    trackId,
+    idempotencyKey,
+    audioPath,
+    artworkPath,
+    manifestJson,
+    sourceTrackId,
+    contentIdentity,
+    status,
+    errorCode,
+    errorMessage,
+    attempts,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CloudUploadTableData &&
+          other.id == this.id &&
+          other.trackId == this.trackId &&
+          other.idempotencyKey == this.idempotencyKey &&
+          other.audioPath == this.audioPath &&
+          other.artworkPath == this.artworkPath &&
+          other.manifestJson == this.manifestJson &&
+          other.sourceTrackId == this.sourceTrackId &&
+          other.contentIdentity == this.contentIdentity &&
+          other.status == this.status &&
+          other.errorCode == this.errorCode &&
+          other.errorMessage == this.errorMessage &&
+          other.attempts == this.attempts &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class CloudUploadTableCompanion extends UpdateCompanion<CloudUploadTableData> {
+  final Value<String> id;
+  final Value<String> trackId;
+  final Value<String> idempotencyKey;
+  final Value<String> audioPath;
+  final Value<String?> artworkPath;
+  final Value<String> manifestJson;
+  final Value<String?> sourceTrackId;
+  final Value<String?> contentIdentity;
+  final Value<String> status;
+  final Value<String?> errorCode;
+  final Value<String?> errorMessage;
+  final Value<int> attempts;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const CloudUploadTableCompanion({
+    this.id = const Value.absent(),
+    this.trackId = const Value.absent(),
+    this.idempotencyKey = const Value.absent(),
+    this.audioPath = const Value.absent(),
+    this.artworkPath = const Value.absent(),
+    this.manifestJson = const Value.absent(),
+    this.sourceTrackId = const Value.absent(),
+    this.contentIdentity = const Value.absent(),
+    this.status = const Value.absent(),
+    this.errorCode = const Value.absent(),
+    this.errorMessage = const Value.absent(),
+    this.attempts = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  CloudUploadTableCompanion.insert({
+    required String id,
+    required String trackId,
+    required String idempotencyKey,
+    required String audioPath,
+    this.artworkPath = const Value.absent(),
+    required String manifestJson,
+    this.sourceTrackId = const Value.absent(),
+    this.contentIdentity = const Value.absent(),
+    required String status,
+    this.errorCode = const Value.absent(),
+    this.errorMessage = const Value.absent(),
+    this.attempts = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       trackId = Value(trackId),
+       idempotencyKey = Value(idempotencyKey),
+       audioPath = Value(audioPath),
+       manifestJson = Value(manifestJson),
+       status = Value(status),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<CloudUploadTableData> custom({
+    Expression<String>? id,
+    Expression<String>? trackId,
+    Expression<String>? idempotencyKey,
+    Expression<String>? audioPath,
+    Expression<String>? artworkPath,
+    Expression<String>? manifestJson,
+    Expression<String>? sourceTrackId,
+    Expression<String>? contentIdentity,
+    Expression<String>? status,
+    Expression<String>? errorCode,
+    Expression<String>? errorMessage,
+    Expression<int>? attempts,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (trackId != null) 'track_id': trackId,
+      if (idempotencyKey != null) 'idempotency_key': idempotencyKey,
+      if (audioPath != null) 'audio_path': audioPath,
+      if (artworkPath != null) 'artwork_path': artworkPath,
+      if (manifestJson != null) 'manifest_json': manifestJson,
+      if (sourceTrackId != null) 'source_track_id': sourceTrackId,
+      if (contentIdentity != null) 'content_identity': contentIdentity,
+      if (status != null) 'status': status,
+      if (errorCode != null) 'error_code': errorCode,
+      if (errorMessage != null) 'error_message': errorMessage,
+      if (attempts != null) 'attempts': attempts,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  CloudUploadTableCompanion copyWith({
+    Value<String>? id,
+    Value<String>? trackId,
+    Value<String>? idempotencyKey,
+    Value<String>? audioPath,
+    Value<String?>? artworkPath,
+    Value<String>? manifestJson,
+    Value<String?>? sourceTrackId,
+    Value<String?>? contentIdentity,
+    Value<String>? status,
+    Value<String?>? errorCode,
+    Value<String?>? errorMessage,
+    Value<int>? attempts,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return CloudUploadTableCompanion(
+      id: id ?? this.id,
+      trackId: trackId ?? this.trackId,
+      idempotencyKey: idempotencyKey ?? this.idempotencyKey,
+      audioPath: audioPath ?? this.audioPath,
+      artworkPath: artworkPath ?? this.artworkPath,
+      manifestJson: manifestJson ?? this.manifestJson,
+      sourceTrackId: sourceTrackId ?? this.sourceTrackId,
+      contentIdentity: contentIdentity ?? this.contentIdentity,
+      status: status ?? this.status,
+      errorCode: errorCode ?? this.errorCode,
+      errorMessage: errorMessage ?? this.errorMessage,
+      attempts: attempts ?? this.attempts,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (trackId.present) {
+      map['track_id'] = Variable<String>(trackId.value);
+    }
+    if (idempotencyKey.present) {
+      map['idempotency_key'] = Variable<String>(idempotencyKey.value);
+    }
+    if (audioPath.present) {
+      map['audio_path'] = Variable<String>(audioPath.value);
+    }
+    if (artworkPath.present) {
+      map['artwork_path'] = Variable<String>(artworkPath.value);
+    }
+    if (manifestJson.present) {
+      map['manifest_json'] = Variable<String>(manifestJson.value);
+    }
+    if (sourceTrackId.present) {
+      map['source_track_id'] = Variable<String>(sourceTrackId.value);
+    }
+    if (contentIdentity.present) {
+      map['content_identity'] = Variable<String>(contentIdentity.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (errorCode.present) {
+      map['error_code'] = Variable<String>(errorCode.value);
+    }
+    if (errorMessage.present) {
+      map['error_message'] = Variable<String>(errorMessage.value);
+    }
+    if (attempts.present) {
+      map['attempts'] = Variable<int>(attempts.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CloudUploadTableCompanion(')
+          ..write('id: $id, ')
+          ..write('trackId: $trackId, ')
+          ..write('idempotencyKey: $idempotencyKey, ')
+          ..write('audioPath: $audioPath, ')
+          ..write('artworkPath: $artworkPath, ')
+          ..write('manifestJson: $manifestJson, ')
+          ..write('sourceTrackId: $sourceTrackId, ')
+          ..write('contentIdentity: $contentIdentity, ')
+          ..write('status: $status, ')
+          ..write('errorCode: $errorCode, ')
+          ..write('errorMessage: $errorMessage, ')
+          ..write('attempts: $attempts, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -13951,6 +17240,17 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $TrackEmotionSegmentTableTable(this);
   late final $PersonalMoodAdjustmentTableTable personalMoodAdjustmentTable =
       $PersonalMoodAdjustmentTableTable(this);
+  late final $CloudLibraryItemTableTable cloudLibraryItemTable =
+      $CloudLibraryItemTableTable(this);
+  late final $CloudAnalysisTableTable cloudAnalysisTable =
+      $CloudAnalysisTableTable(this);
+  late final $CloudPlaylistTableTable cloudPlaylistTable =
+      $CloudPlaylistTableTable(this);
+  late final $CloudPlaylistItemTableTable cloudPlaylistItemTable =
+      $CloudPlaylistItemTableTable(this);
+  late final $CloudUploadTableTable cloudUploadTable = $CloudUploadTableTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -13981,6 +17281,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     trackEmotionAnalysisTable,
     trackEmotionSegmentTable,
     personalMoodAdjustmentTable,
+    cloudLibraryItemTable,
+    cloudAnalysisTable,
+    cloudPlaylistTable,
+    cloudPlaylistItemTable,
+    cloudUploadTable,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -14142,6 +17447,38 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       ),
       result: [
         TableUpdate('personal_mood_adjustment_table', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'track_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('cloud_library_item_table', kind: UpdateKind.delete),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'track_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('cloud_analysis_table', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'playlist_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('cloud_playlist_table', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'playlist_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('cloud_playlist_item_table', kind: UpdateKind.delete),
       ],
     ),
   ]);
@@ -14468,6 +17805,61 @@ final class $$PlaylistTableTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<
+    $CloudPlaylistTableTable,
+    List<CloudPlaylistTableData>
+  >
+  _cloudPlaylistTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.cloudPlaylistTable,
+        aliasName: $_aliasNameGenerator(
+          db.playlistTable.id,
+          db.cloudPlaylistTable.playlistId,
+        ),
+      );
+
+  $$CloudPlaylistTableTableProcessedTableManager get cloudPlaylistTableRefs {
+    final manager = $$CloudPlaylistTableTableTableManager(
+      $_db,
+      $_db.cloudPlaylistTable,
+    ).filter((f) => f.playlistId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _cloudPlaylistTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $CloudPlaylistItemTableTable,
+    List<CloudPlaylistItemTableData>
+  >
+  _cloudPlaylistItemTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.cloudPlaylistItemTable,
+        aliasName: $_aliasNameGenerator(
+          db.playlistTable.id,
+          db.cloudPlaylistItemTable.playlistId,
+        ),
+      );
+
+  $$CloudPlaylistItemTableTableProcessedTableManager
+  get cloudPlaylistItemTableRefs {
+    final manager = $$CloudPlaylistItemTableTableTableManager(
+      $_db,
+      $_db.cloudPlaylistItemTable,
+    ).filter((f) => f.playlistId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _cloudPlaylistItemTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$PlaylistTableTableFilterComposer
@@ -14531,6 +17923,57 @@ class $$PlaylistTableTableFilterComposer
                 $removeJoinBuilderFromRootComposer,
           ),
     );
+    return f(composer);
+  }
+
+  Expression<bool> cloudPlaylistTableRefs(
+    Expression<bool> Function($$CloudPlaylistTableTableFilterComposer f) f,
+  ) {
+    final $$CloudPlaylistTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.cloudPlaylistTable,
+      getReferencedColumn: (t) => t.playlistId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CloudPlaylistTableTableFilterComposer(
+            $db: $db,
+            $table: $db.cloudPlaylistTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> cloudPlaylistItemTableRefs(
+    Expression<bool> Function($$CloudPlaylistItemTableTableFilterComposer f) f,
+  ) {
+    final $$CloudPlaylistItemTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.cloudPlaylistItemTable,
+          getReferencedColumn: (t) => t.playlistId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CloudPlaylistItemTableTableFilterComposer(
+                $db: $db,
+                $table: $db.cloudPlaylistItemTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
     return f(composer);
   }
 }
@@ -14629,6 +18072,58 @@ class $$PlaylistTableTableAnnotationComposer
         );
     return f(composer);
   }
+
+  Expression<T> cloudPlaylistTableRefs<T extends Object>(
+    Expression<T> Function($$CloudPlaylistTableTableAnnotationComposer a) f,
+  ) {
+    final $$CloudPlaylistTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.cloudPlaylistTable,
+          getReferencedColumn: (t) => t.playlistId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CloudPlaylistTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.cloudPlaylistTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> cloudPlaylistItemTableRefs<T extends Object>(
+    Expression<T> Function($$CloudPlaylistItemTableTableAnnotationComposer a) f,
+  ) {
+    final $$CloudPlaylistItemTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.cloudPlaylistItemTable,
+          getReferencedColumn: (t) => t.playlistId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CloudPlaylistItemTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.cloudPlaylistItemTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$PlaylistTableTableTableManager
@@ -14644,7 +18139,11 @@ class $$PlaylistTableTableTableManager
           $$PlaylistTableTableUpdateCompanionBuilder,
           (PlaylistTableData, $$PlaylistTableTableReferences),
           PlaylistTableData,
-          PrefetchHooks Function({bool playlistTrackTableRefs})
+          PrefetchHooks Function({
+            bool playlistTrackTableRefs,
+            bool cloudPlaylistTableRefs,
+            bool cloudPlaylistItemTableRefs,
+          })
         > {
   $$PlaylistTableTableTableManager(_$AppDatabase db, $PlaylistTableTable table)
     : super(
@@ -14701,38 +18200,89 @@ class $$PlaylistTableTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({playlistTrackTableRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [
-                if (playlistTrackTableRefs) db.playlistTrackTable,
-              ],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (playlistTrackTableRefs)
-                    await $_getPrefetchedData<
-                      PlaylistTableData,
-                      $PlaylistTableTable,
-                      PlaylistTrackTableData
-                    >(
-                      currentTable: table,
-                      referencedTable: $$PlaylistTableTableReferences
-                          ._playlistTrackTableRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$PlaylistTableTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).playlistTrackTableRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.playlistId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({
+                playlistTrackTableRefs = false,
+                cloudPlaylistTableRefs = false,
+                cloudPlaylistItemTableRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (playlistTrackTableRefs) db.playlistTrackTable,
+                    if (cloudPlaylistTableRefs) db.cloudPlaylistTable,
+                    if (cloudPlaylistItemTableRefs) db.cloudPlaylistItemTable,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (playlistTrackTableRefs)
+                        await $_getPrefetchedData<
+                          PlaylistTableData,
+                          $PlaylistTableTable,
+                          PlaylistTrackTableData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$PlaylistTableTableReferences
+                              ._playlistTrackTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$PlaylistTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).playlistTrackTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.playlistId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (cloudPlaylistTableRefs)
+                        await $_getPrefetchedData<
+                          PlaylistTableData,
+                          $PlaylistTableTable,
+                          CloudPlaylistTableData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$PlaylistTableTableReferences
+                              ._cloudPlaylistTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$PlaylistTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).cloudPlaylistTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.playlistId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (cloudPlaylistItemTableRefs)
+                        await $_getPrefetchedData<
+                          PlaylistTableData,
+                          $PlaylistTableTable,
+                          CloudPlaylistItemTableData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$PlaylistTableTableReferences
+                              ._cloudPlaylistItemTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$PlaylistTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).cloudPlaylistItemTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.playlistId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -14749,7 +18299,11 @@ typedef $$PlaylistTableTableProcessedTableManager =
       $$PlaylistTableTableUpdateCompanionBuilder,
       (PlaylistTableData, $$PlaylistTableTableReferences),
       PlaylistTableData,
-      PrefetchHooks Function({bool playlistTrackTableRefs})
+      PrefetchHooks Function({
+        bool playlistTrackTableRefs,
+        bool cloudPlaylistTableRefs,
+        bool cloudPlaylistItemTableRefs,
+      })
     >;
 typedef $$TrackTableTableCreateCompanionBuilder =
     TrackTableCompanion Function({
@@ -15173,6 +18727,61 @@ final class $$TrackTableTableReferences
 
     final cache = $_typedResult.readTableOrNull(
       _personalMoodAdjustmentTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $CloudLibraryItemTableTable,
+    List<CloudLibraryItemTableData>
+  >
+  _cloudLibraryItemTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.cloudLibraryItemTable,
+        aliasName: $_aliasNameGenerator(
+          db.trackTable.id,
+          db.cloudLibraryItemTable.trackId,
+        ),
+      );
+
+  $$CloudLibraryItemTableTableProcessedTableManager
+  get cloudLibraryItemTableRefs {
+    final manager = $$CloudLibraryItemTableTableTableManager(
+      $_db,
+      $_db.cloudLibraryItemTable,
+    ).filter((f) => f.trackId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _cloudLibraryItemTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<
+    $CloudAnalysisTableTable,
+    List<CloudAnalysisTableData>
+  >
+  _cloudAnalysisTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.cloudAnalysisTable,
+        aliasName: $_aliasNameGenerator(
+          db.trackTable.id,
+          db.cloudAnalysisTable.trackId,
+        ),
+      );
+
+  $$CloudAnalysisTableTableProcessedTableManager get cloudAnalysisTableRefs {
+    final manager = $$CloudAnalysisTableTableTableManager(
+      $_db,
+      $_db.cloudAnalysisTable,
+    ).filter((f) => f.trackId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _cloudAnalysisTableRefsTable($_db),
     );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
@@ -15636,6 +19245,57 @@ class $$TrackTableTableFilterComposer
                     $removeJoinBuilderFromRootComposer,
               ),
         );
+    return f(composer);
+  }
+
+  Expression<bool> cloudLibraryItemTableRefs(
+    Expression<bool> Function($$CloudLibraryItemTableTableFilterComposer f) f,
+  ) {
+    final $$CloudLibraryItemTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.cloudLibraryItemTable,
+          getReferencedColumn: (t) => t.trackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CloudLibraryItemTableTableFilterComposer(
+                $db: $db,
+                $table: $db.cloudLibraryItemTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<bool> cloudAnalysisTableRefs(
+    Expression<bool> Function($$CloudAnalysisTableTableFilterComposer f) f,
+  ) {
+    final $$CloudAnalysisTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.cloudAnalysisTable,
+      getReferencedColumn: (t) => t.trackId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CloudAnalysisTableTableFilterComposer(
+            $db: $db,
+            $table: $db.cloudAnalysisTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
     return f(composer);
   }
 }
@@ -16181,6 +19841,58 @@ class $$TrackTableTableAnnotationComposer
         );
     return f(composer);
   }
+
+  Expression<T> cloudLibraryItemTableRefs<T extends Object>(
+    Expression<T> Function($$CloudLibraryItemTableTableAnnotationComposer a) f,
+  ) {
+    final $$CloudLibraryItemTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.cloudLibraryItemTable,
+          getReferencedColumn: (t) => t.trackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CloudLibraryItemTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.cloudLibraryItemTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
+
+  Expression<T> cloudAnalysisTableRefs<T extends Object>(
+    Expression<T> Function($$CloudAnalysisTableTableAnnotationComposer a) f,
+  ) {
+    final $$CloudAnalysisTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.cloudAnalysisTable,
+          getReferencedColumn: (t) => t.trackId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$CloudAnalysisTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.cloudAnalysisTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$TrackTableTableTableManager
@@ -16211,6 +19923,8 @@ class $$TrackTableTableTableManager
             bool lyricsResolutionTaskTableRefs,
             bool trackEmotionAnalysisTableRefs,
             bool personalMoodAdjustmentTableRefs,
+            bool cloudLibraryItemTableRefs,
+            bool cloudAnalysisTableRefs,
           })
         > {
   $$TrackTableTableTableManager(_$AppDatabase db, $TrackTableTable table)
@@ -16324,6 +20038,8 @@ class $$TrackTableTableTableManager
                 lyricsResolutionTaskTableRefs = false,
                 trackEmotionAnalysisTableRefs = false,
                 personalMoodAdjustmentTableRefs = false,
+                cloudLibraryItemTableRefs = false,
+                cloudAnalysisTableRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -16348,6 +20064,8 @@ class $$TrackTableTableTableManager
                       db.trackEmotionAnalysisTable,
                     if (personalMoodAdjustmentTableRefs)
                       db.personalMoodAdjustmentTable,
+                    if (cloudLibraryItemTableRefs) db.cloudLibraryItemTable,
+                    if (cloudAnalysisTableRefs) db.cloudAnalysisTable,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -16646,6 +20364,48 @@ class $$TrackTableTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (cloudLibraryItemTableRefs)
+                        await $_getPrefetchedData<
+                          TrackTableData,
+                          $TrackTableTable,
+                          CloudLibraryItemTableData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TrackTableTableReferences
+                              ._cloudLibraryItemTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TrackTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).cloudLibraryItemTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.trackId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (cloudAnalysisTableRefs)
+                        await $_getPrefetchedData<
+                          TrackTableData,
+                          $TrackTableTable,
+                          CloudAnalysisTableData
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TrackTableTableReferences
+                              ._cloudAnalysisTableRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TrackTableTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).cloudAnalysisTableRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.trackId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -16681,6 +20441,8 @@ typedef $$TrackTableTableProcessedTableManager =
         bool lyricsResolutionTaskTableRefs,
         bool trackEmotionAnalysisTableRefs,
         bool personalMoodAdjustmentTableRefs,
+        bool cloudLibraryItemTableRefs,
+        bool cloudAnalysisTableRefs,
       })
     >;
 typedef $$DownloadTaskTableTableCreateCompanionBuilder =
@@ -25581,6 +29343,2125 @@ typedef $$PersonalMoodAdjustmentTableTableProcessedTableManager =
       PersonalMoodAdjustmentTableData,
       PrefetchHooks Function({bool trackId})
     >;
+typedef $$CloudLibraryItemTableTableCreateCompanionBuilder =
+    CloudLibraryItemTableCompanion Function({
+      required String trackId,
+      required String canonicalTitle,
+      Value<String?> canonicalArtistName,
+      Value<String?> canonicalAlbumTitle,
+      Value<String?> albumArtist,
+      Value<int?> trackNumber,
+      Value<int?> discNumber,
+      Value<int?> year,
+      Value<String> genresJson,
+      required int durationMs,
+      required bool hasArtwork,
+      required String analysisStatus,
+      Value<String?> customTitle,
+      Value<String?> customArtistName,
+      Value<String?> customAlbumTitle,
+      Value<bool> favorite,
+      Value<double?> customValence,
+      Value<double?> customArousal,
+      Value<int> playCount,
+      Value<DateTime?> lastPlayedAt,
+      required DateTime addedAt,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$CloudLibraryItemTableTableUpdateCompanionBuilder =
+    CloudLibraryItemTableCompanion Function({
+      Value<String> trackId,
+      Value<String> canonicalTitle,
+      Value<String?> canonicalArtistName,
+      Value<String?> canonicalAlbumTitle,
+      Value<String?> albumArtist,
+      Value<int?> trackNumber,
+      Value<int?> discNumber,
+      Value<int?> year,
+      Value<String> genresJson,
+      Value<int> durationMs,
+      Value<bool> hasArtwork,
+      Value<String> analysisStatus,
+      Value<String?> customTitle,
+      Value<String?> customArtistName,
+      Value<String?> customAlbumTitle,
+      Value<bool> favorite,
+      Value<double?> customValence,
+      Value<double?> customArousal,
+      Value<int> playCount,
+      Value<DateTime?> lastPlayedAt,
+      Value<DateTime> addedAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$CloudLibraryItemTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $CloudLibraryItemTableTable,
+          CloudLibraryItemTableData
+        > {
+  $$CloudLibraryItemTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TrackTableTable _trackIdTable(_$AppDatabase db) =>
+      db.trackTable.createAlias(
+        $_aliasNameGenerator(
+          db.cloudLibraryItemTable.trackId,
+          db.trackTable.id,
+        ),
+      );
+
+  $$TrackTableTableProcessedTableManager get trackId {
+    final $_column = $_itemColumn<String>('track_id')!;
+
+    final manager = $$TrackTableTableTableManager(
+      $_db,
+      $_db.trackTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_trackIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$CloudLibraryItemTableTableFilterComposer
+    extends Composer<_$AppDatabase, $CloudLibraryItemTableTable> {
+  $$CloudLibraryItemTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get canonicalTitle => $composableBuilder(
+    column: $table.canonicalTitle,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get canonicalArtistName => $composableBuilder(
+    column: $table.canonicalArtistName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get canonicalAlbumTitle => $composableBuilder(
+    column: $table.canonicalAlbumTitle,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get albumArtist => $composableBuilder(
+    column: $table.albumArtist,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get trackNumber => $composableBuilder(
+    column: $table.trackNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get discNumber => $composableBuilder(
+    column: $table.discNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get genresJson => $composableBuilder(
+    column: $table.genresJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get hasArtwork => $composableBuilder(
+    column: $table.hasArtwork,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get analysisStatus => $composableBuilder(
+    column: $table.analysisStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get customTitle => $composableBuilder(
+    column: $table.customTitle,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get customArtistName => $composableBuilder(
+    column: $table.customArtistName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get customAlbumTitle => $composableBuilder(
+    column: $table.customAlbumTitle,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get favorite => $composableBuilder(
+    column: $table.favorite,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get customValence => $composableBuilder(
+    column: $table.customValence,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get customArousal => $composableBuilder(
+    column: $table.customArousal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get playCount => $composableBuilder(
+    column: $table.playCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastPlayedAt => $composableBuilder(
+    column: $table.lastPlayedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get addedAt => $composableBuilder(
+    column: $table.addedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TrackTableTableFilterComposer get trackId {
+    final $$TrackTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableFilterComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CloudLibraryItemTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $CloudLibraryItemTableTable> {
+  $$CloudLibraryItemTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get canonicalTitle => $composableBuilder(
+    column: $table.canonicalTitle,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get canonicalArtistName => $composableBuilder(
+    column: $table.canonicalArtistName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get canonicalAlbumTitle => $composableBuilder(
+    column: $table.canonicalAlbumTitle,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get albumArtist => $composableBuilder(
+    column: $table.albumArtist,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get trackNumber => $composableBuilder(
+    column: $table.trackNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get discNumber => $composableBuilder(
+    column: $table.discNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get genresJson => $composableBuilder(
+    column: $table.genresJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get hasArtwork => $composableBuilder(
+    column: $table.hasArtwork,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get analysisStatus => $composableBuilder(
+    column: $table.analysisStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get customTitle => $composableBuilder(
+    column: $table.customTitle,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get customArtistName => $composableBuilder(
+    column: $table.customArtistName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get customAlbumTitle => $composableBuilder(
+    column: $table.customAlbumTitle,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get favorite => $composableBuilder(
+    column: $table.favorite,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get customValence => $composableBuilder(
+    column: $table.customValence,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get customArousal => $composableBuilder(
+    column: $table.customArousal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get playCount => $composableBuilder(
+    column: $table.playCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastPlayedAt => $composableBuilder(
+    column: $table.lastPlayedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get addedAt => $composableBuilder(
+    column: $table.addedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TrackTableTableOrderingComposer get trackId {
+    final $$TrackTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CloudLibraryItemTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CloudLibraryItemTableTable> {
+  $$CloudLibraryItemTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get canonicalTitle => $composableBuilder(
+    column: $table.canonicalTitle,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get canonicalArtistName => $composableBuilder(
+    column: $table.canonicalArtistName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get canonicalAlbumTitle => $composableBuilder(
+    column: $table.canonicalAlbumTitle,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get albumArtist => $composableBuilder(
+    column: $table.albumArtist,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get trackNumber => $composableBuilder(
+    column: $table.trackNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get discNumber => $composableBuilder(
+    column: $table.discNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get year =>
+      $composableBuilder(column: $table.year, builder: (column) => column);
+
+  GeneratedColumn<String> get genresJson => $composableBuilder(
+    column: $table.genresJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get hasArtwork => $composableBuilder(
+    column: $table.hasArtwork,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get analysisStatus => $composableBuilder(
+    column: $table.analysisStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get customTitle => $composableBuilder(
+    column: $table.customTitle,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get customArtistName => $composableBuilder(
+    column: $table.customArtistName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get customAlbumTitle => $composableBuilder(
+    column: $table.customAlbumTitle,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get favorite =>
+      $composableBuilder(column: $table.favorite, builder: (column) => column);
+
+  GeneratedColumn<double> get customValence => $composableBuilder(
+    column: $table.customValence,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get customArousal => $composableBuilder(
+    column: $table.customArousal,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get playCount =>
+      $composableBuilder(column: $table.playCount, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastPlayedAt => $composableBuilder(
+    column: $table.lastPlayedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get addedAt =>
+      $composableBuilder(column: $table.addedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$TrackTableTableAnnotationComposer get trackId {
+    final $$TrackTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CloudLibraryItemTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CloudLibraryItemTableTable,
+          CloudLibraryItemTableData,
+          $$CloudLibraryItemTableTableFilterComposer,
+          $$CloudLibraryItemTableTableOrderingComposer,
+          $$CloudLibraryItemTableTableAnnotationComposer,
+          $$CloudLibraryItemTableTableCreateCompanionBuilder,
+          $$CloudLibraryItemTableTableUpdateCompanionBuilder,
+          (CloudLibraryItemTableData, $$CloudLibraryItemTableTableReferences),
+          CloudLibraryItemTableData,
+          PrefetchHooks Function({bool trackId})
+        > {
+  $$CloudLibraryItemTableTableTableManager(
+    _$AppDatabase db,
+    $CloudLibraryItemTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CloudLibraryItemTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$CloudLibraryItemTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$CloudLibraryItemTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> trackId = const Value.absent(),
+                Value<String> canonicalTitle = const Value.absent(),
+                Value<String?> canonicalArtistName = const Value.absent(),
+                Value<String?> canonicalAlbumTitle = const Value.absent(),
+                Value<String?> albumArtist = const Value.absent(),
+                Value<int?> trackNumber = const Value.absent(),
+                Value<int?> discNumber = const Value.absent(),
+                Value<int?> year = const Value.absent(),
+                Value<String> genresJson = const Value.absent(),
+                Value<int> durationMs = const Value.absent(),
+                Value<bool> hasArtwork = const Value.absent(),
+                Value<String> analysisStatus = const Value.absent(),
+                Value<String?> customTitle = const Value.absent(),
+                Value<String?> customArtistName = const Value.absent(),
+                Value<String?> customAlbumTitle = const Value.absent(),
+                Value<bool> favorite = const Value.absent(),
+                Value<double?> customValence = const Value.absent(),
+                Value<double?> customArousal = const Value.absent(),
+                Value<int> playCount = const Value.absent(),
+                Value<DateTime?> lastPlayedAt = const Value.absent(),
+                Value<DateTime> addedAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CloudLibraryItemTableCompanion(
+                trackId: trackId,
+                canonicalTitle: canonicalTitle,
+                canonicalArtistName: canonicalArtistName,
+                canonicalAlbumTitle: canonicalAlbumTitle,
+                albumArtist: albumArtist,
+                trackNumber: trackNumber,
+                discNumber: discNumber,
+                year: year,
+                genresJson: genresJson,
+                durationMs: durationMs,
+                hasArtwork: hasArtwork,
+                analysisStatus: analysisStatus,
+                customTitle: customTitle,
+                customArtistName: customArtistName,
+                customAlbumTitle: customAlbumTitle,
+                favorite: favorite,
+                customValence: customValence,
+                customArousal: customArousal,
+                playCount: playCount,
+                lastPlayedAt: lastPlayedAt,
+                addedAt: addedAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String trackId,
+                required String canonicalTitle,
+                Value<String?> canonicalArtistName = const Value.absent(),
+                Value<String?> canonicalAlbumTitle = const Value.absent(),
+                Value<String?> albumArtist = const Value.absent(),
+                Value<int?> trackNumber = const Value.absent(),
+                Value<int?> discNumber = const Value.absent(),
+                Value<int?> year = const Value.absent(),
+                Value<String> genresJson = const Value.absent(),
+                required int durationMs,
+                required bool hasArtwork,
+                required String analysisStatus,
+                Value<String?> customTitle = const Value.absent(),
+                Value<String?> customArtistName = const Value.absent(),
+                Value<String?> customAlbumTitle = const Value.absent(),
+                Value<bool> favorite = const Value.absent(),
+                Value<double?> customValence = const Value.absent(),
+                Value<double?> customArousal = const Value.absent(),
+                Value<int> playCount = const Value.absent(),
+                Value<DateTime?> lastPlayedAt = const Value.absent(),
+                required DateTime addedAt,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => CloudLibraryItemTableCompanion.insert(
+                trackId: trackId,
+                canonicalTitle: canonicalTitle,
+                canonicalArtistName: canonicalArtistName,
+                canonicalAlbumTitle: canonicalAlbumTitle,
+                albumArtist: albumArtist,
+                trackNumber: trackNumber,
+                discNumber: discNumber,
+                year: year,
+                genresJson: genresJson,
+                durationMs: durationMs,
+                hasArtwork: hasArtwork,
+                analysisStatus: analysisStatus,
+                customTitle: customTitle,
+                customArtistName: customArtistName,
+                customAlbumTitle: customAlbumTitle,
+                favorite: favorite,
+                customValence: customValence,
+                customArousal: customArousal,
+                playCount: playCount,
+                lastPlayedAt: lastPlayedAt,
+                addedAt: addedAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$CloudLibraryItemTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({trackId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (trackId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.trackId,
+                                referencedTable:
+                                    $$CloudLibraryItemTableTableReferences
+                                        ._trackIdTable(db),
+                                referencedColumn:
+                                    $$CloudLibraryItemTableTableReferences
+                                        ._trackIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CloudLibraryItemTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CloudLibraryItemTableTable,
+      CloudLibraryItemTableData,
+      $$CloudLibraryItemTableTableFilterComposer,
+      $$CloudLibraryItemTableTableOrderingComposer,
+      $$CloudLibraryItemTableTableAnnotationComposer,
+      $$CloudLibraryItemTableTableCreateCompanionBuilder,
+      $$CloudLibraryItemTableTableUpdateCompanionBuilder,
+      (CloudLibraryItemTableData, $$CloudLibraryItemTableTableReferences),
+      CloudLibraryItemTableData,
+      PrefetchHooks Function({bool trackId})
+    >;
+typedef $$CloudAnalysisTableTableCreateCompanionBuilder =
+    CloudAnalysisTableCompanion Function({
+      required String trackId,
+      required int analysisVersion,
+      required String embeddingModel,
+      required String embeddingVersion,
+      required int embeddingDimension,
+      required String emotionVersion,
+      required double valence,
+      required double arousal,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$CloudAnalysisTableTableUpdateCompanionBuilder =
+    CloudAnalysisTableCompanion Function({
+      Value<String> trackId,
+      Value<int> analysisVersion,
+      Value<String> embeddingModel,
+      Value<String> embeddingVersion,
+      Value<int> embeddingDimension,
+      Value<String> emotionVersion,
+      Value<double> valence,
+      Value<double> arousal,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$CloudAnalysisTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $CloudAnalysisTableTable,
+          CloudAnalysisTableData
+        > {
+  $$CloudAnalysisTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TrackTableTable _trackIdTable(_$AppDatabase db) =>
+      db.trackTable.createAlias(
+        $_aliasNameGenerator(db.cloudAnalysisTable.trackId, db.trackTable.id),
+      );
+
+  $$TrackTableTableProcessedTableManager get trackId {
+    final $_column = $_itemColumn<String>('track_id')!;
+
+    final manager = $$TrackTableTableTableManager(
+      $_db,
+      $_db.trackTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_trackIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$CloudAnalysisTableTableFilterComposer
+    extends Composer<_$AppDatabase, $CloudAnalysisTableTable> {
+  $$CloudAnalysisTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get analysisVersion => $composableBuilder(
+    column: $table.analysisVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get embeddingModel => $composableBuilder(
+    column: $table.embeddingModel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get embeddingVersion => $composableBuilder(
+    column: $table.embeddingVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get embeddingDimension => $composableBuilder(
+    column: $table.embeddingDimension,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get emotionVersion => $composableBuilder(
+    column: $table.emotionVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get valence => $composableBuilder(
+    column: $table.valence,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get arousal => $composableBuilder(
+    column: $table.arousal,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TrackTableTableFilterComposer get trackId {
+    final $$TrackTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableFilterComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CloudAnalysisTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $CloudAnalysisTableTable> {
+  $$CloudAnalysisTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get analysisVersion => $composableBuilder(
+    column: $table.analysisVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get embeddingModel => $composableBuilder(
+    column: $table.embeddingModel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get embeddingVersion => $composableBuilder(
+    column: $table.embeddingVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get embeddingDimension => $composableBuilder(
+    column: $table.embeddingDimension,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get emotionVersion => $composableBuilder(
+    column: $table.emotionVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get valence => $composableBuilder(
+    column: $table.valence,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get arousal => $composableBuilder(
+    column: $table.arousal,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TrackTableTableOrderingComposer get trackId {
+    final $$TrackTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CloudAnalysisTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CloudAnalysisTableTable> {
+  $$CloudAnalysisTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get analysisVersion => $composableBuilder(
+    column: $table.analysisVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get embeddingModel => $composableBuilder(
+    column: $table.embeddingModel,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get embeddingVersion => $composableBuilder(
+    column: $table.embeddingVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get embeddingDimension => $composableBuilder(
+    column: $table.embeddingDimension,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get emotionVersion => $composableBuilder(
+    column: $table.emotionVersion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get valence =>
+      $composableBuilder(column: $table.valence, builder: (column) => column);
+
+  GeneratedColumn<double> get arousal =>
+      $composableBuilder(column: $table.arousal, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$TrackTableTableAnnotationComposer get trackId {
+    final $$TrackTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackId,
+      referencedTable: $db.trackTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.trackTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CloudAnalysisTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CloudAnalysisTableTable,
+          CloudAnalysisTableData,
+          $$CloudAnalysisTableTableFilterComposer,
+          $$CloudAnalysisTableTableOrderingComposer,
+          $$CloudAnalysisTableTableAnnotationComposer,
+          $$CloudAnalysisTableTableCreateCompanionBuilder,
+          $$CloudAnalysisTableTableUpdateCompanionBuilder,
+          (CloudAnalysisTableData, $$CloudAnalysisTableTableReferences),
+          CloudAnalysisTableData,
+          PrefetchHooks Function({bool trackId})
+        > {
+  $$CloudAnalysisTableTableTableManager(
+    _$AppDatabase db,
+    $CloudAnalysisTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CloudAnalysisTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CloudAnalysisTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CloudAnalysisTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> trackId = const Value.absent(),
+                Value<int> analysisVersion = const Value.absent(),
+                Value<String> embeddingModel = const Value.absent(),
+                Value<String> embeddingVersion = const Value.absent(),
+                Value<int> embeddingDimension = const Value.absent(),
+                Value<String> emotionVersion = const Value.absent(),
+                Value<double> valence = const Value.absent(),
+                Value<double> arousal = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CloudAnalysisTableCompanion(
+                trackId: trackId,
+                analysisVersion: analysisVersion,
+                embeddingModel: embeddingModel,
+                embeddingVersion: embeddingVersion,
+                embeddingDimension: embeddingDimension,
+                emotionVersion: emotionVersion,
+                valence: valence,
+                arousal: arousal,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String trackId,
+                required int analysisVersion,
+                required String embeddingModel,
+                required String embeddingVersion,
+                required int embeddingDimension,
+                required String emotionVersion,
+                required double valence,
+                required double arousal,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => CloudAnalysisTableCompanion.insert(
+                trackId: trackId,
+                analysisVersion: analysisVersion,
+                embeddingModel: embeddingModel,
+                embeddingVersion: embeddingVersion,
+                embeddingDimension: embeddingDimension,
+                emotionVersion: emotionVersion,
+                valence: valence,
+                arousal: arousal,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$CloudAnalysisTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({trackId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (trackId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.trackId,
+                                referencedTable:
+                                    $$CloudAnalysisTableTableReferences
+                                        ._trackIdTable(db),
+                                referencedColumn:
+                                    $$CloudAnalysisTableTableReferences
+                                        ._trackIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CloudAnalysisTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CloudAnalysisTableTable,
+      CloudAnalysisTableData,
+      $$CloudAnalysisTableTableFilterComposer,
+      $$CloudAnalysisTableTableOrderingComposer,
+      $$CloudAnalysisTableTableAnnotationComposer,
+      $$CloudAnalysisTableTableCreateCompanionBuilder,
+      $$CloudAnalysisTableTableUpdateCompanionBuilder,
+      (CloudAnalysisTableData, $$CloudAnalysisTableTableReferences),
+      CloudAnalysisTableData,
+      PrefetchHooks Function({bool trackId})
+    >;
+typedef $$CloudPlaylistTableTableCreateCompanionBuilder =
+    CloudPlaylistTableCompanion Function({
+      required String playlistId,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$CloudPlaylistTableTableUpdateCompanionBuilder =
+    CloudPlaylistTableCompanion Function({
+      Value<String> playlistId,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$CloudPlaylistTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $CloudPlaylistTableTable,
+          CloudPlaylistTableData
+        > {
+  $$CloudPlaylistTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $PlaylistTableTable _playlistIdTable(_$AppDatabase db) =>
+      db.playlistTable.createAlias(
+        $_aliasNameGenerator(
+          db.cloudPlaylistTable.playlistId,
+          db.playlistTable.id,
+        ),
+      );
+
+  $$PlaylistTableTableProcessedTableManager get playlistId {
+    final $_column = $_itemColumn<String>('playlist_id')!;
+
+    final manager = $$PlaylistTableTableTableManager(
+      $_db,
+      $_db.playlistTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_playlistIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$CloudPlaylistTableTableFilterComposer
+    extends Composer<_$AppDatabase, $CloudPlaylistTableTable> {
+  $$CloudPlaylistTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$PlaylistTableTableFilterComposer get playlistId {
+    final $$PlaylistTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.playlistId,
+      referencedTable: $db.playlistTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PlaylistTableTableFilterComposer(
+            $db: $db,
+            $table: $db.playlistTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CloudPlaylistTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $CloudPlaylistTableTable> {
+  $$CloudPlaylistTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$PlaylistTableTableOrderingComposer get playlistId {
+    final $$PlaylistTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.playlistId,
+      referencedTable: $db.playlistTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PlaylistTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.playlistTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CloudPlaylistTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CloudPlaylistTableTable> {
+  $$CloudPlaylistTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$PlaylistTableTableAnnotationComposer get playlistId {
+    final $$PlaylistTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.playlistId,
+      referencedTable: $db.playlistTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PlaylistTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.playlistTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CloudPlaylistTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CloudPlaylistTableTable,
+          CloudPlaylistTableData,
+          $$CloudPlaylistTableTableFilterComposer,
+          $$CloudPlaylistTableTableOrderingComposer,
+          $$CloudPlaylistTableTableAnnotationComposer,
+          $$CloudPlaylistTableTableCreateCompanionBuilder,
+          $$CloudPlaylistTableTableUpdateCompanionBuilder,
+          (CloudPlaylistTableData, $$CloudPlaylistTableTableReferences),
+          CloudPlaylistTableData,
+          PrefetchHooks Function({bool playlistId})
+        > {
+  $$CloudPlaylistTableTableTableManager(
+    _$AppDatabase db,
+    $CloudPlaylistTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CloudPlaylistTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CloudPlaylistTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CloudPlaylistTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> playlistId = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CloudPlaylistTableCompanion(
+                playlistId: playlistId,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String playlistId,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => CloudPlaylistTableCompanion.insert(
+                playlistId: playlistId,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$CloudPlaylistTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({playlistId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (playlistId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.playlistId,
+                                referencedTable:
+                                    $$CloudPlaylistTableTableReferences
+                                        ._playlistIdTable(db),
+                                referencedColumn:
+                                    $$CloudPlaylistTableTableReferences
+                                        ._playlistIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CloudPlaylistTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CloudPlaylistTableTable,
+      CloudPlaylistTableData,
+      $$CloudPlaylistTableTableFilterComposer,
+      $$CloudPlaylistTableTableOrderingComposer,
+      $$CloudPlaylistTableTableAnnotationComposer,
+      $$CloudPlaylistTableTableCreateCompanionBuilder,
+      $$CloudPlaylistTableTableUpdateCompanionBuilder,
+      (CloudPlaylistTableData, $$CloudPlaylistTableTableReferences),
+      CloudPlaylistTableData,
+      PrefetchHooks Function({bool playlistId})
+    >;
+typedef $$CloudPlaylistItemTableTableCreateCompanionBuilder =
+    CloudPlaylistItemTableCompanion Function({
+      required String itemId,
+      required String playlistId,
+      required String trackId,
+      required int position,
+      Value<int> rowid,
+    });
+typedef $$CloudPlaylistItemTableTableUpdateCompanionBuilder =
+    CloudPlaylistItemTableCompanion Function({
+      Value<String> itemId,
+      Value<String> playlistId,
+      Value<String> trackId,
+      Value<int> position,
+      Value<int> rowid,
+    });
+
+final class $$CloudPlaylistItemTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $CloudPlaylistItemTableTable,
+          CloudPlaylistItemTableData
+        > {
+  $$CloudPlaylistItemTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $PlaylistTableTable _playlistIdTable(_$AppDatabase db) =>
+      db.playlistTable.createAlias(
+        $_aliasNameGenerator(
+          db.cloudPlaylistItemTable.playlistId,
+          db.playlistTable.id,
+        ),
+      );
+
+  $$PlaylistTableTableProcessedTableManager get playlistId {
+    final $_column = $_itemColumn<String>('playlist_id')!;
+
+    final manager = $$PlaylistTableTableTableManager(
+      $_db,
+      $_db.playlistTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_playlistIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$CloudPlaylistItemTableTableFilterComposer
+    extends Composer<_$AppDatabase, $CloudPlaylistItemTableTable> {
+  $$CloudPlaylistItemTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get itemId => $composableBuilder(
+    column: $table.itemId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get trackId => $composableBuilder(
+    column: $table.trackId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$PlaylistTableTableFilterComposer get playlistId {
+    final $$PlaylistTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.playlistId,
+      referencedTable: $db.playlistTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PlaylistTableTableFilterComposer(
+            $db: $db,
+            $table: $db.playlistTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CloudPlaylistItemTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $CloudPlaylistItemTableTable> {
+  $$CloudPlaylistItemTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get itemId => $composableBuilder(
+    column: $table.itemId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get trackId => $composableBuilder(
+    column: $table.trackId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get position => $composableBuilder(
+    column: $table.position,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$PlaylistTableTableOrderingComposer get playlistId {
+    final $$PlaylistTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.playlistId,
+      referencedTable: $db.playlistTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PlaylistTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.playlistTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CloudPlaylistItemTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CloudPlaylistItemTableTable> {
+  $$CloudPlaylistItemTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get itemId =>
+      $composableBuilder(column: $table.itemId, builder: (column) => column);
+
+  GeneratedColumn<String> get trackId =>
+      $composableBuilder(column: $table.trackId, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  $$PlaylistTableTableAnnotationComposer get playlistId {
+    final $$PlaylistTableTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.playlistId,
+      referencedTable: $db.playlistTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PlaylistTableTableAnnotationComposer(
+            $db: $db,
+            $table: $db.playlistTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CloudPlaylistItemTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CloudPlaylistItemTableTable,
+          CloudPlaylistItemTableData,
+          $$CloudPlaylistItemTableTableFilterComposer,
+          $$CloudPlaylistItemTableTableOrderingComposer,
+          $$CloudPlaylistItemTableTableAnnotationComposer,
+          $$CloudPlaylistItemTableTableCreateCompanionBuilder,
+          $$CloudPlaylistItemTableTableUpdateCompanionBuilder,
+          (CloudPlaylistItemTableData, $$CloudPlaylistItemTableTableReferences),
+          CloudPlaylistItemTableData,
+          PrefetchHooks Function({bool playlistId})
+        > {
+  $$CloudPlaylistItemTableTableTableManager(
+    _$AppDatabase db,
+    $CloudPlaylistItemTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CloudPlaylistItemTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$CloudPlaylistItemTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$CloudPlaylistItemTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> itemId = const Value.absent(),
+                Value<String> playlistId = const Value.absent(),
+                Value<String> trackId = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CloudPlaylistItemTableCompanion(
+                itemId: itemId,
+                playlistId: playlistId,
+                trackId: trackId,
+                position: position,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String itemId,
+                required String playlistId,
+                required String trackId,
+                required int position,
+                Value<int> rowid = const Value.absent(),
+              }) => CloudPlaylistItemTableCompanion.insert(
+                itemId: itemId,
+                playlistId: playlistId,
+                trackId: trackId,
+                position: position,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$CloudPlaylistItemTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({playlistId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (playlistId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.playlistId,
+                                referencedTable:
+                                    $$CloudPlaylistItemTableTableReferences
+                                        ._playlistIdTable(db),
+                                referencedColumn:
+                                    $$CloudPlaylistItemTableTableReferences
+                                        ._playlistIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CloudPlaylistItemTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CloudPlaylistItemTableTable,
+      CloudPlaylistItemTableData,
+      $$CloudPlaylistItemTableTableFilterComposer,
+      $$CloudPlaylistItemTableTableOrderingComposer,
+      $$CloudPlaylistItemTableTableAnnotationComposer,
+      $$CloudPlaylistItemTableTableCreateCompanionBuilder,
+      $$CloudPlaylistItemTableTableUpdateCompanionBuilder,
+      (CloudPlaylistItemTableData, $$CloudPlaylistItemTableTableReferences),
+      CloudPlaylistItemTableData,
+      PrefetchHooks Function({bool playlistId})
+    >;
+typedef $$CloudUploadTableTableCreateCompanionBuilder =
+    CloudUploadTableCompanion Function({
+      required String id,
+      required String trackId,
+      required String idempotencyKey,
+      required String audioPath,
+      Value<String?> artworkPath,
+      required String manifestJson,
+      Value<String?> sourceTrackId,
+      Value<String?> contentIdentity,
+      required String status,
+      Value<String?> errorCode,
+      Value<String?> errorMessage,
+      Value<int> attempts,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$CloudUploadTableTableUpdateCompanionBuilder =
+    CloudUploadTableCompanion Function({
+      Value<String> id,
+      Value<String> trackId,
+      Value<String> idempotencyKey,
+      Value<String> audioPath,
+      Value<String?> artworkPath,
+      Value<String> manifestJson,
+      Value<String?> sourceTrackId,
+      Value<String?> contentIdentity,
+      Value<String> status,
+      Value<String?> errorCode,
+      Value<String?> errorMessage,
+      Value<int> attempts,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$CloudUploadTableTableFilterComposer
+    extends Composer<_$AppDatabase, $CloudUploadTableTable> {
+  $$CloudUploadTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get trackId => $composableBuilder(
+    column: $table.trackId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get idempotencyKey => $composableBuilder(
+    column: $table.idempotencyKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get audioPath => $composableBuilder(
+    column: $table.audioPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get artworkPath => $composableBuilder(
+    column: $table.artworkPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get manifestJson => $composableBuilder(
+    column: $table.manifestJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceTrackId => $composableBuilder(
+    column: $table.sourceTrackId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get contentIdentity => $composableBuilder(
+    column: $table.contentIdentity,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get errorCode => $composableBuilder(
+    column: $table.errorCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get errorMessage => $composableBuilder(
+    column: $table.errorMessage,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get attempts => $composableBuilder(
+    column: $table.attempts,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CloudUploadTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $CloudUploadTableTable> {
+  $$CloudUploadTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get trackId => $composableBuilder(
+    column: $table.trackId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get idempotencyKey => $composableBuilder(
+    column: $table.idempotencyKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get audioPath => $composableBuilder(
+    column: $table.audioPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get artworkPath => $composableBuilder(
+    column: $table.artworkPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get manifestJson => $composableBuilder(
+    column: $table.manifestJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceTrackId => $composableBuilder(
+    column: $table.sourceTrackId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get contentIdentity => $composableBuilder(
+    column: $table.contentIdentity,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get errorCode => $composableBuilder(
+    column: $table.errorCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get errorMessage => $composableBuilder(
+    column: $table.errorMessage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get attempts => $composableBuilder(
+    column: $table.attempts,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CloudUploadTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CloudUploadTableTable> {
+  $$CloudUploadTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get trackId =>
+      $composableBuilder(column: $table.trackId, builder: (column) => column);
+
+  GeneratedColumn<String> get idempotencyKey => $composableBuilder(
+    column: $table.idempotencyKey,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get audioPath =>
+      $composableBuilder(column: $table.audioPath, builder: (column) => column);
+
+  GeneratedColumn<String> get artworkPath => $composableBuilder(
+    column: $table.artworkPath,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get manifestJson => $composableBuilder(
+    column: $table.manifestJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceTrackId => $composableBuilder(
+    column: $table.sourceTrackId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get contentIdentity => $composableBuilder(
+    column: $table.contentIdentity,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get errorCode =>
+      $composableBuilder(column: $table.errorCode, builder: (column) => column);
+
+  GeneratedColumn<String> get errorMessage => $composableBuilder(
+    column: $table.errorMessage,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get attempts =>
+      $composableBuilder(column: $table.attempts, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$CloudUploadTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CloudUploadTableTable,
+          CloudUploadTableData,
+          $$CloudUploadTableTableFilterComposer,
+          $$CloudUploadTableTableOrderingComposer,
+          $$CloudUploadTableTableAnnotationComposer,
+          $$CloudUploadTableTableCreateCompanionBuilder,
+          $$CloudUploadTableTableUpdateCompanionBuilder,
+          (
+            CloudUploadTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $CloudUploadTableTable,
+              CloudUploadTableData
+            >,
+          ),
+          CloudUploadTableData,
+          PrefetchHooks Function()
+        > {
+  $$CloudUploadTableTableTableManager(
+    _$AppDatabase db,
+    $CloudUploadTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CloudUploadTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CloudUploadTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CloudUploadTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> trackId = const Value.absent(),
+                Value<String> idempotencyKey = const Value.absent(),
+                Value<String> audioPath = const Value.absent(),
+                Value<String?> artworkPath = const Value.absent(),
+                Value<String> manifestJson = const Value.absent(),
+                Value<String?> sourceTrackId = const Value.absent(),
+                Value<String?> contentIdentity = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> errorCode = const Value.absent(),
+                Value<String?> errorMessage = const Value.absent(),
+                Value<int> attempts = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => CloudUploadTableCompanion(
+                id: id,
+                trackId: trackId,
+                idempotencyKey: idempotencyKey,
+                audioPath: audioPath,
+                artworkPath: artworkPath,
+                manifestJson: manifestJson,
+                sourceTrackId: sourceTrackId,
+                contentIdentity: contentIdentity,
+                status: status,
+                errorCode: errorCode,
+                errorMessage: errorMessage,
+                attempts: attempts,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String trackId,
+                required String idempotencyKey,
+                required String audioPath,
+                Value<String?> artworkPath = const Value.absent(),
+                required String manifestJson,
+                Value<String?> sourceTrackId = const Value.absent(),
+                Value<String?> contentIdentity = const Value.absent(),
+                required String status,
+                Value<String?> errorCode = const Value.absent(),
+                Value<String?> errorMessage = const Value.absent(),
+                Value<int> attempts = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => CloudUploadTableCompanion.insert(
+                id: id,
+                trackId: trackId,
+                idempotencyKey: idempotencyKey,
+                audioPath: audioPath,
+                artworkPath: artworkPath,
+                manifestJson: manifestJson,
+                sourceTrackId: sourceTrackId,
+                contentIdentity: contentIdentity,
+                status: status,
+                errorCode: errorCode,
+                errorMessage: errorMessage,
+                attempts: attempts,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CloudUploadTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CloudUploadTableTable,
+      CloudUploadTableData,
+      $$CloudUploadTableTableFilterComposer,
+      $$CloudUploadTableTableOrderingComposer,
+      $$CloudUploadTableTableAnnotationComposer,
+      $$CloudUploadTableTableCreateCompanionBuilder,
+      $$CloudUploadTableTableUpdateCompanionBuilder,
+      (
+        CloudUploadTableData,
+        BaseReferences<
+          _$AppDatabase,
+          $CloudUploadTableTable,
+          CloudUploadTableData
+        >,
+      ),
+      CloudUploadTableData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -25679,4 +31560,17 @@ class $AppDatabaseManager {
         _db,
         _db.personalMoodAdjustmentTable,
       );
+  $$CloudLibraryItemTableTableTableManager get cloudLibraryItemTable =>
+      $$CloudLibraryItemTableTableTableManager(_db, _db.cloudLibraryItemTable);
+  $$CloudAnalysisTableTableTableManager get cloudAnalysisTable =>
+      $$CloudAnalysisTableTableTableManager(_db, _db.cloudAnalysisTable);
+  $$CloudPlaylistTableTableTableManager get cloudPlaylistTable =>
+      $$CloudPlaylistTableTableTableManager(_db, _db.cloudPlaylistTable);
+  $$CloudPlaylistItemTableTableTableManager get cloudPlaylistItemTable =>
+      $$CloudPlaylistItemTableTableTableManager(
+        _db,
+        _db.cloudPlaylistItemTable,
+      );
+  $$CloudUploadTableTableTableManager get cloudUploadTable =>
+      $$CloudUploadTableTableTableManager(_db, _db.cloudUploadTable);
 }

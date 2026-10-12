@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:openmusic/core/errors/failures/failure.dart';
-import 'package:openmusic/layers/domain/entities/download_track_task.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
+import 'package:owlsonic/layers/domain/entities/download_track_task.dart';
 
 class DownloadFailureClassifier {
   const DownloadFailureClassifier._();
@@ -62,6 +62,7 @@ class DownloadFailureClassifier {
       PermissionFailure() => DownloadFailureCodes.filePermission,
       StorageFailure() => DownloadFailureCodes.fileSystem,
       RateLimitFailure() => DownloadFailureCodes.rateLimited,
+      YouTubeFailure(botCheck: true) => DownloadFailureCodes.botCheck,
       UnsupportedSourceFailure() ||
       UnsupportedMediaFailure() => DownloadFailureCodes.unsupported,
       RemoteServiceFailure(:final statusCode) when statusCode == 429 =>
@@ -76,6 +77,7 @@ class DownloadFailureClassifier {
       NotFoundFailure() ||
       ConflictFailure() ||
       TrackNotReadyFailure() ||
+      CloudUploadFailure() ||
       UnknownFailure() => DownloadFailureCodes.unknown,
     };
   }
@@ -85,6 +87,8 @@ class DownloadFailureClassifier {
       DownloadFailureCodes.network => 'Network request failed',
       DownloadFailureCodes.sourceUnavailable => 'Source is unavailable',
       DownloadFailureCodes.rateLimited => 'Source rate limit reached',
+      DownloadFailureCodes.botCheck =>
+        'YouTube asked to confirm it is not a bot',
       DownloadFailureCodes.fileNotFound => 'Source file was not found',
       DownloadFailureCodes.filePermission => 'File permission denied',
       DownloadFailureCodes.fileSystem => 'File system error',

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/models/download_task_dto.dart';
-import 'package:openmusic/layers/data/mappers/download_task_mapper.dart';
-import 'package:openmusic/layers/domain/entities/download_track_task.dart';
+import 'package:owlsonic/layers/data/models/download_task_dto.dart';
+import 'package:owlsonic/layers/data/mappers/download_task_mapper.dart';
+import 'package:owlsonic/layers/domain/entities/download_track_task.dart';
 
 void main() {
   test('DownloadTaskMapper preserves every persisted field', () {

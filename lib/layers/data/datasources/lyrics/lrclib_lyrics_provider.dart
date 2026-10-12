@@ -3,10 +3,10 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 
-import '../../../domain/entities/track_lyrics.dart';
-import '../../../domain/repositories/lyrics_provider.dart';
-import '../../../domain/services/lrc_parser.dart';
-import '../../../domain/services/lyrics_track_matcher.dart';
+import 'package:owlsonic/layers/domain/entities/track_lyrics.dart';
+import 'package:owlsonic/layers/domain/repositories/lyrics_provider.dart';
+import 'package:owlsonic/layers/domain/services/lrc_parser.dart';
+import 'package:owlsonic/layers/domain/services/lyrics_track_matcher.dart';
 
 typedef LyricsProviderDelay = Future<void> Function(Duration duration);
 typedef LyricsProviderClock = DateTime Function();
@@ -38,7 +38,7 @@ class LrclibLyricsProvider implements LyricsProvider {
        _clock = clock ?? DateTime.now;
 
   static const userAgent =
-      'OpenMusic/0.1.0 (https://github.com/openmusic-app/openmusic)';
+      'Owlsonic/0.1.0 (https://github.com/owlsonic-app/owlsonic)';
 
   final Dio _dio;
   final LyricsTrackMatcher _matcher;

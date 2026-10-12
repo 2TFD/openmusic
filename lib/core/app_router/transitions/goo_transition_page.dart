@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:openmusic/core/themes/app_theme.dart';
+import 'package:owlsonic/core/themes/app_theme.dart';
 
 class GooTransitionPage<T> extends CustomTransitionPage<T> {
   GooTransitionPage({required super.child, super.key})

@@ -1,4 +1,4 @@
-import '../entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
 import 'vector_similarity.dart';
 
 class TemporalSimilarityScore {

@@ -1,0 +1,5 @@
+{
+  "OWLSONIC_ENV": "production",
+  "OWLSONIC_API_BASE_URL": "https://api.owlsonic.stream",
+  "SENTRY_ENVIRONMENT": "production"
+}

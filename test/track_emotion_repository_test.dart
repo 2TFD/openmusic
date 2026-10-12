@@ -1,15 +1,14 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/services/music_analysis/music_analysis_model_registry.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/repositories/mood_map_repository_impl.dart';
-import 'package:openmusic/layers/data/repositories/track_emotion_repository_impl.dart';
-import 'package:openmusic/layers/domain/entities/music_analysis.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/entities/track_emotion_analysis.dart';
-import 'package:openmusic/layers/domain/repositories/music_analysis_client.dart';
-import 'package:openmusic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/core/services/music_analysis/music_analysis_model_registry.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/repositories/mood_map_repository_impl.dart';
+import 'package:owlsonic/layers/data/repositories/track_emotion_repository_impl.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/track_emotion_analysis.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
 
 void main() {
   late AppDatabase database;
@@ -51,7 +50,7 @@ INSERT INTO track_table (
     );
 
     expect(global?.valence, 0.25);
-    expect(global?.moodDistribution.scores['bright'], 0.8);
+    expect(global?.moodDistribution?.scores['bright'], 0.8);
     expect(temporal?.segments.single.arousal, 0.4);
     expect(temporal?.summary.numberOfSegments, 1);
   });
@@ -80,13 +79,49 @@ INSERT INTO track_table (
     expect(await lookup(preprocessing: 'pre-2'), isNull);
   });
 
+  test('getAnalyzedTrackIds returns unique track ids', () async {
+    await database.customStatement('''
+INSERT INTO track_table (
+  id, title, path_to_file, source_type, source_uri, audio_revision,
+  content_identity
+) VALUES ('track-2', 'Track 2', 'track2.mp3', 'localFile', 'track2.mp3', 2,
+  'sha256:track2')
+''');
+
+    await emotions.saveGlobal(_global());
+
+    // Create another global for a different track id manually to test uniqueness and correctness
+    final otherGlobal = TrackEmotionAnalysis(
+      id: 'global-2',
+      trackId: 'track-2',
+      representation: MusicAnalysisRepresentation.audioEmotionGlobal.apiName,
+      modelId: 'music2emo',
+      modelVersion: '1',
+      preprocessingVersion: 'pre-1',
+      contentRevision: 'sha256:track',
+      audioRevision: 2,
+      valence: 0.1,
+      arousal: 0.1,
+      rawValence: 0.1,
+      rawArousal: 0.1,
+      moodDistribution: MoodDistribution(const {'bright': 0.8}),
+      analyzedAt: DateTime.utc(2026),
+    );
+    await emotions.saveGlobal(otherGlobal);
+
+    final analyzedIds = await emotions.getAnalyzedTrackIds();
+
+    expect(analyzedIds, containsAll(['track-1', 'track-2']));
+    expect(analyzedIds.length, 2);
+  });
+
   test('personal position overrides model and reset restores it', () async {
     await emotions.saveGlobal(_global());
     final moodMap = MoodMapRepositoryImpl(
       database: database,
       tracks: _Tracks(_track),
       emotions: emotions,
-      registry: MusicAnalysisModelRegistry(_ModelsClient()),
+      registry: MusicAnalysisModelRegistry(models: (_ModelsClient().models)),
     );
 
     await moodMap.savePersonalPosition(
@@ -168,22 +203,9 @@ TrackEmotionTemporalAnalysis _temporal() => TrackEmotionTemporalAnalysis(
   analyzedAt: DateTime.utc(2026),
 );
 
-class _ModelsClient implements MusicAnalysisClient {
-  @override
-  String get baseUrl => 'https://analysis.test';
-
-  @override
-  Future<MusicAnalysisModels> getModels() async =>
+class _ModelsClient {
+  MusicAnalysisModels get models =>
       MusicAnalysisModels(schemaVersion: '2', models: [_model]);
-
-  @override
-  Future<MusicAnalysisResponse> analyze({
-    required String trackId,
-    required String filePath,
-    String? contentIdentity,
-    String? lyrics,
-    required Set<MusicAnalysisRepresentation> requestedRepresentations,
-  }) => throw UnimplementedError();
 }
 
 class _Tracks implements TrackRepository {

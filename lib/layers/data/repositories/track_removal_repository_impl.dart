@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:drift/drift.dart';
-import 'package:openmusic/core/errors/failures/failure.dart';
-import 'package:openmusic/core/utils/app_logger.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/domain/repositories/track_removal_repository.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
+import 'package:owlsonic/core/utils/app_logger.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/domain/repositories/track_removal_repository.dart';
 import 'package:path/path.dart' as path;
 
 class TrackRemovalRepositoryImpl implements TrackRemovalRepository {

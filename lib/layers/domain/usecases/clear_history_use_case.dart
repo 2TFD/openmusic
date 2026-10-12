@@ -1,4 +1,4 @@
-import 'package:openmusic/layers/domain/repositories/listening_summary_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/listening_summary_repository.dart';
 
 class ClearHistoryUseCase {
   final ListeningSummaryRepository _listeningSummaryRepository;

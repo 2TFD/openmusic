@@ -1,19 +1,18 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/services/music_analysis/music_analysis_model_registry.dart';
-import 'package:openmusic/core/services/recommendation/mood_wave_config.dart';
-import 'package:openmusic/core/services/recommendation/mood_wave_engine.dart';
-import 'package:openmusic/layers/domain/entities/mood_map.dart';
-import 'package:openmusic/layers/domain/entities/mood_wave.dart';
-import 'package:openmusic/layers/domain/entities/music_analysis.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/entities/track_embedding.dart';
-import 'package:openmusic/layers/domain/entities/track_emotion_analysis.dart';
-import 'package:openmusic/layers/domain/entities/track_temporal_embedding.dart';
-import 'package:openmusic/layers/domain/repositories/mood_map_repository.dart';
-import 'package:openmusic/layers/domain/repositories/music_analysis_client.dart';
-import 'package:openmusic/layers/domain/repositories/track_embedding_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_temporal_embedding_repository.dart';
+import 'package:owlsonic/core/services/music_analysis/music_analysis_model_registry.dart';
+import 'package:owlsonic/core/services/recommendation/mood_wave_config.dart';
+import 'package:owlsonic/core/services/recommendation/mood_wave_engine.dart';
+import 'package:owlsonic/layers/domain/entities/mood_map.dart';
+import 'package:owlsonic/layers/domain/entities/mood_wave.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/track_embedding.dart';
+import 'package:owlsonic/layers/domain/entities/track_emotion_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/track_temporal_embedding.dart';
+import 'package:owlsonic/layers/domain/repositories/mood_map_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_embedding_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_temporal_embedding_repository.dart';
 
 void main() {
   group('normalization and scoring', () {
@@ -429,13 +428,13 @@ MoodWaveEngine _engine({
   required List<MoodMapTrack> moods,
   List<TrackEmbedding> globals = const [],
   List<TrackTemporalEmbedding> temporals = const [],
-  MusicAnalysisClient models = const _ModelsClient(),
+  _ModelsClient models = const _ModelsClient(),
   MoodWaveConfig config = const MoodWaveConfig(),
 }) => MoodWaveEngine(
   moods: _Moods(moods),
   globalEmbeddings: _Globals(globals),
   temporalEmbeddings: _Temporals(temporals),
-  registry: MusicAnalysisModelRegistry(models),
+  registry: MusicAnalysisModelRegistry(models: models.models),
   config: config,
 );
 
@@ -548,16 +547,12 @@ class _Moods implements MoodMapRepository {
   Stream<void> watchChanges() => const Stream.empty();
 }
 
-class _ModelsClient implements MusicAnalysisClient {
+class _ModelsClient {
   const _ModelsClient({this.global = true, this.temporal = true});
   final bool global;
   final bool temporal;
 
-  @override
-  String get baseUrl => 'https://analysis.example';
-
-  @override
-  Future<MusicAnalysisModels> getModels() async => MusicAnalysisModels(
+  MusicAnalysisModels get models => MusicAnalysisModels(
     schemaVersion: '1',
     models: [
       MusicAnalysisModel(
@@ -586,15 +581,6 @@ class _ModelsClient implements MusicAnalysisClient {
         ),
     ],
   );
-
-  @override
-  Future<MusicAnalysisResponse> analyze({
-    required String trackId,
-    required String filePath,
-    String? contentIdentity,
-    String? lyrics,
-    required Set<MusicAnalysisRepresentation> requestedRepresentations,
-  }) => throw UnimplementedError();
 }
 
 class _Globals implements TrackEmbeddingRepository {

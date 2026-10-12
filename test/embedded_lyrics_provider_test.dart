@@ -1,9 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/datasources/lyrics/embedded_lyrics_metadata_reader.dart';
-import 'package:openmusic/layers/data/datasources/lyrics/embedded_lyrics_provider.dart';
-import 'package:openmusic/layers/domain/repositories/lyrics_provider.dart';
+import 'package:owlsonic/layers/data/datasources/lyrics/embedded_lyrics_metadata_reader.dart';
+import 'package:owlsonic/layers/data/datasources/lyrics/embedded_lyrics_provider.dart';
+import 'package:owlsonic/layers/domain/repositories/lyrics_provider.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   test('returns plain embedded lyrics', () async {
     const provider = EmbeddedLyricsProvider(
       metadataReader: _Reader(

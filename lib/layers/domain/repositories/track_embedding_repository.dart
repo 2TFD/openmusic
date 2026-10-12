@@ -1,4 +1,4 @@
-import '../entities/track_embedding.dart';
+import 'package:owlsonic/layers/domain/entities/track_embedding.dart';
 
 abstract interface class TrackEmbeddingRepository {
   Future<void> save(TrackEmbedding embedding);

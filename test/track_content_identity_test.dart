@@ -1,22 +1,23 @@
+import 'package:owlsonic/core/telemetry/analytics_tracker.dart';
 import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/services/track_identity/sha256_track_content_identity_service.dart';
-import 'package:openmusic/core/services/track_source_resolver.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/datasources/local/playlist/drift/playlist_drift_local_source.dart';
-import 'package:openmusic/layers/data/datasources/local/track/drift/track_drift_local_source.dart';
-import 'package:openmusic/layers/data/repositories/playlist_repository_impl.dart';
-import 'package:openmusic/layers/data/repositories/track_ingestion_repository_impl.dart';
-import 'package:openmusic/layers/data/repositories/track_repository_impl.dart';
-import 'package:openmusic/layers/domain/entities/operation_cancellation.dart';
-import 'package:openmusic/layers/domain/entities/resolved_track_input.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track_preview.dart';
-import 'package:openmusic/layers/domain/repositories/track_source.dart';
-import 'package:openmusic/layers/domain/usecases/add_track_use_case.dart';
+import 'package:owlsonic/core/services/track_identity/sha256_track_content_identity_service.dart';
+import 'package:owlsonic/core/services/track_source_resolver.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/datasources/local/playlist/drift/playlist_drift_local_source.dart';
+import 'package:owlsonic/layers/data/datasources/local/track/drift/track_drift_local_source.dart';
+import 'package:owlsonic/layers/data/repositories/playlist_repository_impl.dart';
+import 'package:owlsonic/layers/data/repositories/track_ingestion_repository_impl.dart';
+import 'package:owlsonic/layers/data/repositories/track_repository_impl.dart';
+import 'package:owlsonic/layers/domain/entities/operation_cancellation.dart';
+import 'package:owlsonic/layers/domain/entities/resolved_track_input.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track_preview.dart';
+import 'package:owlsonic/layers/domain/repositories/track_source.dart';
+import 'package:owlsonic/layers/domain/usecases/add_track_use_case.dart';
 
 void main() {
   const identity = Sha256TrackContentIdentityService();
@@ -79,6 +80,7 @@ void main() {
     final trackLocal = TrackDriftLocalSource(database);
     final tracks = TrackRepositoryImpl(localDataSource: trackLocal);
     final useCase = AddTrackUseCase(
+      analytics: const NoopAnalyticsTracker(),
       trackResolver: TrackSourceResolver([trackSource]),
       trackRepository: tracks,
       ingestionRepository: TrackIngestionRepositoryImpl(

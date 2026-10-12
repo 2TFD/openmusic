@@ -1,5 +1,5 @@
-import 'package:openmusic/layers/data/models/listening_summary_dto.dart';
-import 'package:openmusic/layers/data/models/listening_stats_summary_dto.dart';
+import 'package:owlsonic/layers/data/models/listening_summary_dto.dart';
+import 'package:owlsonic/layers/data/models/listening_stats_summary_dto.dart';
 
 abstract class ListeningSummaryLocalDataSource {
   Future<ListeningStatsSummaryDto> aggregate({required DateTime from});

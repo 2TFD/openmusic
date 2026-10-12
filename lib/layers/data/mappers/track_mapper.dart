@@ -1,7 +1,7 @@
-import '../../domain/entities/artist.dart';
-import '../../domain/entities/source.dart';
-import '../../domain/entities/track.dart';
-import '../models/track_dto.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/data/models/track_dto.dart';
 
 class TrackMapper {
   static Track toEntity(TrackDto dto) {

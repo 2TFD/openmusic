@@ -1,10 +1,11 @@
 import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/errors/failures/failure.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/repositories/track_download_completion_repository_impl.dart';
-import 'package:openmusic/layers/domain/entities/download_track_task.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/repositories/track_download_completion_repository_impl.dart';
+import 'package:owlsonic/layers/domain/entities/download_track_task.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
 
 void main() {
   late AppDatabase database;
@@ -31,6 +32,35 @@ void main() {
     expect((await _track(database, 'track-1'))?.pathToFile, 'track-1.mp3');
     expect(await _download(database, 'track-1'), isNull);
   });
+
+  test(
+    'fallback completion persists the actual audio source atomically',
+    () async {
+      await _insertTrack(database, 'spotify-track');
+      await _insertClaimedDownload(database, 'spotify-track', 'owner-a');
+      const alternate = MediaLocator(
+        type: SourceType.soundcloud,
+        id: '42',
+        url: 'https://soundcloud.com/artist/song',
+      );
+
+      final completed = await repository.completeClaimed(
+        trackId: 'spotify-track',
+        filePath: 'fallback.mp3',
+        ownerId: 'owner-a',
+        media: alternate,
+      );
+
+      final track = await _track(database, 'spotify-track');
+      expect(completed, isTrue);
+      expect(track?.pathToFile, 'fallback.mp3');
+      expect(track?.mediaSourceType, SourceType.soundcloud.name);
+      expect(track?.mediaSourceId, '42');
+      expect(track?.mediaSourceUri, alternate.url);
+      expect(track?.contentIdentity, 'soundcloud:42');
+      expect(await _download(database, 'spotify-track'), isNull);
+    },
+  );
 
   test('wrong owner cannot partially complete a claimed download', () async {
     await _insertTrack(database, 'track-2');

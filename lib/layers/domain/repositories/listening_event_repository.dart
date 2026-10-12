@@ -1,4 +1,4 @@
-import '../entities/listening_event.dart';
+import 'package:owlsonic/layers/domain/entities/listening_event.dart';
 
 abstract interface class ListeningEventRepository {
   Future<void> save(ListeningEvent event);

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
 
 class ListeningSummary extends Equatable {
   final String id;

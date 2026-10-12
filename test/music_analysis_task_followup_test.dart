@@ -1,9 +1,9 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/repositories/music_analysis_task_repository_impl.dart';
-import 'package:openmusic/layers/domain/entities/music_analysis.dart';
-import 'package:openmusic/layers/domain/entities/music_analysis_task.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/repositories/music_analysis_task_repository_impl.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis_task.dart';
 
 void main() {
   test('enqueue while running keeps a distinct follow-up task', () async {

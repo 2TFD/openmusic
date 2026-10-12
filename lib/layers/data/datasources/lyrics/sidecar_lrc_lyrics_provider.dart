@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 
-import '../../../domain/entities/track_lyrics.dart';
-import '../../../domain/repositories/lyrics_provider.dart';
-import '../../../domain/services/lrc_parser.dart';
+import 'package:owlsonic/layers/domain/entities/track_lyrics.dart';
+import 'package:owlsonic/layers/domain/repositories/lyrics_provider.dart';
+import 'package:owlsonic/layers/domain/services/lrc_parser.dart';
 
 abstract interface class SidecarLyricsFileSystem {
   Future<bool> exists(String filePath);

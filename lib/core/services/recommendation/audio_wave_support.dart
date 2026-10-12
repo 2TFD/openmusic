@@ -1,15 +1,15 @@
 import 'dart:math' as math;
 
-import '../../../layers/domain/entities/music_analysis.dart';
-import '../../../layers/domain/entities/track.dart';
-import '../../../layers/domain/entities/track_embedding.dart';
-import '../../../layers/domain/entities/track_temporal_embedding.dart';
-import '../../../layers/domain/repositories/track_embedding_repository.dart';
-import '../../../layers/domain/repositories/track_repository.dart';
-import '../../../layers/domain/repositories/track_temporal_embedding_repository.dart';
-import '../../../layers/domain/services/temporal_dtw_similarity.dart';
-import '../../../layers/domain/services/vector_similarity.dart';
-import '../music_analysis/music_analysis_model_registry.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/track_embedding.dart';
+import 'package:owlsonic/layers/domain/entities/track_temporal_embedding.dart';
+import 'package:owlsonic/layers/domain/repositories/track_embedding_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_temporal_embedding_repository.dart';
+import 'package:owlsonic/layers/domain/services/temporal_dtw_similarity.dart';
+import 'package:owlsonic/layers/domain/services/vector_similarity.dart';
+import 'package:owlsonic/core/services/music_analysis/music_analysis_model_registry.dart';
 
 class AudioWaveLibraryData {
   const AudioWaveLibraryData({

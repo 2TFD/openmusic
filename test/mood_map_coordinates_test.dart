@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/presentation/mood_map/mood_map_geometry.dart';
+import 'package:owlsonic/layers/presentation/features/mood_map/logic/mood_map_geometry.dart';
 
 void main() {
   const size = Size(200, 200);

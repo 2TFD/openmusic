@@ -1,9 +1,9 @@
-import '../../../layers/domain/entities/track.dart';
-import '../../../layers/domain/entities/wave_session.dart';
-import '../../../layers/domain/repositories/track_embedding_repository.dart';
-import '../../../layers/domain/repositories/track_repository.dart';
-import '../../../layers/domain/repositories/track_temporal_embedding_repository.dart';
-import '../music_analysis/music_analysis_model_registry.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/wave_session.dart';
+import 'package:owlsonic/layers/domain/repositories/track_embedding_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_temporal_embedding_repository.dart';
+import 'package:owlsonic/core/services/music_analysis/music_analysis_model_registry.dart';
 import 'artist_wave_config.dart';
 import 'audio_wave_support.dart';
 import 'wave_recommendation_strategy.dart';
@@ -15,7 +15,9 @@ class ArtistWaveEngine implements WaveRecommendationStrategy {
     required TrackTemporalEmbeddingRepository temporalEmbeddings,
     required MusicAnalysisModelRegistry registry,
     required ArtistWaveConfig config,
-  }) : _loader = AudioWaveDataLoader(
+    bool Function(Track track)? isPlayable,
+  }) : _isPlayable = isPlayable ?? isPlayableWaveTrack,
+       _loader = AudioWaveDataLoader(
          tracks: tracks,
          globals: globalEmbeddings,
          temporals: temporalEmbeddings,
@@ -24,6 +26,9 @@ class ArtistWaveEngine implements WaveRecommendationStrategy {
        _config = config;
 
   final AudioWaveDataLoader _loader;
+
+  /// Eligibility filter (e.g. offline-aware); ranking is unaffected.
+  final bool Function(Track track) _isPlayable;
   final ArtistWaveConfig _config;
 
   ArtistWaveConfig get config => _config;
@@ -127,7 +132,7 @@ class ArtistWaveEngine implements WaveRecommendationStrategy {
       for (final track in data.tracks) {
         if (excluded.contains(track.id) ||
             (excludeArtist && artistTrackIds.contains(track.id)) ||
-            !isPlayableWaveTrack(track)) {
+            !_isPlayable(track)) {
           continue;
         }
         final embedding = data.globals[track.id];

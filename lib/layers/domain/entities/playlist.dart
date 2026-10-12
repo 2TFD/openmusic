@@ -11,6 +11,9 @@ class Playlist extends Equatable {
   final String? imageUrl;
   final int revision;
 
+  /// Tracks shown here that are not part of the synced (cloud) playlist yet.
+  final Set<String> unsyncedTrackIds;
+
   const Playlist({
     required this.id,
     required this.name,
@@ -19,6 +22,7 @@ class Playlist extends Equatable {
     this.description,
     this.imageUrl,
     this.revision = 0,
+    this.unsyncedTrackIds = const {},
   });
 
   @override
@@ -30,6 +34,7 @@ class Playlist extends Equatable {
     description,
     imageUrl,
     revision,
+    unsyncedTrackIds,
   ];
 
   Map<String, dynamic> toJson() {
@@ -68,6 +73,7 @@ class Playlist extends Equatable {
     String? description,
     String? imageUrl,
     int? revision,
+    Set<String>? unsyncedTrackIds,
     bool clearDescription = false,
     bool clearImageUrl = false,
   }) {
@@ -79,6 +85,7 @@ class Playlist extends Equatable {
       description: clearDescription ? null : description ?? this.description,
       imageUrl: clearImageUrl ? null : imageUrl ?? this.imageUrl,
       revision: revision ?? this.revision,
+      unsyncedTrackIds: unsyncedTrackIds ?? this.unsyncedTrackIds,
     );
   }
 }

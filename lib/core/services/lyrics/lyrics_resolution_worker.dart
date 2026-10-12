@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import '../../../layers/domain/entities/lyrics_resolution_state.dart';
-import '../../../layers/domain/repositories/lyrics_resolution_task_repository.dart';
-import '../../utils/app_logger.dart';
+import 'package:owlsonic/layers/domain/entities/lyrics_resolution_state.dart';
+import 'package:owlsonic/layers/domain/repositories/lyrics_resolution_task_repository.dart';
+import 'package:owlsonic/core/utils/app_logger.dart';
 import 'lyrics_backfill_service.dart';
 import 'lyrics_config.dart';
 import 'lyrics_resolver.dart';

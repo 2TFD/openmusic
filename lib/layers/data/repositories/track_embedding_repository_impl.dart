@@ -1,9 +1,9 @@
 import 'package:drift/drift.dart';
 
-import '../../domain/entities/track_embedding.dart';
-import '../../domain/repositories/track_embedding_repository.dart';
-import '../converters/float32_vector_codec.dart';
-import '../database/app_database.dart';
+import 'package:owlsonic/layers/domain/entities/track_embedding.dart';
+import 'package:owlsonic/layers/domain/repositories/track_embedding_repository.dart';
+import 'package:owlsonic/layers/data/converters/float32_vector_codec.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
 
 class TrackEmbeddingRepositoryImpl implements TrackEmbeddingRepository {
   TrackEmbeddingRepositoryImpl(this.database);

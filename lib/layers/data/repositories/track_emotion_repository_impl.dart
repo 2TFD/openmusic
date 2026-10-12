@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:drift/drift.dart';
 
-import '../../domain/entities/music_analysis.dart';
-import '../../domain/entities/track_emotion_analysis.dart';
-import '../../domain/repositories/track_emotion_repository.dart';
-import '../database/app_database.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/track_emotion_analysis.dart';
+import 'package:owlsonic/layers/domain/repositories/track_emotion_repository.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
 
 class TrackEmotionRepositoryImpl implements TrackEmotionRepository {
   TrackEmotionRepositoryImpl(this.database);
@@ -31,7 +31,11 @@ class TrackEmotionRepositoryImpl implements TrackEmotionRepository {
             arousal: Value(analysis.arousal),
             rawValence: Value(analysis.rawValence),
             rawArousal: Value(analysis.rawArousal),
-            moodDistributionJson: Value(_encodeMood(analysis.moodDistribution)),
+            moodDistributionJson: Value(
+              analysis.moodDistribution == null
+                  ? null
+                  : _encodeMood(analysis.moodDistribution!),
+            ),
             analyzedAt: analysis.analyzedAt,
           ),
         );
@@ -186,6 +190,16 @@ class TrackEmotionRepositoryImpl implements TrackEmotionRepository {
   }
 
   @override
+  Future<Set<String>> getAnalyzedTrackIds() async {
+    final query = database.selectOnly(database.trackEmotionAnalysisTable)
+      ..addColumns([database.trackEmotionAnalysisTable.trackId]);
+    final rows = await query.get();
+    return rows
+        .map((r) => r.read(database.trackEmotionAnalysisTable.trackId)!)
+        .toSet();
+  }
+
+  @override
   Stream<void> watchChanges() =>
       database.select(database.trackEmotionAnalysisTable).watch().map((_) {});
 
@@ -225,10 +239,9 @@ class TrackEmotionRepositoryImpl implements TrackEmotionRepository {
     arousal: row.arousal!,
     rawValence: row.rawValence,
     rawArousal: row.rawArousal,
-    moodDistribution: _decodeMood(
-      row.moodDistributionJson!,
-      row.moodDistributionVersion,
-    ),
+    moodDistribution: row.moodDistributionJson == null
+        ? null
+        : _decodeMood(row.moodDistributionJson!, row.moodDistributionVersion),
     analyzedAt: row.analyzedAt,
   );
 

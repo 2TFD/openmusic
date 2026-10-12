@@ -1,5 +1,5 @@
-import 'package:openmusic/layers/domain/entities/playlist.dart';
-import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
+import 'package:owlsonic/layers/domain/entities/playlist.dart';
+import 'package:owlsonic/layers/domain/repositories/playlist_repository.dart';
 
 class WatchPlaylistUseCase {
   const WatchPlaylistUseCase(this._repository);

@@ -1,5 +1,5 @@
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/repositories/artist_repository.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/repositories/artist_repository.dart';
 
 class GetArtistTracksUseCase {
   const GetArtistTracksUseCase(this.repository);

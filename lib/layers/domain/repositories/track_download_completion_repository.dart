@@ -1,3 +1,5 @@
+import 'package:owlsonic/layers/domain/entities/source.dart';
+
 abstract class TrackDownloadCompletionRepository {
   Future<void> completeLocal({
     required String trackId,
@@ -10,5 +12,6 @@ abstract class TrackDownloadCompletionRepository {
     required String trackId,
     required String filePath,
     required String ownerId,
+    MediaLocator? media,
   });
 }

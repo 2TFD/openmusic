@@ -130,6 +130,7 @@ abstract class LocaleKeys {
 
   // ── errors ────────────────────────────────────────────────────────────────
   static const errorYoutube = 'errors.youtube';
+  static const errorYoutubeBotCheck = 'errors.youtubeBotCheck';
   static const errorFileNotFound = 'errors.fileNotFound';
   static const errorNoInternet = 'errors.noInternet';
   static const errorUnknown = 'errors.unknown';
@@ -137,6 +138,12 @@ abstract class LocaleKeys {
   static const errorStorage = 'errors.storage';
   static const errorRemoteAccess = 'errors.remoteAccess';
   static const errorRateLimited = 'errors.rateLimited';
+  static const errorUnsupportedLink = 'errors.unsupportedLink';
+  static const errorUnsupportedMedia = 'errors.unsupportedMedia';
+  static const errorUnreadable = 'errors.unreadable';
+  static const errorNotFound = 'errors.notFound';
+  static const errorNoTracks = 'errors.noTracks';
+  static const errorProvider = 'errors.provider';
   static const errorInvalidInput = 'errors.invalidInput';
   static const errorStartup = 'errors.startup';
   static const errorStartupDescription = 'errors.startupDescription';

@@ -1,4 +1,4 @@
-import '../entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
 import 'temporal_aligned_similarity.dart';
 import 'vector_similarity.dart';
 

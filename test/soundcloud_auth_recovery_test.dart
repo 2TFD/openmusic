@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/network/retry_policy.dart';
-import 'package:openmusic/layers/data/datasources/remote/soundcloud_track_source.dart';
-import 'package:openmusic/layers/data/repositories/search_source_impl.dart';
+import 'package:owlsonic/core/network/retry_policy.dart';
+import 'package:owlsonic/layers/data/datasources/remote/soundcloud_track_source.dart';
+import 'package:owlsonic/layers/data/repositories/search_source_impl.dart';
 
 void main() {
   test(

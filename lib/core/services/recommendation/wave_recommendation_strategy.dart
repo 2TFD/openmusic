@@ -1,4 +1,4 @@
-import '../../../layers/domain/entities/wave_session.dart';
+import 'package:owlsonic/layers/domain/entities/wave_session.dart';
 
 abstract interface class WaveRecommendationStrategy {
   WaveSourceType get sourceType;

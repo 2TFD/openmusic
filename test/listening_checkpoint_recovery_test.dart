@@ -1,14 +1,14 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/datasources/local/listening_summary/drift/listening_summary_drift_local_source.dart';
-import 'package:openmusic/layers/data/repositories/listening_checkpoint_repository_impl.dart';
-import 'package:openmusic/layers/data/repositories/listening_summary_repository_impl.dart';
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/usecases/recover_listening_checkpoint_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/save_listening_summary_use_case.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/datasources/local/listening_summary/drift/listening_summary_drift_local_source.dart';
+import 'package:owlsonic/layers/data/repositories/listening_checkpoint_repository_impl.dart';
+import 'package:owlsonic/layers/data/repositories/listening_summary_repository_impl.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/usecases/recover_listening_checkpoint_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/save_listening_summary_use_case.dart';
 
 void main() {
   test('checkpoint keeps maximum duration and recovery is durable', () async {

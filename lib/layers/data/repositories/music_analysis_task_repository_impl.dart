@@ -1,11 +1,11 @@
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../domain/entities/music_analysis.dart';
-import '../../domain/entities/music_analysis_failure.dart';
-import '../../domain/entities/music_analysis_task.dart';
-import '../../domain/repositories/music_analysis_task_repository.dart';
-import '../database/app_database.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis_failure.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis_task.dart';
+import 'package:owlsonic/layers/domain/repositories/music_analysis_task_repository.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
 
 class MusicAnalysisTaskRepositoryImpl implements MusicAnalysisTaskRepository {
   MusicAnalysisTaskRepositoryImpl(this.database);

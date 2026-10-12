@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/domain/usecases/skip_track_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/skip_track_use_case.dart';
 
 void main() {
   const skip = SkipTrackUseCase();

@@ -1,20 +1,24 @@
 import 'package:just_audio/just_audio.dart';
-import 'package:openmusic/core/infrastructure/mappers/track_audio_mapper.dart';
-import 'package:openmusic/core/utils/app_logger.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
+import 'package:owlsonic/core/infrastructure/mappers/track_audio_mapper.dart';
+import 'package:owlsonic/core/services/cloud/cloud_playback_source.dart';
+import 'package:owlsonic/core/utils/app_logger.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/repositories/audio_player_port.dart';
 
 void log(String message) {
   AppLogger.warning(message, operation: 'audio_player.command');
 }
 
 class AudioPlayerService implements AudioPlayerPort {
-  AudioPlayerService({required this.appDir});
+  AudioPlayerService({required this.appDir, this.cloudPlayback});
 
   final String appDir;
+
+  /// Resolves OwlSonic cloud tracks (local file first, then signed URL).
+  final CloudPlaybackSourceSelector? cloudPlayback;
   final AudioPlayer _player = AudioPlayer();
 
-  /// Только для инфраструктуры: [OpenmusicAudioHandler] зеркалит состояние
+  /// Только для инфраструктуры: [OwlsonicAudioHandler] зеркалит состояние
   /// плеера в системную media session и читает то, что домену не нужно
   /// (буфер, скорость, теги источников). Не часть [AudioPlayerPort].
   AudioPlayer get rawPlayer => _player;
@@ -102,6 +106,10 @@ class AudioPlayerService implements AudioPlayerPort {
   }
 
   @override
+  Future<void> setVolume(double volume) =>
+      _player.setVolume(volume.clamp(0.0, 1.0));
+
+  @override
   Future<void> setLoopMode(PlaybackLoopMode mode) async {
     try {
       await _player.setLoopMode(switch (mode) {
@@ -137,7 +145,9 @@ class AudioPlayerService implements AudioPlayerPort {
   }) async {
     try {
       await _player.stop();
-      final sources = tracks.map((t) => t.toAudioSource(appDir)).toList();
+      final sources = tracks
+          .map((t) => t.toAudioSource(appDir, cloud: cloudPlayback))
+          .toList();
 
       await _player.setAudioSources(
         sources,
@@ -157,7 +167,9 @@ class AudioPlayerService implements AudioPlayerPort {
     if (tracks.isEmpty) return;
     try {
       await _player.addAudioSources(
-        tracks.map((track) => track.toAudioSource(appDir)).toList(),
+        tracks
+            .map((track) => track.toAudioSource(appDir, cloud: cloudPlayback))
+            .toList(),
       );
     } catch (e, st) {
       log(

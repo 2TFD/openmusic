@@ -1,8 +1,8 @@
-import 'package:openmusic/core/errors/failures/failure.dart';
-import 'package:openmusic/layers/domain/entities/playlist.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
+import 'package:owlsonic/layers/domain/entities/playlist.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/repositories/playlist_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
 
 class PlaylistWithTracks {
   final Playlist playlist;

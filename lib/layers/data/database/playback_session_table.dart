@@ -1,5 +1,5 @@
 import 'package:drift/drift.dart';
-import 'package:openmusic/layers/data/datasources/local/track/drift/track_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/track/drift/track_table.dart';
 
 class PlaybackSessionTable extends Table {
   TextColumn get id => text()();

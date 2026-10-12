@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
-import 'package:openmusic/layers/data/models/track_dto.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/datasources/local/track/track_local_data_source.dart';
+import 'package:owlsonic/layers/data/models/track_dto.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/datasources/local/track/track_local_data_source.dart';
 
 class TrackDriftLocalSource implements TrackLocalDataSource {
   TrackDriftLocalSource(this.database);

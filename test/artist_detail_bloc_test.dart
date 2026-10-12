@@ -1,14 +1,14 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/datasources/local/artist/drift/artist_drift_local_source.dart';
-import 'package:openmusic/layers/data/datasources/local/track/drift/track_drift_local_source.dart';
-import 'package:openmusic/layers/data/models/track_dto.dart';
-import 'package:openmusic/layers/data/repositories/artist_repository_impl.dart';
-import 'package:openmusic/layers/data/repositories/track_repository_impl.dart';
-import 'package:openmusic/layers/domain/usecases/get_artist_tracks_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/watch_artist_use_case.dart';
-import 'package:openmusic/layers/presentation/blocs/artist_detail/artist_detail_bloc.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/datasources/local/artist/drift/artist_drift_local_source.dart';
+import 'package:owlsonic/layers/data/datasources/local/track/drift/track_drift_local_source.dart';
+import 'package:owlsonic/layers/data/models/track_dto.dart';
+import 'package:owlsonic/layers/data/repositories/artist_repository_impl.dart';
+import 'package:owlsonic/layers/data/repositories/track_repository_impl.dart';
+import 'package:owlsonic/layers/domain/usecases/get_artist_tracks_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/watch_artist_use_case.dart';
+import 'package:owlsonic/layers/presentation/features/artist/bloc/artist_detail/artist_detail_bloc.dart';
 
 void main() {
   test('artist detail reacts to track changes and artist removal', () async {

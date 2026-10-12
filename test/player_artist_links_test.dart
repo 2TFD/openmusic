@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/presentation/screens/player_screen.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/presentation/features/player/ui/player_screen.dart';
 
 void main() {
   testWidgets('each player artist name opens its own artist', (tester) async {

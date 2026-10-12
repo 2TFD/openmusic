@@ -1,8 +1,8 @@
 import 'package:drift/drift.dart';
-import 'package:openmusic/layers/data/models/download_task_dto.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/datasources/local/download_task/download_task_local_data_source.dart';
-import 'package:openmusic/layers/domain/entities/download_track_task.dart';
+import 'package:owlsonic/layers/data/models/download_task_dto.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/datasources/local/download_task/download_task_local_data_source.dart';
+import 'package:owlsonic/layers/domain/entities/download_track_task.dart';
 
 class DownloadTaskDriftLocalSource implements DownloadTaskLocalDataSource {
   final AppDatabase database;
@@ -181,6 +181,29 @@ RETURNING
               ),
             );
     return affected == 1;
+  }
+
+  @override
+  Future<int> requeueFailed({
+    required Set<String> codes,
+    required DateTime failedBefore,
+  }) {
+    if (codes.isEmpty) return Future.value(0);
+    return (database.update(database.downloadTaskTable)..where(
+          (t) =>
+              t.status.equals(DownloadStatus.failed.name) &
+              t.failureCode.isIn(codes) &
+              t.failedAt.isSmallerThanValue(failedBefore),
+        ))
+        .write(
+          DownloadTaskTableCompanion(
+            status: Value(DownloadStatus.queued.name),
+            failureCode: const Value(null),
+            failureMessage: const Value(null),
+            failureDetails: const Value(null),
+            failedAt: const Value(null),
+          ),
+        );
   }
 
   @override

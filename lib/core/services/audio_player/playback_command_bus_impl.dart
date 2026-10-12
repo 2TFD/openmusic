@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:openmusic/layers/domain/repositories/playback_command_bus.dart';
+import 'package:owlsonic/layers/domain/repositories/playback_command_bus.dart';
 
 /// Реализация на single-subscription контроллере, а не на broadcast.
 ///

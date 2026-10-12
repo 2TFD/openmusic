@@ -1,9 +1,9 @@
-import 'package:openmusic/core/errors/failures/failure.dart';
-import 'package:openmusic/layers/data/datasources/local/track/track_local_data_source.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
+import 'package:owlsonic/layers/data/datasources/local/track/track_local_data_source.dart';
 
-import '../../domain/entities/track.dart';
-import '../../domain/repositories/track_repository.dart';
-import '../mappers/track_mapper.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/layers/data/mappers/track_mapper.dart';
 
 class TrackRepositoryImpl implements TrackRepository {
   final TrackLocalDataSource localDataSource;

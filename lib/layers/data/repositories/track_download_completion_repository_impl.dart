@@ -1,8 +1,9 @@
 import 'package:drift/drift.dart';
-import 'package:openmusic/core/errors/failures/failure.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/domain/entities/download_track_task.dart';
-import 'package:openmusic/layers/domain/repositories/track_download_completion_repository.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/domain/entities/download_track_task.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/repositories/track_download_completion_repository.dart';
 
 class TrackDownloadCompletionRepositoryImpl
     implements TrackDownloadCompletionRepository {
@@ -23,6 +24,7 @@ class TrackDownloadCompletionRepositoryImpl
     required String trackId,
     required String filePath,
     required String ownerId,
+    MediaLocator? media,
   }) {
     return database.transaction<bool>(() async {
       final deleted =
@@ -35,7 +37,11 @@ class TrackDownloadCompletionRepositoryImpl
               .go();
       if (deleted != 1) return false;
 
-      await _updateTrackAudio(trackId: trackId, filePath: filePath);
+      await _updateTrackAudio(
+        trackId: trackId,
+        filePath: filePath,
+        media: media,
+      );
       return true;
     });
   }
@@ -43,6 +49,7 @@ class TrackDownloadCompletionRepositoryImpl
   Future<void> _updateTrackAudio({
     required String trackId,
     required String filePath,
+    MediaLocator? media,
   }) async {
     final current = await (database.select(
       database.trackTable,
@@ -60,6 +67,18 @@ class TrackDownloadCompletionRepositoryImpl
               TrackTableCompanion(
                 pathToFile: Value(filePath),
                 audioRevision: Value(audioRevision),
+                mediaSourceType: media == null
+                    ? const Value.absent()
+                    : Value(media.type.name),
+                mediaSourceId: media == null
+                    ? const Value.absent()
+                    : Value(media.id),
+                mediaSourceUri: media == null
+                    ? const Value.absent()
+                    : Value(media.url),
+                contentIdentity: media == null
+                    ? const Value.absent()
+                    : Value('${media.type.name}:${media.id}'),
               ),
             );
     if (updated != 1) {

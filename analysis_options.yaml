@@ -7,3 +7,11 @@ linter:
 analyzer:
   errors:
     curly_braces_in_flow_control_structures: ignore
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**

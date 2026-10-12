@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:drift/drift.dart';
-import 'package:openmusic/layers/data/models/playlist_dto.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/datasources/local/playlist/playlist_local_data_source.dart';
+import 'package:owlsonic/layers/data/models/playlist_dto.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/datasources/local/playlist/playlist_local_data_source.dart';
 
 class PlaylistDriftLocalSource implements PlaylistLocalDataSource {
   PlaylistDriftLocalSource(this.database);

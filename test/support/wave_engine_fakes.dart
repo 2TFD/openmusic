@@ -1,13 +1,12 @@
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/music_analysis.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/entities/track_embedding.dart';
-import 'package:openmusic/layers/domain/entities/track_temporal_embedding.dart';
-import 'package:openmusic/layers/domain/repositories/music_analysis_client.dart';
-import 'package:openmusic/layers/domain/repositories/track_embedding_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_temporal_embedding_repository.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/track_embedding.dart';
+import 'package:owlsonic/layers/domain/entities/track_temporal_embedding.dart';
+import 'package:owlsonic/layers/domain/repositories/track_embedding_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_temporal_embedding_repository.dart';
 
 Track waveTrack(
   String id, {
@@ -185,16 +184,12 @@ class WaveTemporals implements TrackTemporalEmbeddingRepository {
   Future<bool> save(TrackTemporalEmbedding embedding) async => true;
 }
 
-class WaveModels implements MusicAnalysisClient {
+class WaveModels {
   const WaveModels({this.global = true, this.temporal = true});
   final bool global;
   final bool temporal;
 
-  @override
-  String get baseUrl => 'https://analysis.example';
-
-  @override
-  Future<MusicAnalysisModels> getModels() async => MusicAnalysisModels(
+  MusicAnalysisModels get models => MusicAnalysisModels(
     schemaVersion: '1',
     models: [
       if (global)
@@ -217,13 +212,4 @@ class WaveModels implements MusicAnalysisClient {
         ),
     ],
   );
-
-  @override
-  Future<MusicAnalysisResponse> analyze({
-    required String trackId,
-    required String filePath,
-    String? contentIdentity,
-    String? lyrics,
-    required Set<MusicAnalysisRepresentation> requestedRepresentations,
-  }) => throw UnimplementedError();
 }

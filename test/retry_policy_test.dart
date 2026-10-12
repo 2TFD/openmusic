@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/errors/failures/failure.dart';
-import 'package:openmusic/core/network/retry_policy.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
+import 'package:owlsonic/core/network/retry_policy.dart';
 
 void main() {
   group('RetryPolicy', () {

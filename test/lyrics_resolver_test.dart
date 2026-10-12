@@ -1,20 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/services/lyrics/lyrics_config.dart';
-import 'package:openmusic/core/services/lyrics/lyrics_resolver.dart';
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/lyrics_resolution_state.dart';
-import 'package:openmusic/layers/domain/entities/music_analysis.dart';
-import 'package:openmusic/layers/domain/entities/music_analysis_failure.dart';
-import 'package:openmusic/layers/domain/entities/music_analysis_task.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/entities/track_lyrics.dart';
-import 'package:openmusic/layers/domain/repositories/lyrics_provider.dart';
-import 'package:openmusic/layers/domain/repositories/music_analysis_repository.dart';
-import 'package:openmusic/layers/domain/repositories/music_analysis_task_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_lyrics_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_repository.dart';
-import 'package:openmusic/layers/domain/usecases/queue_lyrics_analysis_use_case.dart';
+import 'package:owlsonic/core/services/lyrics/lyrics_config.dart';
+import 'package:owlsonic/core/services/lyrics/lyrics_resolver.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/domain/entities/lyrics_resolution_state.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/track_lyrics.dart';
+import 'package:owlsonic/layers/domain/repositories/lyrics_provider.dart';
+import 'package:owlsonic/layers/domain/repositories/track_lyrics_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
 
 void main() {
   late _Tracks tracks;
@@ -34,10 +28,6 @@ void main() {
       tracks: tracks,
       lyrics: lyrics,
       providers: providers,
-      queueAnalysis: QueueLyricsAnalysisUseCase(
-        analysis: analysis,
-        tasks: _Tasks(),
-      ),
       config: LyricsConfig(defaultRetryDelay: const Duration(minutes: 5)),
       now: () => DateTime.utc(2026, 8, 27, 12),
     );
@@ -151,10 +141,6 @@ LyricsResolver _resolver(
   tracks: tracks,
   lyrics: lyrics,
   providers: providers,
-  queueAnalysis: QueueLyricsAnalysisUseCase(
-    analysis: analysis,
-    tasks: _Tasks(),
-  ),
   config: LyricsConfig(),
   now: () => DateTime.utc(2026, 8, 27, 12),
 );
@@ -241,46 +227,6 @@ class _Lyrics implements TrackLyricsRepository {
   }
 }
 
-class _Analysis implements MusicAnalysisRepository {
-  @override
-  Future<Set<MusicAnalysisRepresentation>> missingRepresentations({
-    required String trackId,
-    required int audioRevision,
-    required Set<MusicAnalysisRepresentation> representations,
-  }) async => const {};
-  @override
-  Future<MusicAnalysisDisposition> analyzeTrack({
-    required String trackId,
-    required int audioRevision,
-    required Set<MusicAnalysisRepresentation> representations,
-  }) async => MusicAnalysisDisposition.cached;
-}
-
-class _Tasks implements MusicAnalysisTaskRepository {
-  @override
-  Stream<List<MusicAnalysisTask>> watchAll() => const Stream.empty();
-  @override
-  Stream<int> watchPendingCount() => const Stream.empty();
-  @override
-  Future<List<MusicAnalysisTask>> getAll() async => const [];
-  @override
-  Future<void> enqueue({
-    required String trackId,
-    required int audioRevision,
-    required Set<MusicAnalysisRepresentation> representations,
-  }) async {}
-  @override
-  Future<MusicAnalysisTask?> claimNext() async => null;
-  @override
-  Future<void> complete(String id) async {}
-  @override
-  Future<void> fail(
-    String id,
-    MusicAnalysisFailure failure, {
-    required bool requeue,
-  }) async {}
-  @override
-  Future<void> retryFailed() async {}
-  @override
-  Future<void> resetRunning() async {}
-}
+/// Placeholder kept for the helper signatures; lyrics resolution no longer
+/// schedules analysis on the client.
+class _Analysis {}

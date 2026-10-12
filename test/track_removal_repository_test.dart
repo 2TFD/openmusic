@@ -3,17 +3,15 @@ import 'dart:io';
 import 'package:drift/drift.dart' hide isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/repositories/track_removal_repository_impl.dart';
-import 'package:openmusic/layers/domain/entities/download_track_task.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/repositories/track_removal_repository_impl.dart';
+import 'package:owlsonic/layers/domain/entities/download_track_task.dart';
 
 void main() {
   test(
     'removal clears dependent work, orphan artist, and owned files',
     () async {
-      final tempDir = await Directory.systemTemp.createTemp(
-        'openmusic_remove_',
-      );
+      final tempDir = await Directory.systemTemp.createTemp('owlsonic_remove_');
       addTearDown(() => tempDir.delete(recursive: true));
       final audio = File('${tempDir.path}/track.mp3');
       final artwork = File('${tempDir.path}/artwork.jpg');
@@ -112,8 +110,8 @@ void main() {
   );
 
   test('removal never deletes a path outside the app directory', () async {
-    final root = await Directory.systemTemp.createTemp('openmusic_safe_');
-    final outside = await Directory.systemTemp.createTemp('openmusic_outside_');
+    final root = await Directory.systemTemp.createTemp('owlsonic_safe_');
+    final outside = await Directory.systemTemp.createTemp('owlsonic_outside_');
     addTearDown(() => root.delete(recursive: true));
     addTearDown(() => outside.delete(recursive: true));
     final protected = File('${outside.path}/protected.mp3');
@@ -143,10 +141,8 @@ void main() {
   test(
     'local import removal deletes the app copy but keeps the source file',
     () async {
-      final root = await Directory.systemTemp.createTemp('openmusic_copy_');
-      final outside = await Directory.systemTemp.createTemp(
-        'openmusic_source_',
-      );
+      final root = await Directory.systemTemp.createTemp('owlsonic_copy_');
+      final outside = await Directory.systemTemp.createTemp('owlsonic_source_');
       addTearDown(() => root.delete(recursive: true));
       addTearDown(() => outside.delete(recursive: true));
       final source = File('${outside.path}/source.mp3');
@@ -178,7 +174,7 @@ void main() {
   );
 
   test('pending cleanup survives until a later retry', () async {
-    final root = await Directory.systemTemp.createTemp('openmusic_retry_');
+    final root = await Directory.systemTemp.createTemp('owlsonic_retry_');
     addTearDown(() => root.delete(recursive: true));
     final file = File('${root.path}/pending.mp3');
     await file.writeAsString('pending');

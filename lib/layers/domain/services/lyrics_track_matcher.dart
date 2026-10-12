@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:equatable/equatable.dart';
 
-import '../repositories/lyrics_provider.dart';
+import 'package:owlsonic/layers/domain/repositories/lyrics_provider.dart';
 
 class LyricsSearchCandidate extends Equatable {
   const LyricsSearchCandidate({required this.title, required this.artist});

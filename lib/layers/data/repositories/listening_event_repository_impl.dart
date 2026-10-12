@@ -1,8 +1,8 @@
 import 'package:drift/drift.dart';
 
-import '../../domain/entities/listening_event.dart';
-import '../../domain/repositories/listening_event_repository.dart';
-import '../database/app_database.dart';
+import 'package:owlsonic/layers/domain/entities/listening_event.dart';
+import 'package:owlsonic/layers/domain/repositories/listening_event_repository.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
 
 class ListeningEventRepositoryImpl implements ListeningEventRepository {
   ListeningEventRepositoryImpl(this.database);

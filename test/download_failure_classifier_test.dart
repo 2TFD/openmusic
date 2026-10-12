@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/services/download/download_failure_classifier.dart';
-import 'package:openmusic/layers/domain/entities/download_track_task.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
+import 'package:owlsonic/core/services/download/download_failure_classifier.dart';
+import 'package:owlsonic/layers/domain/entities/download_track_task.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 void main() {
   test('classifies network failures for user-facing copy', () {
@@ -37,6 +39,36 @@ void main() {
     );
 
     expect(failure.code, DownloadFailureCodes.rateLimited);
+  });
+
+  test('YouTube bot check gets its own code, not "source unavailable"', () {
+    DownloadFailureInfo classify(Object error) =>
+        DownloadFailureClassifier.classify(
+          error,
+          StackTrace.current,
+          trackId: 'track-3',
+          originalUrl: 'https://www.youtube.com/watch?v=x',
+        );
+
+    expect(
+      classify(const YouTubeFailure(botCheck: true)).code,
+      DownloadFailureCodes.botCheck,
+    );
+    expect(
+      classify(
+        VideoUnplayableException.unplayable(
+          VideoId('dQw4w9WgXcQ'),
+          reason: 'Sign in to confirm you’re not a bot',
+        ),
+      ).code,
+      DownloadFailureCodes.botCheck,
+    );
+    expect(
+      classify(
+        VideoUnavailableException.unavailable(VideoId('dQw4w9WgXcQ')),
+      ).code,
+      DownloadFailureCodes.sourceUnavailable,
+    );
   });
 
   test('classifies file permission failures', () {

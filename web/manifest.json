@@ -1,11 +1,11 @@
 {
-    "name": "openmusic",
-    "short_name": "openmusic",
+    "name": "OwlSonic",
+    "short_name": "OwlSonic",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#090909",
+    "theme_color": "#090909",
+    "description": "Own your music. Take it everywhere. Rediscover it.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

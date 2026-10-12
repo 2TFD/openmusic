@@ -1,0 +1,6409 @@
+{
+  "components": {
+    "schemas": {
+      "AnalysisUpsertEvent": {
+        "properties": {
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Server time the event was appended (RFC 3339 UTC). Null for snapshot records.",
+            "title": "Created At"
+          },
+          "entity_id": {
+            "description": "What the event is about: the Track ID (`library.*`, `analysis.upsert`, `history.append`), the playlist ID (`playlist.*`).",
+            "format": "uuid",
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Opaque resume token. A delta event's `id` is a cursor that resumes right after that event (you may pass it as `cursor`). Always null for bootstrap (snapshot) records. Unique per user and never reused; never parse it.",
+            "title": "Id"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/AnalysisUpsertV1"
+          },
+          "type": {
+            "const": "analysis.upsert",
+            "title": "Type",
+            "type": "string"
+          },
+          "version": {
+            "const": 1,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "entity_id",
+          "created_at",
+          "type",
+          "version",
+          "payload"
+        ],
+        "title": "AnalysisUpsertEvent",
+        "type": "object"
+      },
+      "AnalysisUpsertV1": {
+        "additionalProperties": false,
+        "description": "Canonical (shared, per AudioObject) analysis of a library Track.\n\n`analysis_status` `ready`: every other field is present (`audio_embedding` has exactly\n`embedding_dimension` values). `failed`: only `track_id` and `analysis_status` are present;\ndrop any cached canonical analysis. `pending` is never an event: it is the absence of\nanalysis (see `analysis_status` in `library.upsert`). A later `ready` supersedes `failed` and\nan older `ready` (higher `analysis_version`). Fields that are not applicable are omitted.",
+        "properties": {
+          "analysis_status": {
+            "enum": [
+              "ready",
+              "failed"
+            ],
+            "title": "Analysis Status",
+            "type": "string"
+          },
+          "analysis_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Analysis Version"
+          },
+          "arousal": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arousal"
+          },
+          "audio_embedding": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 1,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audio Embedding"
+          },
+          "embedding_dimension": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Embedding Dimension"
+          },
+          "embedding_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Embedding Model"
+          },
+          "embedding_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Embedding Version"
+          },
+          "emotion_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Emotion Version"
+          },
+          "track_id": {
+            "format": "uuid",
+            "title": "Track Id",
+            "type": "string"
+          },
+          "valence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valence"
+          }
+        },
+        "required": [
+          "track_id",
+          "analysis_status"
+        ],
+        "title": "AnalysisUpsertV1",
+        "type": "object"
+      },
+      "CandidateAnalysis": {
+        "properties": {
+          "analysis_version": {
+            "title": "Analysis Version",
+            "type": "integer"
+          },
+          "arousal": {
+            "title": "Arousal",
+            "type": "number"
+          },
+          "embedding": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Embedding",
+            "type": "array"
+          },
+          "embedding_dimension": {
+            "title": "Embedding Dimension",
+            "type": "integer"
+          },
+          "embedding_model": {
+            "title": "Embedding Model",
+            "type": "string"
+          },
+          "embedding_version": {
+            "title": "Embedding Version",
+            "type": "string"
+          },
+          "emotion_version": {
+            "title": "Emotion Version",
+            "type": "string"
+          },
+          "valence": {
+            "title": "Valence",
+            "type": "number"
+          }
+        },
+        "required": [
+          "embedding",
+          "embedding_dimension",
+          "analysis_version",
+          "embedding_model",
+          "embedding_version",
+          "valence",
+          "arousal",
+          "emotion_version"
+        ],
+        "title": "CandidateAnalysis",
+        "type": "object"
+      },
+      "CandidateItem": {
+        "properties": {
+          "album_artist": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Album Artist"
+          },
+          "album_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Album Title"
+          },
+          "analysis": {
+            "$ref": "#/components/schemas/CandidateAnalysis"
+          },
+          "artist_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artist Name"
+          },
+          "disc_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disc Number"
+          },
+          "duration_ms": {
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "genres": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Genres",
+            "type": "array"
+          },
+          "has_artwork": {
+            "title": "Has Artwork",
+            "type": "boolean"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "track_id": {
+            "format": "uuid",
+            "title": "Track Id",
+            "type": "string"
+          },
+          "track_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Number"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          }
+        },
+        "required": [
+          "track_id",
+          "title",
+          "artist_name",
+          "album_title",
+          "album_artist",
+          "track_number",
+          "disc_number",
+          "year",
+          "genres",
+          "duration_ms",
+          "has_artwork",
+          "analysis"
+        ],
+        "title": "CandidateItem",
+        "type": "object"
+      },
+      "CandidatePage": {
+        "properties": {
+          "has_more": {
+            "title": "Has More",
+            "type": "boolean"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CandidateItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "has_more"
+        ],
+        "title": "CandidatePage",
+        "type": "object"
+      },
+      "CodeRequestAccepted": {
+        "description": "Identical for known and unknown addresses (no account oracle).",
+        "properties": {
+          "code_expires_in": {
+            "title": "Code Expires In",
+            "type": "integer"
+          },
+          "code_length": {
+            "default": 6,
+            "title": "Code Length",
+            "type": "integer"
+          },
+          "resend_available_in": {
+            "title": "Resend Available In",
+            "type": "integer"
+          },
+          "status": {
+            "const": "accepted",
+            "default": "accepted",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code_expires_in",
+          "resend_available_in"
+        ],
+        "title": "CodeRequestAccepted",
+        "type": "object"
+      },
+      "CredentialsResponse": {
+        "properties": {
+          "access_expires_in": {
+            "title": "Access Expires In",
+            "type": "integer"
+          },
+          "access_token": {
+            "title": "Access Token",
+            "type": "string"
+          },
+          "refresh_expires_at": {
+            "format": "date-time",
+            "title": "Refresh Expires At",
+            "type": "string"
+          },
+          "refresh_token": {
+            "title": "Refresh Token",
+            "type": "string"
+          },
+          "token_type": {
+            "const": "bearer",
+            "default": "bearer",
+            "title": "Token Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "access_token",
+          "refresh_token",
+          "access_expires_in",
+          "refresh_expires_at"
+        ],
+        "title": "CredentialsResponse",
+        "type": "object"
+      },
+      "DeleteAccountRequest": {
+        "additionalProperties": false,
+        "description": "Proof of the account password: a valid access token alone must not destroy an account.",
+        "properties": {
+          "password": {
+            "maxLength": 1024,
+            "minLength": 1,
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "password"
+        ],
+        "title": "DeleteAccountRequest",
+        "type": "object"
+      },
+      "DeletionAccepted": {
+        "properties": {
+          "status": {
+            "const": "deletion_pending",
+            "default": "deletion_pending",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "title": "DeletionAccepted",
+        "type": "object"
+      },
+      "DeviceDescriptor": {
+        "description": "Informational, untrusted description of the client installation.",
+        "properties": {
+          "app_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "App Version"
+          },
+          "device_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Name"
+          },
+          "installation_id": {
+            "title": "Installation Id",
+            "type": "string"
+          },
+          "platform": {
+            "title": "Platform",
+            "type": "string"
+          }
+        },
+        "required": [
+          "installation_id",
+          "platform"
+        ],
+        "title": "DeviceDescriptor",
+        "type": "object"
+      },
+      "DeviceListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DeviceResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "DeviceListResponse",
+        "type": "object"
+      },
+      "DeviceResponse": {
+        "properties": {
+          "app_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "App Version"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "current": {
+            "title": "Current",
+            "type": "boolean"
+          },
+          "device_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Device Name"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "last_seen_at": {
+            "format": "date-time",
+            "title": "Last Seen At",
+            "type": "string"
+          },
+          "platform": {
+            "title": "Platform",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "platform",
+          "device_name",
+          "app_version",
+          "created_at",
+          "last_seen_at",
+          "current"
+        ],
+        "title": "DeviceResponse",
+        "type": "object"
+      },
+      "EmailRequest": {
+        "description": "Used by resend-verification and forgot-password.",
+        "properties": {
+          "email": {
+            "title": "Email",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email"
+        ],
+        "title": "EmailRequest",
+        "type": "object"
+      },
+      "ErrorBody": {
+        "properties": {
+          "code": {
+            "description": "Stable machine-readable code: branch on this, never on `message` or on the HTTP status alone. A plain string on purpose: ignore codes you do not know. Each operation lists its codes in `x-error-codes`; all known codes are in `x-known-codes`.",
+            "title": "Code",
+            "type": "string",
+            "x-known-codes": [
+              "INVALID_REQUEST",
+              "NOT_FOUND",
+              "METHOD_NOT_ALLOWED",
+              "INTERNAL_ERROR",
+              "SERVICE_UNAVAILABLE",
+              "UNAUTHORIZED",
+              "INVALID_CREDENTIALS",
+              "INVALID_REFRESH_TOKEN",
+              "EMAIL_ALREADY_REGISTERED",
+              "DEVICE_NOT_FOUND",
+              "TRACK_ID_CONFLICT",
+              "IDEMPOTENCY_KEY_REUSED",
+              "INGESTION_IN_PROGRESS",
+              "AUDIO_TOO_LARGE",
+              "AUDIO_TOO_LONG",
+              "INVALID_AUDIO",
+              "UNSUPPORTED_AUDIO_FORMAT",
+              "ARTWORK_TOO_LARGE",
+              "INVALID_ARTWORK",
+              "SANITIZATION_FAILED",
+              "STORAGE_UNAVAILABLE",
+              "LIBRARY_ITEM_NOT_FOUND",
+              "INVALID_LIBRARY_CURSOR",
+              "PLAYBACK_NOT_AVAILABLE",
+              "ARTWORK_NOT_FOUND",
+              "INVALID_SYNC_CURSOR",
+              "PLAYLIST_NOT_FOUND",
+              "PLAYLIST_ITEM_NOT_FOUND",
+              "PLAYLIST_ID_CONFLICT",
+              "PLAYLIST_ITEM_ID_CONFLICT",
+              "INVALID_PLAYLIST_ORDER",
+              "PLAYLIST_TOO_LARGE",
+              "PLAY_EVENT_ID_CONFLICT",
+              "INVALID_PLAYLIST_CURSOR",
+              "INVALID_HISTORY_CURSOR",
+              "STORAGE_QUOTA_EXCEEDED",
+              "INVALID_DISCOVER_CURSOR",
+              "DISCOVER_ITEM_NOT_FOUND",
+              "RATE_LIMITED",
+              "REQUEST_TOO_LARGE",
+              "EMAIL_NOT_VERIFIED",
+              "INVALID_CODE",
+              "CODE_ATTEMPTS_EXCEEDED",
+              "RESEND_COOLDOWN",
+              "EMAIL_DELIVERY_FAILED"
+            ]
+          },
+          "details": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Validation errors only: `{loc, type}` pairs, never the submitted values.",
+            "title": "Details"
+          },
+          "message": {
+            "description": "Human-readable and generic. Never parse it.",
+            "title": "Message",
+            "type": "string"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Echo of `X-Request-ID`, for support correlation.",
+            "title": "Request Id"
+          },
+          "retryable": {
+            "description": "True: the same request may succeed later (honour `Retry-After` if sent).",
+            "title": "Retryable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "retryable",
+          "request_id"
+        ],
+        "title": "ErrorBody",
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorBody"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HealthStatus": {
+        "properties": {
+          "status": {
+            "default": "ok",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "title": "HealthStatus",
+        "type": "object"
+      },
+      "HistoryAppendEvent": {
+        "properties": {
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Server time the event was appended (RFC 3339 UTC). Null for snapshot records.",
+            "title": "Created At"
+          },
+          "entity_id": {
+            "description": "What the event is about: the Track ID (`library.*`, `analysis.upsert`, `history.append`), the playlist ID (`playlist.*`).",
+            "format": "uuid",
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Opaque resume token. A delta event's `id` is a cursor that resumes right after that event (you may pass it as `cursor`). Always null for bootstrap (snapshot) records. Unique per user and never reused; never parse it.",
+            "title": "Id"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/HistoryAppendV1"
+          },
+          "type": {
+            "const": "history.append",
+            "title": "Type",
+            "type": "string"
+          },
+          "version": {
+            "const": 1,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "entity_id",
+          "created_at",
+          "type",
+          "version",
+          "payload"
+        ],
+        "title": "HistoryAppendEvent",
+        "type": "object"
+      },
+      "HistoryAppendV1": {
+        "additionalProperties": false,
+        "description": "One new PlayEvent plus the resulting aggregates (no extra library event per play).\nIdempotent by `event_id`; set the item's `play_count`/`last_played_at` from the payload.",
+        "properties": {
+          "event_id": {
+            "format": "uuid",
+            "title": "Event Id",
+            "type": "string"
+          },
+          "last_played_at": {
+            "format": "date-time",
+            "title": "Last Played At",
+            "type": "string"
+          },
+          "listened_ms": {
+            "maximum": 86400000.0,
+            "minimum": 0.0,
+            "title": "Listened Ms",
+            "type": "integer"
+          },
+          "play_count": {
+            "minimum": 1.0,
+            "title": "Play Count",
+            "type": "integer"
+          },
+          "played_at": {
+            "format": "date-time",
+            "title": "Played At",
+            "type": "string"
+          },
+          "track_id": {
+            "format": "uuid",
+            "title": "Track Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_id",
+          "track_id",
+          "played_at",
+          "listened_ms",
+          "play_count",
+          "last_played_at"
+        ],
+        "title": "HistoryAppendV1",
+        "type": "object"
+      },
+      "HistoryItem": {
+        "properties": {
+          "album_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Album Title"
+          },
+          "artist_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artist Name"
+          },
+          "event_id": {
+            "format": "uuid",
+            "title": "Event Id",
+            "type": "string"
+          },
+          "listened_ms": {
+            "title": "Listened Ms",
+            "type": "integer"
+          },
+          "played_at": {
+            "format": "date-time",
+            "title": "Played At",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "track_id": {
+            "format": "uuid",
+            "title": "Track Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_id",
+          "track_id",
+          "played_at",
+          "listened_ms",
+          "title",
+          "artist_name",
+          "album_title"
+        ],
+        "title": "HistoryItem",
+        "type": "object"
+      },
+      "HistoryPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "title": "HistoryPage",
+        "type": "object"
+      },
+      "LibraryDeleteEvent": {
+        "properties": {
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Server time the event was appended (RFC 3339 UTC). Null for snapshot records.",
+            "title": "Created At"
+          },
+          "entity_id": {
+            "description": "What the event is about: the Track ID (`library.*`, `analysis.upsert`, `history.append`), the playlist ID (`playlist.*`).",
+            "format": "uuid",
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Opaque resume token. A delta event's `id` is a cursor that resumes right after that event (you may pass it as `cursor`). Always null for bootstrap (snapshot) records. Unique per user and never reused; never parse it.",
+            "title": "Id"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/LibraryDeleteV1"
+          },
+          "type": {
+            "const": "library.delete",
+            "title": "Type",
+            "type": "string"
+          },
+          "version": {
+            "const": 1,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "entity_id",
+          "created_at",
+          "type",
+          "version",
+          "payload"
+        ],
+        "title": "LibraryDeleteEvent",
+        "type": "object"
+      },
+      "LibraryDeleteV1": {
+        "additionalProperties": false,
+        "description": "Tombstone: the Track left the caller's library. Remove the local item, its playlist\nreferences and cached analysis. Re-adding later appends a new `library.upsert`.",
+        "properties": {
+          "deleted_at": {
+            "format": "date-time",
+            "title": "Deleted At",
+            "type": "string"
+          },
+          "track_id": {
+            "format": "uuid",
+            "title": "Track Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "track_id",
+          "deleted_at"
+        ],
+        "title": "LibraryDeleteV1",
+        "type": "object"
+      },
+      "LibraryItem": {
+        "properties": {
+          "added_at": {
+            "format": "date-time",
+            "title": "Added At",
+            "type": "string"
+          },
+          "album_artist": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Album Artist"
+          },
+          "album_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Album Title"
+          },
+          "analysis_status": {
+            "enum": [
+              "pending",
+              "ready",
+              "failed"
+            ],
+            "title": "Analysis Status",
+            "type": "string"
+          },
+          "artist_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artist Name"
+          },
+          "custom_album_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Album Title"
+          },
+          "custom_arousal": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Arousal"
+          },
+          "custom_artist_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Artist Name"
+          },
+          "custom_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Title"
+          },
+          "custom_valence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Valence"
+          },
+          "disc_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disc Number"
+          },
+          "duration_ms": {
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "favorite": {
+            "title": "Favorite",
+            "type": "boolean"
+          },
+          "genres": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Genres",
+            "type": "array"
+          },
+          "has_artwork": {
+            "title": "Has Artwork",
+            "type": "boolean"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "last_played_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Played At"
+          },
+          "play_count": {
+            "title": "Play Count",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "track_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Number"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "artist_name",
+          "album_title",
+          "album_artist",
+          "track_number",
+          "disc_number",
+          "year",
+          "genres",
+          "duration_ms",
+          "has_artwork",
+          "analysis_status",
+          "custom_title",
+          "custom_artist_name",
+          "custom_album_title",
+          "added_at",
+          "updated_at",
+          "favorite",
+          "custom_valence",
+          "custom_arousal",
+          "play_count",
+          "last_played_at"
+        ],
+        "title": "LibraryItem",
+        "type": "object"
+      },
+      "LibraryItemPatch": {
+        "additionalProperties": false,
+        "description": "Personal overrides only. Absent = unchanged, null = clear, string = set (trimmed).",
+        "properties": {
+          "custom_album_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Album Title"
+          },
+          "custom_arousal": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": -1.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Arousal"
+          },
+          "custom_artist_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Artist Name"
+          },
+          "custom_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Title"
+          },
+          "custom_valence": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": -1.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Valence"
+          },
+          "favorite": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Favorite"
+          }
+        },
+        "title": "LibraryItemPatch",
+        "type": "object"
+      },
+      "LibraryPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/LibraryItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "title": "LibraryPage",
+        "type": "object"
+      },
+      "LibraryUpsertEvent": {
+        "properties": {
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Server time the event was appended (RFC 3339 UTC). Null for snapshot records.",
+            "title": "Created At"
+          },
+          "entity_id": {
+            "description": "What the event is about: the Track ID (`library.*`, `analysis.upsert`, `history.append`), the playlist ID (`playlist.*`).",
+            "format": "uuid",
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Opaque resume token. A delta event's `id` is a cursor that resumes right after that event (you may pass it as `cursor`). Always null for bootstrap (snapshot) records. Unique per user and never reused; never parse it.",
+            "title": "Id"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/LibraryUpsertV2"
+          },
+          "type": {
+            "const": "library.upsert",
+            "title": "Type",
+            "type": "string"
+          },
+          "version": {
+            "const": 2,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "entity_id",
+          "created_at",
+          "type",
+          "version",
+          "payload"
+        ],
+        "title": "LibraryUpsertEvent",
+        "type": "object"
+      },
+      "LibraryUpsertEventV1": {
+        "properties": {
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Server time the event was appended (RFC 3339 UTC). Null for snapshot records.",
+            "title": "Created At"
+          },
+          "entity_id": {
+            "description": "What the event is about: the Track ID (`library.*`, `analysis.upsert`, `history.append`), the playlist ID (`playlist.*`).",
+            "format": "uuid",
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Opaque resume token. A delta event's `id` is a cursor that resumes right after that event (you may pass it as `cursor`). Always null for bootstrap (snapshot) records. Unique per user and never reused; never parse it.",
+            "title": "Id"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/LibraryUpsertV1"
+          },
+          "type": {
+            "const": "library.upsert",
+            "title": "Type",
+            "type": "string"
+          },
+          "version": {
+            "const": 1,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "entity_id",
+          "created_at",
+          "type",
+          "version",
+          "payload"
+        ],
+        "title": "LibraryUpsertEventV1",
+        "type": "object"
+      },
+      "LibraryUpsertV1": {
+        "additionalProperties": false,
+        "description": "Legacy shape of `library.upsert` (event version 1): no personal state. Never emitted any\nmore, but stored v1 events are still delivered unchanged.",
+        "properties": {
+          "added_at": {
+            "format": "date-time",
+            "title": "Added At",
+            "type": "string"
+          },
+          "album_artist": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Album Artist"
+          },
+          "analysis_status": {
+            "enum": [
+              "pending",
+              "ready",
+              "failed"
+            ],
+            "title": "Analysis Status",
+            "type": "string"
+          },
+          "canonical_album_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Canonical Album Title"
+          },
+          "canonical_artist_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Canonical Artist Name"
+          },
+          "canonical_title": {
+            "title": "Canonical Title",
+            "type": "string"
+          },
+          "custom_album_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Album Title"
+          },
+          "custom_artist_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Artist Name"
+          },
+          "custom_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Title"
+          },
+          "disc_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disc Number"
+          },
+          "duration_ms": {
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "genres": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Genres",
+            "type": "array"
+          },
+          "has_artwork": {
+            "title": "Has Artwork",
+            "type": "boolean"
+          },
+          "track_id": {
+            "format": "uuid",
+            "title": "Track Id",
+            "type": "string"
+          },
+          "track_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Number"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          }
+        },
+        "required": [
+          "track_id",
+          "canonical_title",
+          "canonical_artist_name",
+          "canonical_album_title",
+          "album_artist",
+          "track_number",
+          "disc_number",
+          "year",
+          "genres",
+          "duration_ms",
+          "has_artwork",
+          "analysis_status",
+          "custom_title",
+          "custom_artist_name",
+          "custom_album_title",
+          "added_at",
+          "updated_at"
+        ],
+        "title": "LibraryUpsertV1",
+        "type": "object"
+      },
+      "LibraryUpsertV2": {
+        "additionalProperties": false,
+        "description": "`library.upsert` version 2: the caller's full library item, upserted by `track_id`.\n\nEmitted when a Track enters the library (also re-add after removal), when a personal\noverride changes (custom title/artist/album, `favorite`, Mood override\n`custom_valence`/`custom_arousal`) and when play aggregates change through library edits.\nThe `custom_*` fields are PERSONAL overrides; canonical Mood lives in `analysis.upsert`\nand is never overwritten by them. Replace the whole local item by `track_id`.",
+        "properties": {
+          "added_at": {
+            "format": "date-time",
+            "title": "Added At",
+            "type": "string"
+          },
+          "album_artist": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Album Artist"
+          },
+          "analysis_status": {
+            "enum": [
+              "pending",
+              "ready",
+              "failed"
+            ],
+            "title": "Analysis Status",
+            "type": "string"
+          },
+          "canonical_album_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Canonical Album Title"
+          },
+          "canonical_artist_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Canonical Artist Name"
+          },
+          "canonical_title": {
+            "title": "Canonical Title",
+            "type": "string"
+          },
+          "custom_album_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Album Title"
+          },
+          "custom_arousal": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": -1.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Arousal"
+          },
+          "custom_artist_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Artist Name"
+          },
+          "custom_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Title"
+          },
+          "custom_valence": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": -1.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Custom Valence"
+          },
+          "disc_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disc Number"
+          },
+          "duration_ms": {
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "favorite": {
+            "title": "Favorite",
+            "type": "boolean"
+          },
+          "genres": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Genres",
+            "type": "array"
+          },
+          "has_artwork": {
+            "title": "Has Artwork",
+            "type": "boolean"
+          },
+          "last_played_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Played At"
+          },
+          "play_count": {
+            "minimum": 0.0,
+            "title": "Play Count",
+            "type": "integer"
+          },
+          "track_id": {
+            "format": "uuid",
+            "title": "Track Id",
+            "type": "string"
+          },
+          "track_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Number"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          }
+        },
+        "required": [
+          "track_id",
+          "canonical_title",
+          "canonical_artist_name",
+          "canonical_album_title",
+          "album_artist",
+          "track_number",
+          "disc_number",
+          "year",
+          "genres",
+          "duration_ms",
+          "has_artwork",
+          "analysis_status",
+          "custom_title",
+          "custom_artist_name",
+          "custom_album_title",
+          "added_at",
+          "updated_at",
+          "favorite",
+          "custom_valence",
+          "custom_arousal",
+          "play_count",
+          "last_played_at"
+        ],
+        "title": "LibraryUpsertV2",
+        "type": "object"
+      },
+      "LoginRequest": {
+        "properties": {
+          "device": {
+            "$ref": "#/components/schemas/DeviceDescriptor"
+          },
+          "email": {
+            "maxLength": 320,
+            "title": "Email",
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 128,
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "device"
+        ],
+        "title": "LoginRequest",
+        "type": "object"
+      },
+      "MeResponse": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "created_at"
+        ],
+        "title": "MeResponse",
+        "type": "object"
+      },
+      "PendingVerificationResponse": {
+        "description": "Registration succeeded but the address is not verified yet: no credentials are issued.",
+        "properties": {
+          "code_expires_in": {
+            "title": "Code Expires In",
+            "type": "integer"
+          },
+          "code_length": {
+            "default": 6,
+            "title": "Code Length",
+            "type": "integer"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "resend_available_in": {
+            "title": "Resend Available In",
+            "type": "integer"
+          },
+          "status": {
+            "const": "verification_required",
+            "default": "verification_required",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "code_expires_in",
+          "resend_available_in"
+        ],
+        "title": "PendingVerificationResponse",
+        "type": "object"
+      },
+      "PlayEventIn": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "Client-generated UUID version 7 is required (canonical hyphenated form): the play event ID, the idempotency key of the event. Other UUID versions (e.g. v4), the nil UUID and malformed values are rejected with `422 INVALID_REQUEST`. Never generated or replaced by the server.",
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "listened_ms": {
+            "maximum": 86400000.0,
+            "minimum": 0.0,
+            "title": "Listened Ms",
+            "type": "integer"
+          },
+          "played_at": {
+            "format": "date-time",
+            "title": "Played At",
+            "type": "string"
+          },
+          "track_id": {
+            "format": "uuid",
+            "title": "Track Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "track_id",
+          "played_at",
+          "listened_ms"
+        ],
+        "title": "PlayEventIn",
+        "type": "object"
+      },
+      "PlayEventsRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/PlayEventIn"
+            },
+            "minItems": 1,
+            "title": "Events",
+            "type": "array"
+          }
+        },
+        "required": [
+          "events"
+        ],
+        "title": "PlayEventsRequest",
+        "type": "object"
+      },
+      "PlayEventsResult": {
+        "properties": {
+          "accepted": {
+            "title": "Accepted",
+            "type": "integer"
+          },
+          "duplicates": {
+            "title": "Duplicates",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "accepted",
+          "duplicates"
+        ],
+        "title": "PlayEventsResult",
+        "type": "object"
+      },
+      "PlaylistCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "Client-generated UUID version 7 is required (canonical hyphenated form): the playlist ID. Other UUID versions (e.g. v4), the nil UUID and malformed values are rejected with `422 INVALID_REQUEST`. Never generated or replaced by the server.",
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "PlaylistCreate",
+        "type": "object"
+      },
+      "PlaylistDeleteEvent": {
+        "properties": {
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Server time the event was appended (RFC 3339 UTC). Null for snapshot records.",
+            "title": "Created At"
+          },
+          "entity_id": {
+            "description": "What the event is about: the Track ID (`library.*`, `analysis.upsert`, `history.append`), the playlist ID (`playlist.*`).",
+            "format": "uuid",
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Opaque resume token. A delta event's `id` is a cursor that resumes right after that event (you may pass it as `cursor`). Always null for bootstrap (snapshot) records. Unique per user and never reused; never parse it.",
+            "title": "Id"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/PlaylistDeleteV1"
+          },
+          "type": {
+            "const": "playlist.delete",
+            "title": "Type",
+            "type": "string"
+          },
+          "version": {
+            "const": 1,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "entity_id",
+          "created_at",
+          "type",
+          "version",
+          "payload"
+        ],
+        "title": "PlaylistDeleteEvent",
+        "type": "object"
+      },
+      "PlaylistDeleteV1": {
+        "additionalProperties": false,
+        "description": "Tombstone: the playlist was deleted. Remove it and its items locally.",
+        "properties": {
+          "deleted_at": {
+            "format": "date-time",
+            "title": "Deleted At",
+            "type": "string"
+          },
+          "playlist_id": {
+            "format": "uuid",
+            "title": "Playlist Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "playlist_id",
+          "deleted_at"
+        ],
+        "title": "PlaylistDeleteV1",
+        "type": "object"
+      },
+      "PlaylistDetail": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PlaylistItemOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "created_at",
+          "updated_at",
+          "items"
+        ],
+        "title": "PlaylistDetail",
+        "type": "object"
+      },
+      "PlaylistItemCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "description": "Client-generated UUID version 7 is required (canonical hyphenated form): the playlist item ID. Other UUID versions (e.g. v4), the nil UUID and malformed values are rejected with `422 INVALID_REQUEST`. Never generated or replaced by the server.",
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "index": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Index"
+          },
+          "track_id": {
+            "format": "uuid",
+            "title": "Track Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "track_id"
+        ],
+        "title": "PlaylistItemCreate",
+        "type": "object"
+      },
+      "PlaylistItemOut": {
+        "properties": {
+          "album_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Album Title"
+          },
+          "artist_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artist Name"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "position": {
+            "title": "Position",
+            "type": "integer"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "track_available": {
+            "title": "Track Available",
+            "type": "boolean"
+          },
+          "track_id": {
+            "format": "uuid",
+            "title": "Track Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "track_id",
+          "position",
+          "title",
+          "artist_name",
+          "album_title",
+          "track_available"
+        ],
+        "title": "PlaylistItemOut",
+        "type": "object"
+      },
+      "PlaylistItemRef": {
+        "additionalProperties": false,
+        "properties": {
+          "item_id": {
+            "format": "uuid",
+            "title": "Item Id",
+            "type": "string"
+          },
+          "position": {
+            "minimum": 0.0,
+            "title": "Position",
+            "type": "integer"
+          },
+          "track_id": {
+            "format": "uuid",
+            "title": "Track Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "item_id",
+          "track_id",
+          "position"
+        ],
+        "title": "PlaylistItemRef",
+        "type": "object"
+      },
+      "PlaylistItemsEvent": {
+        "properties": {
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Server time the event was appended (RFC 3339 UTC). Null for snapshot records.",
+            "title": "Created At"
+          },
+          "entity_id": {
+            "description": "What the event is about: the Track ID (`library.*`, `analysis.upsert`, `history.append`), the playlist ID (`playlist.*`).",
+            "format": "uuid",
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Opaque resume token. A delta event's `id` is a cursor that resumes right after that event (you may pass it as `cursor`). Always null for bootstrap (snapshot) records. Unique per user and never reused; never parse it.",
+            "title": "Id"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/PlaylistItemsV1"
+          },
+          "type": {
+            "const": "playlist.items",
+            "title": "Type",
+            "type": "string"
+          },
+          "version": {
+            "const": 1,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "entity_id",
+          "created_at",
+          "type",
+          "version",
+          "payload"
+        ],
+        "title": "PlaylistItemsEvent",
+        "type": "object"
+      },
+      "PlaylistItemsV1": {
+        "additionalProperties": false,
+        "description": "The whole ordered item list of a playlist (an idempotent snapshot, not a diff): replace\nthe local list. Emitted after every add/remove/reorder. No Track metadata.",
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PlaylistItemRef"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "playlist_id": {
+            "format": "uuid",
+            "title": "Playlist Id",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "playlist_id",
+          "items",
+          "updated_at"
+        ],
+        "title": "PlaylistItemsV1",
+        "type": "object"
+      },
+      "PlaylistPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PlaylistSummary"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "title": "PlaylistPage",
+        "type": "object"
+      },
+      "PlaylistRename": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "PlaylistRename",
+        "type": "object"
+      },
+      "PlaylistSummary": {
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "item_count": {
+            "title": "Item Count",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "item_count",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "PlaylistSummary",
+        "type": "object"
+      },
+      "PlaylistUpsertEvent": {
+        "properties": {
+          "created_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Server time the event was appended (RFC 3339 UTC). Null for snapshot records.",
+            "title": "Created At"
+          },
+          "entity_id": {
+            "description": "What the event is about: the Track ID (`library.*`, `analysis.upsert`, `history.append`), the playlist ID (`playlist.*`).",
+            "format": "uuid",
+            "title": "Entity Id",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Opaque resume token. A delta event's `id` is a cursor that resumes right after that event (you may pass it as `cursor`). Always null for bootstrap (snapshot) records. Unique per user and never reused; never parse it.",
+            "title": "Id"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/PlaylistUpsertV1"
+          },
+          "type": {
+            "const": "playlist.upsert",
+            "title": "Type",
+            "type": "string"
+          },
+          "version": {
+            "const": 1,
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "entity_id",
+          "created_at",
+          "type",
+          "version",
+          "payload"
+        ],
+        "title": "PlaylistUpsertEvent",
+        "type": "object"
+      },
+      "PlaylistUpsertV1": {
+        "additionalProperties": false,
+        "description": "A playlist was created or renamed. Items arrive separately as `playlist.items`.",
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "playlist_id": {
+            "format": "uuid",
+            "title": "Playlist Id",
+            "type": "string"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "playlist_id",
+          "name",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "PlaylistUpsertV1",
+        "type": "object"
+      },
+      "RefreshRequest": {
+        "properties": {
+          "refresh_token": {
+            "maxLength": 4096,
+            "title": "Refresh Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "refresh_token"
+        ],
+        "title": "RefreshRequest",
+        "type": "object"
+      },
+      "RegisterRequest": {
+        "properties": {
+          "device": {
+            "$ref": "#/components/schemas/DeviceDescriptor"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "password": {
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "device"
+        ],
+        "title": "RegisterRequest",
+        "type": "object"
+      },
+      "ReorderRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "item_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Item Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "item_ids"
+        ],
+        "title": "ReorderRequest",
+        "type": "object"
+      },
+      "ResetPasswordRequest": {
+        "properties": {
+          "code": {
+            "maxLength": 64,
+            "title": "Code",
+            "type": "string"
+          },
+          "email": {
+            "maxLength": 320,
+            "title": "Email",
+            "type": "string"
+          },
+          "new_password": {
+            "title": "New Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "code",
+          "new_password"
+        ],
+        "title": "ResetPasswordRequest",
+        "type": "object"
+      },
+      "SignedUrlResponse": {
+        "description": "A short-lived signed GET URL. No bucket, key or credentials as separate fields.",
+        "properties": {
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "expires_in": {
+            "title": "Expires In",
+            "type": "integer"
+          },
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at",
+          "expires_in"
+        ],
+        "title": "SignedUrlResponse",
+        "type": "object"
+      },
+      "StorageUsage": {
+        "properties": {
+          "limit_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit Bytes"
+          },
+          "over_limit": {
+            "title": "Over Limit",
+            "type": "boolean"
+          },
+          "remaining_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remaining Bytes"
+          },
+          "unlimited": {
+            "title": "Unlimited",
+            "type": "boolean"
+          },
+          "used_bytes": {
+            "title": "Used Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "used_bytes",
+          "limit_bytes",
+          "remaining_bytes",
+          "unlimited",
+          "over_limit"
+        ],
+        "title": "StorageUsage",
+        "type": "object"
+      },
+      "SyncEventOut": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/LibraryUpsertEventV1"
+          },
+          {
+            "$ref": "#/components/schemas/LibraryUpsertEvent"
+          },
+          {
+            "$ref": "#/components/schemas/LibraryDeleteEvent"
+          },
+          {
+            "$ref": "#/components/schemas/AnalysisUpsertEvent"
+          },
+          {
+            "$ref": "#/components/schemas/PlaylistUpsertEvent"
+          },
+          {
+            "$ref": "#/components/schemas/PlaylistDeleteEvent"
+          },
+          {
+            "$ref": "#/components/schemas/PlaylistItemsEvent"
+          },
+          {
+            "$ref": "#/components/schemas/HistoryAppendEvent"
+          }
+        ]
+      },
+      "SyncResponse": {
+        "properties": {
+          "events": {
+            "description": "Apply in array order. Every event is idempotent (an upsert by entity or a tombstone): applying one twice is harmless.",
+            "items": {
+              "$ref": "#/components/schemas/SyncEventOut"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "has_more": {
+            "description": "True: call again with `next_cursor` right away (more pages). False on a delta: caught up; poll later with the same `next_cursor`. False on the final snapshot page: continue immediately with `next_cursor` as a delta cursor.",
+            "title": "Has More",
+            "type": "boolean"
+          },
+          "mode": {
+            "description": "`snapshot`: bootstrap pages (no `cursor` sent, or a bootstrap cursor); the events are the current state, not history, and carry no `id`/`created_at`. `delta`: events appended after the cursor, in ascending order, each with `id` and `created_at`.",
+            "enum": [
+              "snapshot",
+              "delta"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "next_cursor": {
+            "description": "Opaque. Always store it and send it as `cursor` next. After the last snapshot page it is already a delta cursor.",
+            "title": "Next Cursor",
+            "type": "string"
+          }
+        },
+        "required": [
+          "mode",
+          "events",
+          "next_cursor",
+          "has_more"
+        ],
+        "title": "SyncResponse",
+        "type": "object"
+      },
+      "TrackManifest": {
+        "additionalProperties": false,
+        "description": "The `manifest` part of `POST /v1/tracks`: shared, user-independent content metadata.\n\nUnknown fields are rejected (`422 INVALID_REQUEST`): no paths, technical properties (duration,\ncodec, MIME type, container, sample rate, size, hashes), owners or personal state. The server\nderives all technical properties from the sanitized audio; the client declares none of them.\nText is trimmed; control characters are rejected.",
+        "properties": {
+          "album_artist": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional, at most 300 characters.",
+            "title": "Album Artist"
+          },
+          "album_title": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional, at most 300 characters.",
+            "title": "Album Title"
+          },
+          "artist_name": {
+            "anyOf": [
+              {
+                "maxLength": 300,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional, at most 300 characters.",
+            "title": "Artist Name"
+          },
+          "disc_number": {
+            "anyOf": [
+              {
+                "maximum": 999,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Disc Number"
+          },
+          "genres": {
+            "description": "At most 20 entries, each 1-64 characters after trimming.",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Genres",
+            "type": "array"
+          },
+          "source_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Optional, only allowed with `COMMUNITY_IMPORT`. Request-only, never returned.",
+            "pattern": "^[a-z0-9_]{1,32}$",
+            "title": "Source Provider"
+          },
+          "source_type": {
+            "description": "Required. Request-only provenance classification, stored backend-side. It is never returned by any response or sync event.",
+            "enum": [
+              "LOCAL_UPLOAD",
+              "COMMUNITY_IMPORT"
+            ],
+            "title": "Source Type",
+            "type": "string"
+          },
+          "title": {
+            "description": "Required, 1-300 characters after trimming.",
+            "maxLength": 300,
+            "title": "Title",
+            "type": "string"
+          },
+          "track_id": {
+            "description": "Client-generated UUID version 7 is required (canonical hyphenated form). Other UUID versions (e.g. v4), the nil UUID and malformed values are rejected with `422 INVALID_REQUEST`. Never generated or replaced by the server; reuse by another request is `409 TRACK_ID_CONFLICT`.",
+            "format": "uuid",
+            "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-7[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$",
+            "title": "Track Id",
+            "type": "string"
+          },
+          "track_number": {
+            "anyOf": [
+              {
+                "maximum": 9999,
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Track Number"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "maximum": 9999,
+                "minimum": 1000,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Year"
+          }
+        },
+        "required": [
+          "track_id",
+          "title",
+          "source_type"
+        ],
+        "title": "TrackManifest",
+        "type": "object"
+      },
+      "TrackResponse": {
+        "properties": {
+          "added_at": {
+            "format": "date-time",
+            "title": "Added At",
+            "type": "string"
+          },
+          "album_artist": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Album Artist"
+          },
+          "album_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Album Title"
+          },
+          "artist_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Artist Name"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "disc_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disc Number"
+          },
+          "duration_ms": {
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "genres": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Genres",
+            "type": "array"
+          },
+          "has_artwork": {
+            "title": "Has Artwork",
+            "type": "boolean"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "track_number": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Number"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "artist_name",
+          "album_title",
+          "album_artist",
+          "track_number",
+          "disc_number",
+          "year",
+          "genres",
+          "duration_ms",
+          "has_artwork",
+          "added_at",
+          "created_at"
+        ],
+        "title": "TrackResponse",
+        "type": "object"
+      },
+      "UsageResponse": {
+        "properties": {
+          "storage": {
+            "$ref": "#/components/schemas/StorageUsage"
+          }
+        },
+        "required": [
+          "storage"
+        ],
+        "title": "UsageResponse",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "VerifyEmailRequest": {
+        "properties": {
+          "code": {
+            "maxLength": 64,
+            "title": "Code",
+            "type": "string"
+          },
+          "device": {
+            "$ref": "#/components/schemas/DeviceDescriptor"
+          },
+          "email": {
+            "maxLength": 320,
+            "title": "Email",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "code",
+          "device"
+        ],
+        "title": "VerifyEmailRequest",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "title": "owlsonic-backend",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/health/live": {
+      "get": {
+        "description": "The process is alive. Never touches dependencies.",
+        "operationId": "live_health_live_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Live",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "description": "Dependencies are reachable right now (PostgreSQL, bounded, not cached).",
+        "operationId": "ready_health_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ready",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/v1/auth/forgot-password": {
+      "post": {
+        "description": "Email a password reset code. Answers `202` whether or not the address has an account.",
+        "operationId": "forgot_password_v1_auth_forgot_password_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeRequestAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `INVALID_REQUEST` (retryable: false): Validation failed; `details[]` holds `{loc, type, message?}`. Password types: `password_too_short` / `password_too_long`; code type: `invalid_code_format`. The submitted value is never echoed."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `RESEND_COOLDOWN` (retryable: true): A code was requested for this address within the last 60 s; wait `Retry-After` seconds.\n- `RATE_LIMITED` (retryable: true): Too many requests from this address; wait `Retry-After` seconds."
+          }
+        },
+        "summary": "Forgot Password",
+        "tags": [
+          "auth"
+        ],
+        "x-error-codes": [
+          {
+            "code": "INVALID_REQUEST",
+            "meaning": "Validation failed; `details[]` holds `{loc, type, message?}`. Password types: `password_too_short` / `password_too_long`; code type: `invalid_code_format`. The submitted value is never echoed.",
+            "retryable": false,
+            "status": 422
+          },
+          {
+            "code": "RESEND_COOLDOWN",
+            "meaning": "A code was requested for this address within the last 60 s; wait `Retry-After` seconds.",
+            "retryable": true,
+            "status": 429
+          },
+          {
+            "code": "RATE_LIMITED",
+            "meaning": "Too many requests from this address; wait `Retry-After` seconds.",
+            "retryable": true,
+            "status": 429
+          }
+        ]
+      }
+    },
+    "/v1/auth/login": {
+      "post": {
+        "operationId": "login_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CredentialsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `INVALID_CREDENTIALS` (retryable: false): Unknown email or wrong password."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `EMAIL_NOT_VERIFIED` (retryable: false): The password is right but the email is not verified: continue with the code screen."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `INVALID_REQUEST` (retryable: false): Validation failed; `details[]` holds `{loc, type, message?}`. Password types: `password_too_short` / `password_too_long`; code type: `invalid_code_format`. The submitted value is never echoed."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `RATE_LIMITED` (retryable: true): Too many requests from this address; wait `Retry-After` seconds."
+          }
+        },
+        "summary": "Login",
+        "tags": [
+          "auth"
+        ],
+        "x-error-codes": [
+          {
+            "code": "INVALID_CREDENTIALS",
+            "meaning": "Unknown email or wrong password.",
+            "retryable": false,
+            "status": 401
+          },
+          {
+            "code": "EMAIL_NOT_VERIFIED",
+            "meaning": "The password is right but the email is not verified: continue with the code screen.",
+            "retryable": false,
+            "status": 403
+          },
+          {
+            "code": "INVALID_REQUEST",
+            "meaning": "Validation failed; `details[]` holds `{loc, type, message?}`. Password types: `password_too_short` / `password_too_long`; code type: `invalid_code_format`. The submitted value is never echoed.",
+            "retryable": false,
+            "status": 422
+          },
+          {
+            "code": "RATE_LIMITED",
+            "meaning": "Too many requests from this address; wait `Retry-After` seconds.",
+            "retryable": true,
+            "status": 429
+          }
+        ]
+      }
+    },
+    "/v1/auth/logout": {
+      "post": {
+        "operationId": "logout_v1_auth_logout_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Logout",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/v1/auth/refresh": {
+      "post": {
+        "description": "Rotate the session's credentials.\n\nRefresh tokens are SINGLE-USE and rotated on EVERY successful refresh: the response always\ncarries a new `refresh_token` (and a new `access_token`) and the presented token is consumed.\nStore both new tokens and discard the old ones. The returned token is the only valid refresh\ntoken of the session. Presenting a consumed token is `401 INVALID_REFRESH_TOKEN`: within a\nshort grace window (default 10 s) the session survives and the successor stays valid\n(concurrent or retried requests); later reuse revokes the whole session. If the response of a\nsuccessful refresh was lost, the new token is unrecoverable: log in again. The refresh expiry\nslides: `refresh_expires_at` is extended on every refresh.",
+        "operationId": "refresh_v1_auth_refresh_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CredentialsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `INVALID_REFRESH_TOKEN` (retryable: false): Unknown, expired, already used (rotated) or revoked token. Log in again."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `INVALID_REQUEST` (retryable: false): Malformed request body."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `RATE_LIMITED` (retryable: true): Too many refresh attempts from this address."
+          }
+        },
+        "summary": "Refresh",
+        "tags": [
+          "auth"
+        ],
+        "x-error-codes": [
+          {
+            "code": "INVALID_REFRESH_TOKEN",
+            "meaning": "Unknown, expired, already used (rotated) or revoked token. Log in again.",
+            "retryable": false,
+            "status": 401
+          },
+          {
+            "code": "INVALID_REQUEST",
+            "meaning": "Malformed request body.",
+            "retryable": false,
+            "status": 422
+          },
+          {
+            "code": "RATE_LIMITED",
+            "meaning": "Too many refresh attempts from this address.",
+            "retryable": true,
+            "status": 429
+          }
+        ]
+      }
+    },
+    "/v1/auth/register": {
+      "post": {
+        "description": "Create (or retry) a pending account and email a six-digit code. No credentials yet: the\nclient continues with `POST /auth/verify-email` (spec 012).",
+        "operationId": "register_v1_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingVerificationResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `EMAIL_ALREADY_REGISTERED` (retryable: false): The address already has a verified account. A still-pending address is NOT a conflict."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `INVALID_REQUEST` (retryable: false): Validation failed; `details[]` holds `{loc, type, message?}`. Password types: `password_too_short` / `password_too_long`; code type: `invalid_code_format`. The submitted value is never echoed."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `RATE_LIMITED` (retryable: true): Too many requests from this address; wait `Retry-After` seconds."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `EMAIL_DELIVERY_FAILED` (retryable: true): The verification email could not be sent; the pending account exists. Retry."
+          }
+        },
+        "summary": "Register",
+        "tags": [
+          "auth"
+        ],
+        "x-error-codes": [
+          {
+            "code": "EMAIL_ALREADY_REGISTERED",
+            "meaning": "The address already has a verified account. A still-pending address is NOT a conflict.",
+            "retryable": false,
+            "status": 409
+          },
+          {
+            "code": "INVALID_REQUEST",
+            "meaning": "Validation failed; `details[]` holds `{loc, type, message?}`. Password types: `password_too_short` / `password_too_long`; code type: `invalid_code_format`. The submitted value is never echoed.",
+            "retryable": false,
+            "status": 422
+          },
+          {
+            "code": "RATE_LIMITED",
+            "meaning": "Too many requests from this address; wait `Retry-After` seconds.",
+            "retryable": true,
+            "status": 429
+          },
+          {
+            "code": "EMAIL_DELIVERY_FAILED",
+            "meaning": "The verification email could not be sent; the pending account exists. Retry.",
+            "retryable": true,
+            "status": 503
+          }
+        ]
+      }
+    },
+    "/v1/auth/resend-verification": {
+      "post": {
+        "description": "Send a new verification code. Answers `202` for any well-formed address.",
+        "operationId": "resend_verification_v1_auth_resend_verification_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CodeRequestAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `INVALID_REQUEST` (retryable: false): Validation failed; `details[]` holds `{loc, type, message?}`. Password types: `password_too_short` / `password_too_long`; code type: `invalid_code_format`. The submitted value is never echoed."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `RESEND_COOLDOWN` (retryable: true): A code was requested for this address within the last 60 s; wait `Retry-After` seconds.\n- `RATE_LIMITED` (retryable: true): Too many requests from this address; wait `Retry-After` seconds."
+          }
+        },
+        "summary": "Resend Verification",
+        "tags": [
+          "auth"
+        ],
+        "x-error-codes": [
+          {
+            "code": "INVALID_REQUEST",
+            "meaning": "Validation failed; `details[]` holds `{loc, type, message?}`. Password types: `password_too_short` / `password_too_long`; code type: `invalid_code_format`. The submitted value is never echoed.",
+            "retryable": false,
+            "status": 422
+          },
+          {
+            "code": "RESEND_COOLDOWN",
+            "meaning": "A code was requested for this address within the last 60 s; wait `Retry-After` seconds.",
+            "retryable": true,
+            "status": 429
+          },
+          {
+            "code": "RATE_LIMITED",
+            "meaning": "Too many requests from this address; wait `Retry-After` seconds.",
+            "retryable": true,
+            "status": 429
+          }
+        ]
+      }
+    },
+    "/v1/auth/reset-password": {
+      "post": {
+        "description": "Set a new password with the emailed code; every session is revoked, log in again.",
+        "operationId": "reset_password_v1_auth_reset_password_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `INVALID_CODE` (retryable: false): Wrong, expired, already used or replaced code (indistinguishable). Counts as one attempt."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `INVALID_REQUEST` (retryable: false): Validation failed; `details[]` holds `{loc, type, message?}`. Password types: `password_too_short` / `password_too_long`; code type: `invalid_code_format`. The submitted value is never echoed."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `CODE_ATTEMPTS_EXCEEDED` (retryable: false): Five wrong attempts: the code is dead, no `Retry-After`; request a new code.\n- `RATE_LIMITED` (retryable: true): Too many requests from this address; wait `Retry-After` seconds."
+          }
+        },
+        "summary": "Reset Password",
+        "tags": [
+          "auth"
+        ],
+        "x-error-codes": [
+          {
+            "code": "INVALID_CODE",
+            "meaning": "Wrong, expired, already used or replaced code (indistinguishable). Counts as one attempt.",
+            "retryable": false,
+            "status": 400
+          },
+          {
+            "code": "INVALID_REQUEST",
+            "meaning": "Validation failed; `details[]` holds `{loc, type, message?}`. Password types: `password_too_short` / `password_too_long`; code type: `invalid_code_format`. The submitted value is never echoed.",
+            "retryable": false,
+            "status": 422
+          },
+          {
+            "code": "CODE_ATTEMPTS_EXCEEDED",
+            "meaning": "Five wrong attempts: the code is dead, no `Retry-After`; request a new code.",
+            "retryable": false,
+            "status": 429
+          },
+          {
+            "code": "RATE_LIMITED",
+            "meaning": "Too many requests from this address; wait `Retry-After` seconds.",
+            "retryable": true,
+            "status": 429
+          }
+        ]
+      }
+    },
+    "/v1/auth/verify-email": {
+      "post": {
+        "description": "Verify the emailed code, activate the account and sign in on this device.",
+        "operationId": "verify_email_v1_auth_verify_email_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmailRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CredentialsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `INVALID_CODE` (retryable: false): Wrong, expired, already used or replaced code, or a different `installation_id` than the one that registered (indistinguishable). Counts as one attempt."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `INVALID_REQUEST` (retryable: false): Validation failed; `details[]` holds `{loc, type, message?}`. Password types: `password_too_short` / `password_too_long`; code type: `invalid_code_format`. The submitted value is never echoed."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `CODE_ATTEMPTS_EXCEEDED` (retryable: false): Five wrong attempts: the code is dead, no `Retry-After`; request a new code.\n- `RATE_LIMITED` (retryable: true): Too many requests from this address; wait `Retry-After` seconds."
+          }
+        },
+        "summary": "Verify Email",
+        "tags": [
+          "auth"
+        ],
+        "x-error-codes": [
+          {
+            "code": "INVALID_CODE",
+            "meaning": "Wrong, expired, already used or replaced code, or a different `installation_id` than the one that registered (indistinguishable). Counts as one attempt.",
+            "retryable": false,
+            "status": 400
+          },
+          {
+            "code": "INVALID_REQUEST",
+            "meaning": "Validation failed; `details[]` holds `{loc, type, message?}`. Password types: `password_too_short` / `password_too_long`; code type: `invalid_code_format`. The submitted value is never echoed.",
+            "retryable": false,
+            "status": 422
+          },
+          {
+            "code": "CODE_ATTEMPTS_EXCEEDED",
+            "meaning": "Five wrong attempts: the code is dead, no `Retry-After`; request a new code.",
+            "retryable": false,
+            "status": 429
+          },
+          {
+            "code": "RATE_LIMITED",
+            "meaning": "Too many requests from this address; wait `Retry-After` seconds.",
+            "retryable": true,
+            "status": 429
+          }
+        ]
+      }
+    },
+    "/v1/devices": {
+      "get": {
+        "operationId": "list_devices_v1_devices_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "List Devices",
+        "tags": [
+          "devices"
+        ]
+      }
+    },
+    "/v1/devices/{device_id}": {
+      "delete": {
+        "operationId": "revoke_device_v1_devices__device_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "device_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Device Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Revoke Device",
+        "tags": [
+          "devices"
+        ]
+      }
+    },
+    "/v1/discover/candidates": {
+      "get": {
+        "description": "The eligible candidate pool for local ranking: catalog traversal, never a ranking.\n\nTracks already in the caller's ACTIVE library are EXCLUDED (there is no `owned` flag): a\ncandidate is never something the caller can already play. A Track the caller removed\n(tombstone) is a candidate again. Pages are cursor-stable: adding a candidate does not shift\nlater pages.",
+        "operationId": "candidates_v1_discover_candidates_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CandidatePage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `INVALID_DISCOVER_CURSOR` (retryable: false): Bad cursor: restart without `cursor`."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `UNAUTHORIZED` (retryable: false): Missing, invalid or expired access token."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `RATE_LIMITED` (retryable: true): Too many requests; wait `Retry-After` seconds."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Candidates",
+        "tags": [
+          "discover"
+        ],
+        "x-error-codes": [
+          {
+            "code": "INVALID_DISCOVER_CURSOR",
+            "meaning": "Bad cursor: restart without `cursor`.",
+            "retryable": false,
+            "status": 400
+          },
+          {
+            "code": "UNAUTHORIZED",
+            "meaning": "Missing, invalid or expired access token.",
+            "retryable": false,
+            "status": 401
+          },
+          {
+            "code": "RATE_LIMITED",
+            "meaning": "Too many requests; wait `Retry-After` seconds.",
+            "retryable": true,
+            "status": 429
+          }
+        ]
+      }
+    },
+    "/v1/discover/{track_id}/add": {
+      "post": {
+        "operationId": "add_to_library_from_discover_v1_discover__track_id__add_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "track_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Track Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LibraryItem"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `UNAUTHORIZED` (retryable: false): Missing, invalid or expired access token."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `STORAGE_QUOTA_EXCEEDED` (retryable: false): Adding would exceed the storage quota."
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `DISCOVER_ITEM_NOT_FOUND` (retryable: false): Unknown or not (or no longer) addable."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `RATE_LIMITED` (retryable: true): Too many requests; wait `Retry-After` seconds."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Add To Library From Discover",
+        "tags": [
+          "discover"
+        ],
+        "x-error-codes": [
+          {
+            "code": "UNAUTHORIZED",
+            "meaning": "Missing, invalid or expired access token.",
+            "retryable": false,
+            "status": 401
+          },
+          {
+            "code": "STORAGE_QUOTA_EXCEEDED",
+            "meaning": "Adding would exceed the storage quota.",
+            "retryable": false,
+            "status": 403
+          },
+          {
+            "code": "DISCOVER_ITEM_NOT_FOUND",
+            "meaning": "Unknown or not (or no longer) addable.",
+            "retryable": false,
+            "status": 404
+          },
+          {
+            "code": "RATE_LIMITED",
+            "meaning": "Too many requests; wait `Retry-After` seconds.",
+            "retryable": true,
+            "status": 429
+          }
+        ]
+      }
+    },
+    "/v1/discover/{track_id}/artwork": {
+      "get": {
+        "operationId": "discover_artwork_v1_discover__track_id__artwork_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "track_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Track Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignedUrlResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Discover Artwork",
+        "tags": [
+          "discover"
+        ]
+      }
+    },
+    "/v1/history": {
+      "get": {
+        "operationId": "read_history_v1_history_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Read History",
+        "tags": [
+          "history"
+        ]
+      }
+    },
+    "/v1/history/events": {
+      "post": {
+        "description": "Append play events atomically and idempotently (by event ID).",
+        "operationId": "submit_events_v1_history_events_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlayEventsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlayEventsResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Submit Events",
+        "tags": [
+          "history"
+        ]
+      }
+    },
+    "/v1/library": {
+      "get": {
+        "operationId": "list_library_v1_library_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LibraryPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "List Library",
+        "tags": [
+          "library"
+        ]
+      }
+    },
+    "/v1/library/{track_id}": {
+      "delete": {
+        "operationId": "delete_library_item_v1_library__track_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "track_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Track Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Delete Library Item",
+        "tags": [
+          "library"
+        ]
+      },
+      "get": {
+        "operationId": "get_library_item_v1_library__track_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "track_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Track Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LibraryItem"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Get Library Item",
+        "tags": [
+          "library"
+        ]
+      },
+      "patch": {
+        "operationId": "patch_library_item_v1_library__track_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "track_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Track Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LibraryItemPatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LibraryItem"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Patch Library Item",
+        "tags": [
+          "library"
+        ]
+      }
+    },
+    "/v1/library/{track_id}/artwork": {
+      "get": {
+        "operationId": "get_library_artwork_v1_library__track_id__artwork_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "track_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Track Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignedUrlResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Get Library Artwork",
+        "tags": [
+          "library"
+        ]
+      }
+    },
+    "/v1/library/{track_id}/playback": {
+      "post": {
+        "description": "Authorize against the caller's active LibraryEntry, then hand out one signed GET URL.",
+        "operationId": "authorize_cloud_playback_v1_library__track_id__playback_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "track_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Track Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SignedUrlResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Authorize Cloud Playback",
+        "tags": [
+          "library"
+        ]
+      }
+    },
+    "/v1/me": {
+      "delete": {
+        "description": "Permanently delete the account (spec 008): reauthenticate, revoke everything now, clean up\npersonal data asynchronously. Irreversible; shared content is retained, ownerless.",
+        "operationId": "delete_me_v1_me_delete",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteAccountRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletionAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Delete Me",
+        "tags": [
+          "account"
+        ]
+      },
+      "get": {
+        "operationId": "me_v1_me_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Me",
+        "tags": [
+          "account"
+        ]
+      }
+    },
+    "/v1/me/usage": {
+      "get": {
+        "description": "The caller's own used/limit figures; nothing about objects, history or plans.",
+        "operationId": "read_usage_v1_me_usage_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Read Usage",
+        "tags": [
+          "usage"
+        ]
+      }
+    },
+    "/v1/playlists": {
+      "get": {
+        "operationId": "list_playlists_v1_playlists_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlaylistPage"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "List Playlists",
+        "tags": [
+          "playlists"
+        ]
+      },
+      "post": {
+        "operationId": "create_playlist_v1_playlists_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlaylistCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlaylistDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Create Playlist",
+        "tags": [
+          "playlists"
+        ]
+      }
+    },
+    "/v1/playlists/{playlist_id}": {
+      "delete": {
+        "operationId": "delete_playlist_v1_playlists__playlist_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "playlist_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Playlist Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Delete Playlist",
+        "tags": [
+          "playlists"
+        ]
+      },
+      "get": {
+        "operationId": "get_playlist_v1_playlists__playlist_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "playlist_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Playlist Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlaylistDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Get Playlist",
+        "tags": [
+          "playlists"
+        ]
+      },
+      "patch": {
+        "operationId": "rename_playlist_v1_playlists__playlist_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "playlist_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Playlist Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlaylistRename"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlaylistDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Rename Playlist",
+        "tags": [
+          "playlists"
+        ]
+      }
+    },
+    "/v1/playlists/{playlist_id}/items": {
+      "post": {
+        "operationId": "add_playlist_item_v1_playlists__playlist_id__items_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "playlist_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Playlist Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlaylistItemCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlaylistItemOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Add Playlist Item",
+        "tags": [
+          "playlists"
+        ]
+      }
+    },
+    "/v1/playlists/{playlist_id}/items/order": {
+      "put": {
+        "operationId": "reorder_playlist_items_v1_playlists__playlist_id__items_order_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "playlist_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Playlist Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlaylistDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Reorder Playlist Items",
+        "tags": [
+          "playlists"
+        ]
+      }
+    },
+    "/v1/playlists/{playlist_id}/items/{item_id}": {
+      "delete": {
+        "operationId": "remove_playlist_item_v1_playlists__playlist_id__items__item_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "playlist_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Playlist Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "item_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Item Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Remove Playlist Item",
+        "tags": [
+          "playlists"
+        ]
+      }
+    },
+    "/v1/sync": {
+      "get": {
+        "description": "Pull the caller's changes. Protocol details: `docs/SYNC_PROTOCOL.md`.\n\n**Bootstrap (snapshot)**: without `cursor` the server pages the CURRENT state (library items,\neach followed by its `analysis.upsert` when analysis is ready, then playlists, then recent\nhistory), not history. `mode` is `snapshot`, events have no `id`/`created_at`, `has_more` is\ntrue until the last page, whose `next_cursor` is already a delta cursor. Pass every\n`next_cursor` back unchanged.\n\n**Delta**: with a delta cursor the response holds the events appended after it, ascending.\nPoll with the last `next_cursor`; `has_more=false` means caught up.\n\n**Cursor**: opaque, per user, durable (stays valid across restarts and deployments; there is\nno expiry). The same cursor always returns the same events plus any newer ones, so a pull\nmay be repeated safely. Event `id`s are unique per user and never repeat; a gap in the\nsequence is normal. `version` is the version of that event type's PAYLOAD SCHEMA (not an\nentity revision): a type may be delivered in more than one version (`library.upsert` v1/v2).\nThe server never rewrites stored events; apply events in array order and idempotently.",
+        "operationId": "pull_v1_sync_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Limit"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `INVALID_SYNC_CURSOR` (retryable: false): Bad cursor (malformed, forged, from the future, not yours): restart without `cursor`."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `UNAUTHORIZED` (retryable: false): Missing, invalid or expired access token."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `INVALID_REQUEST` (retryable: false): `limit` out of range."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `SERVICE_UNAVAILABLE` (retryable: true): Database temporarily unavailable; retry."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Pull",
+        "tags": [
+          "sync"
+        ],
+        "x-error-codes": [
+          {
+            "code": "INVALID_SYNC_CURSOR",
+            "meaning": "Bad cursor (malformed, forged, from the future, not yours): restart without `cursor`.",
+            "retryable": false,
+            "status": 400
+          },
+          {
+            "code": "UNAUTHORIZED",
+            "meaning": "Missing, invalid or expired access token.",
+            "retryable": false,
+            "status": 401
+          },
+          {
+            "code": "INVALID_REQUEST",
+            "meaning": "`limit` out of range.",
+            "retryable": false,
+            "status": 422
+          },
+          {
+            "code": "SERVICE_UNAVAILABLE",
+            "meaning": "Database temporarily unavailable; retry.",
+            "retryable": true,
+            "status": 503
+          }
+        ]
+      }
+    },
+    "/v1/tracks": {
+      "post": {
+        "description": "Upload one Track (spec 002). `multipart/form-data`, parts at most once each:\n\n- `manifest` (required): a JSON object, schema `TrackManifest`. Send it as a plain form field or as\n  a file part, UTF-8 encoded JSON, at most 64 KiB; `Content-Type: application/json` is recommended\n  but the server ignores part content types and file names.\n- `audio` (required): the audio file bytes (mp3, flac, m4a, ogg vorbis, ogg opus or wav).\n- `artwork` (optional): the cover image bytes (JPEG, PNG or WebP).\n\nHeader `Idempotency-Key` is required. Retrying with the same key and the same content replays the\noriginal `201` with `Idempotent-Replayed: true`.\n\nIdentical audio content (same sanitized SHA-256) uploaded again is NOT an error: the server\nreuses the stored AudioObject and still creates the new Track and library entry (`201`). There\nis no \"duplicate content\" error code; a duplicate `track_id` is `409 TRACK_ID_CONFLICT`.\nAnalysis is queued server-side in the same transaction; it never fails the upload (follow\n`analysis.upsert` in `GET /v1/sync`).",
+        "operationId": "create_track_v1_tracks_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          },
+          {
+            "description": "16-128 characters of `A-Za-z0-9._:-`. One key per logical upload.",
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Za-z0-9._:-]{16,128}$",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "encoding": {
+                "artwork": {
+                  "contentType": "image/jpeg, image/png, image/webp"
+                },
+                "audio": {
+                  "contentType": "audio/mpeg, audio/flac, audio/mp4, audio/ogg, audio/wav"
+                },
+                "manifest": {
+                  "contentType": "application/json"
+                }
+              },
+              "schema": {
+                "properties": {
+                  "artwork": {
+                    "format": "binary",
+                    "type": "string"
+                  },
+                  "audio": {
+                    "format": "binary",
+                    "type": "string"
+                  },
+                  "manifest": {
+                    "$ref": "#/components/schemas/TrackManifest",
+                    "description": "UTF-8 JSON object (`TrackManifest`)."
+                  }
+                },
+                "required": [
+                  "manifest",
+                  "audio"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrackResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `INVALID_REQUEST` (retryable: false): Malformed multipart body, missing `audio`, or an unknown or duplicate part."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `UNAUTHORIZED` (retryable: false): Missing, invalid or expired access token (refresh once, then retry)."
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `STORAGE_QUOTA_EXCEEDED` (retryable: false): The upload would exceed the user's storage quota. Nothing was stored."
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `TRACK_ID_CONFLICT` (retryable: false): `track_id` already belongs to another Track (not an idempotent replay).\n- `IDEMPOTENCY_KEY_REUSED` (retryable: false): The `Idempotency-Key` was already used for a different request.\n- `INGESTION_IN_PROGRESS` (retryable: true): A request with this key is still processing; retry the same request later."
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `AUDIO_TOO_LARGE` (retryable: false): `audio` exceeds the upload limit (100 MiB).\n- `ARTWORK_TOO_LARGE` (retryable: false): `artwork` exceeds the upload limit (10 MiB).\n- `REQUEST_TOO_LARGE` (retryable: false): The whole request body exceeds the edge limit."
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `UNSUPPORTED_AUDIO_FORMAT` (retryable: false): Valid media, but not an accepted audio format (mp3, flac, m4a, ogg, opus, wav)."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `INVALID_REQUEST` (retryable: false): Invalid `manifest` (`details[].loc` starts with `manifest`) or `Idempotency-Key`.\n- `INVALID_AUDIO` (retryable: false): `audio` is corrupt, unreadable or not audio.\n- `AUDIO_TOO_LONG` (retryable: false): Audio duration exceeds the limit (1200 s).\n- `INVALID_ARTWORK` (retryable: false): `artwork` is invalid, unsupported (JPEG, PNG, WebP only) or too large in pixels."
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `RATE_LIMITED` (retryable: true): Too many ingestion requests; wait for `Retry-After` seconds."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `SANITIZATION_FAILED` (retryable: false): Media could not be sanitized; resending the same file will not help.\n- `INTERNAL_ERROR` (retryable: false): Unexpected server error."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "- `STORAGE_UNAVAILABLE` (retryable: true): Object storage is temporarily unavailable; retry with the same key.\n- `SERVICE_UNAVAILABLE` (retryable: true): A dependency (database) is temporarily unavailable; retry."
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "summary": "Create Track",
+        "tags": [
+          "tracks"
+        ],
+        "x-error-codes": [
+          {
+            "code": "INVALID_REQUEST",
+            "meaning": "Malformed multipart body, missing `audio`, or an unknown or duplicate part.",
+            "retryable": false,
+            "status": 400
+          },
+          {
+            "code": "UNAUTHORIZED",
+            "meaning": "Missing, invalid or expired access token (refresh once, then retry).",
+            "retryable": false,
+            "status": 401
+          },
+          {
+            "code": "STORAGE_QUOTA_EXCEEDED",
+            "meaning": "The upload would exceed the user's storage quota. Nothing was stored.",
+            "retryable": false,
+            "status": 403
+          },
+          {
+            "code": "TRACK_ID_CONFLICT",
+            "meaning": "`track_id` already belongs to another Track (not an idempotent replay).",
+            "retryable": false,
+            "status": 409
+          },
+          {
+            "code": "IDEMPOTENCY_KEY_REUSED",
+            "meaning": "The `Idempotency-Key` was already used for a different request.",
+            "retryable": false,
+            "status": 409
+          },
+          {
+            "code": "INGESTION_IN_PROGRESS",
+            "meaning": "A request with this key is still processing; retry the same request later.",
+            "retryable": true,
+            "status": 409
+          },
+          {
+            "code": "AUDIO_TOO_LARGE",
+            "meaning": "`audio` exceeds the upload limit (100 MiB).",
+            "retryable": false,
+            "status": 413
+          },
+          {
+            "code": "ARTWORK_TOO_LARGE",
+            "meaning": "`artwork` exceeds the upload limit (10 MiB).",
+            "retryable": false,
+            "status": 413
+          },
+          {
+            "code": "REQUEST_TOO_LARGE",
+            "meaning": "The whole request body exceeds the edge limit.",
+            "retryable": false,
+            "status": 413
+          },
+          {
+            "code": "UNSUPPORTED_AUDIO_FORMAT",
+            "meaning": "Valid media, but not an accepted audio format (mp3, flac, m4a, ogg, opus, wav).",
+            "retryable": false,
+            "status": 415
+          },
+          {
+            "code": "INVALID_REQUEST",
+            "meaning": "Invalid `manifest` (`details[].loc` starts with `manifest`) or `Idempotency-Key`.",
+            "retryable": false,
+            "status": 422
+          },
+          {
+            "code": "INVALID_AUDIO",
+            "meaning": "`audio` is corrupt, unreadable or not audio.",
+            "retryable": false,
+            "status": 422
+          },
+          {
+            "code": "AUDIO_TOO_LONG",
+            "meaning": "Audio duration exceeds the limit (1200 s).",
+            "retryable": false,
+            "status": 422
+          },
+          {
+            "code": "INVALID_ARTWORK",
+            "meaning": "`artwork` is invalid, unsupported (JPEG, PNG, WebP only) or too large in pixels.",
+            "retryable": false,
+            "status": 422
+          },
+          {
+            "code": "RATE_LIMITED",
+            "meaning": "Too many ingestion requests; wait for `Retry-After` seconds.",
+            "retryable": true,
+            "status": 429
+          },
+          {
+            "code": "SANITIZATION_FAILED",
+            "meaning": "Media could not be sanitized; resending the same file will not help.",
+            "retryable": false,
+            "status": 500
+          },
+          {
+            "code": "INTERNAL_ERROR",
+            "meaning": "Unexpected server error.",
+            "retryable": false,
+            "status": 500
+          },
+          {
+            "code": "STORAGE_UNAVAILABLE",
+            "meaning": "Object storage is temporarily unavailable; retry with the same key.",
+            "retryable": true,
+            "status": 503
+          },
+          {
+            "code": "SERVICE_UNAVAILABLE",
+            "meaning": "A dependency (database) is temporarily unavailable; retry.",
+            "retryable": true,
+            "status": 503
+          }
+        ]
+      }
+    }
+  }
+}

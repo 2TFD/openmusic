@@ -1,5 +1,5 @@
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track_preview.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track_preview.dart';
 
 enum TrackResolutionIssueReason { unavailable, noMatch, unsupported }
 

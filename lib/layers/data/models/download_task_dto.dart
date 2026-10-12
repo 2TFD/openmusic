@@ -1,5 +1,5 @@
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/domain/entities/download_track_task.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/domain/entities/download_track_task.dart';
 
 class DownloadTaskDto {
   final String trackId;

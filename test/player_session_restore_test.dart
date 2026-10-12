@@ -1,25 +1,53 @@
+import 'package:owlsonic/core/telemetry/analytics_tracker.dart';
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/listening_summary.dart';
-import 'package:openmusic/layers/domain/entities/playback_session.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
-import 'package:openmusic/layers/domain/repositories/listening_checkpoint_repository.dart';
-import 'package:openmusic/layers/domain/repositories/listening_summary_repository.dart';
-import 'package:openmusic/layers/domain/repositories/playback_session_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_repository.dart';
-import 'package:openmusic/layers/domain/usecases/build_playback_queue_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/restore_playback_session_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/save_listening_summary_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/skip_track_use_case.dart';
-import 'package:openmusic/layers/domain/services/listening_tracker.dart';
-import 'package:openmusic/core/services/audio_player/playback_command_bus_impl.dart';
-import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/domain/entities/listening_summary.dart';
+import 'package:owlsonic/layers/domain/entities/playback_session.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/repositories/audio_player_port.dart';
+import 'package:owlsonic/layers/domain/repositories/listening_checkpoint_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/listening_summary_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/playback_session_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/layers/domain/usecases/build_playback_queue_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/restore_playback_session_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/save_listening_summary_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/skip_track_use_case.dart';
+import 'package:owlsonic/layers/domain/services/listening_tracker.dart';
+import 'package:owlsonic/core/services/audio_player/playback_command_bus_impl.dart';
+import 'package:owlsonic/layers/presentation/features/player/bloc/player/player_bloc.dart';
 
 void main() {
+  test(
+    'desktop volume control updates the player and clamps its range',
+    () async {
+      final player = _FakeAudioPlayer();
+      final bloc = _bloc(
+        player: player,
+        sessions: _MemorySessions(null),
+        tracks: const [],
+      );
+      addTearDown(() async {
+        await bloc.close();
+        await player.close();
+      });
+      await bloc.stream.firstWhere((state) => !state.isRestoring);
+
+      final quieter = bloc.stream.firstWhere((state) => state.volume == .35);
+      bloc.add(PlayerVolumeChanged(.35));
+      await quieter;
+      expect(player.volume, .35);
+
+      final clamped = bloc.stream.firstWhere((state) => state.volume == 1);
+      bloc.add(PlayerVolumeChanged(2));
+      await clamped;
+      expect(player.volume, 1);
+    },
+  );
+
   test(
     'cold restore loads the queue and always leaves playback paused',
     () async {
@@ -256,6 +284,7 @@ PlayerBloc _bloc({
   required _MemorySessions sessions,
   required List<Track> tracks,
 }) => PlayerBloc(
+  analytics: const NoopAnalyticsTracker(),
   service: player,
   saveListeningSummary: SaveListeningSummaryUseCase(repo: _NoopRecords()),
   checkpoints: _NoopCheckpoints(),
@@ -295,6 +324,7 @@ class _FakeAudioPlayer implements AudioPlayerPort {
   Duration initialPosition = Duration.zero;
   PlaybackLoopMode loopMode = PlaybackLoopMode.off;
   bool shuffleEnabled = false;
+  double volume = 1;
   int pauseCalls = 0;
   int playCalls = 0;
   int setQueueCalls = 0;
@@ -390,6 +420,9 @@ class _FakeAudioPlayer implements AudioPlayerPort {
 
   @override
   Future<void> setLoopMode(PlaybackLoopMode mode) async => loopMode = mode;
+
+  @override
+  Future<void> setVolume(double volume) async => this.volume = volume;
   @override
   Future<void> setShuffleModeEnabled(bool enabled) async =>
       shuffleEnabled = enabled;

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
+import 'package:owlsonic/layers/domain/repositories/audio_player_port.dart';
 
 class PlaybackSession extends Equatable {
   const PlaybackSession({

@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track_preview.dart';
-import 'package:openmusic/layers/domain/repositories/local_track_picker.dart';
-import 'package:openmusic/layers/domain/usecases/import_local_tracks_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/pick_local_tracks_use_case.dart';
-import 'package:openmusic/layers/presentation/blocs/import_music/import_music_cubit.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track_preview.dart';
+import 'package:owlsonic/layers/domain/repositories/local_track_picker.dart';
+import 'package:owlsonic/layers/domain/usecases/import_local_tracks_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/pick_local_tracks_use_case.dart';
+import 'package:owlsonic/layers/presentation/features/import_music/bloc/import_music/import_music_cubit.dart';
 
 void main() {
   group('ImportMusicCubit', () {
@@ -74,6 +74,9 @@ TrackPreview _preview(String id) {
 }
 
 class _FakeLocalTrackPicker implements LocalTrackPicker {
+  @override
+  Future<void> clearPickedCache() async {}
+
   const _FakeLocalTrackPicker(this.previews);
 
   final List<TrackPreview> previews;

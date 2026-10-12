@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
-import 'package:openmusic/layers/data/database/playback_session_table.dart';
-import 'package:openmusic/layers/data/datasources/local/track/drift/track_table.dart';
+import 'package:owlsonic/layers/data/database/playback_session_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/track/drift/track_table.dart';
 
 class PlaybackQueueItemTable extends Table {
   TextColumn get sessionId => text().references(

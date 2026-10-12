@@ -1,7 +1,7 @@
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/entities/track_preview.dart';
-import 'package:openmusic/layers/domain/repositories/search_source.dart';
-import 'package:openmusic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/track_preview.dart';
+import 'package:owlsonic/layers/domain/repositories/search_source.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
 
 class LocalSearchPage {
   final List<Track> tracks;

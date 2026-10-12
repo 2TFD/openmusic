@@ -2,11 +2,11 @@ import 'dart:ui';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:openmusic/core/bootstrap/app_initializer.dart';
-import 'package:openmusic/core/themes/app_theme.dart';
-import 'package:openmusic/core/utils/app_logger.dart';
-import 'package:openmusic/layers/presentation/models/ui_error.dart';
-import 'package:openmusic/layers/presentation/screens/startup_screen.dart';
+import 'package:owlsonic/core/bootstrap/app_initializer.dart';
+import 'package:owlsonic/core/themes/app_theme.dart';
+import 'package:owlsonic/core/utils/app_logger.dart';
+import 'package:owlsonic/layers/presentation/shared/models/ui_error.dart';
+import 'package:owlsonic/layers/presentation/features/startup/ui/startup_screen.dart';
 
 class BootstrapHost extends StatefulWidget {
   const BootstrapHost({
@@ -143,14 +143,14 @@ final class _BootstrapCopy {
     final shortId = id.substring(0, 8);
     if (locale.languageCode == 'ru') {
       return _BootstrapCopy(
-        'Не удалось запустить OpenMusic',
+        'Не удалось запустить Owlsonic',
         'Проверьте хранилище устройства и попробуйте снова. '
             'Код ошибки: $shortId',
         'Повторить',
       );
     }
     return _BootstrapCopy(
-      'OpenMusic could not start',
+      'Owlsonic could not start',
       'Check the device storage and try again. Error ID: $shortId',
       'Try again',
     );

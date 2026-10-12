@@ -1,6 +1,6 @@
-import 'package:openmusic/layers/domain/entities/playlist.dart';
-import 'package:openmusic/layers/domain/repositories/playlist_repository.dart';
-import 'package:openmusic/layers/domain/usecases/playlist_metadata_validation.dart';
+import 'package:owlsonic/layers/domain/entities/playlist.dart';
+import 'package:owlsonic/layers/domain/repositories/playlist_repository.dart';
+import 'package:owlsonic/layers/domain/usecases/playlist_metadata_validation.dart';
 
 class UpdatePlaylistUseCase {
   final PlaylistRepository _repository;

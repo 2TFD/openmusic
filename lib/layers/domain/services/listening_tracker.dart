@@ -1,7 +1,7 @@
 import 'package:uuid/uuid.dart';
 
-import '../entities/listening_event.dart';
-import '../usecases/save_listening_event_use_case.dart';
+import 'package:owlsonic/layers/domain/entities/listening_event.dart';
+import 'package:owlsonic/layers/domain/usecases/save_listening_event_use_case.dart';
 
 enum ListeningNavigationIntent { userNext, userPrevious, queueSelection }
 

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/errors/failures/failure.dart';
-import 'package:openmusic/layers/domain/usecases/playlist_metadata_validation.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
+import 'package:owlsonic/layers/domain/usecases/playlist_metadata_validation.dart';
 
 void main() {
   test('playlist metadata is normalized at the use-case boundary', () {

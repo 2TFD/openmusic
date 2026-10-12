@@ -1,6 +1,7 @@
 import 'dart:developer' as dev;
+import 'dart:async';
 
-import 'package:openmusic/core/telemetry/crash_reporter.dart';
+import 'package:owlsonic/core/telemetry/crash_reporter.dart';
 
 class AppLogger {
   static CrashReporter _reporter = const NoopCrashReporter();
@@ -36,19 +37,17 @@ class AppLogger {
     String? occurrenceId,
     bool fatal = false,
   }) async {
-    dev.log(
-      message ?? operation,
-      name: 'AppLogger',
-      level: fatal ? 1200 : 1000,
-      error: error,
-      stackTrace: stackTrace,
-    );
-    await _reporter.captureException(
-      error,
-      stackTrace,
-      operation: operation,
-      occurrenceId: occurrenceId,
-      fatal: fatal,
+    dev.log(operation, name: 'AppLogger', level: fatal ? 1200 : 1000);
+    unawaited(
+      _reporter
+          .captureException(
+            error,
+            stackTrace,
+            operation: operation,
+            occurrenceId: occurrenceId,
+            fatal: fatal,
+          )
+          .catchError((Object _) {}),
     );
   }
 
@@ -60,15 +59,17 @@ class AppLogger {
     StackTrace? stackTrace,
   }) async {
     dev.log(
-      message,
+      operation ?? 'application.${level.name}',
       name: 'AppLogger',
       level: _developerLevel(level),
-      error: error,
-      stackTrace: stackTrace,
     );
-    await _reporter.addBreadcrumb(
-      operation: operation ?? 'application.${level.name}',
-      level: level,
+    unawaited(
+      _reporter
+          .addBreadcrumb(
+            operation: operation ?? 'application.${level.name}',
+            level: level,
+          )
+          .catchError((Object _) {}),
     );
   }
 

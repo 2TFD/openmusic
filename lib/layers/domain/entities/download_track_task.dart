@@ -3,6 +3,7 @@ enum DownloadStatus { queued, downloading, completed, failed }
 abstract class DownloadFailureCodes {
   static const network = 'network';
   static const sourceUnavailable = 'source_unavailable';
+  static const botCheck = 'bot_check';
   static const rateLimited = 'rate_limited';
   static const fileNotFound = 'file_not_found';
   static const filePermission = 'file_permission';

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/datasources/lyrics/embedded_lyrics_metadata_reader.dart';
+import 'package:owlsonic/layers/data/datasources/lyrics/embedded_lyrics_metadata_reader.dart';
 
 void main() {
   test('reads supported format and stream tags case-insensitively', () {

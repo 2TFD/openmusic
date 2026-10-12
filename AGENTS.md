@@ -2,14 +2,16 @@
 
 ## Project Structure & Module Organization
 
-OwlSonic (canonical product definition: `docs/PRODUCT_MVP.md`) follows Clean Architecture. `lib/main.dart` is the entry point; shared routing, dependency injection, services, themes, and utilities live in `lib/core/`. Feature code is divided into `lib/layers/data/` (Drift, data sources, DTOs, mappers, and implementations), `lib/layers/domain/` (entities, contracts, services, and use cases), and `lib/layers/presentation/` (BLoCs/Cubits, screens, and widgets). Keep dependencies flowing through domain abstractions.
+OwlSonic (canonical product definition: `docs/PRODUCT_MVP.md`) follows Clean Architecture. `lib/main.dart` is the entry point; bootstrap, routing, dependency injection, configuration, the OwlSonic API client (`lib/core/network/owlsonic/`), services (audio, cloud sync, downloads, lyrics, Wave), telemetry, themes, and utilities live in `lib/core/`. Feature code is divided into `lib/layers/data/` (Drift, data sources, models, mappers, and implementations), `lib/layers/domain/` (entities, contracts, services, and use cases), and `lib/layers/presentation/` (`features/<feature>/{bloc,ui}` plus `shared/`). Keep dependencies flowing through domain abstractions.
+
+Cloud behavior is described in `docs/CLOUD_INTEGRATION.md`; the backend contract is `docs/openapi.json` (summary: `docs/FLUTTER_API.md`).
 
 Tests are in `test/`, with fakes in `test/support/`. Images and English/Russian translations live under `assets/`. Platform projects use the standard Flutter directories.
 
 ## Build, Test, and Development Commands
 
 - `flutter pub get` installs locked dependencies.
-- `flutter run` starts the app on a connected device or emulator.
+- `flutter run --dart-define-from-file=.env` starts the app on a connected device or emulator (copy `.env.example` to `.env` first).
 - `flutter analyze` applies `flutter_lints` and project analyzer rules.
 - `dart format lib test` formats Dart source and tests.
 - `flutter test` runs the complete automated suite; use `flutter test test/lrc_parser_test.dart` for one file.
@@ -22,11 +24,11 @@ Use two-space indentation and formatter output. Follow `analysis_options.yaml`, 
 
 ## Testing Guidelines
 
-The suite uses `flutter_test` for unit and widget tests. Add focused regression tests, using fakes instead of live network, audio, or filesystem dependencies. There is no enforced coverage threshold; protect affected paths and edge cases. For playback or platform changes, also run relevant scenarios in `TESTING.md`.
+The suite uses `flutter_test` for unit and widget tests. Add focused regression tests, using fakes instead of live network, audio, or filesystem dependencies. There is no enforced coverage threshold; protect affected paths and edge cases. For playback or platform changes, also run relevant scenarios in the local manual QA checklist `TESTING.md` (gitignored; may lag behind the code).
 
 ## Commit & Pull Request Guidelines
 
-History favors short lowercase subjects such as `wave fix` and `moodmap`. Keep commits focused, but clarify action and scope: `fix player session restore`. Pull requests should explain the change, list validation, link issues, and include screenshots or recordings for UI work. Call out migrations, generated files, platform behavior, and new `--dart-define` requirements.
+History favors short lowercase subjects such as `wave fix` and `moodmap`. Keep commits focused, but clarify action and scope: `fix player session restore`. Pull requests should explain the change, list validation, link issues, and include screenshots or recordings for UI work. Call out migrations (bump `schemaVersion` in `app_database.dart`), generated files, platform behavior, and new `--dart-define` requirements.
 
 ## Security & Configuration
 

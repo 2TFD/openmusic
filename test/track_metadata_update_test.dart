@@ -1,9 +1,9 @@
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/datasources/local/track/drift/track_drift_local_source.dart';
-import 'package:openmusic/layers/data/models/track_dto.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/datasources/local/track/drift/track_drift_local_source.dart';
+import 'package:owlsonic/layers/data/models/track_dto.dart';
 
 void main() {
   test('metadata update preserves audio state and revision', () async {

@@ -1,8 +1,8 @@
 import 'package:drift/drift.dart';
 
-import '../../domain/entities/similarity_evaluation.dart';
-import '../../domain/repositories/similarity_evaluation_repository.dart';
-import '../database/app_database.dart';
+import 'package:owlsonic/layers/domain/entities/similarity_evaluation.dart';
+import 'package:owlsonic/layers/domain/repositories/similarity_evaluation_repository.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
 
 class SimilarityEvaluationRepositoryImpl
     implements SimilarityEvaluationRepository {

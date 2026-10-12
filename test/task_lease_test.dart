@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/services/task_lease.dart';
+import 'package:owlsonic/core/services/task_lease.dart';
 
 void main() {
   test('heartbeat renews a lease while an operation is running', () async {

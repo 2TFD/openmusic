@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
-import 'package:openmusic/layers/data/datasources/local/track/drift/artist_table.dart';
-import 'package:openmusic/layers/data/datasources/local/track/drift/track_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/track/drift/artist_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/track/drift/track_table.dart';
 
 class TrackArtistTable extends Table {
   TextColumn get trackId =>

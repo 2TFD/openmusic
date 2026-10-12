@@ -1,4 +1,4 @@
-import 'package:openmusic/layers/data/models/artist_summary_dto.dart';
+import 'package:owlsonic/layers/data/models/artist_summary_dto.dart';
 
 abstract class ArtistLocalDataSource {
   Stream<List<ArtistSummaryDto>> watchArtistSummaries();

@@ -1,16 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/services/music_analysis/music_analysis_model_registry.dart';
-import 'package:openmusic/core/services/research/lyrics_semantic_research_service.dart';
-import 'package:openmusic/layers/domain/entities/lyrics_resolution_state.dart';
-import 'package:openmusic/layers/domain/entities/music_analysis.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/entities/track_embedding.dart';
-import 'package:openmusic/layers/domain/entities/track_lyrics.dart';
-import 'package:openmusic/layers/domain/repositories/music_analysis_client.dart';
-import 'package:openmusic/layers/domain/repositories/track_embedding_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_lyrics_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/core/services/music_analysis/music_analysis_model_registry.dart';
+import 'package:owlsonic/core/services/research/lyrics_semantic_research_service.dart';
+import 'package:owlsonic/layers/domain/entities/lyrics_resolution_state.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/track_embedding.dart';
+import 'package:owlsonic/layers/domain/entities/track_lyrics.dart';
+import 'package:owlsonic/layers/domain/repositories/track_embedding_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_lyrics_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
 
 void main() {
   test(
@@ -33,7 +32,7 @@ void main() {
           _embedding('valid', _hashB, const [0.8, 0.6]),
           _embedding('stale', _hashD, const [1, 0]),
         ]),
-        registry: MusicAnalysisModelRegistry(_ModelsClient()),
+        registry: MusicAnalysisModelRegistry(models: (_ModelsClient().models)),
       );
 
       final result = await service.compare(seedTrackId: 'seed');
@@ -53,7 +52,7 @@ void main() {
       embeddings: _Embeddings([
         _embedding('seed', _hashB, const [1, 0]),
       ]),
-      registry: MusicAnalysisModelRegistry(_ModelsClient()),
+      registry: MusicAnalysisModelRegistry(models: (_ModelsClient().models)),
     );
 
     final result = await service.compare(seedTrackId: 'seed');
@@ -109,22 +108,9 @@ TrackEmbedding _embedding(String trackId, String hash, List<double> vector) =>
       createdAt: DateTime.utc(2026),
     );
 
-class _ModelsClient implements MusicAnalysisClient {
-  @override
-  String get baseUrl => 'https://analysis.test';
-
-  @override
-  Future<MusicAnalysisModels> getModels() async =>
+class _ModelsClient {
+  MusicAnalysisModels get models =>
       MusicAnalysisModels(schemaVersion: '1', models: [_model]);
-
-  @override
-  Future<MusicAnalysisResponse> analyze({
-    required String trackId,
-    required String filePath,
-    String? contentIdentity,
-    String? lyrics,
-    required Set<MusicAnalysisRepresentation> requestedRepresentations,
-  }) => throw UnimplementedError();
 }
 
 class _Tracks implements TrackRepository {

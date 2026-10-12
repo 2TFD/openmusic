@@ -5,10 +5,17 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = openmusic
+PRODUCT_NAME = OwlSonic
 
 // The application's bundle identifier
 PRODUCT_BUNDLE_IDENTIFIER = com.example.openmusic
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2026 com.example. All rights reserved.
+
+// Stable signing so Keychain access ("Always Allow") survives rebuilds; an
+// ad-hoc signature makes every build a new app to the Keychain. Manual style
+// signs locally with the certificate and needs no provisioning profile.
+CODE_SIGN_STYLE = Manual
+CODE_SIGN_IDENTITY = Apple Development
+DEVELOPMENT_TEAM = YHDC2R3QPQ

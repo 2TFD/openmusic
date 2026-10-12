@@ -1,11 +1,11 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/repositories/listening_event_repository_impl.dart';
-import 'package:openmusic/layers/domain/entities/listening_event.dart';
-import 'package:openmusic/layers/domain/repositories/listening_event_repository.dart';
-import 'package:openmusic/layers/domain/services/listening_tracker.dart';
-import 'package:openmusic/layers/domain/usecases/save_listening_event_use_case.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/repositories/listening_event_repository_impl.dart';
+import 'package:owlsonic/layers/domain/entities/listening_event.dart';
+import 'package:owlsonic/layers/domain/repositories/listening_event_repository.dart';
+import 'package:owlsonic/layers/domain/services/listening_tracker.dart';
+import 'package:owlsonic/layers/domain/usecases/save_listening_event_use_case.dart';
 
 void main() {
   test('Drift repository is append-only and maps all event data', () async {

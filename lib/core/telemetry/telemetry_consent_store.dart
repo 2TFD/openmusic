@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 abstract interface class TelemetryConsentStore {
   Future<bool> load();
   Future<void> save(bool enabled);
+  Future<bool> loadAnalytics();
+  Future<void> saveAnalytics(bool enabled);
 }
 
 final class SharedPreferencesTelemetryConsentStore
@@ -11,6 +13,7 @@ final class SharedPreferencesTelemetryConsentStore
     : _preferences = preferences;
 
   static const key = 'telemetry.crash_reporting.enabled';
+  static const analyticsKey = 'telemetry.analytics.enabled';
 
   SharedPreferencesAsync? _preferences;
 
@@ -22,4 +25,12 @@ final class SharedPreferencesTelemetryConsentStore
 
   @override
   Future<void> save(bool enabled) => _instance.setBool(key, enabled);
+
+  @override
+  Future<bool> loadAnalytics() async =>
+      await _instance.getBool(analyticsKey) ?? false;
+
+  @override
+  Future<void> saveAnalytics(bool enabled) =>
+      _instance.setBool(analyticsKey, enabled);
 }

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/domain/repositories/lyrics_provider.dart';
-import 'package:openmusic/layers/domain/services/lyrics_track_matcher.dart';
+import 'package:owlsonic/layers/domain/repositories/lyrics_provider.dart';
+import 'package:owlsonic/layers/domain/services/lyrics_track_matcher.dart';
 
 void main() {
   const matcher = LyricsTrackMatcher();

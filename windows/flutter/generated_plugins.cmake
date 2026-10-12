@@ -3,12 +3,15 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
-  desktop_webview_window
+  audio_service_win
+  connectivity_plus
+  desktop_drop
+  ffmpeg_kit_flutter_new_audio
   flutter_secure_storage_windows
+  media_kit_libs_windows_audio
   sentry_flutter
   share_plus
   url_launcher_windows
-  window_to_front
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

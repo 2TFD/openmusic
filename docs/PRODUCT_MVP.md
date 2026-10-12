@@ -14,7 +14,7 @@ Throughout this document:
 
 - **Current implementation** — exists in the Flutter codebase today.
 - **MVP target** — product decision is fixed, not (fully) implemented yet.
-- **Planned backend integration** — target architecture; no backend exists in this repository.
+- **Backend integration** — the OwlSonic backend lives in a separate repository; the client talks to it through `docs/openapi.json`.
 
 ---
 
@@ -23,10 +23,12 @@ Throughout this document:
 ### Local mode (no account)
 OwlSonic works without a mandatory account, including on first launch. Without an account the user has: local library, local playback, playlists/local state, Mood Map, Wave, offline functionality, local imports.
 
-### Account / cloud mode (MVP target)
+### Account / cloud mode
 After sign-in: cloud library, cross-device sync, audio upload, cloud streaming, offline download/cache, synced playlists, synced library state, synced ML analysis, synced Mood Map state and user overrides, future entitlements/subscriptions.
 
-One user has one logical OwlSonic library across devices. The auth provider is not fixed yet; Google/Apple sign-in is not assumed to be required.
+One user has one logical OwlSonic library across devices.
+
+*Current implementation:* email + password accounts with email verification and password reset, device registration by installation id, cloud library, sync, upload, signed-URL streaming, offline storage mode, synced playlists/history/analysis and Mood overrides. Google/Apple sign-in is not implemented and not assumed to be required. Future entitlements are not implemented.
 
 ## 2. Platforms
 
@@ -36,17 +38,19 @@ One Flutter codebase — a **cross-platform Flutter application** for Android, i
 
 The player abstracts the track source from the UX. Source types: local original, offline cached copy, cloud stream, imported asset. The user presses Play; the app picks an available playable source. Cloud streaming is not a separate player mode.
 
-Target source selection (MVP target):
+Source selection (current implementation, `CloudPlaybackSource`):
 
 ```text
-offline cached copy exists → play cached
-else local original exists → play local
-else cloud asset exists    → stream
+offline copy / local original exists → play file
+else stream-cache copy exists        → play cached
+else cloud asset                     → stream via short-lived signed URL
 ```
+
+Per device the user picks a storage mode: **stream** (played tracks are cached, 1 GB LRU, default) or **offline** (the whole cloud library is downloaded with embedded tags).
 
 Offline is a first-class capability; cloud mode does not mean streaming-only.
 
-## 4. Cloud audio storage (MVP target)
+## 4. Cloud audio storage
 
 OwlSonic Cloud may store a user's audio assets, **including assets that came from experimental Community/OSS import flows**. There is one shared object storage; physical storage is not split by origin.
 
@@ -54,25 +58,26 @@ OwlSonic Cloud may store a user's audio assets, **including assets that came fro
 
 Community/OSS imported audio may be uploaded into the same cloud storage and synchronized like any other library asset. Provenance is stored so policies can change later without redesigning the storage model.
 
-### Provenance (target backend/domain model — not implemented in Flutter)
+### Provenance
+
+Current implementation: the client sends `source_type` (`LOCAL_UPLOAD` for the user's files, `COMMUNITY_IMPORT` for link imports) and `source_provider` in the upload manifest; the server never returns them. Full target model:
 
 - `source_type`: `LOCAL_UPLOAD`, `COMMUNITY_IMPORT`, `CLOUD_IMPORT`, `LICENSED_IMPORT`
 - `source_provider`: `local`, `youtube`, `soundcloud`, `spotify_match`, other future providers
 - optional: `source_external_id`, `sha256`, mime type, size, duration, `created_at`
 
-## 5. Upload and streaming flows (target architecture)
+## 5. Upload and streaming flows
 
-Upload:
+Upload (current implementation):
 
 ```text
-client computes SHA-256
-→ backend checks/deduplicates
-→ backend provides presigned upload
-→ client uploads directly to object storage
-→ backend confirms asset
-→ ML analysis job
-→ library sync
+client generates UUIDv7 track id + Idempotency-Key (persisted in cloud_upload_table)
+→ multipart POST /v1/tracks (manifest, audio, optional artwork)
+→ backend sanitizes, deduplicates stored audio, queues ML analysis
+→ library sync delivers the track and later analysis.upsert
 ```
+
+A presigned direct-to-storage upload is a possible later optimization; it is not what the API does today.
 
 Streaming:
 
@@ -84,31 +89,31 @@ Flutter client
 → Flutter playback
 ```
 
-The main backend is not a permanent proxy for audio bytes and does not accept large uploads through the application server without need. Streaming should support HTTP Range where applicable. None of the signed-URL / presigned-upload flow is implemented yet.
+Playback URLs come from `POST /v1/library/{track_id}/playback`; they are short-lived, support HTTP Range, and are never logged or persisted by the client (`SignedUrlCache`, `CloudStreamAudioSource`).
 
 ## 6. Deduplication
 
-- **User asset deduplication** — content identity is `SHA-256(audio bytes)`. Re-uploading the same file must not create extra physical copies without reason.
+- **User asset deduplication** — content identity is `SHA-256(audio bytes)`. Re-uploading the same file must not create extra physical copies without reason (server-side; the API returns a new Track that reuses stored audio). The client also computes SHA-256 content identity locally (`Sha256TrackContentIdentityService`) for local duplicate detection.
 - **ML result cache** — analysis is reusable by `audio_sha256 + representation/model version + preprocessing version`.
 - Title/artist/ISRC are never the primary identity of audio bytes.
 
-## 7. Sync (MVP target)
+## 7. Sync
 
-Cursor-based delta sync (e.g. `GET /v1/sync?cursor=...`), not realtime WebSocket sync. Scope: tracks, metadata, playlists, playlist items, library membership, play/favorite state, analysis results, Mood Map user overrides, and deletions as tombstones / soft deletes so they propagate between devices.
+Implemented (`CloudSyncCoordinator`, `SyncEngine`). Cursor-based delta sync (e.g. `GET /v1/sync?cursor=...`), not realtime WebSocket sync. Scope: tracks, metadata, playlists, playlist items, library membership, play/favorite state, analysis results, Mood Map user overrides, and deletions as tombstones / soft deletes so they propagate between devices.
 
-Accounts: authenticated sessions, multiple devices, device identity; revoke/logout later.
+Triggers: sign-in, deferred startup, app resume, every 3 minutes in foreground, after imports and mutations. Accounts: authenticated sessions with rotating refresh tokens, multiple devices, device listing/revocation, logout, account deletion.
 
 ## 8. Mood Map
 
 A core differentiator — not a visualizer. A visual 2D emotional map of the user's library: valence axis, arousal axis, tracks/artwork placed spatially. ML provides the default position; the user can override a track's position; personal state should eventually sync between devices.
 
-Current implementation: Mood Map repository and screen exist locally. Cross-device sync of overrides is MVP target.
+Current implementation: Mood Map screen/cubit and repository; personal overrides are stored locally and, for cloud tracks, synced as `custom_valence`/`custom_arousal` on the library item.
 
 ## 9. Wave
 
 A core differentiator. Wave rediscovers familiar music from the user's own library — *radio for the music you already own / have in your OwlSonic library*. It may use mood, audio similarity, track similarity, artist context, embeddings and library state. It is not a global streaming recommendation system.
 
-Current implementation: local Wave engines (track, artist, mood) under `lib/core/services/recommendation/`.
+Current implementation: `WaveOrchestrator` with track, artist and mood engines under `lib/core/services/recommendation/`, ranking locally on embeddings and emotion rows (local or synced).
 
 ## 10. ML
 
@@ -120,13 +125,13 @@ OwlSonic uses centralized ML worker / backend analysis. Current production direc
 - versioned representations
 - Mood Map and Wave built on top
 
-MERT / Music2Emo are **not** the production direction; they are at most historical/legacy experiments. (The client still contains compatibility code that mentions Music2Emo for schema-v2 backend responses — see Technical debt.)
+MERT / Music2Emo are **not** the production direction; they are at most historical/legacy experiments.
 
 **ML worker** — stateless inference service: audio embeddings, emotion from embeddings, text embeddings. It does *not* own accounts, billing, library, quotas, persistent user state, cloud sync, object storage, or playlists. The main backend orchestrates worker calls.
 
-**Main backend (planned)** — accounts/auth, devices, library, track metadata, uploads, object storage authorization, cloud streaming authorization, sync, playlists, ML jobs, analysis cache, usage/quotas, future entitlements/billing.
+**Main backend** (separate repository) — accounts/auth, devices, library, track metadata, uploads, object storage authorization, cloud streaming authorization, sync, playlists, ML jobs, analysis cache, usage/quotas, future entitlements/billing.
 
-Rules for the client: it never receives the ML worker's service secret, and in the target architecture it does not depend on concrete HF Space URLs. *Current implementation:* the client calls an ML API at a configurable `ML_BASE_URL` (default is a hosted Space); this is to be replaced by main-backend orchestration.
+Rules for the client: it never receives the ML worker's service secret and never calls the ML worker. *Current implementation:* canonical analysis arrives only through sync (`analysis.upsert`) and is projected into the local embedding/emotion tables (preprocessing version `owlsonic-cloud-v1`). `MusicAnalysisModelRegistry` prefers synced cloud analysis; analysis rows cached by pre-cloud app versions are used only until cloud analysis exists. Tracks that are not in the cloud get no new analysis.
 
 ## 11. Build flavors (MVP target)
 
@@ -154,20 +159,23 @@ Out-of-MVP items are scope planning — existing working code is not removed bec
 | Capability | Status |
 |---|---|
 | Local library, local playback, background playback | Current |
-| Playlists, play history | Current |
+| Playlists, play history, artists, search | Current |
 | SoundCloud / YouTube / Spotify import (experimental) | Current (no flavor split) |
-| ML analysis via remote API, embeddings | Current |
-| Wave, Mood Map (local) | Current |
-| Lyrics resolution | Current |
+| Wave, Mood Map with personal overrides | Current |
+| Lyrics resolution (embedded, sidecar LRC, LRCLIB) | Current |
 | Offline file storage of imported tracks | Current |
-| Accounts, devices | MVP target |
-| Cloud library, upload, cloud streaming, signed URLs | MVP target |
-| Cross-device sync, tombstones | MVP target |
-| Provenance model, SHA-256 dedup | MVP target (backend) |
+| Accounts (email + password, verification, reset), devices | Current |
+| Cloud library, upload, signed-URL streaming | Current |
+| Cross-device delta sync, tombstones | Current |
+| Stream / offline storage modes, auto-sync | Current |
+| ML analysis via backend, delivered through sync | Current |
+| Provenance on upload (`LOCAL_UPLOAD` / `COMMUNITY_IMPORT`) | Current (client sends; server stores) |
+| Discover (candidate pool, local ranking) | Service only, no UI |
+| Statistics screen | BLoC only, no UI |
 | Community/Store flavors | MVP target |
-| Source auto-selection (cached → local → cloud) | MVP target |
-| Main backend | Planned; not in this repository |
+| Entitlements / billing | Future |
+| Main backend | Separate repository |
 
 ## 15. Terminology and technical debt
 
-The product name is **OwlSonic**. Legacy `openmusic` identifiers survive in a few technical places (e.g. `OpenmusicAudioHandler`, historical notes); they are technical debt and are intentionally not renamed for cosmetics. Do not change package IDs, Android `applicationId` or iOS bundle ID for documentation reasons.
+The product name is **OwlSonic**. Package, Android `applicationId` and iOS bundle ID are `com.ttfd.owlsonic`; the Dart package is `owlsonic`. Legacy `openmusic` identifiers no longer appear in `lib/`; the Git remote is still named `openmusic`, and the iOS test target uses `com.example.owlsonic.RunnerTests`.

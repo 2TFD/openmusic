@@ -1,15 +1,27 @@
-import 'package:openmusic/layers/domain/entities/resolved_track_input.dart';
-import 'package:openmusic/layers/domain/entities/track_preview.dart';
-import 'package:openmusic/core/errors/failures/failure.dart';
-import 'package:openmusic/core/utils/app_logger.dart';
+import 'package:owlsonic/layers/domain/entities/resolved_track_input.dart';
+import 'package:owlsonic/layers/domain/entities/track_preview.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
+import 'package:owlsonic/core/utils/app_logger.dart';
 
 typedef TrackImportOperation = Future<void> Function(ResolvedTrackInput input);
 
 class ImportLocalTracksResult {
-  const ImportLocalTracksResult({required this.added, required this.failed});
+  const ImportLocalTracksResult({
+    required this.added,
+    required this.failed,
+    this.failures = const [],
+    this.localOnly = false,
+  });
 
   final int added;
   final int failed;
+
+  /// Why files failed (cloud uploads carry the backend error category).
+  final List<Failure> failures;
+
+  /// True when the user is signed out of a configured OwlSonic backend, so the
+  /// imported music exists on this device only and is not synced.
+  final bool localOnly;
 }
 
 class ImportLocalTracksUseCase {

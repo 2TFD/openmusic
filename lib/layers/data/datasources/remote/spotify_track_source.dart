@@ -1,15 +1,17 @@
+import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:dio/dio.dart';
-import 'package:openmusic/core/errors/failures/failure.dart';
-import 'package:openmusic/core/network/retry_policy.dart';
-import 'package:openmusic/core/services/spotify/spotify_auth_service.dart';
-import 'package:openmusic/layers/data/datasources/remote/youtube_track_source.dart';
-import 'package:openmusic/layers/domain/entities/operation_cancellation.dart';
-import 'package:openmusic/layers/domain/entities/resolved_track_input.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track_preview.dart';
-import 'package:openmusic/layers/domain/repositories/track_source.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
+import 'package:owlsonic/core/network/retry_policy.dart';
+import 'package:owlsonic/core/utils/app_logger.dart';
+import 'package:owlsonic/layers/data/datasources/remote/youtube_track_source.dart';
+import 'package:owlsonic/layers/domain/entities/operation_cancellation.dart';
+import 'package:owlsonic/layers/domain/entities/resolved_track_input.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track_preview.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/repositories/track_source.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class SpotifyTrackMetadata {
@@ -39,11 +41,23 @@ class SpotifyYoutubeMatcher {
 
   static const acceptanceThreshold = 0.72;
 
-  double score(SpotifyTrackMetadata track, Video candidate) {
+  double score(SpotifyTrackMetadata track, Video candidate) => _score(
+    track,
+    author: candidate.author,
+    title: candidate.title,
+    duration: candidate.duration,
+  );
+
+  double _score(
+    SpotifyTrackMetadata track, {
+    required String author,
+    required String title,
+    required Duration? duration,
+  }) {
     final target = _tokens('${track.artists.join(' ')} ${track.title}');
-    final candidateTokens = _tokens('${candidate.author} ${candidate.title}');
+    final candidateTokens = _tokens('$author $title');
     final textScore = _dice(target, candidateTokens);
-    final candidateDuration = candidate.duration;
+    final candidateDuration = duration;
     var durationScore = 0.5;
     if (candidateDuration != null) {
       final delta = (candidateDuration - track.duration).abs().inMilliseconds;
@@ -81,6 +95,34 @@ class SpotifyYoutubeMatcher {
     return selected;
   }
 
+  /// SoundCloud fallback. A candidate without a known length is skipped:
+  /// uploads there are often edits, so the length check is what keeps a
+  /// remix or a cut-down version out.
+  TrackPreview? bestPreview(
+    SpotifyTrackMetadata track,
+    Iterable<TrackPreview> candidates,
+  ) {
+    TrackPreview? selected;
+    var selectedScore = acceptanceThreshold;
+    for (final candidate in candidates) {
+      final duration = candidate.duration;
+      if (duration == null || duration == Duration.zero) continue;
+      final candidateScore = _score(
+        track,
+        author: candidate.artist,
+        title: candidate.title,
+        duration: duration,
+      );
+      if (candidateScore < selectedScore ||
+          (selected != null && candidateScore == selectedScore)) {
+        continue;
+      }
+      selected = candidate;
+      selectedScore = candidateScore;
+    }
+    return selected;
+  }
+
   static bool _isOfficial(Video video) {
     final value = '${video.author} ${video.title}'.toLowerCase();
     return value.contains(' - topic') ||
@@ -102,31 +144,63 @@ class SpotifyYoutubeMatcher {
   }
 }
 
-class SpotifyTrackSource implements TrackSource {
+/// Reads Spotify metadata from the public embed widget
+/// (`open.spotify.com/embed/<type>/<id>`): no developer app, no sign-in.
+/// Audio comes from the matched YouTube video, as before.
+///
+/// Limits of the embed: playlists list their first 100 tracks only, and
+/// private playlists are not visible.
+class SpotifyTrackSource implements TrackSource, TrackAudioFallback {
   SpotifyTrackSource({
-    required SpotifyAuthService auth,
     required YoutubeTrackSource youtube,
+    TrackSource? soundcloud,
+    Future<List<TrackPreview>> Function(String query)? soundcloudSearch,
     Dio? dio,
     SpotifyYoutubeMatcher matcher = const SpotifyYoutubeMatcher(),
     RetryPolicy? retryPolicy,
-  }) : _auth = auth,
-       _youtube = youtube,
-       _dio = dio ?? Dio(BaseOptions(baseUrl: 'https://api.spotify.com/v1')),
+    Duration searchSpacing = const Duration(milliseconds: 400),
+  }) : _youtube = youtube,
+       _soundcloud = soundcloud,
+       _soundcloudSearch = soundcloudSearch,
+       _searchSpacing = searchSpacing,
+       _dio =
+           dio ??
+           Dio(
+             BaseOptions(
+               connectTimeout: const Duration(seconds: 10),
+               receiveTimeout: const Duration(seconds: 20),
+               responseType: ResponseType.plain,
+               headers: {'User-Agent': _browserUserAgent},
+             ),
+           ),
        _matcher = matcher,
        _retryPolicy = retryPolicy ?? RetryPolicy();
 
-  final SpotifyAuthService _auth;
   final YoutubeTrackSource _youtube;
+
+  /// Fallback audio when YouTube has no match or refuses this network.
+  final TrackSource? _soundcloud;
+  final Future<List<TrackPreview>> Function(String query)? _soundcloudSearch;
+
+  /// Minimum gap between YouTube searches: a burst of them is what trips
+  /// Google's abuse check on a big playlist.
+  final Duration _searchSpacing;
+  DateTime _nextSearchAt = DateTime.fromMillisecondsSinceEpoch(0);
   final Dio _dio;
   final SpotifyYoutubeMatcher _matcher;
   final RetryPolicy _retryPolicy;
+
+  /// The embed answers non-browser agents with a bare shell page.
+  static const _browserUserAgent =
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/537.36 '
+      '(KHTML, like Gecko) Chrome/128.0 Safari/537.36';
 
   @override
   SourceType get sourceType => SourceType.spotify;
 
   @override
   bool canHandle(String input) {
-    if (input.startsWith('spotify:')) return true;
+    if (input.trim().startsWith('spotify:')) return true;
     final uri = Uri.tryParse(input.trim());
     if (uri == null) return false;
     final host = uri.host.toLowerCase().replaceFirst('www.', '');
@@ -137,76 +211,69 @@ class SpotifyTrackSource implements TrackSource {
   Future<ResolvedTrackInput> resolve(String input) async {
     if (!canHandle(input)) throw UnsupportedSourceFailure(input);
     final parsed = await _parseInput(input);
+    if (!const {'track', 'album', 'playlist'}.contains(parsed.type)) {
+      throw const UnsupportedMediaFailure('Spotify entity');
+    }
+    final entity = await _embedEntity(parsed.type, parsed.id);
     return switch (parsed.type) {
-      'track' => _resolveTrack(parsed.id, parsed.url),
-      'album' => _resolveAlbum(parsed.id, parsed.url),
-      'playlist' => _resolvePlaylist(parsed.id, parsed.url),
-      _ => throw const UnsupportedMediaFailure('Spotify entity'),
+      'track' => _resolveTrack(entity, parsed.url),
+      _ => _resolveCollection(entity, parsed.type, parsed.id, parsed.url),
     };
   }
 
-  Future<ResolvedTrackInput> _resolveTrack(String id, String url) async {
-    final json = await _get('/tracks/$id');
-    final metadata = _trackFromJson(json, fallbackUrl: url);
+  Future<ResolvedTrackInput> _resolveTrack(
+    Map<String, dynamic> entity,
+    String url,
+  ) async {
+    final metadata = _trackFromEntity(entity, url);
     final preview = await _match(metadata);
     if (preview == null) throw const EmptyResultFailure('match Spotify track');
     return ResolvedTrackInput.single(preview);
   }
 
-  Future<ResolvedTrackInput> _resolveAlbum(String id, String url) async {
-    final album = await _get('/albums/$id');
-    final items = await _allPages('/albums/$id/tracks?limit=50');
-    final albumName = album['name'] as String?;
-    final image = _image(album['images']);
-    final releaseDate = album['release_date'] as String?;
-    final tracks = items
-        .whereType<Map<String, dynamic>>()
-        .map(
-          (item) => _trackFromJson(
-            item,
-            fallbackUrl: _spotifyUrl('track', item['id'].toString()),
-            album: albumName,
-            artworkUrl: image,
-            year: releaseDate == null
-                ? null
-                : int.tryParse(releaseDate.split('-').first),
-          ),
-        )
-        .toList();
-    return _matchCollection(
-      input: url,
-      id: 'spotify:album:$id',
-      name: albumName ?? 'Spotify album',
-      description: null,
-      imageUrl: image,
-      tracks: tracks,
-    );
-  }
-
-  Future<ResolvedTrackInput> _resolvePlaylist(String id, String url) async {
-    final playlist = await _get('/playlists/$id');
-    List<dynamic> rawItems;
-    try {
-      rawItems = await _allPages('/playlists/$id/items?limit=50');
-    } on DioException catch (error) {
-      if (error.response?.statusCode == 403) throw const RemoteAccessFailure();
-      rethrow;
-    }
+  Future<ResolvedTrackInput> _resolveCollection(
+    Map<String, dynamic> entity,
+    String type,
+    String id,
+    String url,
+  ) {
+    final isAlbum = type == 'album';
+    final name = (entity['name'] ?? entity['title']) as String?;
+    final cover = _coverArt(entity) ?? _largestImage(entity);
     final tracks = <SpotifyTrackMetadata>[];
-    for (final raw in rawItems.whereType<Map<String, dynamic>>()) {
-      final item = raw['item'] ?? raw['track'];
-      if (item is! Map<String, dynamic> || item['type'] != 'track') continue;
-      if (item['is_local'] == true) continue;
-      tracks.add(_trackFromJson(item));
+    final issues = <TrackResolutionIssue>[];
+    final rawItems = entity['trackList'];
+    for (final item in rawItems is List ? rawItems : const []) {
+      if (item is! Map<String, dynamic>) continue;
+      // Podcast episodes can sit in playlists; they are not music.
+      final entityType = item['entityType'];
+      if (entityType != null && entityType != 'track') continue;
+      final track = _trackFromListItem(
+        item,
+        album: isAlbum ? name : null,
+        // Playlist items carry no per-track artwork; the album cover is
+        // right for every album track.
+        artworkUrl: isAlbum ? cover : null,
+      );
+      if (track != null) {
+        tracks.add(track);
+      } else {
+        issues.add(
+          TrackResolutionIssue(
+            label: item['title']?.toString() ?? 'Spotify track',
+            reason: TrackResolutionIssueReason.unavailable,
+          ),
+        );
+      }
     }
-    final images = playlist['images'];
     return _matchCollection(
       input: url,
-      id: 'spotify:playlist:$id',
-      name: playlist['name'] as String? ?? 'Spotify playlist',
-      description: playlist['description'] as String?,
-      imageUrl: _image(images),
+      id: 'spotify:$type:$id',
+      name: name ?? (isAlbum ? 'Spotify album' : 'Spotify playlist'),
+      description: null,
+      imageUrl: cover,
       tracks: tracks,
+      parseIssues: issues,
     );
   }
 
@@ -217,24 +284,27 @@ class SpotifyTrackSource implements TrackSource {
     required String? description,
     required String? imageUrl,
     required List<SpotifyTrackMetadata> tracks,
+    List<TrackResolutionIssue> parseIssues = const [],
   }) async {
     final previews = <TrackPreview>[];
-    final issues = <TrackResolutionIssue>[];
+    final issues = [...parseIssues];
     for (var start = 0; start < tracks.length; start += 3) {
       final batch = tracks.skip(start).take(3);
-      final matches = await Future.wait(batch.map(_match));
+      final matches = await Future.wait(batch.map(_matchSafely));
       var index = 0;
       for (final track in batch) {
         final match = matches[index++];
-        if (match == null) {
+        if (match.preview == null) {
           issues.add(
             TrackResolutionIssue(
               label: '${track.artists.join(', ')} — ${track.title}',
-              reason: TrackResolutionIssueReason.noMatch,
+              reason: match.failed
+                  ? TrackResolutionIssueReason.unavailable
+                  : TrackResolutionIssueReason.noMatch,
             ),
           );
         } else {
-          previews.add(match);
+          previews.add(match.preview!);
         }
       }
     }
@@ -255,114 +325,278 @@ class SpotifyTrackSource implements TrackSource {
     );
   }
 
+  /// One failed YouTube search (rate limit, captcha, network) must cost one
+  /// track, not the whole album or playlist. A rate-limited search is retried
+  /// once after a pause.
+  Future<({TrackPreview? preview, bool failed})> _matchSafely(
+    SpotifyTrackMetadata track,
+  ) async {
+    for (var attempt = 1; ; attempt++) {
+      try {
+        return (preview: await _match(track), failed: false);
+      } catch (error, stackTrace) {
+        if (attempt < 2) {
+          await Future<void>.delayed(const Duration(seconds: 5));
+          continue;
+        }
+        await AppLogger.warning(
+          'YouTube search for a Spotify track failed.',
+          operation: 'spotify.match',
+          error: error,
+          stackTrace: stackTrace,
+        );
+        return (preview: null, failed: true);
+      }
+    }
+  }
+
+  /// YouTube first; SoundCloud when YouTube has no match or fails. A YouTube
+  /// error is rethrown only when SoundCloud found nothing either, so the
+  /// caller still retries and reports the track as unavailable.
   Future<TrackPreview?> _match(SpotifyTrackMetadata track) async {
+    Object? youtubeError;
+    StackTrace? youtubeStack;
+    try {
+      final youtube = await _matchYoutube(track);
+      if (youtube != null) return youtube;
+    } catch (error, stackTrace) {
+      youtubeError = error;
+      youtubeStack = stackTrace;
+    }
+    final soundcloud = await _matchSoundcloud(track);
+    if (soundcloud != null) return soundcloud;
+    if (youtubeError != null) {
+      Error.throwWithStackTrace(youtubeError, youtubeStack!);
+    }
+    return null;
+  }
+
+  Future<TrackPreview?> _matchYoutube(SpotifyTrackMetadata track) async {
+    await _paceSearch();
     final query = '${track.artists.join(' ')} ${track.title} audio';
     final candidates = await _youtube.search(query, limit: 10);
     final selected = _matcher.best(track, candidates);
     if (selected == null) return null;
-    return TrackPreview(
-      id: track.id,
-      title: track.title,
-      artist: track.artists.join(', '),
-      artistId: track.artists.length == 1
-          ? 'spotify:artist:${_slug(track.artists.first)}'
-          : null,
-      album: track.album,
-      artworkUrl: track.artworkUrl,
-      duration: track.duration,
-      source: SourceType.spotify,
-      originalUrl: track.url,
-      year: track.year,
-      urlFile: '',
+    return _previewFor(
+      track,
       media: MediaLocator(
         type: SourceType.youtube,
         id: selected.id.value,
         url: selected.url,
       ),
+      fallbackArtwork: selected.thumbnails.highResUrl,
     );
   }
 
-  SpotifyTrackMetadata _trackFromJson(
-    Map<String, dynamic> json, {
-    String? fallbackUrl,
-    String? album,
-    String? artworkUrl,
-    int? year,
-  }) {
-    final albumJson = json['album'] is Map<String, dynamic>
-        ? json['album'] as Map<String, dynamic>
-        : null;
-    final duration = json['duration_ms'];
-    final id = json['id']?.toString();
-    if (id == null || json['name'] == null || duration is! int) {
+  Future<TrackPreview?> _matchSoundcloud(SpotifyTrackMetadata track) async {
+    final selected = await _findSoundcloudCandidate(track);
+    if (selected == null) return null;
+    return _previewFor(
+      track,
+      media: MediaLocator(
+        type: SourceType.soundcloud,
+        id: selected.id,
+        url: selected.originalUrl,
+      ),
+      fallbackArtwork: selected.artworkUrl,
+    );
+  }
+
+  @override
+  Future<TrackPreview?> findFallback(Track track) {
+    if (track.source.type != SourceType.spotify ||
+        track.source.media?.type != SourceType.youtube ||
+        track.duration <= Duration.zero ||
+        track.artists.isEmpty) {
+      return Future.value();
+    }
+    return _findSoundcloudCandidate(
+      SpotifyTrackMetadata(
+        id: track.id,
+        title: track.title,
+        artists: track.artists.map((artist) => artist.name).toList(),
+        url: track.source.originalUrl,
+        duration: track.duration,
+      ),
+    );
+  }
+
+  Future<TrackPreview?> _findSoundcloudCandidate(
+    SpotifyTrackMetadata track,
+  ) async {
+    final search = _soundcloudSearch;
+    if (search == null || _soundcloud == null) return null;
+    try {
+      final candidates = await search(
+        '${track.artists.join(' ')} ${track.title}',
+      );
+      final selected = _matcher.bestPreview(track, candidates);
+      return selected;
+    } catch (error, stackTrace) {
+      await AppLogger.warning(
+        'SoundCloud fallback search for a Spotify track failed.',
+        operation: 'spotify.match_soundcloud',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      return null;
+    }
+  }
+
+  Future<void> _paceSearch() async {
+    final now = DateTime.now();
+    final at = _nextSearchAt.isAfter(now) ? _nextSearchAt : now;
+    _nextSearchAt = at.add(_searchSpacing);
+    final wait = at.difference(now);
+    if (wait > Duration.zero) await Future<void>.delayed(wait);
+  }
+
+  TrackPreview _previewFor(
+    SpotifyTrackMetadata track, {
+    required MediaLocator media,
+    String? fallbackArtwork,
+  }) => TrackPreview(
+    id: track.id,
+    title: track.title,
+    artist: track.artists.join(', '),
+    artistId: track.artists.length == 1
+        ? 'spotify:artist:${_slug(track.artists.first)}'
+        : null,
+    album: track.album,
+    artworkUrl: track.artworkUrl ?? fallbackArtwork,
+    duration: track.duration,
+    source: SourceType.spotify,
+    originalUrl: track.url,
+    year: track.year,
+    urlFile: '',
+    media: media,
+  );
+
+  static final _nextData = RegExp(
+    r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>',
+    dotAll: true,
+  );
+
+  Future<Map<String, dynamic>> _embedEntity(String type, String id) async {
+    final response = await _retryPolicy.execute(
+      () => _dio.get<String>('https://open.spotify.com/embed/$type/$id'),
+    );
+    return parseEmbedEntity(response.data ?? '', id);
+  }
+
+  /// The embed is a Next.js page; its data sits in `__NEXT_DATA__`. A missing
+  /// entity there is either a 404 page or a changed page format.
+  static Map<String, dynamic> parseEmbedEntity(String html, String id) {
+    final match = _nextData.firstMatch(html);
+    if (match == null) throw const ParseFailure();
+    final Object? data;
+    try {
+      data = jsonDecode(match.group(1)!);
+    } on FormatException {
       throw const ParseFailure();
     }
-    final releaseDate = albumJson?['release_date'] as String?;
+    final pageProps = _map(_map(data)?['props'])?['pageProps'];
+    if (_map(pageProps)?['status'] == 404) {
+      throw NotFoundFailure('spotify', id);
+    }
+    final entity = _map(_map(_map(pageProps)?['state'])?['data'])?['entity'];
+    if (entity is! Map<String, dynamic>) throw const ParseFailure();
+    return entity;
+  }
+
+  static Map<String, dynamic>? _map(Object? value) =>
+      value is Map<String, dynamic> ? value : null;
+
+  SpotifyTrackMetadata _trackFromEntity(
+    Map<String, dynamic> entity,
+    String url,
+  ) {
+    final id = entity['id']?.toString();
+    final rawTitle = (entity['name'] ?? entity['title'])?.toString();
+    final duration = entity['duration'];
+    if (id == null || rawTitle == null || duration is! int || duration <= 0) {
+      throw const ParseFailure();
+    }
+    final artists = [
+      for (final artist
+          in entity['artists'] is List ? entity['artists'] as List : const [])
+        if (artist is Map && artist['name'] is String)
+          _plainSpaces(artist['name'] as String),
+    ];
+    final title = _plainSpaces(rawTitle);
+    final release = _map(entity['releaseDate'])?['isoString'] as String?;
     return SpotifyTrackMetadata(
       id: id,
-      title: json['name'] as String,
-      artists: (json['artists'] as List<dynamic>? ?? const [])
-          .whereType<Map<String, dynamic>>()
-          .map((artist) => artist['name']?.toString() ?? '')
-          .where((name) => name.isNotEmpty)
-          .toList(),
-      url:
-          (json['external_urls'] as Map<String, dynamic>?)?['spotify']
-              as String? ??
-          fallbackUrl ??
-          _spotifyUrl('track', id),
+      title: title,
+      artists: artists,
+      url: url,
       duration: Duration(milliseconds: duration),
-      album: albumJson?['name'] as String? ?? album,
-      artworkUrl: _image(albumJson?['images']) ?? artworkUrl,
-      year:
-          (releaseDate == null
-              ? null
-              : int.tryParse(releaseDate.split('-').first)) ??
-          year,
+      artworkUrl: _largestImage(entity),
+      year: release == null ? null : int.tryParse(release.split('-').first),
     );
   }
 
-  Future<List<dynamic>> _allPages(String path) async {
-    final items = <dynamic>[];
-    String? next = path;
-    while (next != null) {
-      final page = await _get(next);
-      items.addAll(page['items'] as List<dynamic>? ?? const []);
-      next = page['next'] as String?;
+  /// List items name their artists only as a joined `subtitle`.
+  static SpotifyTrackMetadata? _trackFromListItem(
+    Map<String, dynamic> item, {
+    String? album,
+    String? artworkUrl,
+  }) {
+    final uri = item['uri']?.toString() ?? '';
+    final id = uri.startsWith('spotify:track:')
+        ? uri.substring('spotify:track:'.length)
+        : null;
+    final title = item['title']?.toString();
+    final duration = item['duration'];
+    if (id == null || id.isEmpty || title == null || duration is! int) {
+      return null;
     }
-    return items;
+    // Spotify joins artists with a comma and a no-break space (U+00A0); left
+    // in, it ends up in the YouTube query and trips Google's abuse check.
+    final subtitle = _plainSpaces(item['subtitle']?.toString() ?? '');
+    return SpotifyTrackMetadata(
+      id: id,
+      title: _plainSpaces(title),
+      artists: subtitle
+          .split(',')
+          .map((name) => name.trim())
+          .where((name) => name.isNotEmpty)
+          .toList(),
+      url: _spotifyUrl('track', id),
+      duration: Duration(milliseconds: duration),
+      album: album,
+      artworkUrl: artworkUrl,
+    );
   }
 
-  Future<Map<String, dynamic>> _get(String path, {bool retried = false}) async {
-    final token = await _auth.accessToken();
-    try {
-      final response = await _retryPolicy.execute(() async {
-        try {
-          return await _dio.get<Map<String, dynamic>>(
-            path,
-            options: Options(headers: {'Authorization': 'Bearer $token'}),
-          );
-        } on DioException catch (error) {
-          final data = error.response?.data;
-          if (error.response?.statusCode == 429 &&
-              data is Map &&
-              data['error'] is Map &&
-              (data['error'] as Map)['reason'] == 'QUOTA_EXCEEDED') {
-            throw const RateLimitFailure();
-          }
-          rethrow;
-        }
-      });
-      final data = response.data;
-      if (data == null) throw const ParseFailure();
-      return data;
-    } on DioException catch (error) {
-      if (error.response?.statusCode == 401 && !retried) {
-        await _auth.refreshAccessToken();
-        return _get(path, retried: true);
+  static String _plainSpaces(String value) =>
+      value.replaceAll(RegExp(r'[\u00A0\u2007\u202F]'), ' ');
+
+  static String? _coverArt(Map<String, dynamic> entity) {
+    final sources = _map(entity['coverArt'])?['sources'];
+    if (sources is! List) return null;
+    for (final source in sources) {
+      if (source is Map && source['url'] is String) {
+        return source['url'] as String;
       }
-      rethrow;
     }
+    return null;
+  }
+
+  static String? _largestImage(Map<String, dynamic> entity) {
+    final images = _map(entity['visualIdentity'])?['image'];
+    if (images is! List) return null;
+    String? best;
+    var bestWidth = -1;
+    for (final image in images) {
+      if (image is! Map || image['url'] is! String) continue;
+      final width = image['maxWidth'] is int ? image['maxWidth'] as int : 0;
+      if (width > bestWidth) {
+        best = image['url'] as String;
+        bestWidth = width;
+      }
+    }
+    return best;
   }
 
   Future<({String type, String id, String url})> _parseInput(
@@ -380,19 +614,56 @@ class SpotifyTrackSource implements TrackSource {
     }
     var uri = Uri.parse(value);
     if (uri.host.toLowerCase().replaceFirst('www.', '') == 'spotify.link') {
-      final response = await Dio(
-        BaseOptions(followRedirects: true),
-      ).getUri<dynamic>(uri);
-      uri = response.realUri;
+      uri = await _expandShortLink(uri);
     }
-    final parts = uri.pathSegments.where((part) => part.isNotEmpty).toList();
-    final offset = parts.firstOrNull?.startsWith('intl-') == true ? 1 : 0;
-    if (parts.length < offset + 2) {
-      throw const ValidationFailure('spotifyUrl');
-    }
-    final type = parts[offset];
-    final id = parts[offset + 1];
+    var parts = uri.pathSegments.where((part) => part.isNotEmpty).toList();
+    if (parts.firstOrNull?.startsWith('intl-') == true)
+      parts = parts.skip(1).toList();
+    // An embed link pasted as-is: /embed/<type>/<id>.
+    if (parts.firstOrNull == 'embed') parts = parts.skip(1).toList();
+    if (parts.length < 2) throw const ValidationFailure('spotifyUrl');
+    final type = parts[0];
+    final id = parts[1];
     return (type: type, id: id, url: _spotifyUrl(type, id));
+  }
+
+  static final _openSpotifyUrl = RegExp(
+    r'https://open\.spotify\.com/[A-Za-z0-9/_\-]+',
+  );
+
+  /// spotify.link is a Branch link: it answers with a plain redirect for some
+  /// clients and with an HTML/JS page for others. Follow redirects by hand and
+  /// fall back to the open.spotify.com link embedded in the page.
+  Future<Uri> _expandShortLink(Uri uri) async {
+    final dio = Dio(
+      BaseOptions(
+        followRedirects: false,
+        validateStatus: (status) => status != null && status < 400,
+        responseType: ResponseType.plain,
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+        headers: {'User-Agent': 'curl/8.0'},
+      ),
+    );
+    var current = uri;
+    for (var hop = 0; hop < 6; hop++) {
+      if (current.host.toLowerCase().replaceFirst('www.', '') ==
+          'open.spotify.com') {
+        return current;
+      }
+      final response = await _retryPolicy.execute(
+        () => dio.getUri<String>(current),
+      );
+      final location = response.headers.value('location');
+      if (location != null && location.isNotEmpty) {
+        current = current.resolve(location);
+        continue;
+      }
+      final embedded = _openSpotifyUrl.firstMatch(response.data ?? '');
+      if (embedded != null) return Uri.parse(embedded.group(0)!);
+      break;
+    }
+    throw const ValidationFailure('spotifyUrl');
   }
 
   @override
@@ -401,29 +672,25 @@ class SpotifyTrackSource implements TrackSource {
     OperationCancellation? cancellation,
   }) {
     final media = track.media;
-    if (media?.type != SourceType.youtube) {
+    final source = switch (media?.type) {
+      SourceType.youtube => _youtube,
+      SourceType.soundcloud => _soundcloud,
+      _ => null,
+    };
+    if (media == null || source == null) {
       throw const UnsupportedMediaFailure('Spotify audio');
     }
-    return _youtube.download(
+    return source.download(
       TrackPreview(
-        id: media!.id,
+        id: media.id,
         title: track.title,
         artist: track.artist,
-        source: SourceType.youtube,
+        source: media.type,
         originalUrl: media.url,
         urlFile: '',
       ),
       cancellation: cancellation,
     );
-  }
-
-  static String? _image(dynamic images) {
-    if (images is! List<dynamic>) return null;
-    for (final image in images.whereType<Map<String, dynamic>>()) {
-      final url = image['url'] as String?;
-      if (url != null) return url;
-    }
-    return null;
   }
 
   static String _spotifyUrl(String type, String id) =>

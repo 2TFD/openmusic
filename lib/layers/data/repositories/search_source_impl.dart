@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
-import 'package:openmusic/core/errors/failures/failure.dart';
-import 'package:openmusic/core/network/retry_policy.dart';
-import 'package:openmusic/core/utils/app_logger.dart';
-import 'package:openmusic/layers/data/datasources/remote/soundcloud_track_source.dart';
-import 'package:openmusic/layers/domain/entities/track_preview.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/repositories/search_source.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
+import 'package:owlsonic/core/network/retry_policy.dart';
+import 'package:owlsonic/core/utils/app_logger.dart';
+import 'package:owlsonic/layers/data/datasources/remote/soundcloud_track_source.dart';
+import 'package:owlsonic/layers/domain/entities/track_preview.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/repositories/search_source.dart';
 
 class SearchSourceImpl implements SearchSource {
   final SoundcloudTrackSource _soundcloudTrackSource;
@@ -104,6 +104,9 @@ class SearchSourceImpl implements SearchSource {
       if (id == null || permalinkUrl == null || permalinkUrl.isEmpty) {
         return null;
       }
+      // Go+ 30-second previews and blocked tracks cannot be downloaded.
+      final policy = json['policy'];
+      if (policy == 'SNIP' || policy == 'BLOCK') return null;
       final createdAt = json['created_at'] as String?;
       final year = createdAt != null
           ? int.tryParse(createdAt.split('-').first)

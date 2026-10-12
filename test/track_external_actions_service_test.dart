@@ -2,18 +2,18 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/errors/failures/failure.dart';
-import 'package:openmusic/core/services/track_external_actions_service.dart';
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
+import 'package:owlsonic/core/services/track_external_actions_service.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
 
 void main() {
   late Directory tempDirectory;
 
   setUp(() async {
     tempDirectory = await Directory.systemTemp.createTemp(
-      'openmusic-external-actions-',
+      'owlsonic-external-actions-',
     );
   });
 

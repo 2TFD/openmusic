@@ -1,8 +1,8 @@
-import 'package:openmusic/layers/data/datasources/local/listening_summary/listening_summary_local_data_source.dart';
-import 'package:openmusic/layers/data/mappers/listening_summary_mapper.dart';
-import 'package:openmusic/layers/domain/entities/listening_summary.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/repositories/listening_summary_repository.dart';
+import 'package:owlsonic/layers/data/datasources/local/listening_summary/listening_summary_local_data_source.dart';
+import 'package:owlsonic/layers/data/mappers/listening_summary_mapper.dart';
+import 'package:owlsonic/layers/domain/entities/listening_summary.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/repositories/listening_summary_repository.dart';
 
 class ListeningSummaryRepositoryImpl implements ListeningSummaryRepository {
   final ListeningSummaryLocalDataSource localDataSource;

@@ -1,5 +1,5 @@
-import 'package:openmusic/layers/data/models/download_task_dto.dart';
-import 'package:openmusic/layers/domain/entities/download_track_task.dart';
+import 'package:owlsonic/layers/data/models/download_task_dto.dart';
+import 'package:owlsonic/layers/domain/entities/download_track_task.dart';
 
 class DownloadTaskMapper {
   static DownloadTaskDto toDto(DownloadTrackTask entity) {

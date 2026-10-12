@@ -1,16 +1,20 @@
+import 'package:owlsonic/core/telemetry/analytics_tracker.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/domain/entities/mood_map.dart';
-import 'package:openmusic/layers/domain/entities/music_analysis.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/entities/track_emotion_analysis.dart';
-import 'package:openmusic/layers/domain/repositories/mood_map_repository.dart';
-import 'package:openmusic/layers/presentation/blocs/mood_map/mood_map_cubit.dart';
+import 'package:owlsonic/layers/domain/entities/mood_map.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/track_emotion_analysis.dart';
+import 'package:owlsonic/layers/domain/repositories/mood_map_repository.dart';
+import 'package:owlsonic/layers/presentation/features/mood_map/bloc/mood_map/mood_map_cubit.dart';
 
 void main() {
   test('personal save/reset and radius selection stay independent', () async {
     final repository = _MoodMapRepository([_point]);
-    final cubit = MoodMapCubit(repository: repository);
+    final cubit = MoodMapCubit(
+      analytics: const NoopAnalyticsTracker(),
+      repository: repository,
+    );
     addTearDown(cubit.close);
     await cubit.initialize();
 
@@ -64,7 +68,10 @@ void main() {
         ),
       ),
     ]);
-    final cubit = MoodMapCubit(repository: repository);
+    final cubit = MoodMapCubit(
+      analytics: const NoopAnalyticsTracker(),
+      repository: repository,
+    );
     addTearDown(cubit.close);
     await cubit.initialize();
 

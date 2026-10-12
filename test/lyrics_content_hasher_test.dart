@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/domain/services/lyrics_content_hasher.dart';
+import 'package:owlsonic/layers/domain/services/lyrics_content_hasher.dart';
 
 void main() {
   test('uses the standard lowercase SHA-256 representation', () {

@@ -1,8 +1,8 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/repositories/similarity_evaluation_repository_impl.dart';
-import 'package:openmusic/layers/domain/entities/similarity_evaluation.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/repositories/similarity_evaluation_repository_impl.dart';
+import 'package:owlsonic/layers/domain/entities/similarity_evaluation.dart';
 
 void main() {
   late AppDatabase database;

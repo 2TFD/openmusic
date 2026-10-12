@@ -1,9 +1,9 @@
-import 'package:openmusic/layers/data/datasources/local/artist/artist_local_data_source.dart';
-import 'package:openmusic/layers/data/mappers/artist_mapper.dart';
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/repositories/artist_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/layers/data/datasources/local/artist/artist_local_data_source.dart';
+import 'package:owlsonic/layers/data/mappers/artist_mapper.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/repositories/artist_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
 
 class ArtistRepositoryImpl implements ArtistRepository {
   ArtistRepositoryImpl({

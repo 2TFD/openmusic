@@ -1,4 +1,4 @@
-import 'package:openmusic/core/errors/failures/failure.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
 
 typedef ValidatedPlaylistMetadata = ({
   String name,

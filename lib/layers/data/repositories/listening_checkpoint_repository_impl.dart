@@ -1,8 +1,8 @@
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/domain/entities/listening_summary.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/repositories/listening_checkpoint_repository.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/domain/entities/listening_summary.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/repositories/listening_checkpoint_repository.dart';
 import 'package:uuid/uuid.dart';
 
 class ListeningCheckpointRepositoryImpl
@@ -19,7 +19,7 @@ class ListeningCheckpointRepositoryImpl
     final current = await database
         .select(database.listeningCheckpointTable)
         .getSingleOrNull();
-    final id = current?.trackId == track.id ? current!.id : const Uuid().v4();
+    final id = current?.trackId == track.id ? current!.id : const Uuid().v7();
     final milliseconds = current?.trackId == track.id
         ? listenedDuration.inMilliseconds.clamp(
             current!.listenedMilliseconds,

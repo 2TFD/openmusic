@@ -1,6 +1,6 @@
-import 'package:openmusic/core/errors/failures/failure.dart';
-import 'package:openmusic/core/services/track_source_resolver.dart';
-import 'package:openmusic/layers/domain/entities/resolved_track_input.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
+import 'package:owlsonic/core/services/track_source_resolver.dart';
+import 'package:owlsonic/layers/domain/entities/resolved_track_input.dart';
 
 class FetchTrackPreviewUseCase {
   final TrackSourceResolver _trackResolver;
@@ -8,7 +8,8 @@ class FetchTrackPreviewUseCase {
   FetchTrackPreviewUseCase({required TrackSourceResolver trackResolver})
     : _trackResolver = trackResolver;
 
-  Future<ResolvedTrackInput> call(String url) async {
+  Future<ResolvedTrackInput> call(String input) async {
+    final url = TrackSourceResolver.normalizeInput(input);
     final source = _trackResolver.resolveByUrl(url);
     final resolved = await source.resolve(url);
     if (resolved.tracks.isEmpty) {

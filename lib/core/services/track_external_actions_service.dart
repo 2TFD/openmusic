@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:openmusic/core/errors/failures/failure.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/repositories/track_external_actions.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/repositories/track_external_actions.dart';
 import 'package:path/path.dart' as path;
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -38,6 +38,12 @@ class TrackExternalActionsService implements TrackExternalActions {
       case SourceType.spotify:
         await _openWebSource(track.source.originalUrl);
       case SourceType.localFile:
+        await _shareTrackFile(track, sharePositionOrigin);
+      case SourceType.owlsonic:
+        // Only a local copy can be shared; a streamed cloud track has none.
+        if (track.filePath == null) {
+          throw UnsupportedSourceFailure(track.source.originalUrl);
+        }
         await _shareTrackFile(track, sharePositionOrigin);
       case SourceType.unknown:
         throw UnsupportedSourceFailure(track.source.originalUrl);

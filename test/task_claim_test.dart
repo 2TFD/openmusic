@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/models/download_task_dto.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/datasources/local/download_task/drift/download_task_drift_local_source.dart';
-import 'package:openmusic/layers/domain/entities/download_track_task.dart';
+import 'package:owlsonic/layers/data/models/download_task_dto.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/datasources/local/download_task/drift/download_task_drift_local_source.dart';
+import 'package:owlsonic/layers/domain/entities/download_track_task.dart';
 
 void main() {
   late AppDatabase database;
@@ -44,9 +44,60 @@ void main() {
     );
   });
 
+  test('only old temporary failures go back to the queue', () async {
+    final source = DownloadTaskDriftLocalSource(database);
+    final now = DateTime.now();
+    Future<void> fail(String id, String code, DateTime at) async {
+      await source.enqueue(
+        trackId: id,
+        originalUrl: 'https://example.com/$id',
+        createdAt: now,
+      );
+      await source.claimNext(
+        ownerId: 'owner',
+        leaseUntil: now.add(const Duration(minutes: 1)),
+      );
+      await source.markFailedIfOwned(
+        trackId: id,
+        ownerId: 'owner',
+        failure: DownloadFailureInfo(
+          code: code,
+          message: code,
+          details: '',
+          failedAt: at,
+        ),
+      );
+    }
+
+    final old = now.subtract(const Duration(hours: 1));
+    await fail('bot-old', DownloadFailureCodes.botCheck, old);
+    await fail('bot-new', DownloadFailureCodes.botCheck, now);
+    await fail('gone-old', DownloadFailureCodes.sourceUnavailable, old);
+
+    final requeued = await source.requeueFailed(
+      codes: {DownloadFailureCodes.botCheck},
+      failedBefore: now.subtract(const Duration(minutes: 20)),
+    );
+
+    expect(requeued, 1);
+    final bot = await source.getByTrackId('bot-old');
+    expect(bot?.status, DownloadStatus.queued);
+    expect(bot?.failure, isNull);
+    expect(
+      (await source.getByTrackId('bot-new'))?.status,
+      DownloadStatus.failed,
+      reason: 'a fresh failure waits for the cool-down',
+    );
+    expect(
+      (await source.getByTrackId('gone-old'))?.status,
+      DownloadStatus.failed,
+      reason: 'a removed video is not retried forever',
+    );
+  });
+
   test('claim stays atomic across independent database connections', () async {
     final tempDir = await Directory.systemTemp.createTemp(
-      'openmusic_atomic_claim_',
+      'owlsonic_atomic_claim_',
     );
     addTearDown(() => tempDir.delete(recursive: true));
     final file = File('${tempDir.path}/queue.sqlite');

@@ -1,5 +1,5 @@
-import '../entities/lyrics_resolution_state.dart';
-import '../entities/track_lyrics.dart';
+import 'package:owlsonic/layers/domain/entities/lyrics_resolution_state.dart';
+import 'package:owlsonic/layers/domain/entities/track_lyrics.dart';
 
 abstract interface class TrackLyricsRepository {
   Future<TrackLyrics?> getForTrack(String trackId);

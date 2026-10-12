@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/domain/entities/playlist.dart';
-import 'package:openmusic/layers/domain/usecases/create_playlist_use_case.dart';
-import 'package:openmusic/layers/presentation/blocs/playlist/playlist_bloc.dart';
+import 'package:owlsonic/layers/domain/entities/playlist.dart';
+import 'package:owlsonic/layers/domain/usecases/create_playlist_use_case.dart';
+import 'package:owlsonic/layers/presentation/features/playlist/bloc/playlist/playlist_bloc.dart';
 
 void main() {
   test('snapshots and mutations keep playlist content visible', () async {

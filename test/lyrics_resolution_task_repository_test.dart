@@ -1,8 +1,8 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/repositories/lyrics_resolution_task_repository_impl.dart';
-import 'package:openmusic/layers/domain/entities/lyrics_resolution_task.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/repositories/lyrics_resolution_task_repository_impl.dart';
+import 'package:owlsonic/layers/domain/entities/lyrics_resolution_task.dart';
 
 void main() {
   late AppDatabase database;

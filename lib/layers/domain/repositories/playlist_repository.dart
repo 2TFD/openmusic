@@ -1,4 +1,4 @@
-import '../entities/playlist.dart';
+import 'package:owlsonic/layers/domain/entities/playlist.dart';
 
 abstract class PlaylistRepository {
   Future<Playlist?> getPlaylistById(String id);

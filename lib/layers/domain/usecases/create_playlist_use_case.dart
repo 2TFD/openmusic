@@ -1,5 +1,5 @@
-import '../entities/playlist.dart';
-import '../repositories/playlist_repository.dart';
+import 'package:owlsonic/layers/domain/entities/playlist.dart';
+import 'package:owlsonic/layers/domain/repositories/playlist_repository.dart';
 import 'playlist_metadata_validation.dart';
 
 class CreatePlaylistUseCase {

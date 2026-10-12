@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
-import 'package:openmusic/layers/data/datasources/local/playlist/drift/playlist_table.dart';
-import 'package:openmusic/layers/data/datasources/local/track/drift/track_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/playlist/drift/playlist_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/track/drift/track_table.dart';
 
 class PlaylistTrackTable extends Table {
   TextColumn get playlistId =>

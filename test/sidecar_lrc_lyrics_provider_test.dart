@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/data/datasources/lyrics/sidecar_lrc_lyrics_provider.dart';
-import 'package:openmusic/layers/domain/repositories/lyrics_provider.dart';
+import 'package:owlsonic/layers/data/datasources/lyrics/sidecar_lrc_lyrics_provider.dart';
+import 'package:owlsonic/layers/domain/repositories/lyrics_provider.dart';
 
 void main() {
   test('prefers sidecar adjacent to original local file', () async {

@@ -1,4 +1,4 @@
-import '../entities/track_emotion_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/track_emotion_analysis.dart';
 
 abstract interface class TrackEmotionRepository {
   Future<void> saveGlobal(TrackEmotionAnalysis analysis);
@@ -27,6 +27,8 @@ abstract interface class TrackEmotionRepository {
     required String modelVersion,
     required String preprocessingVersion,
   });
+
+  Future<Set<String>> getAnalyzedTrackIds();
 
   Stream<void> watchChanges();
 }

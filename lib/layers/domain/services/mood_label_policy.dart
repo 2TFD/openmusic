@@ -1,4 +1,4 @@
-import '../entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
 
 class MoodLabelPolicy {
   const MoodLabelPolicy({this.excludedLabels = defaultExcludedLabels});
@@ -17,9 +17,10 @@ class MoodLabelPolicy {
   final Set<String> excludedLabels;
 
   List<MapEntry<String, double>> topLabels(
-    MoodDistribution distribution, {
+    MoodDistribution? distribution, {
     int limit = 3,
   }) {
+    if (distribution == null) return const [];
     final allowed =
         distribution.scores.entries
             .where((entry) => !excludedLabels.contains(entry.key.toLowerCase()))

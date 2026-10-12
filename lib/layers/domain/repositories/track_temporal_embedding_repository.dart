@@ -1,5 +1,5 @@
-import '../entities/track_embedding.dart';
-import '../entities/track_temporal_embedding.dart';
+import 'package:owlsonic/layers/domain/entities/track_embedding.dart';
+import 'package:owlsonic/layers/domain/entities/track_temporal_embedding.dart';
 
 abstract interface class TrackTemporalEmbeddingRepository {
   Future<bool> save(TrackTemporalEmbedding embedding);

@@ -1,6 +1,6 @@
-import '../entities/music_analysis.dart';
-import '../entities/music_analysis_failure.dart';
-import '../entities/music_analysis_task.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis_failure.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis_task.dart';
 
 abstract interface class MusicAnalysisTaskRepository {
   Stream<List<MusicAnalysisTask>> watchAll();

@@ -1,4 +1,4 @@
-import '../repositories/playlist_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/playlist_repository.dart';
 
 class AddTrackToPlaylistUseCase {
   final PlaylistRepository _repository;

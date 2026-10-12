@@ -1,5 +1,5 @@
-import '../../domain/entities/listening_summary.dart';
-import '../models/listening_summary_dto.dart';
+import 'package:owlsonic/layers/domain/entities/listening_summary.dart';
+import 'package:owlsonic/layers/data/models/listening_summary_dto.dart';
 
 class ListeningSummaryMapper {
   static ListeningSummary toEntity(ListeningSummaryDto dto) {

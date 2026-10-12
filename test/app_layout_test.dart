@@ -1,21 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/layout/app_layout.dart';
+import 'package:owlsonic/core/layout/app_layout.dart';
 
 void main() {
   group('AppLayout', () {
+    test('desktop family is selected by platform at every window width', () {
+      addTearDown(() => debugDefaultTargetPlatformOverride = null);
+      for (final platform in [
+        TargetPlatform.macOS,
+        TargetPlatform.windows,
+        TargetPlatform.linux,
+      ]) {
+        debugDefaultTargetPlatformOverride = platform;
+        expect(AppLayout.isDesktopPlatform, isTrue);
+        expect(AppLayout.desktopSizeFor(800), DesktopWindowSize.compact);
+        expect(AppLayout.desktopSizeFor(900), DesktopWindowSize.standard);
+        expect(AppLayout.desktopSizeFor(1440), DesktopWindowSize.large);
+      }
+      for (final platform in [TargetPlatform.android, TargetPlatform.iOS]) {
+        debugDefaultTargetPlatformOverride = platform;
+        expect(AppLayout.isDesktopPlatform, isFalse);
+      }
+    });
     test('classifies widths at the shared breakpoints', () {
-      expect(AppLayout.windowSizeFor(599), AppWindowSize.compact);
-      expect(AppLayout.windowSizeFor(600), AppWindowSize.medium);
-      expect(AppLayout.windowSizeFor(839), AppWindowSize.medium);
-      expect(AppLayout.windowSizeFor(840), AppWindowSize.expanded);
+      expect(AppLayout.windowSizeFor(719), AppWindowSize.compact);
+      expect(AppLayout.windowSizeFor(720), AppWindowSize.medium);
+      expect(AppLayout.windowSizeFor(1099), AppWindowSize.medium);
+      expect(AppLayout.windowSizeFor(1100), AppWindowSize.desktop);
+      expect(AppLayout.windowSizeFor(1439), AppWindowSize.desktop);
+      expect(AppLayout.windowSizeFor(1440), AppWindowSize.largeDesktop);
     });
 
     test('uses smaller gutters only on very narrow screens', () {
       expect(AppLayout.horizontalPaddingFor(320), 16);
       expect(AppLayout.horizontalPaddingFor(390), 24);
-      expect(AppLayout.horizontalPaddingFor(700), 32);
-      expect(AppLayout.horizontalPaddingFor(1000), 40);
+      expect(AppLayout.horizontalPaddingFor(700), 24);
+      expect(AppLayout.horizontalPaddingFor(1000), 32);
+      expect(AppLayout.horizontalPaddingFor(1100), 40);
     });
 
     test('calculates bounded grid column counts', () {

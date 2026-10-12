@@ -1,4 +1,4 @@
-import 'package:openmusic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
 
 enum StatsPeriod { today, week, twoWeeks, month, allTime }
 

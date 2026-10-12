@@ -1,5 +1,5 @@
-import '../entities/track.dart';
-import '../repositories/lyrics_resolution_task_repository.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/repositories/lyrics_resolution_task_repository.dart';
 
 enum QueueLyricsResolutionDisposition { needsDownload, queued }
 

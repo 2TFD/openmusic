@@ -3,14 +3,14 @@ import 'dart:io';
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/errors/failures/failure.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/datasources/local/playlist/drift/playlist_drift_local_source.dart';
-import 'package:openmusic/layers/data/datasources/local/playlist/playlist_local_data_source.dart';
-import 'package:openmusic/layers/data/datasources/local/track/drift/track_drift_local_source.dart';
-import 'package:openmusic/layers/data/models/playlist_dto.dart';
-import 'package:openmusic/layers/data/models/track_dto.dart';
-import 'package:openmusic/layers/data/repositories/playlist_repository_impl.dart';
+import 'package:owlsonic/core/errors/failures/failure.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/datasources/local/playlist/drift/playlist_drift_local_source.dart';
+import 'package:owlsonic/layers/data/datasources/local/playlist/playlist_local_data_source.dart';
+import 'package:owlsonic/layers/data/datasources/local/track/drift/track_drift_local_source.dart';
+import 'package:owlsonic/layers/data/models/playlist_dto.dart';
+import 'package:owlsonic/layers/data/models/track_dto.dart';
+import 'package:owlsonic/layers/data/repositories/playlist_repository_impl.dart';
 
 void main() {
   late AppDatabase database;
@@ -166,7 +166,7 @@ ORDER BY position
 
   test('independent connections append different tracks atomically', () async {
     final tempDir = await Directory.systemTemp.createTemp(
-      'openmusic_playlist_add_',
+      'owlsonic_playlist_add_',
     );
     addTearDown(() => tempDir.delete(recursive: true));
     final file = File('${tempDir.path}/playlist.sqlite');

@@ -1,8 +1,8 @@
 import 'package:drift/drift.dart';
-import 'package:openmusic/layers/data/database/app_database.dart';
-import 'package:openmusic/layers/data/datasources/local/listening_summary/listening_summary_local_data_source.dart';
-import 'package:openmusic/layers/data/models/listening_summary_dto.dart';
-import 'package:openmusic/layers/data/models/listening_stats_summary_dto.dart';
+import 'package:owlsonic/layers/data/database/app_database.dart';
+import 'package:owlsonic/layers/data/datasources/local/listening_summary/listening_summary_local_data_source.dart';
+import 'package:owlsonic/layers/data/models/listening_summary_dto.dart';
+import 'package:owlsonic/layers/data/models/listening_stats_summary_dto.dart';
 
 class ListeningSummaryDriftLocalSource
     implements ListeningSummaryLocalDataSource {

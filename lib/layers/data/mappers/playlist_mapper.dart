@@ -1,5 +1,5 @@
-import '../../domain/entities/playlist.dart';
-import '../models/playlist_dto.dart';
+import 'package:owlsonic/layers/domain/entities/playlist.dart';
+import 'package:owlsonic/layers/data/models/playlist_dto.dart';
 
 class PlaylistMapper {
   static Playlist toEntity(PlaylistDto model) {

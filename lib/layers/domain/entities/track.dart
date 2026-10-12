@@ -134,7 +134,11 @@ class Track extends Equatable {
     );
   }
 
-  bool get isReadyToPlay => filePath != null;
+  bool get isCloudTrack => source.type == SourceType.owlsonic;
+
+  /// Cloud tracks stream through a backend signed URL when no local copy
+  /// exists, so they are playable without [filePath].
+  bool get isReadyToPlay => filePath != null || isCloudTrack;
 }
 
 class TrackDescriptor {
@@ -222,12 +226,7 @@ class TrackDescriptor {
 
   @override
   int get hashCode {
-    return audio.hashCode ^
-        emotion.hashCode ^
-        atmosphere.hashCode ^
-        texture.hashCode ^
-        structure.hashCode ^
-        context.hashCode;
+    return Object.hash(audio, emotion, atmosphere, texture, structure, context);
   }
 }
 
@@ -334,15 +333,17 @@ class AudioFeatures {
 
   @override
   int get hashCode {
-    return tempo.hashCode ^
-        energy.hashCode ^
-        loudness.hashCode ^
-        danceability.hashCode ^
-        valence.hashCode ^
-        acousticness.hashCode ^
-        instrumentalness.hashCode ^
-        liveness.hashCode ^
-        speechiness.hashCode;
+    return Object.hash(
+      tempo,
+      energy,
+      loudness,
+      danceability,
+      valence,
+      acousticness,
+      instrumentalness,
+      liveness,
+      speechiness,
+    );
   }
 }
 
@@ -427,12 +428,14 @@ class EmotionalProfile {
 
   @override
   int get hashCode {
-    return valence.hashCode ^
-        arousal.hashCode ^
-        tension.hashCode ^
-        nostalgia.hashCode ^
-        melancholy.hashCode ^
-        euphoria.hashCode;
+    return Object.hash(
+      valence,
+      arousal,
+      tension,
+      nostalgia,
+      melancholy,
+      euphoria,
+    );
   }
 }
 
@@ -517,12 +520,14 @@ class AtmosphereProfile {
 
   @override
   int get hashCode {
-    return intimacy.hashCode ^
-        spaciousness.hashCode ^
-        darkness.hashCode ^
-        warmth.hashCode ^
-        haziness.hashCode ^
-        realism.hashCode;
+    return Object.hash(
+      intimacy,
+      spaciousness,
+      darkness,
+      warmth,
+      haziness,
+      realism,
+    );
   }
 }
 
@@ -607,12 +612,14 @@ class TextureProfile {
 
   @override
   int get hashCode {
-    return softness.hashCode ^
-        sharpness.hashCode ^
-        roughness.hashCode ^
-        density.hashCode ^
-        brightness.hashCode ^
-        saturation.hashCode;
+    return Object.hash(
+      softness,
+      sharpness,
+      roughness,
+      density,
+      brightness,
+      saturation,
+    );
   }
 }
 
@@ -690,11 +697,13 @@ class StructureProfile {
 
   @override
   int get hashCode {
-    return complexity.hashCode ^
-        variation.hashCode ^
-        buildup.hashCode ^
-        dropIntensity.hashCode ^
-        repetitiveness.hashCode;
+    return Object.hash(
+      complexity,
+      variation,
+      buildup,
+      dropIntensity,
+      repetitiveness,
+    );
   }
 }
 
@@ -755,5 +764,5 @@ class ContextProfile {
   }
 
   @override
-  int get hashCode => genres.hashCode ^ moods.hashCode ^ scenarios.hashCode;
+  int get hashCode => Object.hash(genres, moods, scenarios);
 }

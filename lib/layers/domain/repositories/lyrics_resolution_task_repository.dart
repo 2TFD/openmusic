@@ -1,4 +1,4 @@
-import '../entities/lyrics_resolution_task.dart';
+import 'package:owlsonic/layers/domain/entities/lyrics_resolution_task.dart';
 
 abstract interface class LyricsResolutionTaskRepository {
   Stream<int> watchPendingCount();

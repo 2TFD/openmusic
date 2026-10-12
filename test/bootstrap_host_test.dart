@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:openmusic/core/bootstrap/app_initializer.dart';
-import 'package:openmusic/core/bootstrap/bootstrap_host.dart';
+import 'package:owlsonic/core/bootstrap/app_initializer.dart';
+import 'package:owlsonic/core/bootstrap/bootstrap_host.dart';
 
 void main() {
   setUpAll(() async {

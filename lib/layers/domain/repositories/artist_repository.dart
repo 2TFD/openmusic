@@ -1,5 +1,5 @@
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
 
 abstract class ArtistRepository {
   Stream<List<ArtistSummary>> watchArtistSummaries();

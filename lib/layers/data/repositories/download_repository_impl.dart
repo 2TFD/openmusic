@@ -1,8 +1,8 @@
-import 'package:openmusic/core/services/task_lease.dart';
-import 'package:openmusic/layers/data/datasources/local/download_task/download_task_local_data_source.dart';
-import 'package:openmusic/layers/data/mappers/download_task_mapper.dart';
-import 'package:openmusic/layers/domain/entities/download_track_task.dart';
-import 'package:openmusic/layers/domain/repositories/download_task_repository.dart';
+import 'package:owlsonic/core/services/task_lease.dart';
+import 'package:owlsonic/layers/data/datasources/local/download_task/download_task_local_data_source.dart';
+import 'package:owlsonic/layers/data/mappers/download_task_mapper.dart';
+import 'package:owlsonic/layers/domain/entities/download_track_task.dart';
+import 'package:owlsonic/layers/domain/repositories/download_task_repository.dart';
 
 class DownloadTaskRepositoryImpl implements DownloadTaskRepository {
   final DownloadTaskLocalDataSource localDataSource;
@@ -56,4 +56,10 @@ class DownloadTaskRepositoryImpl implements DownloadTaskRepository {
     ownerId: ownerId,
     failure: failure,
   );
+
+  @override
+  Future<int> requeueFailed({
+    required Set<String> codes,
+    required DateTime failedBefore,
+  }) => localDataSource.requeueFailed(codes: codes, failedBefore: failedBefore);
 }

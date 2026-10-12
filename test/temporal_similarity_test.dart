@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/domain/entities/music_analysis.dart';
-import 'package:openmusic/layers/domain/services/temporal_aligned_similarity.dart';
-import 'package:openmusic/layers/domain/services/temporal_dtw_similarity.dart';
-import 'package:openmusic/layers/domain/services/vector_similarity.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/services/temporal_aligned_similarity.dart';
+import 'package:owlsonic/layers/domain/services/temporal_dtw_similarity.dart';
+import 'package:owlsonic/layers/domain/services/vector_similarity.dart';
 
 void main() {
   test('cosine identifies identical and orthogonal vectors', () {

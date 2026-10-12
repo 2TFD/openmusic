@@ -1,11 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
+import 'package:owlsonic/layers/presentation/features/player/bloc/player/player_bloc.dart';
 
 class AppLifecycleScope extends StatefulWidget {
-  const AppLifecycleScope({super.key, required this.child});
+  const AppLifecycleScope({super.key, required this.child, this.onFirstFrame});
 
   final Widget child;
+  final Future<void> Function()? onFirstFrame;
 
   @override
   State<AppLifecycleScope> createState() => _AppLifecycleScopeState();
@@ -17,6 +20,15 @@ class _AppLifecycleScopeState extends State<AppLifecycleScope>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_afterFirstFrame());
+    });
+  }
+
+  Future<void> _afterFirstFrame() async {
+    try {
+      await widget.onFirstFrame?.call();
+    } catch (_) {}
   }
 
   @override

@@ -2,13 +2,12 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/entities/wave_session.dart';
-import 'package:openmusic/layers/presentation/blocs/mood_map/mood_map_cubit.dart';
-import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
-import 'package:openmusic/layers/presentation/widgets/wave_card.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/wave_session.dart';
+import 'package:owlsonic/layers/presentation/features/player/bloc/player/player_bloc.dart';
+import 'package:owlsonic/layers/presentation/features/player/ui/widgets/wave_card.dart';
 
 void main() {
   const preferencesChannel = MethodChannel(
@@ -77,9 +76,6 @@ void main() {
                         playerState: state.value,
                         tracks: [track],
                         artists: const [artist],
-                        moodMapState: const MoodMapState(
-                          status: MoodMapStatus.ready,
-                        ),
                         onEvent: events.add,
                       ),
               ),
@@ -90,8 +86,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Start a Wave'), findsOneWidget);
-    expect(find.byKey(const ValueKey('stop-wave')), findsNothing);
+    expect(find.byKey(const ValueKey('wave-card-start')), findsOneWidget);
+    expect(find.byKey(const ValueKey('wave-card-stop')), findsNothing);
 
     state.value = PlayerState(
       waveSession: WaveSession.startMood(
@@ -102,8 +98,10 @@ void main() {
       ),
     );
     await tester.pump();
-    expect(find.text('Mood · Stay'), findsOneWidget);
-    expect(find.byKey(const ValueKey('stop-wave')), findsNothing);
+    expect(find.text('Wave is playing'), findsOneWidget);
+    expect(find.text('Mood: Bright and warm'), findsOneWidget);
+    expect(find.byKey(const ValueKey('wave-card-start')), findsNothing);
+    expect(find.byKey(const ValueKey('wave-card-stop')), findsOneWidget);
 
     state.value = PlayerState(
       waveSession: WaveSession.startTrack(
@@ -112,7 +110,7 @@ void main() {
       ),
     );
     await tester.pump();
-    expect(find.text('Based on: Track — Seed song'), findsOneWidget);
+    expect(find.text('Based on Seed song'), findsOneWidget);
 
     state.value = PlayerState(
       waveSession: WaveSession.startArtist(
@@ -131,7 +129,7 @@ void main() {
       waveContinuationStatus: WaveContinuationStatus.waiting,
     );
     await tester.pump();
-    expect(find.text('Waiting for suitable tracks…'), findsOneWidget);
+    expect(find.text('Looking for songs that fit…'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('wave-card-retry')));
     expect(retryCount, 1);
 
@@ -148,14 +146,23 @@ void main() {
 
     expect(find.byKey(const ValueKey('stop-wave-in-settings')), findsOneWidget);
     expect(find.byKey(const ValueKey('mood-wave-settings')), findsOneWidget);
-    expect(find.byKey(const ValueKey('wave-radius')), findsOneWidget);
-    await tester.drag(
+    // Starting mood comes first; Style and Variety are secondary and scroll.
+    await tester.dragUntilVisible(
+      find.byKey(const ValueKey('wave-radius')),
       find.byKey(const ValueKey('mood-wave-settings')),
-      const Offset(0, -240),
+      const Offset(0, -80),
     );
-    await tester.pumpAndSettle();
-    expect(find.byKey(const ValueKey('wave-target-map')), findsOneWidget);
-    expect(find.byType(InteractiveViewer), findsOneWidget);
+    expect(find.byKey(const ValueKey('wave-radius')), findsOneWidget);
+    // Customize no longer embeds a second Mood Map: the mood is chosen in the
+    // dedicated picker, and only a short summary lives here.
+    expect(find.byKey(const ValueKey('wave-target-map')), findsNothing);
+    expect(find.byType(InteractiveViewer), findsNothing);
+    expect(find.byKey(const ValueKey('wave-choose-on-map')), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('wave-target-description')),
+      findsOneWidget,
+    );
+    expect(find.textContaining('V 0'), findsNothing);
     expect(find.byKey(const ValueKey('wave-target-valence')), findsNothing);
     expect(find.byKey(const ValueKey('wave-target-arousal')), findsNothing);
     expect(find.byKey(const ValueKey('choose-mood-target')), findsNothing);

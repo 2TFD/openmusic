@@ -1,6 +1,6 @@
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/repositories/listening_summary_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/repositories/listening_summary_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
 
 class GetHistoryUseCase {
   final ListeningSummaryRepository listeningSummaryRepository;

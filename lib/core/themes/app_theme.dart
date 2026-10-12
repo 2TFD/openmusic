@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
-  // Фоны
-  static const Color bg = Color(0xFF080808); // основной фон
+  // Quiet, deliberately close dark levels. Artwork and Mood Map provide color.
+  static const Color bg = Color(0xFF090909);
 
   static const Color surface = Color(0xFF111111); // карточки 1 уровня
   static const Color surface2 = Color(
     0xFF181818,
   ); // карточки 2 уровня (активные)
-  static const Color surface3 = Color(0xFF222222); // ховер / выбранный элемент
+  static const Color surface3 = Color(0xFF222222); // selected / pressed element
+  static const Color elevatedSurface = surface2;
 
   // Границы
   static const Color border = Color(0xFF1E1E1E); // обычная граница
@@ -20,9 +22,14 @@ class AppColors {
   static const Color error = Color.fromARGB(255, 178, 11, 11);
   // Текст
   static const Color text = Color(0xFFF0F0F0); // основной текст
-  static const Color textSub = Color(0xFF888888); // вторичный текст
-  static const Color muted = Color(0xFF555555); // метки, плейсхолдеры
-  static const Color muted2 = Color(0xFF333333); // совсем приглушённое
+  static const Color textSub = Color(
+    0xFFA3A3A3,
+  ); // вторичный текст (~7.5:1 on bg)
+  static const Color muted = Color(
+    0xFF858585,
+  ); // третичный текст (~4.9:1 on bg)
+  static const Color muted2 = Color(0xFF6B6B6B); // подсказки, неактивные иконки
+  static const Color disabled = Color(0xFF454545); // disabled controls
 
   // Акцент
   static const Color accent = Color(0xFFFFFFFF); // белый — единственный акцент
@@ -37,6 +44,18 @@ class AppColors {
   static const Color glowGreen = Color(
     0x331E4A30,
   ); // зелёное — ambient/nature seed
+
+  // Modal sheets: opaque surface over a dimmed barrier.
+  static const Color sheetSurface = Color(0xFF111111);
+  static const Color sheetBarrier = Color(0xB3000000);
+
+  // Specifics
+  static const Color imageOverlay = Color(0xFFC0C0C0);
+  static const Color success = Color(0xFF4ADE80);
+  static const Color successBg = Color(0x1A4ADE80);
+  static const Color successBorder = Color(0x334ADE80);
+  static const Color downloadPending = Color(0x1AFF5500);
+  static const Color downloadPendingBorder = Color(0x33FF5500);
 }
 
 class AppText {
@@ -129,6 +148,7 @@ class AppSpacing {
   static const double xl = 20.0;
   static const double xxl = 24.0;
   static const double xxxl = 32.0;
+  static const double pageMaxWidth = 760.0;
 
   /// Горизонтальный padding экранов
   static const double screenH = 24.0;
@@ -147,6 +167,7 @@ class AppRadius {
   static const double s = 10.0; // обложка трека
   static const double m = 14.0; // seed chip (100px для pill)
   static const double l = 20.0; // карточки Now Playing, секции
+  static const double card = 24.0;
   static const double xl = 28.0; // bottom sheet
   static const double pill = 100.0; // полностью округлый (chips, кнопки)
 
@@ -236,7 +257,9 @@ class AppBlur {
 
   // Цвет подложки под blur
   static const Color overlayColor = Color(0xCC080808); // 80% opacity bg
-  static const Color sheetColor = Color(0xE6111111); // 90% opacity surface
+  // Modal sheets must be opaque: the screen behind is dimmed by the barrier,
+  // never seen through the sheet content.
+  static const Color sheetColor = AppColors.sheetSurface;
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -251,6 +274,7 @@ class AppTheme {
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.bg,
         surfaceTintColor: Colors.transparent,
+        elevation: 0,
       ),
       scaffoldBackgroundColor: AppColors.bg,
       colorScheme: const ColorScheme.dark(
@@ -271,6 +295,84 @@ class AppTheme {
       textTheme: GoogleFonts.figtreeTextTheme(
         ThemeData.dark().textTheme,
       ).apply(bodyColor: AppColors.text, displayColor: AppColors.text),
+
+      // Глобальный тюнинг Material 3 виджетов под дизайн-систему
+      dialogTheme: DialogThemeData(
+        backgroundColor: AppColors.surface,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.l),
+        ),
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: AppColors.sheetSurface,
+        modalBackgroundColor: AppColors.sheetSurface,
+        modalBarrierColor: AppColors.sheetBarrier,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(AppRadius.xl),
+          ),
+        ),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return AppColors.bg;
+          return AppColors.textSub;
+        }),
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return AppColors.accent;
+          return AppColors.surface2;
+        }),
+        trackOutlineColor: WidgetStateProperty.all(Colors.transparent),
+      ),
+      checkboxTheme: CheckboxThemeData(
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) return AppColors.accent;
+          return Colors.transparent;
+        }),
+        checkColor: WidgetStateProperty.all(AppColors.bg),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+        side: const BorderSide(color: AppColors.borderAct),
+      ),
+      sliderTheme: const SliderThemeData(
+        activeTrackColor: AppColors.accent,
+        inactiveTrackColor: AppColors.surface2,
+        thumbColor: AppColors.accent,
+        overlayColor: AppColors.glowWhite,
+        trackHeight: 2.0,
+        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8.0),
+        overlayShape: RoundSliderOverlayShape(overlayRadius: 16.0),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.accent,
+          foregroundColor: AppColors.bg,
+          disabledBackgroundColor: AppColors.surface3,
+          disabledForegroundColor: AppColors.disabled,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.pill),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          textStyle: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.text,
+          disabledForegroundColor: AppColors.disabled,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.pill),
+          ),
+          textStyle: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: AppColors.accent,
+      ),
 
       // Bottom nav
       navigationBarTheme: NavigationBarThemeData(

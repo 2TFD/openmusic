@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:openmusic/core/errors/failures/failure_platform_stub.dart'
-    if (dart.library.io) 'package:openmusic/core/errors/failures/failure_platform_io.dart';
-import 'package:openmusic/core/errors/failures/platform_failure_kind.dart';
-import 'package:openmusic/core/utils/locale_keys.dart';
+import 'package:owlsonic/core/errors/failures/failure_platform_stub.dart'
+    if (dart.library.io) 'package:owlsonic/core/errors/failures/failure_platform_io.dart';
+import 'package:owlsonic/core/errors/failures/platform_failure_kind.dart';
+import 'package:owlsonic/core/utils/locale_keys.dart';
 import 'package:sqlite3/common.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
@@ -31,7 +31,16 @@ class TrackNotReadyFailure extends Failure {
 }
 
 class YouTubeFailure extends Failure {
-  const YouTubeFailure();
+  const YouTubeFailure({this.botCheck = false});
+
+  /// YouTube answered "Sign in to confirm you're not a bot": the network
+  /// (usually a VPN or a data-center IP) is blocked, not the video.
+  final bool botCheck;
+
+  @override
+  String toString() => botCheck
+      ? 'YouTubeFailure: YouTube asked to confirm this network is not a bot'
+      : 'YouTubeFailure';
 }
 
 class ParseFailure extends Failure {
@@ -97,15 +106,35 @@ class ValidationFailure extends Failure {
   final String field;
 }
 
+/// `POST /v1/tracks` rejected or could not complete. [kind] is the client
+/// category derived from the backend `error.code`, which is kept verbatim.
+class CloudUploadFailure extends Failure {
+  const CloudUploadFailure(
+    this.kind, {
+    this.code,
+    this.message,
+    this.requestId,
+  });
+
+  final String kind;
+  final String? code;
+  final String? message;
+  final String? requestId;
+}
+
 class UnknownFailure extends Failure {
   const UnknownFailure(this.cause);
   final Object cause;
 }
 
+bool isYouTubeBotCheckMessage(String message) => message.contains('not a bot');
+
 Failure failureFromException(Object e) {
   if (e is Failure) return e;
   if (e is DioException) return _failureFromDio(e);
-  if (e is YoutubeExplodeException) return const YouTubeFailure();
+  if (e is YoutubeExplodeException) {
+    return YouTubeFailure(botCheck: isYouTubeBotCheckMessage('$e'));
+  }
   if (e is SqliteException) return const DbFailure();
   if (e is FormatException) return const ParseFailure();
   switch (platformFailureKind(e)) {
@@ -166,18 +195,21 @@ extension FailureLocaleKey on Failure {
     PermissionFailure() => LocaleKeys.errorPermission,
     StorageFailure() => LocaleKeys.errorStorage,
     TrackNotReadyFailure() => LocaleKeys.snackDownloading,
-    YouTubeFailure() => LocaleKeys.errorYoutube,
-    ParseFailure() => LocaleKeys.snackErrorLoad,
+    YouTubeFailure(:final botCheck) =>
+      botCheck ? LocaleKeys.errorYoutubeBotCheck : LocaleKeys.errorYoutube,
+    ParseFailure() => LocaleKeys.errorUnreadable,
     DbFailure() => LocaleKeys.snackErrorGeneric,
-    NotFoundFailure() => LocaleKeys.snackErrorLoad,
+    NotFoundFailure() => LocaleKeys.errorNotFound,
     ConflictFailure() => LocaleKeys.snackErrorGeneric,
-    UnsupportedSourceFailure() => LocaleKeys.snackErrorLoad,
-    UnsupportedMediaFailure() => LocaleKeys.snackErrorLoad,
-    RemoteServiceFailure() => LocaleKeys.snackErrorNetwork,
+    UnsupportedSourceFailure() => LocaleKeys.errorUnsupportedLink,
+    UnsupportedMediaFailure() => LocaleKeys.errorUnsupportedMedia,
+    RemoteServiceFailure() => LocaleKeys.errorProvider,
     RemoteAccessFailure() => LocaleKeys.errorRemoteAccess,
     RateLimitFailure() => LocaleKeys.errorRateLimited,
-    EmptyResultFailure() => LocaleKeys.snackErrorLoad,
-    ValidationFailure() => LocaleKeys.errorInvalidInput,
+    EmptyResultFailure() => LocaleKeys.errorNoTracks,
+    ValidationFailure(:final field) =>
+      field.startsWith('cloud.') ? field : LocaleKeys.errorInvalidInput,
+    CloudUploadFailure(:final kind) => 'cloud.upload.$kind',
     UnknownFailure() => LocaleKeys.errorUnknown,
   };
 }

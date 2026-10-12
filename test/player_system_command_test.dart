@@ -1,24 +1,25 @@
+import 'package:owlsonic/core/telemetry/analytics_tracker.dart';
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/services/audio_player/playback_command_bus_impl.dart';
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/listening_summary.dart';
-import 'package:openmusic/layers/domain/entities/playback_session.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
-import 'package:openmusic/layers/domain/repositories/listening_checkpoint_repository.dart';
-import 'package:openmusic/layers/domain/repositories/listening_summary_repository.dart';
-import 'package:openmusic/layers/domain/repositories/playback_command_bus.dart';
-import 'package:openmusic/layers/domain/repositories/playback_session_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_repository.dart';
-import 'package:openmusic/layers/domain/usecases/build_playback_queue_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/restore_playback_session_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/save_listening_summary_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/skip_track_use_case.dart';
-import 'package:openmusic/layers/domain/services/listening_tracker.dart';
-import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
+import 'package:owlsonic/core/services/audio_player/playback_command_bus_impl.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/domain/entities/listening_summary.dart';
+import 'package:owlsonic/layers/domain/entities/playback_session.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/repositories/audio_player_port.dart';
+import 'package:owlsonic/layers/domain/repositories/listening_checkpoint_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/listening_summary_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/playback_command_bus.dart';
+import 'package:owlsonic/layers/domain/repositories/playback_session_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/layers/domain/usecases/build_playback_queue_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/restore_playback_session_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/save_listening_summary_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/skip_track_use_case.dart';
+import 'package:owlsonic/layers/domain/services/listening_tracker.dart';
+import 'package:owlsonic/layers/presentation/features/player/bloc/player/player_bloc.dart';
 
 /// Экран блокировки, наушники и Bluetooth обязаны вести себя ровно так же, как
 /// кнопки в приложении: политика живёт в SkipTrackUseCase, а не в адаптере.
@@ -110,6 +111,7 @@ class _Harness {
     final sessions = _MemorySessions();
     final tracks = [_track('a'), _track('b')];
     final bloc = PlayerBloc(
+      analytics: const NoopAnalyticsTracker(),
       service: player,
       saveListeningSummary: SaveListeningSummaryUseCase(repo: records),
       checkpoints: _NoopCheckpoints(),
@@ -203,6 +205,9 @@ class _FakeAudioPlayer implements AudioPlayerPort {
   Future<void> seekToIndex(int value) async => index.add(value);
   @override
   Future<void> setLoopMode(PlaybackLoopMode mode) async {}
+
+  @override
+  Future<void> setVolume(double volume) async {}
   @override
   Future<void> setShuffleModeEnabled(bool enabled) async {}
   @override

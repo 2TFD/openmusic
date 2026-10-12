@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/usecases/add_track_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/get_tracks_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/remove_track_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/search_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/update_track_use_case.dart';
-import 'package:openmusic/layers/presentation/blocs/track/track_bloc.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/usecases/add_track_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/get_tracks_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/remove_track_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/search_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/update_track_use_case.dart';
+import 'package:owlsonic/layers/presentation/features/track/bloc/track/track_bloc.dart';
 
 void main() {
   test('track refresh keeps loaded content visible', () async {

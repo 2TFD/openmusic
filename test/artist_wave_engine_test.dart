@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/services/music_analysis/music_analysis_model_registry.dart';
-import 'package:openmusic/core/services/recommendation/artist_wave_config.dart';
-import 'package:openmusic/core/services/recommendation/artist_wave_engine.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/entities/track_embedding.dart';
-import 'package:openmusic/layers/domain/entities/track_temporal_embedding.dart';
-import 'package:openmusic/layers/domain/entities/wave_session.dart';
+import 'package:owlsonic/core/services/music_analysis/music_analysis_model_registry.dart';
+import 'package:owlsonic/core/services/recommendation/artist_wave_config.dart';
+import 'package:owlsonic/core/services/recommendation/artist_wave_engine.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/track_embedding.dart';
+import 'package:owlsonic/layers/domain/entities/track_temporal_embedding.dart';
+import 'package:owlsonic/layers/domain/entities/wave_session.dart';
 
 import 'support/wave_engine_fakes.dart';
 
@@ -229,7 +229,7 @@ ArtistWaveEngine _engine({
   tracks: WaveTracks(tracks),
   globalEmbeddings: WaveGlobals(globals),
   temporalEmbeddings: WaveTemporals(temporals),
-  registry: MusicAnalysisModelRegistry(models),
+  registry: MusicAnalysisModelRegistry(models: models.models),
   config: config,
 );
 

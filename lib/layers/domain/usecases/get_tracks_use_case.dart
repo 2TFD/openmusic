@@ -1,5 +1,5 @@
-import '../entities/track.dart';
-import '../repositories/track_repository.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
 
 class GetTracksUseCase {
   final TrackRepository repository;

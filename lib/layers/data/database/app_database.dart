@@ -1,30 +1,31 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
-import 'package:openmusic/layers/data/datasources/local/download_task/drift/download_task_table.dart';
-import 'package:openmusic/layers/data/datasources/local/listening_summary/drift/listening_summary_table.dart';
-import 'package:openmusic/layers/data/datasources/local/playlist/drift/playlist_table.dart';
-import 'package:openmusic/layers/data/datasources/local/playlist/drift/playlist_track_table.dart';
-import 'package:openmusic/layers/data/datasources/local/track/drift/artist_table.dart';
-import 'package:openmusic/layers/data/datasources/local/track/drift/track_artist_table.dart';
-import 'package:openmusic/layers/data/datasources/local/track/drift/track_table.dart';
-import 'package:openmusic/layers/data/database/file_cleanup_task_table.dart';
-import 'package:openmusic/layers/data/database/listening_checkpoint_table.dart';
-import 'package:openmusic/layers/data/database/playback_session_table.dart';
-import 'package:openmusic/layers/data/database/playback_queue_item_table.dart';
-import 'package:openmusic/layers/data/database/app_navigation_state_table.dart';
-import 'package:openmusic/layers/data/datasources/local/listening_event/drift/listening_event_table.dart';
-import 'package:openmusic/layers/data/datasources/local/lyrics/lyrics_resolution_state_table.dart';
-import 'package:openmusic/layers/data/datasources/local/lyrics/lyrics_resolution_task_table.dart';
-import 'package:openmusic/layers/data/datasources/local/lyrics/track_lyrics_table.dart';
-import 'package:openmusic/layers/data/datasources/local/music_analysis/music_analysis_task_table.dart';
-import 'package:openmusic/layers/data/datasources/local/music_analysis/music_analysis_settings_table.dart';
-import 'package:openmusic/layers/data/datasources/local/similarity_evaluation/similarity_evaluation_table.dart';
-import 'package:openmusic/layers/data/datasources/local/track_embedding/drift/track_embedding_table.dart';
-import 'package:openmusic/layers/data/datasources/local/track_temporal_embedding/track_temporal_embedding_segment_table.dart';
-import 'package:openmusic/layers/data/datasources/local/track_temporal_embedding/track_temporal_embedding_table.dart';
-import 'package:openmusic/layers/data/datasources/local/track_emotion/track_emotion_analysis_table.dart';
-import 'package:openmusic/layers/data/datasources/local/track_emotion/track_emotion_segment_table.dart';
-import 'package:openmusic/layers/data/datasources/local/track_emotion/personal_mood_adjustment_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/download_task/drift/download_task_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/listening_summary/drift/listening_summary_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/playlist/drift/playlist_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/playlist/drift/playlist_track_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/track/drift/artist_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/track/drift/track_artist_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/track/drift/track_table.dart';
+import 'package:owlsonic/layers/data/database/file_cleanup_task_table.dart';
+import 'package:owlsonic/layers/data/database/listening_checkpoint_table.dart';
+import 'package:owlsonic/layers/data/database/playback_session_table.dart';
+import 'package:owlsonic/layers/data/database/playback_queue_item_table.dart';
+import 'package:owlsonic/layers/data/database/app_navigation_state_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/listening_event/drift/listening_event_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/lyrics/lyrics_resolution_state_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/lyrics/lyrics_resolution_task_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/lyrics/track_lyrics_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/music_analysis/music_analysis_task_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/music_analysis/music_analysis_settings_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/similarity_evaluation/similarity_evaluation_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/track_embedding/drift/track_embedding_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/track_temporal_embedding/track_temporal_embedding_segment_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/track_temporal_embedding/track_temporal_embedding_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/track_emotion/track_emotion_analysis_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/track_emotion/track_emotion_segment_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/track_emotion/personal_mood_adjustment_table.dart';
+import 'package:owlsonic/layers/data/datasources/local/cloud/cloud_tables.dart';
 import 'package:path_provider/path_provider.dart';
 
 part 'app_database.g.dart';
@@ -56,13 +57,18 @@ part 'app_database.g.dart';
     TrackEmotionAnalysisTable,
     TrackEmotionSegmentTable,
     PersonalMoodAdjustmentTable,
+    CloudLibraryItemTable,
+    CloudAnalysisTable,
+    CloudPlaylistTable,
+    CloudPlaylistItemTable,
+    CloudUploadTable,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 19;
+  int get schemaVersion => 20;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -365,6 +371,14 @@ WHERE modality = 'audio' AND audio_revision IS NOT NULL
       }
       if (from < 19) {
         await _ensureMediaSourceColumns(m, m.database);
+      }
+      if (from < 20) {
+        // OwlSonic cloud state; additive, local-only data is untouched.
+        await m.createTable(cloudLibraryItemTable);
+        await m.createTable(cloudAnalysisTable);
+        await m.createTable(cloudPlaylistTable);
+        await m.createTable(cloudPlaylistItemTable);
+        await m.createTable(cloudUploadTable);
       }
     },
     beforeOpen: (details) async {
@@ -773,7 +787,7 @@ JOIN track_table ON track_table.id = legacy.track_id
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
-      name: "openmusic_database",
+      name: "owlsonic_database",
       native: const DriftNativeOptions(
         databaseDirectory: getApplicationSupportDirectory,
         shareAcrossIsolates: true,

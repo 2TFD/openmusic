@@ -1,37 +1,37 @@
+import 'package:owlsonic/core/telemetry/analytics_tracker.dart';
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/core/services/audio_player/playback_command_bus_impl.dart';
-import 'package:openmusic/core/services/music_analysis/music_analysis_model_registry.dart';
-import 'package:openmusic/core/services/recommendation/mood_wave_config.dart';
-import 'package:openmusic/core/services/recommendation/mood_wave_engine.dart';
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/listening_summary.dart';
-import 'package:openmusic/layers/domain/entities/mood_map.dart';
-import 'package:openmusic/layers/domain/entities/mood_wave.dart';
-import 'package:openmusic/layers/domain/entities/music_analysis.dart';
-import 'package:openmusic/layers/domain/entities/playback_session.dart';
-import 'package:openmusic/layers/domain/entities/queue_entry_provenance.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/entities/track_embedding.dart';
-import 'package:openmusic/layers/domain/entities/track_emotion_analysis.dart';
-import 'package:openmusic/layers/domain/entities/track_temporal_embedding.dart';
-import 'package:openmusic/layers/domain/repositories/audio_player_port.dart';
-import 'package:openmusic/layers/domain/repositories/listening_checkpoint_repository.dart';
-import 'package:openmusic/layers/domain/repositories/listening_summary_repository.dart';
-import 'package:openmusic/layers/domain/repositories/mood_map_repository.dart';
-import 'package:openmusic/layers/domain/repositories/music_analysis_client.dart';
-import 'package:openmusic/layers/domain/repositories/playback_session_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_embedding_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_repository.dart';
-import 'package:openmusic/layers/domain/repositories/track_temporal_embedding_repository.dart';
-import 'package:openmusic/layers/domain/services/listening_tracker.dart';
-import 'package:openmusic/layers/domain/usecases/build_playback_queue_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/restore_playback_session_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/save_listening_summary_use_case.dart';
-import 'package:openmusic/layers/domain/usecases/skip_track_use_case.dart';
-import 'package:openmusic/layers/presentation/blocs/player/player_bloc.dart';
+import 'package:owlsonic/core/services/audio_player/playback_command_bus_impl.dart';
+import 'package:owlsonic/core/services/music_analysis/music_analysis_model_registry.dart';
+import 'package:owlsonic/core/services/recommendation/mood_wave_config.dart';
+import 'package:owlsonic/core/services/recommendation/mood_wave_engine.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/domain/entities/listening_summary.dart';
+import 'package:owlsonic/layers/domain/entities/mood_map.dart';
+import 'package:owlsonic/layers/domain/entities/mood_wave.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/playback_session.dart';
+import 'package:owlsonic/layers/domain/entities/queue_entry_provenance.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/track_embedding.dart';
+import 'package:owlsonic/layers/domain/entities/track_emotion_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/track_temporal_embedding.dart';
+import 'package:owlsonic/layers/domain/repositories/audio_player_port.dart';
+import 'package:owlsonic/layers/domain/repositories/listening_checkpoint_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/listening_summary_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/mood_map_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/playback_session_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_embedding_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_temporal_embedding_repository.dart';
+import 'package:owlsonic/layers/domain/services/listening_tracker.dart';
+import 'package:owlsonic/layers/domain/usecases/build_playback_queue_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/restore_playback_session_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/save_listening_summary_use_case.dart';
+import 'package:owlsonic/layers/domain/usecases/skip_track_use_case.dart';
+import 'package:owlsonic/layers/presentation/features/player/bloc/player/player_bloc.dart';
 
 void main() {
   test(
@@ -396,10 +396,13 @@ class _Harness {
       moods: moods,
       globalEmbeddings: _EmptyGlobalEmbeddings(),
       temporalEmbeddings: _EmptyTemporalEmbeddings(),
-      registry: MusicAnalysisModelRegistry(_EmptyAnalysisClient()),
+      registry: MusicAnalysisModelRegistry(
+        models: (_EmptyAnalysisClient().models),
+      ),
       config: config,
     );
     final bloc = PlayerBloc(
+      analytics: const NoopAnalyticsTracker(),
       service: player,
       saveListeningSummary: SaveListeningSummaryUseCase(
         repo: _NoopListeningSummaries(),
@@ -556,6 +559,9 @@ class _FakeAudioPlayer implements AudioPlayerPort {
   Future<void> seekToIndex(int value) async => index.add(value);
   @override
   Future<void> setLoopMode(PlaybackLoopMode mode) async => loopMode = mode;
+
+  @override
+  Future<void> setVolume(double volume) async {}
   @override
   Future<void> setQueue(
     List<Track> tracks, {
@@ -628,19 +634,8 @@ class _EmptyTemporalEmbeddings implements TrackTemporalEmbeddingRepository {
   Future<bool> save(TrackTemporalEmbedding embedding) async => true;
 }
 
-class _EmptyAnalysisClient implements MusicAnalysisClient {
-  @override
-  String get baseUrl => 'memory://';
-  @override
-  Future<MusicAnalysisResponse> analyze({
-    required String trackId,
-    required String filePath,
-    String? contentIdentity,
-    String? lyrics,
-    required Set<MusicAnalysisRepresentation> requestedRepresentations,
-  }) => throw UnimplementedError();
-  @override
-  Future<MusicAnalysisModels> getModels() async =>
+class _EmptyAnalysisClient {
+  MusicAnalysisModels get models =>
       const MusicAnalysisModels(schemaVersion: '1', models: []);
 }
 

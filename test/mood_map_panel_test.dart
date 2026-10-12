@@ -1,19 +1,20 @@
+import 'package:owlsonic/core/telemetry/analytics_tracker.dart';
+import 'package:owlsonic/layers/domain/entities/mood_map.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/mood_map.dart';
-import 'package:openmusic/layers/domain/entities/music_analysis.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
-import 'package:openmusic/layers/domain/entities/track_emotion_analysis.dart';
-import 'package:openmusic/layers/domain/entities/wave_session.dart';
-import 'package:openmusic/layers/domain/repositories/mood_map_repository.dart';
-import 'package:openmusic/layers/presentation/blocs/mood_map/mood_map_cubit.dart';
-import 'package:openmusic/layers/presentation/mood_map/mood_map_view_policy.dart';
-import 'package:openmusic/layers/presentation/screens/mood_map_page.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/domain/entities/music_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/track_emotion_analysis.dart';
+import 'package:owlsonic/layers/domain/entities/wave_session.dart';
+import 'package:owlsonic/layers/domain/repositories/mood_map_repository.dart';
+import 'package:owlsonic/layers/presentation/features/mood_map/bloc/mood_map/mood_map_cubit.dart';
+import 'package:owlsonic/layers/presentation/features/mood_map/logic/mood_map_view_policy.dart';
+import 'package:owlsonic/layers/presentation/features/mood_map/ui/mood_map_page.dart';
 
 void main() {
   const preferencesChannel = MethodChannel(
@@ -64,7 +65,10 @@ void main() {
         analyzedAt: DateTime.utc(2026),
       ),
     );
-    final cubit = MoodMapCubit(repository: const _EmptyMoodMapRepository());
+    final cubit = MoodMapCubit(
+      analytics: const NoopAnalyticsTracker(),
+      repository: const _EmptyMoodMapRepository(),
+    );
     addTearDown(cubit.close);
     MoodPoint? selectedTarget;
 
@@ -132,7 +136,8 @@ void main() {
     expect(find.text('Map Track'), findsOneWidget);
     expect(find.text('Map Artist'), findsOneWidget);
 
-    await tester.tap(find.byType(ModalBarrier).last);
+    expect(find.byKey(const ValueKey('mood-track-play')), findsOneWidget);
+    await tester.tapAt(const Offset(4, 4));
     await tester.pumpAndSettle();
     await tester.tapAt(
       tester.getTopLeft(find.byType(InteractiveViewer)) + const Offset(20, 20),

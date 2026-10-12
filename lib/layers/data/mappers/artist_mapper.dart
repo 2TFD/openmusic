@@ -1,5 +1,5 @@
-import 'package:openmusic/layers/data/models/artist_summary_dto.dart';
-import 'package:openmusic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/data/models/artist_summary_dto.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
 
 class ArtistMapper {
   const ArtistMapper._();

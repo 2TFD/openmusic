@@ -1,10 +1,11 @@
 import 'dart:convert';
 
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/entities/source.dart';
-import 'package:openmusic/layers/domain/entities/track.dart';
+import 'package:equatable/equatable.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/domain/entities/source.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
 
-class TrackPreview {
+class TrackPreview extends Equatable {
   final String id;
   final String title;
   final String artist;
@@ -32,6 +33,22 @@ class TrackPreview {
     required this.urlFile,
     this.media,
   });
+
+  @override
+  List<Object?> get props => [
+    id,
+    title,
+    artist,
+    artistId,
+    album,
+    artworkUrl,
+    duration,
+    source,
+    originalUrl,
+    year,
+    urlFile,
+    media,
+  ];
 
   Track toTrack(
     String? filePath, {
@@ -86,7 +103,10 @@ class TrackPreview {
       duration: map['duration'] != null
           ? Duration(microseconds: int.parse(map['duration'] as String))
           : null,
-      source: SourceType.values.firstWhere((e) => e.name == map['source']),
+      source: SourceType.values.firstWhere(
+        (e) => e.name == map['source'],
+        orElse: () => SourceType.unknown,
+      ),
       originalUrl: map['originalUrl'] as String,
       year: map['year'] != null ? map['year'] as int : null,
       urlFile: map['urlFile'] as String,

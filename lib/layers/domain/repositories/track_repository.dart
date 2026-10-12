@@ -1,4 +1,4 @@
-import '../entities/track.dart';
+import 'package:owlsonic/layers/domain/entities/track.dart';
 
 abstract class TrackRepository {
   Future<List<Track>> getTracks();

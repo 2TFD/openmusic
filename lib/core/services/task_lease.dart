@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:openmusic/core/utils/app_logger.dart';
+import 'package:owlsonic/core/utils/app_logger.dart';
 
 class TaskLeasePolicy {
   static const duration = Duration(minutes: 1);

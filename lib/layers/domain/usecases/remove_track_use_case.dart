@@ -1,4 +1,4 @@
-import 'package:openmusic/layers/domain/repositories/track_removal_repository.dart';
+import 'package:owlsonic/layers/domain/repositories/track_removal_repository.dart';
 
 class RemoveTrackUseCase {
   final TrackRemovalRepository trackRemovalRepository;

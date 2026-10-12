@@ -1,5 +1,5 @@
-import 'package:openmusic/layers/domain/entities/artist.dart';
-import 'package:openmusic/layers/domain/repositories/artist_repository.dart';
+import 'package:owlsonic/layers/domain/entities/artist.dart';
+import 'package:owlsonic/layers/domain/repositories/artist_repository.dart';
 
 class WatchArtistSummariesUseCase {
   const WatchArtistSummariesUseCase(this.repository);

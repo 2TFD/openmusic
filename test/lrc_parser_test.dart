@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:openmusic/layers/domain/services/lrc_parser.dart';
+import 'package:owlsonic/layers/domain/services/lrc_parser.dart';
 
 void main() {
   const parser = LrcParser();
